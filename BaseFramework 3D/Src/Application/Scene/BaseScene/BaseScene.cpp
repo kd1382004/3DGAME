@@ -141,6 +141,11 @@ void BaseScene::DrawDebug()
 	KdShaderManager::Instance().m_StandardShader.EndUnLit();
 }
 
+
+void BaseScene::ImGUi()
+{
+}
+
 void BaseScene::Event()
 {
 	// 各シーンで必要な内容を実装(オーバーライド)する

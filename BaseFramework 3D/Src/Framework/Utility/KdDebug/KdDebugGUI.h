@@ -124,6 +124,8 @@ private:
 	// ImGui
 	std::unique_ptr<ImGuiAppLog> m_uqLog = nullptr;
 
+	bool m_SceneManagerImGUIFlg = false;
+
 //=====================================================
 // シングルトンパターン
 //=====================================================

@@ -1,5 +1,29 @@
 ﻿#include "TitleScene.h"
 #include "../SceneManager.h"
+#include"../../Editor/TitleSceneEditor/TitleSceneEditor.h"
+
+#include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
+
+
+void TitleScene::Init()
+{
+	m_spTitleSceneEditor = std::make_shared<TitleSceneEditor>();
+
+	//実験用
+	std::shared_ptr<TPSCamera>tPSCamera = std::make_shared<TPSCamera>();
+	tPSCamera->Init();
+	tPSCamera->SetMouseFreeFlg(true);
+	m_objList.push_back(tPSCamera);
+}
+
+
+void TitleScene::ImGUi()
+{
+	if (m_spTitleSceneEditor)
+	{
+		m_spTitleSceneEditor->ImGui();
+	}
+}
 
 void TitleScene::Event()
 {
@@ -10,8 +34,4 @@ void TitleScene::Event()
 			SceneManager::SceneType::Game
 		);
 	}
-}
-
-void TitleScene::Init()
-{
 }

@@ -66,6 +66,19 @@ public:
 	bool Intersects(const KdCollider::BoxInfo& targetBox, std::list<KdCollider::CollisionResult>* pResults);
 	bool Intersects(const KdCollider::RayInfo& targetShape, std::list<KdCollider::CollisionResult>* pResults);
 
+
+	//追加
+	//GameObjectを直接継承したクラスを入れる
+	enum GameObjectClass
+	{
+		//初期クラス
+		GameObjectClass_gameObjectClass,
+
+		//カメラクラス
+		GameObjectClass_Camera,
+	};
+
+	GameObjectClass GetGameObjectClass() { return m_gameObjectClass; }
 protected:
 
 	void Release() {}
@@ -87,4 +100,6 @@ protected:
 
 	// デバッグ情報クラス
 	std::unique_ptr<KdDebugWireFrame> m_pDebugWire = nullptr;
+
+	GameObjectClass m_gameObjectClass = GameObjectClass_gameObjectClass;
 };

@@ -28,6 +28,11 @@ public :
 		m_objList.push_back(_obj);
 	}
 
+
+	//追加
+	//ImGUIをいじるならこの中で
+	virtual void ImGUi();
+
 protected :
 
 	// 継承先シーンで必要ならオーバーライドする

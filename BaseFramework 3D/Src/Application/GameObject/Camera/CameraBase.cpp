@@ -9,6 +9,8 @@ void CameraBase::Init()
 	// ↓画面中央座標
 	m_FixMousePos.x = 640;
 	m_FixMousePos.y = 360;
+
+	m_gameObjectClass = KdGameObject::GameObjectClass::GameObjectClass_Camera;
 }
 
 void CameraBase::PreDraw()
@@ -28,6 +30,9 @@ void CameraBase::SetTarget(const std::shared_ptr<KdGameObject>& target)
 
 void CameraBase::UpdateRotateByMouse()
 {
+	if (m_mouseFreeFlg) { return; }
+
+
 	// マウスでカメラを回転させる処理
 	POINT _nowPos;
 	GetCursorPos(&_nowPos);

@@ -55,6 +55,11 @@ void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _obj)
 	m_currentScene->AddObject(_obj);
 }
 
+void SceneManager::ImGUI()
+{
+	m_currentScene->ImGUi();
+}
+
 void SceneManager::ChangeScene(SceneType _sceneType)
 {
 	// 次のシーンを作成し、現在のシーンにする

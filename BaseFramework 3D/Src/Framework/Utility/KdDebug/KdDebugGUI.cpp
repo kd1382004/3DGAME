@@ -2,6 +2,12 @@
 
 #include "KdDebugGUI.h"
 
+
+//追加
+#include"../../../Application/Scene/SceneManager.h"
+#include"../../../Application/Info/DebugInfo/DebugInfo.h"
+
+
 KdDebugGUI::KdDebugGUI()
 {}
 KdDebugGUI::~KdDebugGUI()
@@ -72,6 +78,12 @@ void KdDebugGUI::GuiProcess()
 	//=====================================================
 
 //	KdDebugGUI::Instance().AddLog("TestLog\n");
+
+	//自分追加
+	if (DebugInfo::Instance().m_SceneManagerImGUIFlg)
+	{
+		SceneManager::Instance().ImGUI();
+	}
 
 	//===========================================================
 	// ここより上にImGuiの描画はする事
