@@ -100,6 +100,21 @@
     <Filter Include="Src\Application\Info\DebugInfo">
       <UniqueIdentifier>{a2c6fd40-1dde-4906-a172-20b66cffa406}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Button">
+      <UniqueIdentifier>{2439c879-bb7e-490f-8faa-a45f47dd799a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Button\GameButton">
+      <UniqueIdentifier>{37e26d8e-8743-4bef-87df-27550a6711e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Info\MouseInfo">
+      <UniqueIdentifier>{fc01923c-66d5-4d5e-9b37-210e7bc7cafc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains">
+      <UniqueIdentifier>{26448d13-fb9e-4b77-b9d0-46cdeeadd89a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Ground">
+      <UniqueIdentifier>{002fbbc5-d1a8-4d08-ba35-5b641197268c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -291,6 +306,18 @@
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h">
       <Filter>Src\Application\Info\DebugInfo</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Button\GameButton\GameButton.h">
+      <Filter>Src\Application\GameObject\Button\GameButton</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Button\ButtonBase.h">
+      <Filter>Src\Application\GameObject\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h">
+      <Filter>Src\Application\Info\MouseInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Ground\Ground.h">
+      <Filter>Src\Application\GameObject\Terrains\Ground</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -451,6 +478,18 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp">
       <Filter>Src\Application\Info\DebugInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Button\GameButton\GameButton.cpp">
+      <Filter>Src\Application\GameObject\Button\GameButton</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Button\ButtonBase.cpp">
+      <Filter>Src\Application\GameObject\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Info\MouseInfo\MouseInfo.cpp">
+      <Filter>Src\Application\Info\MouseInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Ground\Ground.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Ground</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

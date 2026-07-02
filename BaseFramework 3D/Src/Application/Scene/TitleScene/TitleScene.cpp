@@ -12,7 +12,6 @@ void TitleScene::Init()
 	//実験用
 	std::shared_ptr<TPSCamera>tPSCamera = std::make_shared<TPSCamera>();
 	tPSCamera->Init();
-	tPSCamera->SetMouseFreeFlg(true);
 	m_objList.push_back(tPSCamera);
 }
 

@@ -76,9 +76,20 @@ public:
 
 		//カメラクラス
 		GameObjectClass_Camera,
+
+		//ボタンクラス
+		GameObjectClass_Botton,
+
+		//地形
+		GameObjectClass_Terrains,
 	};
 
 	GameObjectClass GetGameObjectClass() { return m_gameObjectClass; }
+
+
+	virtual void ImGUI() {}
+
+	std::string GetImGUIName() { return m_ImGUIName; }
 protected:
 
 	void Release() {}
@@ -101,5 +112,11 @@ protected:
 	// デバッグ情報クラス
 	std::unique_ptr<KdDebugWireFrame> m_pDebugWire = nullptr;
 
+
+	//自分追加
+	//GameObjectを直接継承したクラスの分類を入れる
 	GameObjectClass m_gameObjectClass = GameObjectClass_gameObjectClass;
+
+	//ImGUI表示名
+	std::string m_ImGUIName;
 };

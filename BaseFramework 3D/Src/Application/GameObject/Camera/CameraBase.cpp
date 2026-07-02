@@ -1,14 +1,13 @@
 ﻿#include "CameraBase.h"
 
+#include"../../Info/MouseInfo/MouseInfo.h"
+
 void CameraBase::Init()
 {
 	if (!m_spCamera)
 	{
 		m_spCamera = std::make_shared<KdCamera>();
 	}
-	// ↓画面中央座標
-	m_FixMousePos.x = 640;
-	m_FixMousePos.y = 360;
 
 	m_gameObjectClass = KdGameObject::GameObjectClass::GameObjectClass_Camera;
 }
@@ -30,7 +29,7 @@ void CameraBase::SetTarget(const std::shared_ptr<KdGameObject>& target)
 
 void CameraBase::UpdateRotateByMouse()
 {
-	if (m_mouseFreeFlg) { return; }
+	if (MouseInfo::Instance().GetMouseFreeFlg()) { return; }
 
 
 	// マウスでカメラを回転させる処理
@@ -38,10 +37,10 @@ void CameraBase::UpdateRotateByMouse()
 	GetCursorPos(&_nowPos);
 
 	POINT _mouseMove{};
-	_mouseMove.x = _nowPos.x - m_FixMousePos.x;
-	_mouseMove.y = _nowPos.y - m_FixMousePos.y;
+	_mouseMove.x = _nowPos.x - MouseInfo::Instance().GetFixMousePos().x;
+	_mouseMove.y = _nowPos.y - MouseInfo::Instance().GetFixMousePos().y;
 
-	SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
+	SetCursorPos(MouseInfo::Instance().GetFixMousePos().x, MouseInfo::Instance().GetFixMousePos().y);
 
 	// 実際にカメラを回転させる処理(0.15はただの補正値)
 	m_DegAng.x += _mouseMove.y * 0.15f;

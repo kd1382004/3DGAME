@@ -1,5 +1,7 @@
 ﻿#include "SceneManager.h"
 
+#include"../Info/MouseInfo/MouseInfo.h"
+
 #include "BaseScene/BaseScene.h"
 #include "TitleScene/TitleScene.h"
 #include "GameScene/GameScene.h"
@@ -17,6 +19,8 @@ void SceneManager::PreUpdate()
 
 void SceneManager::Update()
 {
+	MouseInfo::Instance().Update();
+
 	m_currentScene->Update();
 }
 
@@ -37,7 +41,10 @@ void SceneManager::Draw()
 
 void SceneManager::DrawSprite()
 {
+
 	m_currentScene->DrawSprite();
+
+	MouseInfo::Instance().DrawSprite();
 }
 
 void SceneManager::DrawDebug()

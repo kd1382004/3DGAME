@@ -42,8 +42,6 @@ public:
 		m_wpHitObjectList.push_back(object);
 	}
 
-	void SetMouseFreeFlg(bool _flg) { m_mouseFreeFlg = _flg; }
-
 protected:
 	// カメラ回転用角度
 	Math::Vector3								m_DegAng		= Math::Vector3::Zero;
@@ -57,13 +55,6 @@ protected:
 	Math::Matrix								m_mLocalPos		= Math::Matrix::Identity;
 	Math::Matrix								m_mRotation		= Math::Matrix::Identity;
 
-	// カメラ回転用マウス座標の差分
-	POINT										m_FixMousePos{};
-
-
 	//カメラの基準点・注視点
 	Math::Vector3 m_cameraPos = {0,0,0};
-
-	//マウスをフリーにするか
-	bool m_mouseFreeFlg=false;
 };

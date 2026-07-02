@@ -18,8 +18,8 @@ protected:
 	Math::Vector2 m_pos = {};
 	Math::Vector2 m_radius = {};
 	float m_scale = 1.0f;
-	const float m_defScale = 2;
-	const float m_hitScale = 1.5;
+	float m_defScale = 2.0;
+	float m_hitScale = 1.5;
 
 
 	bool m_choseFlg;
@@ -30,4 +30,6 @@ protected:
 	float m_alphaAdd = 0.01;
 
 	void AlphaFlashing();
+
+	void ImGUI()override;
 };
