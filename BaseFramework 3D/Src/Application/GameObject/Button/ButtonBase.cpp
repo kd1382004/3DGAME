@@ -1,8 +1,11 @@
 ﻿#include "ButtonBase.h"
 
+#include"../../Info/MouseInfo/MouseInfo.h"
+
 void ButtonBase::Init()
 {
 	m_gameObjectClass = KdGameObject::GameObjectClass::GameObjectClass_Botton;
+	m_choseFlg = false;
 }
 
 void ButtonBase::Update()
@@ -11,7 +14,7 @@ void ButtonBase::Update()
 void ButtonBase::DrawSprite()
 {
 	Math::Color color = { 1,1,1,m_alpha };
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, m_pos.x, m_pos.y, m_radius.x * m_scale, m_radius.y * m_scale, nullptr, &color);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, m_pos.x, m_pos.y, m_diameter.x * m_scale, m_diameter.y * m_scale, nullptr, &color);
 }
 
 void ButtonBase::SetPos(const Math::Vector3& pos)
@@ -80,6 +83,30 @@ void ButtonBase::ImGUI()
 
 
 		ImGui::TreePop();
+	}
+
+}
+
+void ButtonBase::MouseChosen()
+{
+
+	float Left = m_pos.x - (m_diameter.x / 2.0f) * m_scale;
+	float Right = m_pos.x + (m_diameter.x / 2.0f) * m_scale;
+	float Top = m_pos.y - (m_diameter.y / 2.0f) * m_scale;
+	float Bottom = m_pos.y + (m_diameter.y / 2.0f) * m_scale;
+
+	float mx = MouseInfo::Instance().m_pos.x;
+	float my = MouseInfo::Instance().m_pos.y;
+
+	if (Left <= mx && mx <= Right &&
+		Top <= my && my <= Bottom)
+	{
+		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
+		m_choseFlg = true;
+	}
+	else
+	{
+		m_choseFlg = false;
 	}
 
 }

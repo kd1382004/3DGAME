@@ -16,7 +16,7 @@ protected:
 
 	std::shared_ptr<KdTexture> m_tex;
 	Math::Vector2 m_pos = {};
-	Math::Vector2 m_radius = {};
+	Math::Vector2 m_diameter = {};
 	float m_scale = 1.0f;
 	float m_defScale = 2.0;
 	float m_hitScale = 1.5;
@@ -32,4 +32,7 @@ protected:
 	void AlphaFlashing();
 
 	void ImGUI()override;
+
+	//Mouseと当たっているかどうか
+	void MouseChosen();
 };

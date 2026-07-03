@@ -10,7 +10,7 @@ void GameButton::Init()
 		m_tex = std::make_shared<KdTexture>();
 		m_tex->Load("Asset/Textures/Button/GameButton/PlayButton.png");
 		m_scale = m_defScale;
-		m_radius = { m_tex->GetWidth() / 2.0f * m_scale , m_tex->GetHeight() / 2.0f * m_scale };
+		m_diameter = { m_tex->GetWidth() / 2.0f * m_scale , m_tex->GetHeight() / 2.0f * m_scale };
 
 		Math::Matrix scaleMat = Math::Matrix::CreateScale(m_scale);
 		Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0);
@@ -24,7 +24,10 @@ void GameButton::Init()
 
 void GameButton::Update()
 {
-	/*if (m_choseFlg)
+
+	ButtonBase::MouseChosen();
+
+	if (m_choseFlg)
 	{
 		SceneManager::Instance().SetNextScene
 		(
@@ -35,6 +38,6 @@ void GameButton::Update()
 	else
 	{
 		m_alpha = m_alphaMax;
-	}*/
+	}
 }
 
