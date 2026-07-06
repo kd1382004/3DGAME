@@ -17,7 +17,7 @@ void MouseInfo::SetMousePosFixMousePos()
 }
 
 void MouseInfo::Init()
-{ 
+{
 	// ↓画面中央座標
 	m_fixMousePos.x = 640;
 	m_fixMousePos.y = 360;
@@ -25,16 +25,29 @@ void MouseInfo::Init()
 }
 
 void MouseInfo::Update()
-{ 
+{
 	//************************************************
 	//ウィンドウ単位でのフォーカスがあるかどうか
 	m_FocusWindowFlg = (GetForegroundWindow() == Application::Instance().GetWindowHandle());
 
-	if (!m_FocusWindowFlg)
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+
+	//指定のウィンドウ基準のマウス座標に変換(実行画面の左上が(0,0))
+	ScreenToClient(Application::Instance().GetWindowHandle(), &mousePos);
+
+
+	if (mousePos.x > -640 && mousePos.x < 640 &&
+		mousePos.y > -360 && mousePos.y < 360)
 	{
-		return;
+		if (!m_FocusWindowFlg)
+		{
+			return;
+		}
+
 	}
 
+		
 	//************************************************
 
 	//************************************************
@@ -44,7 +57,7 @@ void MouseInfo::Update()
 		m_mouseFreeFlg = true;
 		m_mouseType = MouseType::MouseType_Nomal;
 	}
-	
+
 	if (GetAsyncKeyState('E') & 0x8000)
 	{
 		m_mouseFreeFlg = false;
