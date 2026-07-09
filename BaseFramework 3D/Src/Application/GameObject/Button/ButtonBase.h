@@ -9,7 +9,7 @@ public:
 	virtual void Update()override;
 	void DrawSprite()override;
 
-	void SetPos(const Math::Vector3& pos);
+	void SetPos(const Math::Vector3& pos)override;
 
 	void KeyChosen(bool _choseFlg);
 protected:
@@ -35,4 +35,8 @@ protected:
 
 	//Mouseと当たっているかどうか
 	void MouseChosen();
+
+
+	//エディター用
+	bool m_editorChoseFlg = false;
 };

@@ -13,15 +13,39 @@ void MouseInfo::SetMousePosFixMousePos()
 		return;
 	}
 
-	SetCursorPos(GetFixMousePos().x, GetFixMousePos().y);
+	POINT pos;
+	pos.x = m_fixMousePos.x;
+	pos.y = m_fixMousePos.y;
+	if (ClientToScreen(Application::Instance().GetWindowHandle(), &pos))
+	{
+		SetCursorPos(pos.x, pos.y);
+	}
+}
+
+POINT MouseInfo::GetWindouMousePos()
+{
+
+	POINT pos;
+	pos.x = m_fixMousePos.x;
+	pos.y = m_fixMousePos.y;
+	ClientToScreen(Application::Instance().GetWindowHandle(), &pos);
+
+	return pos;
 }
 
 void MouseInfo::Init()
 {
-	// ↓画面中央座標
+	// ↓ウィンドウ中央座標
 	m_fixMousePos.x = 640;
 	m_fixMousePos.y = 360;
-	SetCursorPos(m_fixMousePos.x, m_fixMousePos.y);
+
+	POINT pos;
+	pos.x = m_fixMousePos.x;
+	pos.y = m_fixMousePos.y;
+	if (ClientToScreen(Application::Instance().GetWindowHandle(), &pos))
+	{
+		SetCursorPos(pos.x, pos.y);
+	}
 }
 
 void MouseInfo::Update()
@@ -37,8 +61,8 @@ void MouseInfo::Update()
 	ScreenToClient(Application::Instance().GetWindowHandle(), &mousePos);
 
 
-	if (mousePos.x > -640 && mousePos.x < 640 &&
-		mousePos.y > -360 && mousePos.y < 360)
+	if (mousePos.x > -m_fixMousePos.x && mousePos.x < m_fixMousePos.x &&
+		mousePos.y > -m_fixMousePos.y && mousePos.y < m_fixMousePos.y)
 	{
 		if (!m_FocusWindowFlg)
 		{
@@ -47,7 +71,7 @@ void MouseInfo::Update()
 
 	}
 
-		
+
 	//************************************************
 
 	//************************************************
@@ -74,15 +98,16 @@ void MouseInfo::Update()
 	if (m_mouseFreeFlg)
 	{
 		//ディスプレイ状のマウス座標を取得(pc画面の左上が(0,0))
-		GetCursorPos(&m_pos);
+		GetCursorPos(&m_windowPos);
 
 		//指定のウィンドウ基準のマウス座標に変換(実行画面の左上が(0,0))
-		ScreenToClient(Application::Instance().GetWindowHandle(), &m_pos);
+		ScreenToClient(Application::Instance().GetWindowHandle(), &m_windowPos);
 
-		//マウスの座標系を実行ウィンドウの座標敬(中心が(0,0)に補正)
-		m_pos.x -= m_fixMousePos.x;
-		m_pos.y -= m_fixMousePos.y;
-		m_pos.y *= -1;
+
+		//マウスの座標系を実行ウィンドウの座標(中心が(0,0)に補正)
+		m_windowPos.x -= m_fixMousePos.x;
+		m_windowPos.y -= m_fixMousePos.y;
+		m_windowPos.y *= -1;	
 	}
 
 	//************************************************

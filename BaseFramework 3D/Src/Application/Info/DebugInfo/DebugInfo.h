@@ -4,10 +4,13 @@ class DebugInfo
 {
 public:
 
-	bool m_SceneManagerImGUIFlg = true;
+
+
+	void SetSceneManagerImGUIFlg(bool _flg) { m_SceneManagerImGUIFlg = _flg; }
+	bool GetSceneManagerImGUIFlg() { return m_SceneManagerImGUIFlg; }
 
 private:
-
+	bool m_SceneManagerImGUIFlg = true;
 private:
 	DebugInfo() {};
 	~DebugInfo() {};

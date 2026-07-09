@@ -80,7 +80,7 @@ void KdDebugGUI::GuiProcess()
 //	KdDebugGUI::Instance().AddLog("TestLog\n");
 
 	//自分追加
-	if (DebugInfo::Instance().m_SceneManagerImGUIFlg)
+	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
 	{
 		SceneManager::Instance().ImGUI();
 	}

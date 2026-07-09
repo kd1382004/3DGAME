@@ -25,14 +25,16 @@ void GameButton::Init()
 void GameButton::Update()
 {
 
-	ButtonBase::MouseChosen();
+	ButtonBase::Update();
+
+	//ButtonBase::MouseChosen();
 
 	if (m_choseFlg)
 	{
-		SceneManager::Instance().SetNextScene
+		/*SceneManager::Instance().SetNextScene
 		(
 			SceneManager::SceneType::Game
-		);
+		);*/
 		AlphaFlashing();
 	}
 	else

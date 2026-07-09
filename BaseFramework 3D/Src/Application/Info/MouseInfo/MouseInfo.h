@@ -42,15 +42,23 @@ public:
 		}
 	}
 
-	POINT m_pos = {};
+	//マウスのウィンドウ上座標
+	POINT m_windowPos = {};
 
 	POINT GetFixMousePos() const { return m_fixMousePos; }
 
+	//マウスの状態セッター
 	void SetMouseType(MouseType _type) { m_mouseType = _type; }
 
+	//マウスをウィンドウ上の中央にセット
 	void SetMousePosFixMousePos();
 
+	//ウィンドウマウスがフォーカスしているか
 	bool GetFocusWindowFlg() const { return m_FocusWindowFlg; }
+
+
+	//ウィンドウ上でのマウスの中央
+	POINT GetWindouMousePos();
 private:
 
 	void Init();
@@ -68,6 +76,7 @@ private:
 
 	//ウィンドウ単位でのフォーカスがあるかどうか
 	bool m_FocusWindowFlg = false;
+
 public:
 
 	// シングルトンパターン

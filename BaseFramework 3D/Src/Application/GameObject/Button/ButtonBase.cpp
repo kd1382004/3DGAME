@@ -2,6 +2,8 @@
 
 #include"../../Info/MouseInfo/MouseInfo.h"
 
+#include"../../Info/DebugInfo/DebugInfo.h"
+
 void ButtonBase::Init()
 {
 	m_gameObjectClass = KdGameObject::GameObjectClass::GameObjectClass_Botton;
@@ -9,7 +11,41 @@ void ButtonBase::Init()
 }
 
 void ButtonBase::Update()
-{}
+{
+
+	/////////////////////////////////////////////////////////
+	//マウスで座標変換(エディター用)
+	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
+	{
+		float Left = m_pos.x - (m_diameter.x / 2.0f) * m_scale;
+		float Right = m_pos.x + (m_diameter.x / 2.0f) * m_scale;
+		float Top = m_pos.y - (m_diameter.y / 2.0f) * m_scale;
+		float Bottom = m_pos.y + (m_diameter.y / 2.0f) * m_scale;
+
+		float mx = MouseInfo::Instance().m_windowPos.x;
+		float my = MouseInfo::Instance().m_windowPos.y;
+
+		if (Left <= mx && mx <= Right &&
+			Top <= my && my <= Bottom)
+		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
+			m_editorChoseFlg = true;
+		}
+
+		if (m_editorChoseFlg)
+		{
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				m_pos = { mx,my };
+			}
+			else
+			{
+				m_editorChoseFlg = false;
+			}
+		}
+	}
+	/////////////////////////////////////////////////////////
+}
 
 void ButtonBase::DrawSprite()
 {
@@ -95,8 +131,8 @@ void ButtonBase::MouseChosen()
 	float Top = m_pos.y - (m_diameter.y / 2.0f) * m_scale;
 	float Bottom = m_pos.y + (m_diameter.y / 2.0f) * m_scale;
 
-	float mx = MouseInfo::Instance().m_pos.x;
-	float my = MouseInfo::Instance().m_pos.y;
+	float mx = MouseInfo::Instance().m_windowPos.x;
+	float my = MouseInfo::Instance().m_windowPos.y;
 
 	if (Left <= mx && mx <= Right &&
 		Top <= my && my <= Bottom)

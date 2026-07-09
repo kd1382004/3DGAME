@@ -38,8 +38,8 @@ void CameraBase::UpdateRotateByMouse()
 	GetCursorPos(&_nowPos);
 
 	POINT _mouseMove{};
-	_mouseMove.x = _nowPos.x - MouseInfo::Instance().GetFixMousePos().x;
-	_mouseMove.y = _nowPos.y - MouseInfo::Instance().GetFixMousePos().y;
+	_mouseMove.x = _nowPos.x - MouseInfo::Instance().GetWindouMousePos().x;
+	_mouseMove.y = _nowPos.y - MouseInfo::Instance().GetWindouMousePos().y;
 
 	MouseInfo::Instance().SetMousePosFixMousePos();
 

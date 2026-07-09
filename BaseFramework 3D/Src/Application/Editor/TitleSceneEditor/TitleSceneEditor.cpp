@@ -8,7 +8,17 @@
 
 TitleSceneEditor::TitleSceneEditor()
 {
+	g_factory.RegisterCreateFunction("GameButton", []() {
+		std::shared_ptr<GameButton>g = std::make_shared<GameButton>();
+		g->Init();
+		return g;
+		});
 
+	g_factory.RegisterCreateFunction("Ground", []() {
+		std::shared_ptr<Ground>g = std::make_shared<Ground>();
+		g->Init();
+		return g;
+		});
 }
 
 TitleSceneEditor::~TitleSceneEditor()
@@ -55,7 +65,7 @@ void TitleSceneEditor::ImGui()
 
 				if (ImGui::MenuItem(U8("TitleSceneEditorを閉じる")))
 				{
-					DebugInfo::Instance().m_SceneManagerImGUIFlg = false;
+					DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 				}
 
 				ImGui::EndMenu();
@@ -117,8 +127,7 @@ void TitleSceneEditor::ButtonImGUI(std::list<std::shared_ptr<KdGameObject>> _obj
 		{
 			if (ImGui::Button("GameButton"))
 			{
-				std::shared_ptr<GameButton> gameBotton = std::make_shared<GameButton>();
-				gameBotton->Init();
+				auto gameBotton = g_factory.CreateGameObject("GameButton");
 				SceneManager::Instance().AddObject(gameBotton);
 			}
 
@@ -154,8 +163,7 @@ void TitleSceneEditor::TerrainsImGUI(std::list<std::shared_ptr<KdGameObject>> _o
 		{
 			if (ImGui::Button("Ground"))
 			{
-				std::shared_ptr<Ground> ground = std::make_shared<Ground>();
-				ground->Init();
+				auto ground = g_factory.CreateGameObject("Ground");;
 				SceneManager::Instance().AddObject(ground);
 			}
 

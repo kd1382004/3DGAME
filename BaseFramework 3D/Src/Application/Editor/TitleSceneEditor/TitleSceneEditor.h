@@ -13,4 +13,6 @@ private:
 	void ButtonImGUI(std::list<std::shared_ptr<KdGameObject>>_obj);
 	void TerrainsImGUI(std::list<std::shared_ptr<KdGameObject>>_obj);
 
+
+	KdGameObjectFactory g_factory;
 };
