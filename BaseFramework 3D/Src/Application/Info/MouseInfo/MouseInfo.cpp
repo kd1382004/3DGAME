@@ -1,5 +1,6 @@
 ﻿#include"MouseInfo.h"
 #include"../../main.h"
+#include"../KeyInfo/KeyInfo.h"
 
 MouseInfo::~MouseInfo()
 {
@@ -39,6 +40,8 @@ void MouseInfo::Init()
 	m_fixMousePos.x = 640;
 	m_fixMousePos.y = 360;
 
+
+	//マウスをウィンドウの中央に設定
 	POINT pos;
 	pos.x = m_fixMousePos.x;
 	pos.y = m_fixMousePos.y;
@@ -76,16 +79,15 @@ void MouseInfo::Update()
 
 	//************************************************
 	//デバック用のマウスフリー切り替え
-	if (GetAsyncKeyState('Q') & 0x8000)
+	
+	if (KeyInfo::Instance().GetValidKeyPush('Q',true,true))
 	{
-		m_mouseFreeFlg = true;
-		m_mouseType = MouseType::MouseType_Nomal;
+		SetMouseFreeFlg(true);
 	}
 
-	if (GetAsyncKeyState('E') & 0x8000)
+	if (KeyInfo::Instance().GetValidKeyPush('E', true, true))
 	{
-		m_mouseFreeFlg = false;
-		m_mouseType = MouseType::MouseType_NotFree;
+		SetMouseFreeFlg(false);
 	}
 
 	//************************************************
@@ -109,7 +111,6 @@ void MouseInfo::Update()
 		m_windowPos.y -= m_fixMousePos.y;
 		m_windowPos.y *= -1;	
 	}
-
 	//************************************************
 }
 

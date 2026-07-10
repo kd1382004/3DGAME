@@ -1,5 +1,7 @@
 ﻿#include "GameButton.h"
 #include "../../../Scene/SceneManager.h"
+#include"../../../Info/DebugInfo/DebugInfo.h"
+#include"../../../Info/KeyInfo/KeyInfo.h"
 
 void GameButton::Init()
 {
@@ -27,19 +29,30 @@ void GameButton::Update()
 
 	ButtonBase::Update();
 
-	//ButtonBase::MouseChosen();
 
-	if (m_choseFlg)
+	if (!DebugInfo::Instance().GetSceneManagerImGUIFlg())
 	{
-		/*SceneManager::Instance().SetNextScene
-		(
-			SceneManager::SceneType::Game
-		);*/
-		AlphaFlashing();
+		ButtonBase::MouseChosen();
+
+		if (m_choseFlg)
+		{
+			KeyInfo::Instance().SetKeyValid('Q');
+			if (KeyInfo::Instance().GetValidKeyPush('Q', true, true))
+			{
+				SceneManager::Instance().SetNextScene
+				(
+					SceneManager::SceneType::Game
+				);
+			}
+
+		
+			AlphaFlashing();
+		}
+		else
+		{
+			m_alpha = m_alphaMax;
+		}
 	}
-	else
-	{
-		m_alpha = m_alphaMax;
-	}
+
 }
 

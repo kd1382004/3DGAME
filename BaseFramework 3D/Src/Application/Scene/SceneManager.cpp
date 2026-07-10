@@ -1,6 +1,7 @@
 ﻿#include "SceneManager.h"
 
 #include"../Info/MouseInfo/MouseInfo.h"
+#include"../Info/KeyInfo/KeyInfo.h"
 
 #include "BaseScene/BaseScene.h"
 #include "TitleScene/TitleScene.h"
@@ -20,6 +21,7 @@ void SceneManager::PreUpdate()
 void SceneManager::Update()
 {
 	MouseInfo::Instance().Update();
+	KeyInfo::Instance().UpdateKey();
 
 	m_currentScene->Update();
 }

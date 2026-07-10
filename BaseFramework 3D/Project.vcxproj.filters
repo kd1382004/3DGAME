@@ -115,6 +115,9 @@
     <Filter Include="Src\Application\GameObject\Terrains\Ground">
       <UniqueIdentifier>{002fbbc5-d1a8-4d08-ba35-5b641197268c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Info\KeyInfo">
+      <UniqueIdentifier>{b8384455-1786-4a13-87cd-240aa1430fc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -318,6 +321,9 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Ground\Ground.h">
       <Filter>Src\Application\GameObject\Terrains\Ground</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Info\KeyInfo\KeyInfo.h">
+      <Filter>Src\Application\Info\KeyInfo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -490,6 +496,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\Ground\Ground.cpp">
       <Filter>Src\Application\GameObject\Terrains\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp">
+      <Filter>Src\Application\Info\KeyInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

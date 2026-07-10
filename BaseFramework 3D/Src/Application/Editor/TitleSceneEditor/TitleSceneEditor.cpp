@@ -9,15 +9,15 @@
 TitleSceneEditor::TitleSceneEditor()
 {
 	g_factory.RegisterCreateFunction("GameButton", []() {
-		std::shared_ptr<GameButton>g = std::make_shared<GameButton>();
-		g->Init();
-		return g;
+		std::shared_ptr<GameButton>obj = std::make_shared<GameButton>();
+		obj->Init();
+		return obj;
 		});
 
 	g_factory.RegisterCreateFunction("Ground", []() {
-		std::shared_ptr<Ground>g = std::make_shared<Ground>();
-		g->Init();
-		return g;
+		std::shared_ptr<Ground>obj = std::make_shared<Ground>();
+		obj->Init();
+		return obj;
 		});
 }
 
@@ -122,7 +122,7 @@ void TitleSceneEditor::ButtonImGUI(std::list<std::shared_ptr<KdGameObject>> _obj
 	{
 		ImGui::Separator();
 		ImGui::Text(U8("ボタンクラスの量 : %d"), _obj.size());
-
+		
 		if (ImGui::TreeNode(U8("ボタンクラス追加")))
 		{
 			if (ImGui::Button("GameButton"))

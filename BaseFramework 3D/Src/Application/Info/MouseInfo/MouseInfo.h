@@ -34,11 +34,13 @@ public:
 		if (m_mouseFreeFlg)
 		{
 			m_mouseType = MouseType::MouseType_Nomal;
+			ShowCursor(true);
 
 		}
 		else
 		{
 			m_mouseType = MouseType::MouseType_NotFree;
+			ShowCursor(false);
 		}
 	}
 
