@@ -19,4 +19,9 @@ private :
 	void Init()  override;
 
 	std::shared_ptr<TitleSceneEditor>m_spTitleSceneEditor;
+
+	KdGameObjectFactory g_factory;
+
+
+	void SetObjeList();
 };

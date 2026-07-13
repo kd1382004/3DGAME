@@ -121,6 +121,34 @@ void ButtonBase::ImGUI()
 		ImGui::TreePop();
 	}
 
+	if (ImGui::Button(U8("読み込み")))
+	{
+
+
+
+		std::ifstream ifs(m_filePath);
+		nlohmann::json data = nlohmann::json::parse(ifs, nullptr, false);
+
+		m_pos.x = data["pos"]["x"];
+		m_pos.y = data["pos"]["y"];
+
+		m_defScale = data["size"]["m_defScale"];
+		m_hitScale = data["size"]["m_hitScale"];
+	}
+
+
+	if (ImGui::Button(U8("保存")))
+	{
+		nlohmann::json data;
+
+		data["pos"]["x"] = m_pos.x;
+		data["pos"]["y"] = m_pos.y;
+		data["size"]["m_defScale"] = m_defScale;
+		data["size"]["m_hitScale"] = m_hitScale;
+
+		std::ofstream ofs(m_filePath);
+		ofs << data.dump(4);   // 4 = インデント幅（整形）
+	}
 }
 
 void ButtonBase::MouseChosen()
@@ -145,4 +173,17 @@ void ButtonBase::MouseChosen()
 		m_choseFlg = false;
 	}
 
+}
+
+void ButtonBase::DataLodo()
+{
+
+	std::ifstream ifs(m_filePath);
+	nlohmann::json data = nlohmann::json::parse(ifs, nullptr, false);
+
+	m_pos.x = data["pos"]["x"];
+	m_pos.y = data["pos"]["y"];
+
+	m_defScale = data["size"]["m_defScale"];
+	m_hitScale = data["size"]["m_hitScale"];
 }

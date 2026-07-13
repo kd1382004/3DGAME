@@ -39,4 +39,6 @@ protected:
 
 	//エディター用
 	bool m_editorChoseFlg = false;
+
+	void DataLodo()override;
 };

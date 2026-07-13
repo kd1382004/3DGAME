@@ -1,0 +1,12 @@
+{
+    "objects": [
+        {
+            "data_path": "",
+            "name": ""
+        },
+        {
+            "data_path": "Asset/Data/ObjeData/TitelObjeData/Button/GameButtom.json",
+            "name": "GameButton"
+        }
+    ]
+}

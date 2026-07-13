@@ -90,6 +90,16 @@ public:
 	virtual void ImGUI() {}
 
 	std::string GetImGUIName() { return m_ImGUIName; }
+
+	void SetFilePass(std::string str) { m_filePath = str; };
+	std::string GetFilePass() { return m_filePath; };
+
+
+	std::string GetObjName() { return m_objNemu; };
+	void SetObjName(std::string str) { m_objNemu = str;};
+
+	virtual void DataLodo() {};
+
 protected:
 
 	void Release() {}
@@ -119,4 +129,11 @@ protected:
 
 	//ImGUI表示名
 	std::string m_ImGUIName;
+
+
+	//保存ファイルパス名
+	std::string m_filePath;
+
+	//オブジェ名
+	std::string m_objNemu;
 };
