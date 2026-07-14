@@ -1,5 +1,7 @@
 ﻿#include "GameScene.h"
 #include"../SceneManager.h"
+#include"../../GameObject/Character/Player/PlayerBase.h"
+
 
 void GameScene::Event()
 {
@@ -14,4 +16,8 @@ void GameScene::Event()
 
 void GameScene::Init()
 {
+
+	std::shared_ptr<PlayerBase>player = std::make_shared<PlayerBase>();
+	player->Init();
+	m_objList.push_back(player);
 }

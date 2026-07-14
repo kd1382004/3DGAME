@@ -317,6 +317,18 @@ void Application::Execute()
 		//=========================================
 
 		m_fpsController.Update();
+
+
+
+
+		//=========================================
+		//
+		// タイトル表示
+		//
+		//=========================================
+		std::string titleBer = "'3D' FPS :" + std::to_string(m_fpsController.m_nowfps);
+		SetWindowTextA(m_window.GetWndHandle(), titleBer.c_str());
+
 	}
 
 	//===================================================================

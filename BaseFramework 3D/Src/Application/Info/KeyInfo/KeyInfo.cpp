@@ -132,7 +132,6 @@ bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
 	{
 		_key->m_useFlg = true;
 
-
 		if (_useFlg && _flg)
 		{
 			if (_key->m_pushS > m_pushMax)

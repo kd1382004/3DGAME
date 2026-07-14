@@ -18,6 +18,9 @@ void GameButton::Init()
 		Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0);
 
 		m_mWorld = scaleMat * transMat;
+
+
+		KeyInfo::Instance().SetKeyValid('A');
 	}
 
 
@@ -36,8 +39,7 @@ void GameButton::Update()
 
 		if (m_choseFlg)
 		{
-			KeyInfo::Instance().SetKeyValid('Q');
-			if (KeyInfo::Instance().GetValidKeyPush('Q', true, true))
+			if (KeyInfo::Instance().GetValidKeyPush('A', true, true))
 			{
 				SceneManager::Instance().SetNextScene
 				(
