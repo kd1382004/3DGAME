@@ -1,0 +1,7 @@
+{
+    "jump": 32,
+    "moveBackward": 83,
+    "moveForward": 87,
+    "moveLeft": 65,
+    "moveRight": 68
+}

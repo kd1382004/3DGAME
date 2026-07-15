@@ -35,8 +35,14 @@ void KeyInfo::SetKeyValid(int _key)
 	}
 }
 
+void KeyInfo::KeyvalidReset()
+{
+
+}
+
 void KeyInfo::UpdateKey()
 {
+	//アルファベット
 	for (int i = 0; i < AlphabetNum; i++)
 	{
 		if (!KeyAlphabet[i].m_validFlg) { continue; }
@@ -58,6 +64,49 @@ void KeyInfo::UpdateKey()
 			KeyAlphabet[i].m_pushS = 0;
 		}
 	}
+
+	//矢印
+	for (int i = 0; i < ArrowNum; i++)
+	{
+		if (!KeyArrow[i].m_validFlg) { continue; }
+
+		int Num = i;
+		if (GetAsyncKeyState(Num) & 0x8000)
+		{
+			KeyArrow[i].m_pushFlg = true;
+
+			if (KeyArrow[i].m_useFlg)
+			{
+				KeyArrow[i].m_pushS++;
+			}
+		}
+		else
+		{
+			KeyArrow[i].m_useFlg = false;
+			KeyArrow[i].m_pushFlg = false;
+			KeyArrow[i].m_pushS = 0;
+		}
+	}
+
+
+	if (KeySpace.m_validFlg)
+	{
+		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+		{
+			KeySpace.m_pushFlg = true;
+
+			if (KeySpace.m_useFlg)
+			{
+				KeySpace.m_pushS++;
+			}
+		}
+		else
+		{
+			KeySpace.m_useFlg = false;
+			KeySpace.m_pushFlg = false;
+			KeySpace.m_pushS = 0;
+		}
+	}	
 }
 
 bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)

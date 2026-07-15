@@ -80,6 +80,9 @@ void MouseInfo::Update()
 	//************************************************
 	//デバック用のマウスフリー切り替え
 	
+
+	KeyInfo::Instance().SetKeyValid('Q');
+	KeyInfo::Instance().SetKeyValid('E');
 	if (KeyInfo::Instance().GetValidKeyPush('Q',true,true))
 	{
 		SetMouseFreeFlg(true);

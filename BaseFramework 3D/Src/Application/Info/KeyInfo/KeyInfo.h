@@ -20,9 +20,15 @@ class KeyInfo
 public:
 	~KeyInfo() {};
 
+	//keyを使用できるかどうかの設定
 	void SetKeyValid(int _key);
 
+	void KeyvalidReset();
+	
+	
 	void UpdateKey();
+
+
 
 
 	//このフレーム中に有効なKeyが押されたかどうか

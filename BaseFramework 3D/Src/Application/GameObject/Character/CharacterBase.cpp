@@ -31,6 +31,30 @@ void CharacterBase::DrawLit()
 	}
 }
 
+void CharacterBase::ImGUI()
+{
+	if (ImGui::Begin(U8("%s : Status", m_statusEditorName), nullptr, ImGuiWindowFlags_MenuBar))
+	{
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu(U8("メニュー")))
+			{
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+
+
+		if (ImGui::TreeNode(U8("座標")))
+		{
+			ImGui::InputFloat(U8("現在HP"), &m_status.HP.nowHP, 0.1f, 1.0f, "%.2f");
+			ImGui::TreePop();
+		}
+	}
+
+	ImGui::End();
+}
+
 void CharacterBase::CollisionUpdate()
 {
 	//レイ判定設定
@@ -94,6 +118,7 @@ void CharacterBase::CollisionUpdate()
 			//////////////////////////////////////////////////
 
 			//その他球による衝突判定
+			//////////////////////////////////////////////////
 			std::list<KdCollider::CollisionResult> retBumpList;
 			spGameObj->Intersects(spherInfo, &retBumpList);
 
@@ -102,6 +127,8 @@ void CharacterBase::CollisionUpdate()
 				Math::Vector3 newPos = GetPos() + (ret.m_hitDir * ret.m_overlapDistance);
 				SetPos(newPos);
 			}
+			//////////////////////////////////////////////////
+
 		}
 	}
 }
@@ -109,4 +136,64 @@ void CharacterBase::CollisionUpdate()
 void CharacterBase::Release()
 {
 	m_spCharaModel = nullptr;
+}
+
+void CharacterBase::LoadCharaStatus(std::string _filePath)
+{
+	Status status;
+
+	std::ifstream ifs(_filePath);
+	if (!ifs.is_open())
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] ステータスファイルが見つかりません : %s\n"), _filePath.c_str());
+		return;
+	}
+
+	nlohmann::json data = nlohmann::json::parse(ifs, nullptr, false);
+
+	if (data.is_discarded())
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] ステータスファイルの読み込みに失敗しました : %s\n"), _filePath.c_str());
+		return;
+	}
+
+	auto getFloat = [&](const nlohmann::json& j, const char* key, float def = 0.0f)
+		{
+			if (j.contains(key) && j[key].is_number())
+				return j[key].get<float>();
+			return def;
+		};
+
+	// HP
+	status.HP.maxHP = getFloat(data["HP"], "maxHP");
+
+	// 攻撃力
+	status.attck.baseAttckPowe = getFloat(data["attck"], "baseAttckPowe");
+
+	// 防御力
+	status.defense.baseDefensePowe = getFloat(data["defense"], "baseDefensePowe");
+
+	// 移動速度
+	status.moveSpeed.baseSpeed = getFloat(data["moveSpeed"], "baseSpeed");
+	status.moveSpeed.walkMovePowe = getFloat(data["moveSpeed"], "walkMovePowe");
+	status.moveSpeed.runMovePowe = getFloat(data["moveSpeed"], "runMovePowe");
+
+	m_status = status;
+
+	// HP
+	m_status.HP.nowHP = m_status.HP.maxHP;
+
+	// 攻撃力
+	m_status.attck.baseAttckPowe = m_status.attck.baseAttckPowe;
+
+	// 防御力
+	m_status.defense.baseDefensePowe = m_status.defense.baseDefensePowe;
+
+	// 移動速度
+	m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed;
+}
+
+void CharacterBase::StatusEditor()
+{
+
 }

@@ -144,6 +144,7 @@ void BaseScene::DrawDebug()
 
 void BaseScene::ImGUi()
 {
+
 }
 
 void BaseScene::Event()
