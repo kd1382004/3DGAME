@@ -6,82 +6,52 @@ void PlayerBase::Init()
 {
 	m_keyConfigFilePath = "Asset/Data/KeyConfig/KeyConfig.json";
 	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Praeyr/Status/Status.json";
-	
+
+	m_statusEditorName = "player";
+
 	LoadKeyConfig(m_keyConfigFilePath);
 
 	LoadCharaStatus(m_charaStatusFilePath);
 
 	SaveKeyConfig(m_keyConfigFilePath);
 
+	SaveCharaStatus(m_charaStatusFilePath);
+
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveRight);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveLeft);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveForward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveBackward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.jump);
+
+
+	m_pos = {};
+
+
+	m_spCharaModel = std::make_shared<KdModelWork>();
+	m_spCharaModel->SetModelData("Asset/Models/Character/Player/Player.gltf");
+
+	
 }
 
 void PlayerBase::Update()
 {
-	Math::Vector3	_nowPos = GetPos();
+	//////////////////////////////////////////////////////////////
+	//移動
+	Move();
 
-	Math::Vector3 _moveVec = Math::Vector3::Zero;
+	//ジャンプ&重力処理
+	JumpAndGravity();
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveRight))
-	{
-		_moveVec.x += 1.0f;
-	}
+	AngeleUpdate();
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveLeft))
-	{
-		_moveVec.x += -1.0f;
-	}
+	//座標行列を作る
+	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveForward))
-	{
-		_moveVec.z += 1.0f;
-	}
+	//回転行列
+	Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_angle));
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveBackward))
-	{
-		_moveVec.z += -1.0f;
-	}
-
-
-
-
-	//カメラに合わせる
-	std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
-	if (camera)
-	{
-		_moveVec = Math::Vector3::TransformNormal(_moveVec, camera->GetRotationYMatrix());
-	}
-
-
-	_moveVec.Normalize();
-	_moveVec *= m_status.moveSpeed.nowSpeed + 0.1;
-	_nowPos += _moveVec;
-
-	static	bool _spaceFlg = false;
-
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump, true, true))
-	{
-		if (!_spaceFlg)
-		{
-			_spaceFlg = true;
-			m_Gravity = -0.2;
-		}
-	}
-	else
-	{
-		_spaceFlg = false;
-	}
-
-	//キャラクターには常に重力がかかる
-	m_Gravity += m_gravityPower;
-	_nowPos.y -= m_Gravity;
-
-	// キャラクターのワールド行列を創る処理
-	m_mWorld = Math::Matrix::CreateTranslation(_nowPos);
+	//行列の合成(S * R * T)
+	m_mWorld = rMat * tMat;
 }
 
 void PlayerBase::LoadKeyConfig(std::string _filePath)
@@ -158,6 +128,118 @@ void PlayerBase::SaveKeyConfig(std::string _filePath)
 	data["jump"] = m_keyConfig.jump;
 
 	std::ofstream ofs(_filePath);
-	ofs << data.dump(4); // 4 はインデント
+	ofs << data.dump(4);
+}
+
+void PlayerBase::Move()
+{
+	//////////////////////////////////////////////////////////////
+	//どの方向に行きたいかベクトルを取る
+	m_moveVec = Math::Vector3::Zero;
+
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveRight))
+	{
+		m_moveVec.x += 1.0f;
+	}
+
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveLeft))
+	{
+		m_moveVec.x += -1.0f;
+	}
+
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveForward))
+	{
+		m_moveVec.z += 1.0f;
+	}
+
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveBackward))
+	{
+		m_moveVec.z += -1.0f;
+	}
+
+	//////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////
+	//ベクトルの状態から動いてるかどうかを取る
+	if (m_moveVec != Math::Vector3::Zero)
+	{
+		m_moveMode = MoveMode::MoveWalk;
+
+
+
+
+
+
+		//////////////////////////////////////////////////////////////
+		//動いてるならベクトルをカメラの向きに合わせる
+		std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
+		if (camera)
+		{
+			m_moveVec = Math::Vector3::TransformNormal(m_moveVec, camera->GetRotationYMatrix());
+		}
+		//////////////////////////////////////////////////////////////
+
+
+		//////////////////////////////////////////////////////////////
+		m_moveVec.Normalize();
+
+		//移動状態から移動速度を求める
+		MoveNowSpeedDecision();
+
+
+		m_moveVec *= m_status.moveSpeed.nowSpeed;
+		m_pos += m_moveVec;
+		//////////////////////////////////////////////////////////////
+
+
+	}
+	else
+	{
+		//動いてないならストップを入れる
+		m_moveMode = MoveMode::MoveStop;
+	}
+	//////////////////////////////////////////////////////////////
+}
+
+void PlayerBase::MoveNowSpeedDecision()
+{
+	switch (m_moveMode)
+	{
+	case PlayerBase::MoveWalk:
+		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
+		break;
+	case PlayerBase::MoveRun:
+		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
+		break;
+	default:
+		break;
+	}
+}
+
+void PlayerBase::JumpAndGravity()
+{
+	//////////////////////////////////////////////////////////////
+	//ジャンプ処理
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump, true, true))
+	{
+		if (m_jumpFlg)
+		{
+			m_jumpPower = 0.2;
+			m_Gravity = -m_jumpPower;
+			m_jumpFlg = false;
+		}
+
+	}
+	//////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////
+	// 重力処理
+	//キャラクターには常に重力がかかる
+	m_pos.y -= m_Gravity;
+	m_Gravity += m_gravityPower;
+
+	//////////////////////////////////////////////////////////////
 }
 

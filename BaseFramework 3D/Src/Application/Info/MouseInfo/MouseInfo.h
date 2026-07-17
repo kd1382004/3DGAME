@@ -30,18 +30,6 @@ public:
 	void SetMouseFreeFlg(bool _free) 
 	{ 
 		m_mouseFreeFlg = _free; 
-	
-		if (m_mouseFreeFlg)
-		{
-			m_mouseType = MouseType::MouseType_Nomal;
-			ShowCursor(true);
-
-		}
-		else
-		{
-			m_mouseType = MouseType::MouseType_NotFree;
-			ShowCursor(false);
-		}
 	}
 
 	//マウスのウィンドウ上座標

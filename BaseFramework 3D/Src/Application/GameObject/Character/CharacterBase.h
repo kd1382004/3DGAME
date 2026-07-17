@@ -49,6 +49,9 @@ protected:
 
 	struct StatusHP
 	{
+		//基礎体力
+		float baseHP = 0;
+
 		//最大体力
 		float maxHP = 0;
 
@@ -109,9 +112,30 @@ protected:
 
 	//_filePath ... ファイルパスを書く
 	void LoadCharaStatus(std::string _filePath);
-
+	void SaveCharaStatus(std::string _filePath);
 	///////////////////////////////////////////
 
+	///////////////////////////////////////////
+	
+	//座標
+	Math::Vector3 m_pos;
+
+	//サイズ
+	float m_siz;
+
+	//移動方向
+	Math::Vector3 m_moveVec;
+
+	///////////////////////////////////////////
+	
+	///////////////////////////////////////////
+	//キャラの回転
+	//角度
+	float m_angle;
+
+	void AngeleUpdate();
+
+	///////////////////////////////////////////
 
 	///////////////////////////////////////////
 	//ステータスエディターに表示する

@@ -33,7 +33,8 @@ void CharacterBase::DrawLit()
 
 void CharacterBase::ImGUI()
 {
-	if (ImGui::Begin(U8("%s : Status", m_statusEditorName), nullptr, ImGuiWindowFlags_MenuBar))
+	std::string windowName = m_statusEditorName + " : Status";
+	if (ImGui::Begin(windowName.c_str(), nullptr, ImGuiWindowFlags_MenuBar))
 	{
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu(U8("メニュー")))
@@ -45,10 +46,41 @@ void CharacterBase::ImGUI()
 
 
 
-		if (ImGui::TreeNode(U8("座標")))
+		if (ImGui::TreeNode(U8("HP")))
 		{
-			ImGui::InputFloat(U8("現在HP"), &m_status.HP.nowHP, 0.1f, 1.0f, "%.2f");
+			ImGui::InputFloat(U8("基礎HP"), &m_status.HP.baseHP, 0.1f, 1.0f, "%.2f");
 			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode(U8("Attck")))
+		{
+			ImGui::InputFloat(U8("基礎Attck"), &m_status.attck.baseAttckPowe , 0.1f, 1.0f, "%.2f");
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode(U8("Defense")))
+		{
+			ImGui::InputFloat(U8("基礎Defense"), &m_status.defense.baseDefensePowe, 0.1f, 1.0f, "%.2f");
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode(U8("MoveSpeed")))
+		{
+			ImGui::InputFloat(U8("基礎MoveSpeed"), &m_status.moveSpeed.baseSpeed, 0.01f, 1.0f, "%.2f");
+			ImGui::InputFloat(U8("歩くときに足す値"), &m_status.moveSpeed.walkMovePowe, 0.01f, 1.0f, "%.2f");
+			ImGui::Text(U8("歩く速度 : %f\n"), m_status.moveSpeed.baseSpeed+ m_status.moveSpeed.walkMovePowe);
+
+
+
+			ImGui::InputFloat(U8("走るときに足す値"), &m_status.moveSpeed.runMovePowe, 0.01f, 1.0f, "%.2f");
+			ImGui::Text(U8("走る速度 : %f\n"), m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe);
+			ImGui::TreePop();
+		}
+	
+
+		if (ImGui::Button(U8("保存")))
+		{
+			SaveCharaStatus(m_charaStatusFilePath);
 		}
 	}
 
@@ -165,7 +197,7 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 		};
 
 	// HP
-	status.HP.maxHP = getFloat(data["HP"], "maxHP");
+	status.HP.baseHP = getFloat(data["HP"], "baseHP");
 
 	// 攻撃力
 	status.attck.baseAttckPowe = getFloat(data["attck"], "baseAttckPowe");
@@ -181,6 +213,7 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 	m_status = status;
 
 	// HP
+	m_status.HP.maxHP = m_status.HP.baseHP;
 	m_status.HP.nowHP = m_status.HP.maxHP;
 
 	// 攻撃力
@@ -193,7 +226,79 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 	m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed;
 }
 
+void CharacterBase::AngeleUpdate()
+{	
+	if (m_moveVec == Math::Vector3::Zero) { return; }
+
+
+	//今キャラが向いている方向
+	Math::Vector3 nowDir = m_mWorld.Backward();
+
+	//向きたい方向
+	Math::Vector3 toDir = m_moveVec;
+
+	//内積を求める ベクトルA ・ ベクトルB
+	float dot = nowDir.Dot(toDir);
+
+	//角度に変換
+	float angle = DirectX::XMConvertToDegrees(acos(dot));
+
+	//少しでも回転する必要があったら
+	if (angle >= 0.1f)
+	{
+		//回転角度の上限
+		if (angle > 5)
+		{
+			angle = 5;
+		}
+
+
+		//回転軸
+		//外積
+		Math::Vector3 cross = nowDir.Cross(toDir);
+
+		if (cross.y >= 0)
+		{
+			//右回転
+			m_angle += angle;
+
+			if (m_angle > 360)
+			{
+				m_angle -= 360;
+			}
+		}
+		else
+		{
+			//左回転
+			m_angle -= angle;
+
+			if (m_angle < 0)
+			{
+				m_angle += 360;
+			}
+		}
+	}
+}
+
+
 void CharacterBase::StatusEditor()
 {
+
+}
+
+void CharacterBase::SaveCharaStatus(std::string _filePath)
+{
+	nlohmann::json data;
+
+	data["HP"]["baseHP"] = m_status.HP.baseHP;
+	data["attck"]["baseAttckPowe"] = m_status.attck.baseAttckPowe;
+	data["defense"]["baseDefensePowe"] = m_status.defense.baseDefensePowe;
+
+	data["moveSpeed"]["baseSpeed"] = m_status.moveSpeed.baseSpeed;
+	data["moveSpeed"]["walkMovePowe"] = m_status.moveSpeed.walkMovePowe;
+	data["moveSpeed"]["runMovePowe"] = m_status.moveSpeed.runMovePowe;
+
+	std::ofstream ofs(_filePath);
+	ofs << data.dump(4);
 
 }

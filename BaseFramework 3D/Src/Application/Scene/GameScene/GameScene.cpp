@@ -4,6 +4,15 @@
 #include"../../GameObject/Terrains/Ground/Ground.h"
 #include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
 
+#include"../../../Application/Info/DebugInfo/DebugInfo.h"
+void GameScene::ImGUi()
+{
+	for (auto Camera : m_spCharacterStatus)
+	{
+		Camera->ImGUI();
+	}
+}
+
 void GameScene::Event()
 {
 	if (GetAsyncKeyState('T') & 0x8000)
@@ -15,12 +24,18 @@ void GameScene::Event()
 	}
 }
 
+
 void GameScene::Init()
 {
+	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
+
 
 	std::shared_ptr<PlayerBase>player = std::make_shared<PlayerBase>();
 	player->Init();
 	m_objList.push_back(player);
+
+	m_spCharacterStatus.push_back(player);
+
 
 	std::shared_ptr<Ground>ground = std::make_shared<Ground>();
 	ground->Init();
