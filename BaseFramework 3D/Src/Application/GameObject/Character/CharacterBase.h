@@ -13,12 +13,6 @@ public:
 	void GenerateDepthMapFromLight()override;
 	void DrawLit()		override;
 
-	//当り判定をするオブジェクトを入れる
-	void RegistHitObject(const std::shared_ptr<KdGameObject>& object)
-	{
-		m_wpHitObjectList.push_back(object);
-	}
-
 	void ImGUI()override;
 
 private:
@@ -33,8 +27,7 @@ private:
 protected:
 	std::shared_ptr<KdModelWork> m_spCharaModel = nullptr;
 
-	//当り判定をするオブジェクトを入れる
-	std::vector<std::weak_ptr<KdGameObject>> m_wpHitObjectList{};
+
 	
 	
 	float m_Gravity = 0;

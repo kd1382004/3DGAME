@@ -100,7 +100,14 @@ public:
 
 	virtual void DataLodo() {};
 
+	//当り判定をするオブジェクトを入れる
+	void RegistHitObject(const std::shared_ptr<KdGameObject>& object)
+	{
+		m_wpHitObjectList.push_back(object);
+	}
+
 protected:
+
 
 	void Release() {}
 
@@ -136,4 +143,9 @@ protected:
 
 	//オブジェ名
 	std::string m_objNemu;
+
+
+
+	//当り判定をするオブジェクトを入れる
+	std::vector<std::weak_ptr<KdGameObject>> m_wpHitObjectList{};
 };

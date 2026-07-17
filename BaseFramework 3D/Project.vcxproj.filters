@@ -124,6 +124,12 @@
     <Filter Include="Src\Application\GameObject\Character\Player">
       <UniqueIdentifier>{ad30c110-8139-46e1-a70c-704456c8e0ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map">
+      <UniqueIdentifier>{488be9f7-d4fd-42a5-8e63-7a8b3186aedf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\MapGenerate">
+      <UniqueIdentifier>{5eb411ab-05a2-4739-9e79-88da03259723}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -336,6 +342,15 @@
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h">
       <Filter>Src\Application\GameObject\Character\Player</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapManager.h">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -517,6 +532,15 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp">
       <Filter>Src\Application\GameObject\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapManager.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

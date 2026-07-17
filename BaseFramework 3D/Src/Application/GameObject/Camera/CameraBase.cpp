@@ -16,6 +16,21 @@ void CameraBase::PreDraw()
 {
 	if (!m_spCamera) { return; }
 
+	//デバック用
+	float x=0;
+	float z=0;
+	if (!m_wpTarget.expired())
+	{
+		x = m_wpTarget.lock()->GetPos().x;
+		z = m_wpTarget.lock()->GetPos().z;
+	}
+
+
+	Math::Matrix tMat = Math::Matrix::CreateTranslation({ x,100,z });
+	Math::Matrix rMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(90));
+
+
+	m_mWorld = rMat * tMat;
 	m_spCamera->SetCameraMatrix(m_mWorld);
 	m_spCamera->SetToShader();
 }

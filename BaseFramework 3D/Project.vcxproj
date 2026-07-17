@@ -282,6 +282,9 @@
     <ClInclude Include="Src\Application\GameObject\Character\CharacterBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Ground\Ground.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapManager.h" />
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h" />
     <ClInclude Include="Src\Application\Info\KeyInfo\KeyInfo.h" />
     <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h" />
@@ -347,6 +350,9 @@
     <ClCompile Include="Src\Application\GameObject\Character\CharacterBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Ground\Ground.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapManager.cpp" />
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp" />
     <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp" />
     <ClCompile Include="Src\Application\Info\MouseInfo\MouseInfo.cpp" />

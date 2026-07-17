@@ -4,6 +4,10 @@
 #include"../../GameObject/Terrains/Ground/Ground.h"
 #include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
 
+
+//マップ
+#include"../../GameObject/Terrains/Map/MapManager.h"
+
 #include"../../../Application/Info/DebugInfo/DebugInfo.h"
 void GameScene::ImGUi()
 {
@@ -37,17 +41,23 @@ void GameScene::Init()
 	m_spCharacterStatus.push_back(player);
 
 
-	std::shared_ptr<Ground>ground = std::make_shared<Ground>();
-	ground->Init();
-	m_objList.push_back(ground);
+	//std::shared_ptr<Ground>ground = std::make_shared<Ground>();
+	//ground->Init();
+	//m_objList.push_back(ground);
 
 	std::shared_ptr<TPSCamera>camera = std::make_shared<TPSCamera>();
 	camera->Init();
 	m_objList.push_back(camera);
 
+	std::shared_ptr<MapManager>map = std::make_shared<MapManager>();
+	map->Init();
+	m_objList.push_back(map);
+
 	//それぞれにセット
 	camera->SetTarget(player);
 
 	player->SetCamera(camera);
-	player->RegistHitObject(ground);
+	//player->RegistHitObject(ground);
+
+	map->MapHit(player);
 }

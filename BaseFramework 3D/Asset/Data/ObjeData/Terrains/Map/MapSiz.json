@@ -1,0 +1,6 @@
+{
+    "room": {
+        "sizeMax": 15,
+        "sizeMin": 4
+    }
+}
