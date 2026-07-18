@@ -26,7 +26,7 @@ void CameraBase::PreDraw()
 	}
 
 
-	Math::Matrix tMat = Math::Matrix::CreateTranslation({ x,100,z });
+	Math::Matrix tMat = Math::Matrix::CreateTranslation({ x,1000,z });
 	Math::Matrix rMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(90));
 
 

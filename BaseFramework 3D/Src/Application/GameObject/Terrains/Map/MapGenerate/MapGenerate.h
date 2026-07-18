@@ -2,6 +2,33 @@
 
 class MapBase;
 
+
+struct roomEnd
+{
+	//右端
+	int FarRight;
+
+	//左端
+	int FarLeft;
+
+	//上
+	int topEnd;
+
+	//下
+	int downEnd;
+};
+
+struct RoomInfo
+{
+	//部屋ID
+	int m_roomID = 0;
+
+	//中心
+	Math::Vector2 m_center;
+
+	roomEnd m_roomEnd;
+};
+
 enum MapType
 {
 	//草原
@@ -25,6 +52,10 @@ public:
 
 private:
 
+
+
+	std::vector<RoomInfo> m_roomInfo;
+
 	enum class TileType
 	{
 		None = 0,   // 何もない
@@ -43,4 +74,17 @@ private:
 	//_filePath ... ファイルパスを書く
 	void LoadRoomSiz(std::string _filePath);
 	void SaveRoomSiz(std::string _filePath);
+
+
+	//どの部屋とどの部屋をつなぐかを返す
+	std::vector<std::pair<RoomInfo, RoomInfo>> GetRoomConnectionPairs(std::vector<RoomInfo> _roomInfo);
+
+	//通路の座標リストを返す
+	std::vector<Math::Vector2>  GenerateCorridorPath(RoomInfo _A, RoomInfo _B);
+
+
+
+	int FindRoot(std::vector<int>& _parent, int _x);
+
+	void UnionSet(std::vector<int>& _parent, int _a, int _b);
 };

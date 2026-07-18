@@ -6,7 +6,7 @@ void MapManager::Init()
 {
 
 	std::shared_ptr<MapGenerate>map = std::make_shared<MapGenerate>();
-	map->Generate({ 100,50 }, 30, m_mapTileSiz,MapType::MapType_Grassland, &m_mapObj);
+	map->Generate({ 50,50 },50, m_mapTileSiz,MapType::MapType_Grassland, &m_mapObj);
 
 }
 

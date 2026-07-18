@@ -45,7 +45,7 @@ void PlayerBase::Update()
 	AngeleUpdate();
 
 	//座標行列を作る
-	m_pos.y = 1;
+	m_pos.y = 0;
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
 
 	//回転行列

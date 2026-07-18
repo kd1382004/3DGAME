@@ -20,5 +20,5 @@ private:
 
 	std::list<std::shared_ptr<MapBase>> m_mapObj;
 
-	float m_mapTileSiz = 2;
+	float m_mapTileSiz = 10;
 };
