@@ -12,7 +12,7 @@ public:
 	void DrawLit();
 	void GenerateDepthMapFromLight();
 
-
+	void SetRotation(Math::Matrix _rMat);
 
 protected:
 

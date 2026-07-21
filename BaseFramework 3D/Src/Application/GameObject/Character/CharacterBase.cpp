@@ -108,15 +108,6 @@ void CharacterBase::CollisionUpdate()
 	rayInfo.m_type = KdCollider::TypeGround;
 	/////////////////////////////////////////////
 
-	// その他球による衝突判定
-	/////////////////////////////////////////////
-	// 当たり判定(球判定)用の情報作成
-	DirectX::BoundingSphere sphere;
-	sphere.Center = GetPos() + Math::Vector3(0, 0.5f, 0);
-	sphere.Radius = 0.5f;
-	KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
-	/////////////////////////////////////////////
-
 	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
 	{
 		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
@@ -149,6 +140,23 @@ void CharacterBase::CollisionUpdate()
 			}
 			//////////////////////////////////////////////////
 
+		}
+	}
+
+	// その他球による衝突判定
+	/////////////////////////////////////////////
+	// 当たり判定(球判定)用の情報作成
+	DirectX::BoundingSphere sphere;
+	sphere.Center = GetPos() + Math::Vector3(0, 0.5f, 0);
+	sphere.Radius = 0.5f;
+	KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
+	/////////////////////////////////////////////
+
+	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
+	{
+		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
+		if (spGameObj)
+		{
 			//その他球による衝突判定
 			//////////////////////////////////////////////////
 			std::list<KdCollider::CollisionResult> retBumpList;
@@ -163,6 +171,7 @@ void CharacterBase::CollisionUpdate()
 
 		}
 	}
+	
 }
 
 void CharacterBase::Release()

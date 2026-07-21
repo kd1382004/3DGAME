@@ -1,6 +1,6 @@
 ﻿#include "MapGenerate.h"
-#include"../MapBase.h"
-
+#include"../FloorBase/FloorBase.h"
+#include"../WallBase/WallBase.h"
 
 MapGenerate::MapGenerate()
 {
@@ -177,7 +177,6 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 	/////////////////////////////////////////////////////
 
 
-	//床と通路を保存
 	for (int y = 0; y < map.size(); y++)
 	{
 		for (int x = 0; x < map[y].size(); x++)
@@ -185,24 +184,128 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 			/////////////////////////////////////////////////////
 			if (map[y][x] != static_cast<int>(TileType::None))
 			{
+				//床と通路を保存
 				float xPos = -(_mapSiz.x / 2.0f * tileSiz);
-				float zPos = -(_mapSiz.y / 2.0f * tileSiz);
+				float zPos = (_mapSiz.y / 2.0f * tileSiz);
 
-				std::shared_ptr<MapBase> mapA = std::make_shared<MapBase>();
-
+				std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
 
 				xPos += tileSiz * x;
-				zPos += tileSiz * y;
+				zPos -= tileSiz * y;
 
 				Math::Vector3 pos = { xPos,0,zPos };
 
 				mapA->Init();
 				mapA->SetPos(pos);
 				ret->push_back(mapA);
-			}
 
+				//壁を生成
+				//上方向に作るべきか
+				pos = { xPos,0,zPos };
+				int UP = y - 1;
+				if (UP < 0)
+				{
+					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+					pos.z += tileSiz / 2;
+					wall->Init();
+					wall->SetPos(pos);
+					ret->push_back(wall);
+				}
+				else
+				{
+					if (map[UP][x] == static_cast<int>(TileType::None))
+					{
+						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+						pos.z += tileSiz / 2;
+						wall->Init();
+						wall->SetPos(pos);
+						ret->push_back(wall);
+					}
+				}
+
+				//下方向に作るべきか
+				pos = { xPos,0,zPos };
+				int DOWN = y + 1;
+				if (DOWN > map.size())
+				{
+					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+					pos.z -= tileSiz / 2;
+					wall->Init();
+					wall->SetPos(pos);
+					ret->push_back(wall);
+				}
+				else
+				{
+					if (map[DOWN][x] == static_cast<int>(TileType::None))
+					{
+						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+						pos.z -= tileSiz / 2;
+						wall->Init();
+						wall->SetPos(pos);
+						ret->push_back(wall);
+					}
+				}
+
+				//左方向に作るべきか
+				pos = { xPos,0,zPos };
+				int Left = x - 1;
+				if (Left < 0)
+				{
+					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+					pos.x -= tileSiz / 2;
+					wall->Init();
+					wall->SetPos(pos);
+
+					Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
+					wall->SetRotation(rMat);
+					ret->push_back(wall);
+				}
+				else
+				{
+					if (map[y][Left] == static_cast<int>(TileType::None))
+					{
+						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+						pos.x -= tileSiz / 2;
+						wall->Init();
+						wall->SetPos(pos);
+						Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
+						wall->SetRotation(rMat);
+						ret->push_back(wall);
+					}
+				}
+
+				//右方向に作るべきか
+				pos = { xPos,0,zPos };
+				int RIGHT = x + 1;
+				if (RIGHT > map[y].size())
+				{
+					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+					pos.x += tileSiz / 2;
+					wall->Init();
+					wall->SetPos(pos);
+
+					Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
+					wall->SetRotation(rMat);
+					ret->push_back(wall);
+				}
+				else
+				{
+					if (map[y][RIGHT] == static_cast<int>(TileType::None))
+					{
+						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
+						pos.x += tileSiz / 2;
+						wall->Init();
+						wall->SetPos(pos);
+						Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
+						wall->SetRotation(rMat);
+						ret->push_back(wall);
+					}
+				}
+
+			}
 			/////////////////////////////////////////////////////
 		}
+
 	}
 }
 

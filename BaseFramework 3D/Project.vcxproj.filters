@@ -130,6 +130,12 @@
     <Filter Include="Src\Application\GameObject\Terrains\Map\MapGenerate">
       <UniqueIdentifier>{5eb411ab-05a2-4739-9e79-88da03259723}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\WallBase">
+      <UniqueIdentifier>{c501f1a2-5f51-44db-9490-b4b5e60564dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\FloorBase">
+      <UniqueIdentifier>{53a660c9-1d9e-4856-b75b-47227e8f0c1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -351,6 +357,12 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h">
       <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\FloorBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -541,6 +553,12 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp">
       <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\FloorBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

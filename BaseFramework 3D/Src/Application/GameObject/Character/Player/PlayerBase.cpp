@@ -30,7 +30,7 @@ void PlayerBase::Init()
 	m_spCharaModel = std::make_shared<KdModelWork>();
 	m_spCharaModel->SetModelData("Asset/Models/Character/Player/Player.gltf");
 
-	
+	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 }
 
 void PlayerBase::Update()

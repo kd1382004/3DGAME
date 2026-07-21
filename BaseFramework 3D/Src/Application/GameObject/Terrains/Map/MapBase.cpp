@@ -2,11 +2,7 @@
 
 void MapBase::Init()
 {
-	m_spModel = std::make_shared<KdModelWork>();
-	m_spModel->SetModelData("Asset/Models/Terrains/Map/Base/Base.gltf");
 
-	m_pCollider = std::make_unique<KdCollider>();
-	m_pCollider->RegisterCollisionShape("Ground", m_spModel, KdCollider::TypeGround);
 }
 
 void MapBase::Update()
@@ -24,4 +20,15 @@ void MapBase::GenerateDepthMapFromLight()
 	if (!m_spModel) { return; }
 
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+}
+
+void MapBase::SetRotation(Math::Matrix _rMat)
+{
+	Math::Vector3 pos = GetPos();
+	Math::Vector3 siz = GetScale();
+
+	Math::Matrix tMat = Math::Matrix::CreateTranslation(pos);
+	Math::Matrix sMat = Math::Matrix::CreateScale(siz);
+
+	m_mWorld = sMat * _rMat * tMat;
 }

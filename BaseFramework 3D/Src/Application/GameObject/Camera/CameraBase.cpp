@@ -30,7 +30,7 @@ void CameraBase::PreDraw()
 	Math::Matrix rMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(90));
 
 
-	m_mWorld = rMat * tMat;
+	//m_mWorld = rMat * tMat;
 	m_spCamera->SetCameraMatrix(m_mWorld);
 	m_spCamera->SetToShader();
 }
