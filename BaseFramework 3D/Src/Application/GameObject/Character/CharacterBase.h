@@ -15,6 +15,13 @@ public:
 
 	void ImGUI()override;
 
+
+	void SetPos(const Math::Vector3& pos)override
+	{
+		m_pos = pos;
+		m_mWorld.Translation(m_pos);
+	}
+
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
@@ -26,7 +33,7 @@ private:
 
 protected:
 	std::shared_ptr<KdModelWork> m_spCharaModel = nullptr;
-
+	std::shared_ptr<KdAnimator>	m_spAnimetor = nullptr;
 
 	
 	
@@ -124,7 +131,7 @@ protected:
 	///////////////////////////////////////////
 	//キャラの回転
 	//角度
-	float m_angle;
+	float m_angle=0;
 
 	void AngeleUpdate();
 

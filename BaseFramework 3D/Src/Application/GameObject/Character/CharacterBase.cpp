@@ -89,9 +89,10 @@ void CharacterBase::ImGUI()
 
 void CharacterBase::CollisionUpdate()
 {
-	//レイ判定設定
-	/////////////////////////////////////////////
-	// 当たり判定(レイ判定)用の情報作成
+	// 地面判定するよ
+	// ----- ----- ----- ----- -----
+
+	// ①当たり判定(レイ判定)用の情報作成
 	KdCollider::RayInfo rayInfo;
 	// レイの発射位置を設定
 	rayInfo.m_pos = GetPos();
@@ -104,26 +105,27 @@ void CharacterBase::CollisionUpdate()
 
 	// レイの長さを設定
 	rayInfo.m_range = m_Gravity + enableStepHigh;
-	// 当たり判定タイプを設定
+	// 当たり判定をしたいタイプを設定
 	rayInfo.m_type = KdCollider::TypeGround;
-	/////////////////////////////////////////////
 
+	// ②HIT判定対象オブジェクトに総当たり
 	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
 	{
 		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
 		if (spGameObj)
 		{
-
-			//レイ判定
-			//////////////////////////////////////////////////
 			std::list<KdCollider::CollisionResult> retRayList;
 			spGameObj->Intersects(rayInfo, &retRayList);
 
+			// ③ 結果を使って座標を補完する
+			// レイに当たったリストから一番近いオブジェクトを検出
 			float maxOverLap = 0;
 			Math::Vector3 hitPos = {};
 			bool hit = false;
 			for (auto& ret : retRayList)
 			{
+				// レイを遮断しオーバーした長さが
+				// 一番長いものを探す
 				if (maxOverLap < ret.m_overlapDistance)
 				{
 					maxOverLap = ret.m_overlapDistance;
@@ -131,47 +133,40 @@ void CharacterBase::CollisionUpdate()
 					hit = true;
 				}
 			}
-
 			if (hit)
 			{
 				// 地面に当たっている
 				SetPos(hitPos);
 				m_Gravity = 0;
 			}
-			//////////////////////////////////////////////////
-
 		}
 	}
 
 	// その他球による衝突判定
-	/////////////////////////////////////////////
-	// 当たり判定(球判定)用の情報作成
+	// ----- ----- ----- ----- -----
+	// ①当たり判定(球判定)用の情報作成
 	DirectX::BoundingSphere sphere;
 	sphere.Center = GetPos() + Math::Vector3(0, 0.5f, 0);
 	sphere.Radius = 0.5f;
 	KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
-	/////////////////////////////////////////////
 
+	// ②HIT判定対象オブジェクトに総当たり
 	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
 	{
 		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
 		if (spGameObj)
 		{
-			//その他球による衝突判定
-			//////////////////////////////////////////////////
 			std::list<KdCollider::CollisionResult> retBumpList;
 			spGameObj->Intersects(spherInfo, &retBumpList);
 
+			// ③ 結果を使って座標を補完する
 			for (auto& ret : retBumpList)
 			{
 				Math::Vector3 newPos = GetPos() + (ret.m_hitDir * ret.m_overlapDistance);
 				SetPos(newPos);
 			}
-			//////////////////////////////////////////////////
-
 		}
 	}
-	
 }
 
 void CharacterBase::Release()
@@ -237,7 +232,7 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 
 void CharacterBase::AngeleUpdate()
 {	
-	if (m_moveVec == Math::Vector3::Zero) { return; }
+	if (m_moveVec.Length() == 0) { return; }
 
 
 	//今キャラが向いている方向
@@ -248,6 +243,7 @@ void CharacterBase::AngeleUpdate()
 
 	//内積を求める ベクトルA ・ ベクトルB
 	float dot = nowDir.Dot(toDir);
+	dot = std::clamp(dot, -1.0f, 1.0f);
 
 	//角度に変換
 	float angle = DirectX::XMConvertToDegrees(acos(dot));
@@ -265,6 +261,7 @@ void CharacterBase::AngeleUpdate()
 		//回転軸
 		//外積
 		Math::Vector3 cross = nowDir.Cross(toDir);
+
 
 		if (cross.y >= 0)
 		{

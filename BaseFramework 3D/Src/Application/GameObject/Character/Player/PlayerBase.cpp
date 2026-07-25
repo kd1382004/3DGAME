@@ -31,6 +31,11 @@ void PlayerBase::Init()
 	m_spCharaModel->SetModelData("Asset/Models/Character/Player/Player.gltf");
 
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
+
+
+	//アニメータの準備
+	m_spAnimetor = std::make_shared<KdAnimator>();
+	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation("Walk"), true);
 }
 
 void PlayerBase::Update()
@@ -39,13 +44,17 @@ void PlayerBase::Update()
 	//移動
 	Move();
 
+
+
 	//ジャンプ&重力処理
 	JumpAndGravity();
 
 	AngeleUpdate();
 
+	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes());
+	m_spCharaModel->CalcNodeMatrices();
+
 	//座標行列を作る
-	m_pos.y = 0;
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
 
 	//回転行列
@@ -168,10 +177,6 @@ void PlayerBase::Move()
 		m_moveMode = MoveMode::MoveWalk;
 
 
-
-
-
-
 		//////////////////////////////////////////////////////////////
 		//動いてるならベクトルをカメラの向きに合わせる
 		std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
@@ -191,6 +196,7 @@ void PlayerBase::Move()
 
 		m_moveVec *= m_status.moveSpeed.nowSpeed;
 		m_pos += m_moveVec;
+
 		//////////////////////////////////////////////////////////////
 
 
