@@ -16,21 +16,6 @@ void CameraBase::PreDraw()
 {
 	if (!m_spCamera) { return; }
 
-	//デバック用
-	float x=0;
-	float z=0;
-	if (!m_wpTarget.expired())
-	{
-		x = m_wpTarget.lock()->GetPos().x;
-		z = m_wpTarget.lock()->GetPos().z;
-	}
-
-
-	Math::Matrix tMat = Math::Matrix::CreateTranslation({ x,1000,z });
-	Math::Matrix rMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(90));
-
-
-	//m_mWorld = rMat * tMat;
 	m_spCamera->SetCameraMatrix(m_mWorld);
 	m_spCamera->SetToShader();
 }
@@ -40,6 +25,71 @@ void CameraBase::SetTarget(const std::shared_ptr<KdGameObject>& target)
 	if (!target) { return; }
 
 	m_wpTarget = target;
+}
+
+void CameraBase::ResolveCameraOcclusion()
+{
+	// あたり判定オブジェクトから期限切れの要素を削除
+	auto it = m_cameraOcclusionObjects.begin();
+	while (it != m_cameraOcclusionObjects.end())
+	{
+		if (it->expired())
+		{
+			it = m_cameraOcclusionObjects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+
+
+	std::shared_ptr<KdGameObject>spTarget = m_wpTarget.lock();
+
+	if (!spTarget) { return; }
+
+	KdCollider::RayInfo rayInfo;
+
+	rayInfo.m_pos = spTarget->GetPos() +Math::Vector3(0,1,0);
+	rayInfo.m_dir = GetPos() - rayInfo.m_pos;
+	rayInfo.m_range = rayInfo.m_dir.Length();
+	rayInfo.m_dir.Normalize();
+	rayInfo.m_type = KdCollider::TypeCameraOcclusion;
+
+
+	float maxOverLap = 0;
+	Math::Vector3 hitPos = {};
+	bool hit = false;
+
+	m_detectRange = (GetPos() - spTarget->GetPos()).Length() + 1.0f;
+
+	for (auto& wpObj : m_cameraOcclusionObjects)
+	{
+		if (auto spObj = wpObj.lock())
+		{
+			std::list<KdCollider::CollisionResult> retRayList;
+
+			spObj->Intersects(rayInfo, &retRayList);
+
+
+			for (auto& ret : retRayList)
+			{
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hitPos = ret.m_hitPos;
+					hit = true;
+				}
+			}
+		}
+	}
+
+
+
+	if (hit)
+	{
+		SetPos(hitPos);
+	}
 }
 
 void CameraBase::UpdateRotateByMouse()

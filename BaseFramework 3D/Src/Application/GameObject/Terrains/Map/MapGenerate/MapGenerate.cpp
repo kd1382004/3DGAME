@@ -1,6 +1,7 @@
 ﻿#include "MapGenerate.h"
 #include"../FloorBase/FloorBase.h"
 #include"../WallBase/WallBase.h"
+#include"../Stairs/StairsBase.h"
 
 MapGenerate::MapGenerate()
 {
@@ -9,7 +10,7 @@ MapGenerate::MapGenerate()
 	LoadRoomSiz(m_roomSizPath);
 }
 
-void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret)
+void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos)
 {
 	if (roomMine <= 0 && roomMax <= 0)
 	{
@@ -39,7 +40,7 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 	int maxTry = 50;
 
 	//部屋ID
-	int roomID = 1;
+	int roomID = m_ionitialRoomID;
 	for (int i = 0; i < roomNum; i++)
 	{
 		for (int t = 0; t < maxTry; t++)
@@ -49,10 +50,11 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 			// 部屋のサイズ決定
 
 			//横
-			int roomW = rand() % (roomMax - roomMine) + roomMine;
+
+			int roomW = KdRandom::GetInt(roomMine, roomMax);
 
 			//縦
-			int roomH = rand() % (roomMax - roomMine) + roomMine;
+			int roomH = KdRandom::GetInt(roomMine, roomMax);
 
 			//縦横のサイズを奇数にする(部屋の中心をわかりやすくするため)
 			if (roomW % 2 == 0)
@@ -73,15 +75,16 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 			// 部屋の左上番号
 			int X = _mapSiz.x;
 			int Y = _mapSiz.y;
-			int roomX = rand() % (X - roomW - 1);
-			int roomY = rand() % (Y - roomH - 1);
+
+			int roomX = KdRandom::GetInt(0, X - roomW - 1);
+			int roomY = KdRandom::GetInt(0, Y - roomH - 1);
 
 			// 部屋が空いてるかチェック
 			bool canPlace = true;
 
 			//部屋同士何タイル開けるか
-			int aX = rand() % 5 + 2;
-			int aY = rand() % 3 + 2;
+			int aX = KdRandom::GetInt(3, 8);
+			int aY = KdRandom::GetInt(2, 5);
 
 			for (int y = roomY - aY; y < roomY + roomH + aY; y++)
 			{
@@ -155,7 +158,7 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 
 	/////////////////////////////////////////////////////
 
-	auto pairs = GetRoomConnectionPairs(m_roomInfo);
+	std::vector<std::pair<RoomInfo, RoomInfo>> pairs = GetRoomConnectionPairs(m_roomInfo);
 
 	for (auto& p : pairs)
 	{
@@ -172,6 +175,45 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 		}
 
 	}
+
+
+	/////////////////////////////////////////////////////
+	//プレイヤーのスポーン部屋を決める
+	int playerSpwanRoomID = KdRandom::GetInt(m_ionitialRoomID, roomID - 1);
+
+
+	for (auto room : m_roomInfo)
+	{
+		if (room.m_roomID == playerSpwanRoomID)
+		{
+			room.m_playerSpwanRoom = true;
+		}
+	}
+
+
+	/////////////////////////////////////////////////////
+	//階段設置部屋を決める
+	int SetStairsRoomID;
+	while (true)
+	{
+		SetStairsRoomID = KdRandom::GetInt(m_ionitialRoomID, roomID - 1);
+		if (playerSpwanRoomID != SetStairsRoomID)
+		{
+			for (auto room : m_roomInfo)
+			{
+				if (room.m_roomID == SetStairsRoomID)
+				{
+					room.m_stairsRoom = true;
+				}
+			}
+
+			break;
+		}
+	}
+
+	//階段設置したかどうか
+	bool stairsPlaced=false;
+
 
 
 	/////////////////////////////////////////////////////
@@ -197,111 +239,77 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 
 				mapA->Init();
 				mapA->SetPos(pos);
+				mapA->SetMapObjType(MapObjType::Ground);
+
+				if (map[y][x] == static_cast<int>(TileType::Floor))
+				{
+					mapA->SetGroundType(GroundType::Floor);
+				}
+				else if (map[y][x] == static_cast<int>(TileType::Room))
+				{
+					mapA->SetGroundType(GroundType::Room);
+					mapA->SerRoomID(roomIDVector[y][x]);
+
+
+					//プレイヤースポーン位置を保存
+					if (roomIDVector[y][x] == playerSpwanRoomID)
+					{
+						*_playerSpawnPos = pos;
+					}
+				}
+
 				ret->push_back(mapA);
 
+
+
+
 				//壁を生成
-				//上方向に作るべきか
-				pos = { xPos,0,zPos };
-				int UP = y - 1;
-				if (UP < 0)
+				// 4方向の定義データ構造
+				struct WallDirectionInfo
 				{
-					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-					pos.z += tileSiz / 2;
-					wall->Init();
-					wall->SetPos(pos);
-					ret->push_back(wall);
+					int dx, dy;              // マップインデックスの移動量
+					Math::Vector3 offset;    // 座標オフセット
+					float rotY;              // Y軸回転角度
+					bool allowStairs;        // 階段の生成を許可するか
+				};
+
+				const float halfTile = tileSiz / 2.0f;
+				// 上、下、左、右の定義
+				std::vector<WallDirectionInfo> wallDirs = {
+				{  0, -1, { 0.0f, 0.0f,  halfTile },   0.0f, true }, // 上 (0度)
+				{  0,  1, { 0.0f, 0.0f, -halfTile }, 180.0f, true }, // 下 (180度)
+				{ -1,  0, {-halfTile, 0.0f, 0.0f  }, 270.0f, true }, // 左 (270度)
+				{  1,  0, { halfTile, 0.0f, 0.0f  }, 90.0f, true }, // 右 (90度)
+				};
+
+				bool isStairsRoom = (roomIDVector[y][x] == SetStairsRoomID);
+
+
+				//階段の設定位置をランダムにしたいから配列シャッフル
+				for (size_t i = 0; i < wallDirs.size(); ++i)
+				{
+					int rndIndex = KdRandom::GetInt(0, wallDirs.size() - 1);
+					std::swap(wallDirs[i], wallDirs[rndIndex]); 
 				}
-				else
+
+				for (const auto& dir : wallDirs)
 				{
-					if (map[UP][x] == static_cast<int>(TileType::None))
+					int nx = x + dir.dx;
+					int ny = y + dir.dy;
+					// 隣接マスに壁が必要か判定
+					if (IsNeedWall(nx, ny, map))
 					{
-						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-						pos.z += tileSiz / 2;
-						wall->Init();
-						wall->SetPos(pos);
-						ret->push_back(wall);
+						// まだ階段が設置されておらず、階段部屋かつ許可方向の場合のみ階段を作る
+						bool createStairs = dir.allowStairs && isStairsRoom && !stairsPlaced;
+						if (createStairs)
+						{
+							stairsPlaced = true; // 1つ作ったらフラグを立てて2つ目以降を作らない
+						}
+
+						Math::Vector3 wallPos = { xPos + dir.offset.x, 0.0f, zPos + dir.offset.z };
+						CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret);
 					}
 				}
-
-				//下方向に作るべきか
-				pos = { xPos,0,zPos };
-				int DOWN = y + 1;
-				if (DOWN > map.size())
-				{
-					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-					pos.z -= tileSiz / 2;
-					wall->Init();
-					wall->SetPos(pos);
-					ret->push_back(wall);
-				}
-				else
-				{
-					if (map[DOWN][x] == static_cast<int>(TileType::None))
-					{
-						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-						pos.z -= tileSiz / 2;
-						wall->Init();
-						wall->SetPos(pos);
-						ret->push_back(wall);
-					}
-				}
-
-				//左方向に作るべきか
-				pos = { xPos,0,zPos };
-				int Left = x - 1;
-				if (Left < 0)
-				{
-					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-					pos.x -= tileSiz / 2;
-					wall->Init();
-					wall->SetPos(pos);
-
-					Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
-					wall->SetRotation(rMat);
-					ret->push_back(wall);
-				}
-				else
-				{
-					if (map[y][Left] == static_cast<int>(TileType::None))
-					{
-						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-						pos.x -= tileSiz / 2;
-						wall->Init();
-						wall->SetPos(pos);
-						Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
-						wall->SetRotation(rMat);
-						ret->push_back(wall);
-					}
-				}
-
-				//右方向に作るべきか
-				pos = { xPos,0,zPos };
-				int RIGHT = x + 1;
-				if (RIGHT > map[y].size())
-				{
-					std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-					pos.x += tileSiz / 2;
-					wall->Init();
-					wall->SetPos(pos);
-
-					Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
-					wall->SetRotation(rMat);
-					ret->push_back(wall);
-				}
-				else
-				{
-					if (map[y][RIGHT] == static_cast<int>(TileType::None))
-					{
-						std::shared_ptr<WallBase> wall = std::make_shared<WallBase>();
-						pos.x += tileSiz / 2;
-						wall->Init();
-						wall->SetPos(pos);
-						Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(90));
-						wall->SetRotation(rMat);
-						ret->push_back(wall);
-					}
-				}
-
 			}
 			/////////////////////////////////////////////////////
 		}
@@ -359,7 +367,7 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(s
 		float dist;
 	};
 
-	//すべて手のペアのリストを入れる
+	//すべてのペアのリストを入れる
 	std::vector<Edge> edges;
 
 	for (int i = 0;i < _roomInfo.size() - 1;i++)
@@ -391,6 +399,9 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(s
 		parent[i] = i;
 	}
 
+	//すべてのペアのリストを入れる
+	std::vector<Edge> loopEdges;
+
 	// 距離の短い順に Edge を見ていく
 	for (auto& e : edges)
 	{
@@ -405,8 +416,45 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(s
 			// グループ結合
 			UnionSet(parent, rootA, rootB);
 		}
+		else
+		{
+			loopEdges.push_back(e);
+		}
 	}
 
+
+	// 部屋Aと部屋Bの距離が短い順にする
+	std::sort(loopEdges.begin(), loopEdges.end(), [](const Edge& a, const Edge& b) {return a.dist < b.dist;});
+
+	/////////////////////////
+	//上位30%だけ残す
+	int siz = loopEdges.size() * 0.3;
+
+	auto it = loopEdges.begin() + siz;
+
+	while (it != loopEdges.end())
+	{
+		// 無効なオブジェクトをリストから削除
+		it = loopEdges.erase(it);
+	}
+	//上位30%だけ残す
+	/////////////////////////
+
+	int i = 0;
+
+	float percent;
+	for (auto& e : loopEdges)
+	{
+
+		percent = (1 - e.dist / loopEdges.back().dist) * 100;
+
+		if (KdRandom::GetInt(1, 100) < percent && i < 5)
+		{
+			i++;
+			pairList.push_back({ _roomInfo[e.roomA], _roomInfo[e.roomB] });
+		}
+
+	}
 
 
 	return pairList;
@@ -529,3 +577,45 @@ void MapGenerate::UnionSet(std::vector<int>& _parent, int _a, int _b)
 	// 結合（親にする）
 	_parent[rootB] = rootA;
 }
+
+bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>& map)
+{
+	// マップ範囲外なら壁を作る
+	if (ny < 0 || ny >= static_cast<int>(map.size())) { return true; }
+	if (nx < 0 || nx >= static_cast<int>(map[ny].size())) { return true; }
+
+	// 隣のマスが None（空き地）なら壁を作る
+	if(map[ny][nx] == static_cast<int>(TileType::None)){ return true;}
+
+	return false;
+}
+
+void MapGenerate::CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret)
+{
+	if (isStairs)
+	{
+		auto stairs = std::make_shared<StairsBase>();
+		stairs->Init();
+		stairs->SetPos(pos);
+		if (rotYDegree != 0.0f)
+		{
+			stairs->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(rotYDegree)));
+		}
+
+		ret->push_back(stairs);
+	}
+	else
+	{
+		auto wall = std::make_shared<WallBase>();
+		wall->Init();
+		wall->SetPos(pos);
+		if (rotYDegree != 0.0f)
+		{
+			wall->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(rotYDegree)));
+		}
+
+		wall->SetMapObjType(MapObjType::Wall);
+		ret->push_back(wall);
+	}
+}
+

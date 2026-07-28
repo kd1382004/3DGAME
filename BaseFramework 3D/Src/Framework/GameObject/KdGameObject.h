@@ -52,8 +52,7 @@ public:
 	virtual bool IsVisible()	const { return false; }
 	virtual bool IsRideable()	const { return false; }
 
-	// 視錐台範囲内に入っているかどうか
-	virtual bool CheckInScreen(const DirectX::BoundingFrustum&) const { return false; }
+
 
 	// カメラからの距離を計算
 	virtual void CalcDistSqrFromCamera(const Math::Vector3& camPos);
@@ -68,6 +67,10 @@ public:
 
 
 	//追加
+	
+	// 視錐台範囲内に入っているかどうか
+	virtual bool CheckInScreen(const DirectX::BoundingFrustum&, const KdCollider::BoxInfo& targetBox);
+
 	//GameObjectを直接継承したクラスを入れる
 	enum GameObjectClass
 	{
@@ -105,6 +108,10 @@ public:
 	{
 		m_wpHitObjectList.push_back(object);
 	}
+
+
+	//Hit後処理
+	virtual void IsHit() {};
 
 protected:
 

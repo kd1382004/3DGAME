@@ -136,6 +136,9 @@
     <Filter Include="Src\Application\GameObject\Terrains\Map\FloorBase">
       <UniqueIdentifier>{53a660c9-1d9e-4856-b75b-47227e8f0c1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\Stairs">
+      <UniqueIdentifier>{75191ae0-bdc8-48e0-bf85-64b2f188b541}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -363,6 +366,9 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h">
       <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -559,6 +565,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp">
       <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -54,7 +54,7 @@ void CharacterBase::ImGUI()
 
 		if (ImGui::TreeNode(U8("Attck")))
 		{
-			ImGui::InputFloat(U8("基礎Attck"), &m_status.attck.baseAttckPowe , 0.1f, 1.0f, "%.2f");
+			ImGui::InputFloat(U8("基礎Attck"), &m_status.attck.baseAttckPowe, 0.1f, 1.0f, "%.2f");
 			ImGui::TreePop();
 		}
 
@@ -68,7 +68,7 @@ void CharacterBase::ImGUI()
 		{
 			ImGui::InputFloat(U8("基礎MoveSpeed"), &m_status.moveSpeed.baseSpeed, 0.01f, 1.0f, "%.2f");
 			ImGui::InputFloat(U8("歩くときに足す値"), &m_status.moveSpeed.walkMovePowe, 0.01f, 1.0f, "%.2f");
-			ImGui::Text(U8("歩く速度 : %f\n"), m_status.moveSpeed.baseSpeed+ m_status.moveSpeed.walkMovePowe);
+			ImGui::Text(U8("歩く速度 : %f\n"), m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe);
 
 
 
@@ -76,7 +76,7 @@ void CharacterBase::ImGUI()
 			ImGui::Text(U8("走る速度 : %f\n"), m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe);
 			ImGui::TreePop();
 		}
-	
+
 
 		if (ImGui::Button(U8("保存")))
 		{
@@ -89,6 +89,22 @@ void CharacterBase::ImGUI()
 
 void CharacterBase::CollisionUpdate()
 {
+
+	// あたり判定オブジェクトから期限切れの要素を削除
+	auto it = m_wpHitObjectList.begin();
+	while (it != m_wpHitObjectList.end())
+	{
+		if (it->expired())
+		{
+			it = m_wpHitObjectList.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+
+
 	// 地面判定するよ
 	// ----- ----- ----- ----- -----
 
@@ -104,9 +120,13 @@ void CharacterBase::CollisionUpdate()
 	rayInfo.m_dir = Math::Vector3::Down;
 
 	// レイの長さを設定
-	rayInfo.m_range = m_Gravity + enableStepHigh;
+	rayInfo.m_range = m_Gravity + enableStepHigh+0.5f;
 	// 当たり判定をしたいタイプを設定
 	rayInfo.m_type = KdCollider::TypeGround;
+
+	float maxOverLap = 0;
+	Math::Vector3 hitPos = {};
+	bool hit = false;
 
 	// ②HIT判定対象オブジェクトに総当たり
 	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
@@ -114,14 +134,18 @@ void CharacterBase::CollisionUpdate()
 		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
 		if (spGameObj)
 		{
+			float dist = (GetPos() - spGameObj->GetPos()).Length();
+
+			//処理軽減用
+			if (dist >= m_detectRange) { continue; }
+
+
 			std::list<KdCollider::CollisionResult> retRayList;
 			spGameObj->Intersects(rayInfo, &retRayList);
 
 			// ③ 結果を使って座標を補完する
 			// レイに当たったリストから一番近いオブジェクトを検出
-			float maxOverLap = 0;
-			Math::Vector3 hitPos = {};
-			bool hit = false;
+
 			for (auto& ret : retRayList)
 			{
 				// レイを遮断しオーバーした長さが
@@ -133,38 +157,77 @@ void CharacterBase::CollisionUpdate()
 					hit = true;
 				}
 			}
-			if (hit)
-			{
-				// 地面に当たっている
-				SetPos(hitPos);
-				m_Gravity = 0;
-			}
 		}
 	}
 
-	// その他球による衝突判定
-	// ----- ----- ----- ----- -----
-	// ①当たり判定(球判定)用の情報作成
-	DirectX::BoundingSphere sphere;
-	sphere.Center = GetPos() + Math::Vector3(0, 0.5f, 0);
-	sphere.Radius = 0.5f;
-	KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
-
-	// ②HIT判定対象オブジェクトに総当たり
-	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
+	if (hit)
 	{
-		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
-		if (spGameObj)
-		{
-			std::list<KdCollider::CollisionResult> retBumpList;
-			spGameObj->Intersects(spherInfo, &retBumpList);
+		// 地面に当たっている
+		SetPos(hitPos);
+		m_Gravity = 0;
+		m_groundHit = true;
+	}
+	else
+	{
+		m_groundHit = false;
+	}
 
-			// ③ 結果を使って座標を補完する
+	// その他球による衝突判定 (壁判定)
+	// ----- ----- ----- ----- -----
+	// 反復押し戻し処理
+	for (int pass = 0; pass < 3; pass++)
+	{
+		DirectX::BoundingSphere sphere;
+		sphere.Center = GetPos() + Math::Vector3(0, 0.5f, 0);
+		sphere.Radius = 1.0f;
+		KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
+
+		if (m_pDebugWire && pass == 0)
+		{
+			m_pDebugWire->AddDebugSphere(sphere.Center, sphere.Radius);
+			m_pDebugWire->AddDebugSphere(sphere.Center, m_detectRange, kRedColor);
+			m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
+		}
+
+		Math::Vector3 maxPush = Math::Vector3::Zero;
+		float maxOverlap = 0.0f;
+		bool bumpHit = false;
+
+		for (auto& wpGameObj : m_wpHitObjectList)
+		{
+			auto spGameObj = wpGameObj.lock();
+			if (!spGameObj) continue;
+
+
+			//処理軽減
+			float dist = (GetPos() - spGameObj->GetPos()).Length();
+			if (dist >= m_detectRange) { continue; }
+
+			std::list<KdCollider::CollisionResult> retBumpList;
+			if (spGameObj->Intersects(spherInfo, &retBumpList))
+			{
+				//Hit後処理
+				spGameObj->IsHit();
+			}
+
 			for (auto& ret : retBumpList)
 			{
-				Math::Vector3 newPos = GetPos() + (ret.m_hitDir * ret.m_overlapDistance);
-				SetPos(newPos);
+				if (ret.m_overlapDistance > maxOverlap)
+				{
+					maxOverlap = ret.m_overlapDistance;
+					maxPush = ret.m_hitDir * ret.m_overlapDistance;
+					bumpHit = true;
+				}
 			}
+		}
+
+		if (bumpHit)
+		{
+			SetPos(GetPos() + maxPush);
+		}
+		else
+		{
+			break; // 衝突が無くなればループ終了
 		}
 	}
 }
@@ -231,7 +294,7 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 }
 
 void CharacterBase::AngeleUpdate()
-{	
+{
 	if (m_moveVec.Length() == 0) { return; }
 
 

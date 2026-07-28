@@ -1,12 +1,11 @@
 ﻿#include "MapManager.h"
 #include"MapBase.h"
 #include"MapGenerate/MapGenerate.h"
+#include"../../Camera/CameraBase.h"
+#include"../../Character/Player/PlayerBase.h"
 
 void MapManager::Init()
 {
-
-	std::shared_ptr<MapGenerate>map = std::make_shared<MapGenerate>();
-	map->Generate({ 50,50 },50, m_mapTileSiz,MapType::MapType_Grassland, &m_mapObj);
 
 }
 
@@ -16,13 +15,14 @@ void MapManager::Update()
 	{
 		mapObj->Update();
 	}
+}
 
-
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+void MapManager::PostUpdate()
+{
+	/*for (auto mapObj : m_mapObj)
 	{
-		m_mapObj.clear();
-		Init();
-	}
+		mapObj->PostUpdate();
+	}*/
 }
 
 void MapManager::DrawLit()
@@ -30,6 +30,14 @@ void MapManager::DrawLit()
 	for (auto mapObj : m_mapObj)
 	{
 		mapObj->DrawLit();
+	}
+}
+
+void MapManager::PreDraw()
+{
+	for (auto mapObj : m_mapObj)
+	{
+		mapObj->PreDraw();
 	}
 }
 
@@ -51,4 +59,39 @@ void MapManager::MapHit(std::shared_ptr<KdGameObject> obj)
 		obj->RegistHitObject(mapObj);
 	}
 
+}
+
+void MapManager::SetCamera(std::shared_ptr<CameraBase> _spCamera)
+{
+	m_wpCamera = _spCamera;
+
+	for (auto mapObj : m_mapObj)
+	{
+		mapObj->SetCamera(_spCamera);
+
+		_spCamera->ResolveCameraOcclusionObject(mapObj);
+	}
+}
+
+void MapManager::GenerateMap()
+{
+	m_mapObj.clear();
+
+	std::shared_ptr<MapGenerate>map = std::make_shared<MapGenerate>();
+	map->Generate({ 50,50 }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj,&m_playerSpawnPos);
+
+	if (!m_wpCamera.expired())
+	{
+		SetCamera(m_wpCamera.lock());
+	}
+
+	std::shared_ptr<PlayerBase>spPlayerBase=m_wpPlayerBase.lock();
+
+	if (spPlayerBase)
+	{
+		for (auto mapObj : m_mapObj)
+		{
+			mapObj->SetPlayer(spPlayerBase);
+		}
+	}
 }

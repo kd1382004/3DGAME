@@ -29,14 +29,16 @@ private:
 	// 解放処理
 	void Release();
 
+	//当たり判定をする半径(この円ないならあたり判定)
+	const float m_detectRange = 10;
 
 
 protected:
 	std::shared_ptr<KdModelWork> m_spCharaModel = nullptr;
 	std::shared_ptr<KdAnimator>	m_spAnimetor = nullptr;
 
-	
-	
+
+
 	float m_Gravity = 0;
 
 	float m_gravityPower = 0.01f;
@@ -116,7 +118,7 @@ protected:
 	///////////////////////////////////////////
 
 	///////////////////////////////////////////
-	
+
 	//座標
 	Math::Vector3 m_pos;
 
@@ -127,11 +129,11 @@ protected:
 	Math::Vector3 m_moveVec;
 
 	///////////////////////////////////////////
-	
+
 	///////////////////////////////////////////
 	//キャラの回転
 	//角度
-	float m_angle=0;
+	float m_angle = 0;
 
 	void AngeleUpdate();
 
@@ -144,6 +146,12 @@ protected:
 	bool m_statusEditorFlf = false;
 
 	std::string m_statusEditorName = "キャラクター";
+
+	///////////////////////////////////////////
+
+	///////////////////////////////////////////
+
+	bool m_groundHit;
 
 	///////////////////////////////////////////
 };

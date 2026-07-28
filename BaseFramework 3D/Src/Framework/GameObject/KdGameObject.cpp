@@ -35,6 +35,8 @@ Math::Vector3 KdGameObject::GetScale() const
 	return Math::Vector3(m_mWorld.Right().Length(), m_mWorld.Up().Length(), m_mWorld.Backward().Length());
 }
 
+
+
 void KdGameObject::CalcDistSqrFromCamera(const Math::Vector3& camPos)
 {
 	m_distSqrFromCamera = (m_mWorld.Translation() - camPos).LengthSquared();
@@ -59,4 +61,23 @@ bool KdGameObject::Intersects(const KdCollider::RayInfo& targetShape, std::list<
 	if (!m_pCollider) { return false; }
 
 	return m_pCollider->Intersects(targetShape, m_mWorld, pResults);
+}
+
+bool KdGameObject::CheckInScreen(const DirectX::BoundingFrustum& frustum, const KdCollider::BoxInfo& targetBox)
+{
+	
+	if (targetBox.CheckBoxType(KdCollider::BoxInfo::BoxType::BoxOBB))
+	{
+		// OBB 判定
+		DirectX::BoundingOrientedBox obbWS;
+		targetBox.m_Obox.Transform(obbWS, m_mWorld);
+		return frustum.Intersects(obbWS);
+	}
+	else
+	{
+		// AABB 判定
+		DirectX::BoundingBox boxWS;
+		targetBox.m_Abox.Transform(boxWS, m_mWorld);
+		return frustum.Intersects(boxWS);
+	}
 }

@@ -11,8 +11,10 @@ void WallBase::Init()
 		if (!m_pCollider)
 		{
 			m_pCollider = std::make_unique<KdCollider>();
-			m_pCollider->RegisterCollisionShape("Wall", m_spModel, KdCollider::TypeBump);
+			m_pCollider->RegisterCollisionShape("Wall", m_spModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion);
 		}
+
+		MapBase::Init();
 	}
 }
 

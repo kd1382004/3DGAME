@@ -226,13 +226,19 @@ void PlayerBase::MoveNowSpeedDecision()
 
 void PlayerBase::JumpAndGravity()
 {
+	if (m_groundHit)
+	{
+		m_jumpFlg = true;
+	}
+
+	m_jumpFlg = true;
 	//////////////////////////////////////////////////////////////
 	//ジャンプ処理
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump, true, true))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump,true, true))
 	{
 		if (m_jumpFlg)
 		{
-			m_jumpPower = 0.2;
+			m_jumpPower = 0.5;
 			m_Gravity = -m_jumpPower;
 			m_jumpFlg = false;
 		}

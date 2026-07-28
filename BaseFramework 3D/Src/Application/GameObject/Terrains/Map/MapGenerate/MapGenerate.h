@@ -27,6 +27,12 @@ struct RoomInfo
 	Math::Vector2 m_center;
 
 	roomEnd m_roomEnd;
+
+	//プレイヤーのスポーン部屋
+	bool m_playerSpwanRoom = false;
+
+	//階段部屋か
+	bool m_stairsRoom = false;
 };
 
 enum MapType
@@ -43,17 +49,18 @@ public:
 	~MapGenerate() {};
 
 	//マップ生成
-	//_mapSiz	 ...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
-	//roomNum	 ...部屋の最大個数
-	//tileSiz	 ...1タイルのサイズ(正方形)
-	//_type		 ...マップの種類
-	//ret		 ...生成結果を格納する先
-	void Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret);
+	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
+	//roomNum			...部屋の最大個数
+	//tileSiz			...1タイルのサイズ(正方形)
+	//_type				...マップの種類
+	//ret				...生成結果を格納する先
+	//_playerSpawnPos	...	プレイヤーのスポーン位置
+	void Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos);
 
 private:
 
-
-
+	//部屋IDの初期値
+	static const int m_ionitialRoomID = 1;
 	std::vector<RoomInfo> m_roomInfo;
 
 	enum class TileType
@@ -62,7 +69,6 @@ private:
 		Floor,  // 床（通路）
 		Room    // 部屋
 	};
-
 
 	//部屋のサイズ
 	int roomMax = 0; //最大値
@@ -87,4 +93,10 @@ private:
 	int FindRoot(std::vector<int>& _parent, int _x);
 
 	void UnionSet(std::vector<int>& _parent, int _a, int _b);
+
+	// 指定された隣接マスが「範囲外」または「空き地（None）」で壁が必要かを判定する
+	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>& map);
+
+	// 壁または階段オブジェクトを生成してリストに追加する
+	void CreateWallOrStairs(const Math::Vector3& pos,float rotYDegree,bool isStairs,std::list<std::shared_ptr<MapBase>>* ret);
 };
