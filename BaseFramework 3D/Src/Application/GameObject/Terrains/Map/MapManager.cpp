@@ -78,7 +78,7 @@ void MapManager::GenerateMap()
 	m_mapObj.clear();
 
 	std::shared_ptr<MapGenerate>map = std::make_shared<MapGenerate>();
-	map->Generate({ 50,50 }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj,&m_playerSpawnPos);
+	map->Generate({ 30,30 }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj,&m_playerSpawnPos);
 
 	if (!m_wpCamera.expired())
 	{

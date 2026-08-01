@@ -1,0 +1,38 @@
+﻿#include "UIManager.h"
+#include"UIBase.h"
+#include"NextFloorGaugeUI/NextFloorGaugeUI.h"
+
+
+#include"../Character/Player/PlayerBase.h"
+void UIManager::Init()
+{
+	std::shared_ptr<NextFloorGaugeUI> spNextFloorGaugeUI = std::make_shared<NextFloorGaugeUI>();
+	spNextFloorGaugeUI->Init();
+	m_spUIList.push_back(spNextFloorGaugeUI);
+
+
+
+	//プレイヤーにUIを渡す
+	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
+	if (spPlayerBase)
+	{
+		spPlayerBase->SetNextFloorGaugeUI(spNextFloorGaugeUI);
+	}
+
+}
+
+void UIManager::Update()
+{
+	for (auto UI : m_spUIList)
+	{
+		UI->Update();
+	}
+}
+
+void UIManager::DrawSprite()
+{
+	for (auto UI : m_spUIList)
+	{
+		UI->DrawSprite();
+	}
+}

@@ -5,33 +5,34 @@ void MapBase::Init()
 {
 	if (!m_spModel) { return; }
 
-
-	//視錐台用のBoxInfo生成
 	auto spData = m_spModel->GetData();
+
+	if (!spData) { return; }
+
 	const auto& meshNodeIndices = spData->GetDrawMeshNodeIndices();
-	int nodeIndex = meshNodeIndices[0];
-	const auto& node = spData->GetOriginalNodes()[nodeIndex];
 
-	auto spMesh = node.m_spMesh;
-	const auto& positions = spMesh->GetVertexPositions();
-	size_t vertexCount = positions.size();
+	if (meshNodeIndices.empty()) { return; }
 
+	// 全メッシュの頂点をまとめる（複数メッシュ対応）
+	std::vector<Math::Vector3> allPositions;
+	for (int nodeIndex : meshNodeIndices)
+	{
+		const auto& node = spData->GetOriginalNodes()[nodeIndex];
+		if (!node.m_spMesh) { continue; }
+		const auto& positions = node.m_spMesh->GetVertexPositions();
+		allPositions.insert(allPositions.end(), positions.begin(), positions.end());
+	}
+
+	if (allPositions.empty()) { return; }
+
+	// ローカル空間の OBB を生成
 	DirectX::BoundingOrientedBox localOBB;
 	DirectX::BoundingOrientedBox::CreateFromPoints(
 		localOBB,
-		vertexCount,
-		positions.data(),
+		allPositions.size(),
+		allPositions.data(),
 		sizeof(Math::Vector3)
 	);
-
-	Math::Vector3 worldScale;
-	worldScale.x = m_mWorld.Right().Length();
-	worldScale.y = m_mWorld.Up().Length();
-	worldScale.z = m_mWorld.Backward().Length();
-
-	localOBB.Extents.x *= worldScale.x;
-	localOBB.Extents.y *= worldScale.y;
-	localOBB.Extents.z *= worldScale.z;
 
 	m_frustumBox = KdCollider::BoxInfo(0, localOBB);
 }

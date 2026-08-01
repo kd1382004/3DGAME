@@ -1,6 +1,8 @@
 ﻿#include "PlayerBase.h"
 #include"../../Camera/CameraBase.h"
 #include"../../../Info/KeyInfo/KeyInfo.h"
+#include"../../../Scene/GameScene/GameScene.h"
+#include"Action/NextFloorAction/NextFloorAction.h"
 
 void PlayerBase::Init()
 {
@@ -22,6 +24,7 @@ void PlayerBase::Init()
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveForward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveBackward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.jump);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.interact);
 
 
 	m_pos = {};
@@ -36,6 +39,16 @@ void PlayerBase::Init()
 	//アニメータの準備
 	m_spAnimetor = std::make_shared<KdAnimator>();
 	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation("Walk"), true);
+
+
+
+	if (!m_spNextFloorAction)
+	{
+		m_spNextFloorAction = std::make_shared<NextFloorAction>();
+		m_spNextFloorAction->Init();
+		m_spNextFloorAction->SetActionKey(m_keyConfig.interact);
+	}
+
 }
 
 void PlayerBase::Update()
@@ -43,6 +56,16 @@ void PlayerBase::Update()
 	//////////////////////////////////////////////////////////////
 	//移動
 	Move();
+
+
+
+	//次の階に行くアクションをするかどうか
+
+	if (m_spNextFloorAction)
+	{
+		m_spNextFloorAction->Update(m_nextFloorActionFlg);
+	}
+
 
 
 
@@ -62,6 +85,25 @@ void PlayerBase::Update()
 
 	//行列の合成(S * R * T)
 	m_mWorld = rMat * tMat;
+}
+
+void PlayerBase::SetGameScene(const std::shared_ptr<GameScene>& _GameScene)
+{
+	m_wpGameScene = _GameScene;
+
+	if (m_spNextFloorAction)
+	{
+		m_spNextFloorAction->SetGameScene(_GameScene);
+	}
+
+}
+
+void PlayerBase::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _NextFloorGaugeUI)
+{
+	if (m_spNextFloorAction)
+	{
+		m_spNextFloorAction->SetNextFloorGaugeUI(_NextFloorGaugeUI);
+	}
 }
 
 void PlayerBase::LoadKeyConfig(std::string _filePath)
@@ -136,6 +178,7 @@ void PlayerBase::SaveKeyConfig(std::string _filePath)
 	data["moveRight"] = m_keyConfig.moveRight;
 	data["moveLeft"] = m_keyConfig.moveLeft;
 	data["jump"] = m_keyConfig.jump;
+	data["interact"] = m_keyConfig.interact;
 
 	std::ofstream ofs(_filePath);
 	ofs << data.dump(4);
@@ -234,7 +277,7 @@ void PlayerBase::JumpAndGravity()
 	m_jumpFlg = true;
 	//////////////////////////////////////////////////////////////
 	//ジャンプ処理
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump,true, true))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump, true, true))
 	{
 		if (m_jumpFlg)
 		{

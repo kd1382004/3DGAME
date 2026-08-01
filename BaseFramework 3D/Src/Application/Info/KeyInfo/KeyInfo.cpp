@@ -106,8 +106,11 @@ void KeyInfo::UpdateKey()
 			KeySpace.m_pushFlg = false;
 			KeySpace.m_pushS = 0;
 		}
-	}	
+	}
 }
+
+
+
 
 bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
 {
@@ -187,7 +190,7 @@ bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
 			{
 				_key->m_useFlg = false;
 				_key->m_pushS = 0;
-			} 
+			}
 		}
 
 	}
@@ -197,3 +200,47 @@ bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
 	return flg;
 }
 
+void KeyInfo::Init()
+{
+	if (!m_spKeyTexture)
+	{
+		m_spKeyTexture = std::make_shared<KdTexture>();
+		m_spKeyTexture->Load("Asset/Textures/Key/Keyboard Letters and Symbols.png");
+
+
+		m_keyTexSiz.x = m_spKeyTexture->GetWidth() / AlphabetNum;
+		m_keyTexSiz.y = m_spKeyTexture->GetHeight();
+	}
+}
+
+Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
+{
+	Math::Rectangle srcRect;
+
+
+	//アルファベット
+	if (_key >= 'A' && _key <= 'Z')
+	{
+		int Num = _key - 'A';
+		srcRect = {
+			(long)m_keyTexSiz.x * Num,
+			0,
+			(long)m_keyTexSiz.x,
+			(long)m_keyTexSiz.y
+		};
+	}
+
+	return srcRect;
+}
+
+void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, float _alpha, Math::Vector2 _pivot)
+{
+	if (!m_spKeyTexture) { return; }
+
+	Math::Rectangle srcRect = GetKeySrcRect(_key);
+
+	Math::Color color = { 1,1,1,_alpha };
+
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+
+}

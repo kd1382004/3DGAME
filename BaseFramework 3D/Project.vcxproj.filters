@@ -139,6 +139,18 @@
     <Filter Include="Src\Application\GameObject\Terrains\Map\Stairs">
       <UniqueIdentifier>{75191ae0-bdc8-48e0-bf85-64b2f188b541}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI">
+      <UniqueIdentifier>{3d30c56b-4f5b-4b1d-b471-e86605bdda76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\NextFloorGaugeUI">
+      <UniqueIdentifier>{00cd65e2-3a7b-4d20-975f-ac190403863c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Player\Action">
+      <UniqueIdentifier>{d9521b26-662d-42bd-a52f-2a0e97771e60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction">
+      <UniqueIdentifier>{03fb3ed3-9625-47b9-b699-d41bb499cd9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -369,6 +381,18 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h">
       <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\UIBase.h">
+      <Filter>Src\Application\GameObject\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\UIManager.h">
+      <Filter>Src\Application\GameObject\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h">
+      <Filter>Src\Application\GameObject\UI\NextFloorGaugeUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.h">
+      <Filter>Src\Application\GameObject\Character\Player\Action\NextFloorAction</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -568,6 +592,18 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp">
       <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp">
+      <Filter>Src\Application\GameObject\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\UIManager.cpp">
+      <Filter>Src\Application\GameObject\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp">
+      <Filter>Src\Application\GameObject\UI\NextFloorGaugeUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.cpp">
+      <Filter>Src\Application\GameObject\Character\Player\Action\NextFloorAction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

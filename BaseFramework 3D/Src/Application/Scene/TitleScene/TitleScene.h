@@ -8,15 +8,15 @@ class TitleScene : public BaseScene
 {
 public :
 
-	TitleScene()  { Init(); }
+	TitleScene()  {}
 	~TitleScene() {}
 
 	void ImGUi()override;
-
+	void Init()  override;
 private :
 
 	void Event() override;
-	void Init()  override;
+
 
 	std::shared_ptr<TitleSceneEditor>m_spTitleSceneEditor;
 

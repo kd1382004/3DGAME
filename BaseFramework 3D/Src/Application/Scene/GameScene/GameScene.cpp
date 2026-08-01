@@ -9,6 +9,10 @@
 #include"../../GameObject/Terrains/Map/MapManager.h"
 
 #include"../../../Application/Info/DebugInfo/DebugInfo.h"
+
+//UI
+#include"../../GameObject/UI/UIManager.h"
+
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
@@ -19,16 +23,18 @@ void GameScene::ImGUi()
 
 void GameScene::Event()
 {
-	if (GetAsyncKeyState('T') & 0x8000)
-	{
-		GenerateMap();
-	}
+	
 }
 
 
 void GameScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
+
+	/////////////////////////////////////////
+	//ゲームシーン
+	/////////////////////////////////////////
+	auto self = shared_from_this();
 
 	/////////////////////////////////////////
 	//プレイヤー
@@ -56,10 +62,21 @@ void GameScene::Init()
 	m_spMapManager = std::make_shared<MapManager>();
 	m_spMapManager->Init();
 	m_objList.push_back(m_spMapManager);
+	
+	/////////////////////////////////////////
+	//UI
+	/////////////////////////////////////////	
+	std::shared_ptr<UIManager> spUIManager = std::make_shared<UIManager>();
+	spUIManager->SetPlayer(m_spPlayer);
+	spUIManager->Init();
+	m_objList.push_back(spUIManager);
+
+	
 	/////////////////////////////////////////
 	//プレイヤーにセット
 	/////////////////////////////////////////
 	m_spPlayer->SetCamera(camera);
+	m_spPlayer->SetGameScene(self);
 
 	/////////////////////////////////////////
 	//カメラにセット

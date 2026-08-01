@@ -29,6 +29,9 @@ void StairsBase::Update()
 	float top = noePos.z + 2.5;
 	float bot = noePos.z - 2.5;
 
+	
+
+
 	std::shared_ptr<PlayerBase>spPalyerBase = m_wpPlayerBase.lock();
 
 	if (spPalyerBase)
@@ -50,13 +53,11 @@ void StairsBase::Update()
 			m_playerHit = false;
 		}
 
-	}
 
-
-	if (m_playerHit)
-	{
+		spPalyerBase->SetNextFloorActionFlg(m_playerHit);
 
 	}
+
 
 
 }

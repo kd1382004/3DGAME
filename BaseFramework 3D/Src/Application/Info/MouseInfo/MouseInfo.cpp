@@ -83,12 +83,12 @@ void MouseInfo::Update()
 
 	KeyInfo::Instance().SetKeyValid('Q');
 	KeyInfo::Instance().SetKeyValid('E');
-	if (KeyInfo::Instance().GetValidKeyPush('Q',true,true))
+	if (KeyInfo::Instance().GetValidKeyPush('Q'))
 	{
 		SetMouseFreeFlg(true);
 	}
 
-	if (KeyInfo::Instance().GetValidKeyPush('E', true, true))
+	if (KeyInfo::Instance().GetValidKeyPush('E'))
 	{
 		SetMouseFreeFlg(false);
 	}

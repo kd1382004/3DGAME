@@ -24,23 +24,29 @@ public:
 	void SetKeyValid(int _key);
 
 	void KeyvalidReset();
-	
-	
+
+
 	void UpdateKey();
 
 
-
+	//2D描画
+	// _key ... Key番号
+	// _2DPos ... 2D座標
+	// _siz ... サイズ
+	// _alpha ... 不透明度
+	// _pivot ... ピボット
+	void Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, float _alpha = 1, Math::Vector2 _pivot = { 0.5,0.5 });
 
 	//このフレーム中に有効なKeyが押されたかどうか
 	// _key ... Key番号
 	// _useFlg ...使われてるかどうかを気にする(true)
 	// _flg 
-	bool GetValidKeyPush(int _key,bool _useFlg=false,bool _flg=false);
+	bool GetValidKeyPush(int _key, bool _useFlg = false, bool _flg = false);
 private:
 
 	bool GetValidKeyPush(Key* _key, bool _useFlg = false, bool _flg = false);
 
-	void Init() {};
+	void Init();
 
 	//大文字アルファベット
 	static const int AlphabetNum = 26;
@@ -67,6 +73,15 @@ private:
 	static const int m_pushMax = 20;
 
 
+	//////////////////////////////////////////
+	//Key描画用
+	std::shared_ptr<KdTexture> m_spKeyTexture;
+
+	//Key1つのテクスチャサイズ
+	Math::Vector2 m_keyTexSiz;
+
+
+	Math::Rectangle GetKeySrcRect(int _key);
 private:
 
 	KeyInfo() { Init(); };

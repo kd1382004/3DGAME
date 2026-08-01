@@ -6,23 +6,26 @@ class CharacterBase;
 class MapManager;
 class PlayerBase;
 
-class GameScene : public BaseScene
+class GameScene : public BaseScene,public std::enable_shared_from_this<GameScene>
 {
 public:
 
-	GameScene() { Init(); }
+	GameScene() {}
 	~GameScene() {}
 
 	void ImGUi()override;
+
+	void GenerateMap();
+	void Init()  override;
 private:
 
 	void Event() override;
-	void Init()  override;
+
 
 	std::list<std::shared_ptr<CharacterBase>>m_spCharacterStatus;
 	std::shared_ptr<MapManager>m_spMapManager;
 	std::shared_ptr<PlayerBase>m_spPlayer;
 
 
-	void GenerateMap();
+
 };
