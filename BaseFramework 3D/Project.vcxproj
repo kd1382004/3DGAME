@@ -280,6 +280,9 @@
     <ClInclude Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Character\CharacterBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyManager.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Ground\Ground.h" />
@@ -292,7 +295,10 @@
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIBase.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIManager.h" />
+    <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
+    <ClInclude Include="Src\Application\GameObject\Weapon\WeaponBase.h" />
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h" />
+    <ClInclude Include="Src\Application\Info\DeltaTime\DeltaTime.h" />
     <ClInclude Include="Src\Application\Info\KeyInfo\KeyInfo.h" />
     <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h" />
     <ClInclude Include="Src\Application\main.h" />
@@ -355,6 +361,9 @@
     <ClCompile Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\CharacterBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Ground\Ground.cpp" />
@@ -367,6 +376,8 @@
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Weapon\WeaponBase.cpp" />
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp" />
     <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp" />
     <ClCompile Include="Src\Application\Info\MouseInfo\MouseInfo.cpp" />

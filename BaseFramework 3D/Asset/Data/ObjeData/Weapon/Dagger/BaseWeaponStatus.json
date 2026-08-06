@@ -1,0 +1,14 @@
+{
+    "attackPower": 0.0,
+    "attackSpeed": 1.0,
+    "cancelWindow": 0.0,
+    "critDamage": 0.0,
+    "critRate": 0.0,
+    "knockback": 0.0,
+    "poiseBreak": 0.0,
+    "range": 1.0,
+    "recovery": 0.0,
+    "startup": 0.0,
+    "stunPower": 0.0,
+    "weight": 1.0
+}

@@ -67,7 +67,8 @@ private:
 	Key KeyEnter;
 
 	//マウス
-	Key Mousebutton[2];
+	static const int MousebuttonNum = 2;
+	Key Mousebutton[MousebuttonNum];
 
 
 	static const int m_pushMax = 20;

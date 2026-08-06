@@ -1,4 +1,5 @@
 ﻿#include "MapGenerate.h"
+#include<array>
 #include"../FloorBase/FloorBase.h"
 #include"../WallBase/WallBase.h"
 #include"../Stairs/StairsBase.h"
@@ -18,7 +19,10 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 		roomMine = 0;
 	}
 
+	m_roomNum = 0;
+
 	m_roomInfo.clear();
+	m_roomInfoList.clear();
 
 	//マップのサイズを作る
 	//TileType::Noneで初期化(何もない)
@@ -41,6 +45,7 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 
 	//部屋ID
 	int roomID = m_ionitialRoomID;
+
 	for (int i = 0; i < roomNum; i++)
 	{
 		for (int t = 0; t < maxTry; t++)
@@ -137,7 +142,7 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 					}
 				}
 
-
+				m_roomNum++;
 				roomID++;
 				break; // この部屋は成功したので次の部屋へ
 			}
@@ -146,6 +151,14 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 		}
 	}
 
+	//部屋の数
+	std::vector<RoomType> roomTypeList(roomID);
+
+	for (int i = 0;i < roomID;i++)
+	{
+		//何用の部屋か決める
+		roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_SafeRoom);
+	}
 
 
 	/////////////////////////////////////////////////////
@@ -187,6 +200,7 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 		if (room.m_roomID == playerSpwanRoomID)
 		{
 			room.m_playerSpwanRoom = true;
+			break;
 		}
 	}
 
@@ -219,6 +233,9 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 	/////////////////////////////////////////////////////
 
 
+	// 部屋ごとにタイル情報を管理するためリサイズ
+	m_roomInfoList.resize(roomID);
+
 	for (int y = 0; y < map.size(); y++)
 	{
 		for (int x = 0; x < map[y].size(); x++)
@@ -248,15 +265,35 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 				else if (map[y][x] == static_cast<int>(TileType::Room))
 				{
 					mapA->SetGroundType(GroundType::Room);
-					mapA->SerRoomID(roomIDVector[y][x]);
-
+					int rID = roomIDVector[y][x];
+					mapA->SerRoomID(rID);
 
 					//プレイヤースポーン位置を保存
-					if (roomIDVector[y][x] == playerSpwanRoomID)
+					if (rID == playerSpwanRoomID)
 					{
 						*_playerSpawnPos = pos;
 					}
+					else
+					{
+						mapA->SetRoomType(roomTypeList[rID]);
+
+
+						// 部屋ごとに部屋IDとワールド座標情報を保存
+						if (rID >= 0 && rID < static_cast<int>(m_roomInfoList.size()))
+						{
+							RoomI room;
+							room.m_roomID = rID;
+							room.m_pos = pos;
+							room.m_roomType = static_cast<int>(roomTypeList[rID]);
+
+
+							m_roomInfoList[rID].push_back(room);
+						}
+
+					}
 				}
+
+
 
 				ret->push_back(mapA);
 
@@ -313,9 +350,35 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 			}
 			/////////////////////////////////////////////////////
 		}
+	}
 
+	// 部屋の生成・全タイル保存完了後、部屋ごとの敵出現数を一括計算
+	for (size_t i = 0; i < m_roomInfoList.size(); i++)
+	{
+		if (m_roomInfoList[i].empty()) { continue; }
+
+		for (size_t j = 0; j < m_roomInfoList[i].size(); j++)
+		{
+			switch (m_roomInfoList[i][j].m_roomType)
+			{
+			case RoomType_EnemyRoom:
+				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_EnemyRoom);
+				break;
+			case RoomType_TreasureChestRoom:
+			case RoomType_TrapRoom:
+				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_NotEnemyRoom);
+				if (m_roomInfoList[i][j].m_roomEnemyNum == 0) { m_roomInfoList[i][j].m_roomEnemyNum = 1; }
+				break;
+			case RoomType_SafeRoom:
+				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_SafeRoom);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }
+ 
 
 void MapGenerate::LoadRoomSiz(std::string _filePath)
 {
@@ -352,7 +415,7 @@ void MapGenerate::SaveRoomSiz(std::string _filePath)
 	ofs << data.dump(4);
 }
 
-std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(std::vector<RoomInfo> _roomInfo)
+std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(const std::vector<RoomInfo>& _roomInfo)
 {
 	//マンハッタン距離でペアの距離を計算
 	struct Edge
@@ -369,41 +432,43 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(s
 
 	//すべてのペアのリストを入れる
 	std::vector<Edge> edges;
-
-	for (int i = 0;i < _roomInfo.size() - 1;i++)
+	if (_roomInfo.size() > 1)
 	{
-		for (int j = i + 1;j < _roomInfo.size();j++)
+		edges.reserve(_roomInfo.size() * (_roomInfo.size() - 1) / 2);
+	}
+
+	for (size_t i = 0; i < _roomInfo.size() - 1; i++)
+	{
+		for (size_t j = i + 1; j < _roomInfo.size(); j++)
 		{
-			float dist = abs(_roomInfo[i].m_center.x - _roomInfo[j].m_center.x) + abs(_roomInfo[i].m_center.y - _roomInfo[j].m_center.y);
+			float dist = std::abs(_roomInfo[i].m_center.x - _roomInfo[j].m_center.x) + std::abs(_roomInfo[i].m_center.y - _roomInfo[j].m_center.y);
 
 			Edge edge;
-			edge.roomA = i;
-			edge.roomB = j;
+			edge.roomA = static_cast<int>(i);
+			edge.roomB = static_cast<int>(j);
 			edge.dist = dist;
 			edges.push_back(edge);
 		}
 	}
 
 	//distが短い順に並べる
-	std::sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {return a.dist < b.dist;});
+	std::sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {return a.dist < b.dist; });
 
 	//return用
 	std::vector<std::pair<RoomInfo, RoomInfo>> pairList;
+	pairList.reserve(_roomInfo.size());
 
-	std::vector<int> parent;
-
-	parent.resize(_roomInfo.size());
-
-	for (int i = 0; i < _roomInfo.size(); i++)
+	std::vector<int> parent(_roomInfo.size());
+	for (size_t i = 0; i < _roomInfo.size(); i++)
 	{
-		parent[i] = i;
+		parent[i] = static_cast<int>(i);
 	}
 
 	//すべてのペアのリストを入れる
 	std::vector<Edge> loopEdges;
 
 	// 距離の短い順に Edge を見ていく
-	for (auto& e : edges)
+	for (const auto& e : edges)
 	{
 		int rootA = FindRoot(parent, e.roomA);
 		int rootB = FindRoot(parent, e.roomB);
@@ -422,79 +487,71 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(s
 		}
 	}
 
-
 	// 部屋Aと部屋Bの距離が短い順にする
-	std::sort(loopEdges.begin(), loopEdges.end(), [](const Edge& a, const Edge& b) {return a.dist < b.dist;});
+	std::sort(loopEdges.begin(), loopEdges.end(), [](const Edge& a, const Edge& b) {return a.dist < b.dist; });
 
 	/////////////////////////
-	//上位30%だけ残す
-	int siz = loopEdges.size() * 0.3;
-
-	auto it = loopEdges.begin() + siz;
-
-	while (it != loopEdges.end())
+	//上位30%だけ残す (resize で一括処理し超高速化)
+	size_t siz = static_cast<size_t>(loopEdges.size() * 0.3f);
+	if (loopEdges.size() > siz)
 	{
-		// 無効なオブジェクトをリストから削除
-		it = loopEdges.erase(it);
+		loopEdges.resize(siz);
 	}
-	//上位30%だけ残す
 	/////////////////////////
 
-	int i = 0;
-
-	float percent;
-	for (auto& e : loopEdges)
+	int count = 0;
+	if (!loopEdges.empty())
 	{
-
-		percent = (1 - e.dist / loopEdges.back().dist) * 100;
-
-		if (KdRandom::GetInt(1, 100) < percent && i < 5)
+		float maxDist = loopEdges.back().dist;
+		for (const auto& e : loopEdges)
 		{
-			i++;
-			pairList.push_back({ _roomInfo[e.roomA], _roomInfo[e.roomB] });
+			float percent = (maxDist > 0.0f) ? (1.0f - e.dist / maxDist) * 100.0f : 0.0f;
+
+			if (KdRandom::GetInt(1, 100) < percent && count < 5)
+			{
+				count++;
+				pairList.push_back({ _roomInfo[e.roomA], _roomInfo[e.roomB] });
+			}
 		}
-
 	}
-
 
 	return pairList;
 }
 
-std::vector<Math::Vector2> MapGenerate::GenerateCorridorPath(RoomInfo _A, RoomInfo _B)
+std::vector<Math::Vector2> MapGenerate::GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B)
 {
 	//return用
 	std::vector<Math::Vector2> ans;
 
-
-
-	// A の端候補
-	std::vector<Math::Vector2> Aends;
-	float roomH = (float)((_A.m_roomEnd.topEnd + _A.m_roomEnd.downEnd) / 2.0f);
-	float roomW = (float)((_A.m_roomEnd.FarLeft + _A.m_roomEnd.FarRight) / 2.0f);
-	Aends.push_back({ (float)_A.m_roomEnd.FarLeft , roomH });
-	Aends.push_back({ (float)_A.m_roomEnd.FarRight, roomH });
-	Aends.push_back({ roomW , (float)_A.m_roomEnd.topEnd });
-	Aends.push_back({ roomW, (float)_A.m_roomEnd.downEnd });
+	// A の端候補 (std::array を使用して動的メモリ割り当てを排除)
+	float roomHA = (_A.m_roomEnd.topEnd + _A.m_roomEnd.downEnd) / 2.0f;
+	float roomWA = (_A.m_roomEnd.FarLeft + _A.m_roomEnd.FarRight) / 2.0f;
+	std::array<Math::Vector2, 4> Aends = {
+		Math::Vector2{ (float)_A.m_roomEnd.FarLeft, roomHA },
+		Math::Vector2{ (float)_A.m_roomEnd.FarRight, roomHA },
+		Math::Vector2{ roomWA, (float)_A.m_roomEnd.topEnd },
+		Math::Vector2{ roomWA, (float)_A.m_roomEnd.downEnd }
+	};
 
 	// B の端候補
-	std::vector<Math::Vector2> Bends;
-	roomH = (float)((_B.m_roomEnd.topEnd + _B.m_roomEnd.downEnd) / 2.0f);
-	roomW = (float)((_B.m_roomEnd.FarLeft + _B.m_roomEnd.FarRight) / 2.0f);
-	Bends.push_back({ (float)_B.m_roomEnd.FarLeft , roomH });
-	Bends.push_back({ (float)_B.m_roomEnd.FarRight, roomH });
-	Bends.push_back({ roomW , (float)_B.m_roomEnd.topEnd });
-	Bends.push_back({ roomW, (float)_B.m_roomEnd.downEnd });
-
+	float roomHB = (_B.m_roomEnd.topEnd + _B.m_roomEnd.downEnd) / 2.0f;
+	float roomWB = (_B.m_roomEnd.FarLeft + _B.m_roomEnd.FarRight) / 2.0f;
+	std::array<Math::Vector2, 4> Bends = {
+		Math::Vector2{ (float)_B.m_roomEnd.FarLeft, roomHB },
+		Math::Vector2{ (float)_B.m_roomEnd.FarRight, roomHB },
+		Math::Vector2{ roomWB, (float)_B.m_roomEnd.topEnd },
+		Math::Vector2{ roomWB, (float)_B.m_roomEnd.downEnd }
+	};
 
 	// 最短端ペアを探す
 	float bestDist = FLT_MAX;
-	Math::Vector2 bestA, bestB;
+	Math::Vector2 bestA{}, bestB{};
 
-	for (auto& a : Aends)
+	for (const auto& a : Aends)
 	{
-		for (auto& b : Bends)
+		for (const auto& b : Bends)
 		{
-			float dist = fabs(a.x - b.x) + fabs(a.y - b.y);
+			float dist = std::abs(a.x - b.x) + std::abs(a.y - b.y);
 			if (dist < bestDist)
 			{
 				bestDist = dist;
@@ -505,24 +562,14 @@ std::vector<Math::Vector2> MapGenerate::GenerateCorridorPath(RoomInfo _A, RoomIn
 	}
 
 	// L字通路を作る（横 → 縦）
-	// 横方向
 	int xStart = (int)bestA.x;
 	int xEnd = (int)bestB.x;
 	int yMid = (int)bestA.y;
 
-	if (xStart <= xEnd)
+	int xStep = (xStart <= xEnd) ? 1 : -1;
+	for (int x = xStart; x != xEnd + xStep; x += xStep)
 	{
-		for (int x = xStart; x <= xEnd; x++)
-		{
-			ans.push_back({ (float)x, (float)yMid });
-		}
-	}
-	else
-	{
-		for (int x = xStart; x >= xEnd; x--)
-		{
-			ans.push_back({ (float)x, (float)yMid });
-		}
+		ans.push_back({ (float)x, (float)yMid });
 	}
 
 	// 縦方向
@@ -530,19 +577,10 @@ std::vector<Math::Vector2> MapGenerate::GenerateCorridorPath(RoomInfo _A, RoomIn
 	int yEnd = (int)bestB.y;
 	int xMid = (int)bestB.x;
 
-	if (yStart <= yEnd)
+	int yStep = (yStart <= yEnd) ? 1 : -1;
+	for (int y = yStart; y != yEnd + yStep; y += yStep)
 	{
-		for (int y = yStart; y <= yEnd; y++)
-		{
-			ans.push_back({ (float)xMid, (float)y });
-		}
-	}
-	else
-	{
-		for (int y = yStart; y >= yEnd; y--)
-		{
-			ans.push_back({ (float)xMid, (float)y });
-		}
+		ans.push_back({ (float)xMid, (float)y });
 	}
 
 	return ans;
@@ -618,4 +656,5 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree,
 		ret->push_back(wall);
 	}
 }
+
 

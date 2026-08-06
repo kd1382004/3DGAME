@@ -151,6 +151,21 @@
     <Filter Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction">
       <UniqueIdentifier>{03fb3ed3-9625-47b9-b699-d41bb499cd9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Weapon">
+      <UniqueIdentifier>{bc193f3d-770c-418d-a6b7-28be3df909b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Weapon\Dagger">
+      <UniqueIdentifier>{ae5e191b-db7c-4cca-ada6-8a4d6b0c7464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy">
+      <UniqueIdentifier>{91008ba2-1edf-454c-8a0f-c1d57b6a1aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush">
+      <UniqueIdentifier>{53105968-1db1-4ca1-9ff9-a43dfd9ea4fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Info\DeltaTime">
+      <UniqueIdentifier>{a4958f4c-0997-4863-8c14-abcd3e3f79d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -393,6 +408,24 @@
     <ClInclude Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.h">
       <Filter>Src\Application\GameObject\Character\Player\Action\NextFloorAction</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\WeaponBase.h">
+      <Filter>Src\Application\GameObject\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h">
+      <Filter>Src\Application\GameObject\Weapon\Dagger</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyBase.h">
+      <Filter>Src\Application\GameObject\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\EnemyAmbush</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Info\DeltaTime\DeltaTime.h">
+      <Filter>Src\Application\Info\DeltaTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyManager.h">
+      <Filter>Src\Application\GameObject\Character\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -604,6 +637,21 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.cpp">
       <Filter>Src\Application\GameObject\Character\Player\Action\NextFloorAction</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\WeaponBase.cpp">
+      <Filter>Src\Application\GameObject\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp">
+      <Filter>Src\Application\GameObject\Weapon\Dagger</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyBase.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\EnemyAmbush</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyManager.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

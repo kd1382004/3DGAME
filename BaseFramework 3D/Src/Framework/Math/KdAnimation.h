@@ -66,6 +66,7 @@ public:
 	}
 
 	// アニメーションの更新
+	//speed...１秒で何フレーム進むか
 	void AdvanceTime(std::vector<KdModelWork::Node>& rNodes, float speed = 1.0f);
 
 private:

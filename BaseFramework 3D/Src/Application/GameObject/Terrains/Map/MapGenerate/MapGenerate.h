@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class MapBase;
 
@@ -42,6 +42,22 @@ enum MapType
 
 };
 
+
+struct RoomI
+{
+	//部屋ID
+	int m_roomID;
+
+	//部屋の床の座標
+	Math::Vector3 m_pos;
+
+	//部屋のType
+	int m_roomType;
+
+	//部屋あたりの敵の数
+	int m_roomEnemyNum=0;
+};
+
 class MapGenerate
 {
 public:
@@ -57,11 +73,33 @@ public:
 	//_playerSpawnPos	...	プレイヤーのスポーン位置
 	void Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos);
 
+
+	// 部屋ごとの情報リストを取得
+	const std::vector<std::vector<RoomI>>& GetRoomInfoList() const { return m_roomInfoList; }
 private:
 
 	//部屋IDの初期値
 	static const int m_ionitialRoomID = 1;
 	std::vector<RoomInfo> m_roomInfo;
+
+	//部屋の数
+	int m_roomNum = 0;
+
+	//部屋の一覧情報が入る
+	std::vector<std::vector<RoomI>> m_roomInfoList;
+
+	//部屋のTypeごとの敵の枠割合(部屋のタイル数にかける)
+	struct RoomEnemyPercent
+	{
+		float m_EnemyRoom = 0.15f;
+		float m_NotEnemyRoom = 0.1f;
+		float m_SafeRoom = 0.0f;
+	};
+
+	RoomEnemyPercent m_roomEnemyPercent;
+
+private:
+
 
 	enum class TileType
 	{
@@ -83,10 +121,10 @@ private:
 
 
 	//どの部屋とどの部屋をつなぐかを返す
-	std::vector<std::pair<RoomInfo, RoomInfo>> GetRoomConnectionPairs(std::vector<RoomInfo> _roomInfo);
+	std::vector<std::pair<RoomInfo, RoomInfo>> GetRoomConnectionPairs(const std::vector<RoomInfo>& _roomInfo);
 
 	//通路の座標リストを返す
-	std::vector<Math::Vector2>  GenerateCorridorPath(RoomInfo _A, RoomInfo _B);
+	std::vector<Math::Vector2>  GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B);
 
 
 
@@ -99,4 +137,10 @@ private:
 
 	// 壁または階段オブジェクトを生成してリストに追加する
 	void CreateWallOrStairs(const Math::Vector3& pos,float rotYDegree,bool isStairs,std::list<std::shared_ptr<MapBase>>* ret);
+
+
+	std::vector<Math::Vector3>m_enemySpawnList;
+
+	//敵のスポーン位置を決める
+	void EnemySpawnListDecision(std::vector<std::vector<int>> map);
 };

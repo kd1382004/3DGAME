@@ -120,7 +120,7 @@ void CharacterBase::CollisionUpdate()
 	rayInfo.m_dir = Math::Vector3::Down;
 
 	// レイの長さを設定
-	rayInfo.m_range = m_Gravity + enableStepHigh+0.5f;
+	rayInfo.m_range = m_Gravity + enableStepHigh + 0.5f;
 	// 当たり判定をしたいタイプを設定
 	rayInfo.m_type = KdCollider::TypeGround;
 

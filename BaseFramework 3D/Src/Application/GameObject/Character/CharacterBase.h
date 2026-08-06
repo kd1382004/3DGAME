@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+class CameraBase;
+  
 class CharacterBase : public KdGameObject
 {
 public:
@@ -22,6 +24,16 @@ public:
 		m_mWorld.Translation(m_pos);
 	}
 
+
+	Math::Matrix GetWeaponParentMatrix()
+	{
+		return m_weponParentMatrix;
+	}
+
+	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
+
+
+
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
@@ -41,7 +53,7 @@ protected:
 
 	float m_Gravity = 0;
 
-	float m_gravityPower = 0.01f;
+	float m_gravityPower = 0.12f;
 
 	///////////////////////////////////////////
 	//キャラステータス
@@ -154,4 +166,11 @@ protected:
 	bool m_groundHit;
 
 	///////////////////////////////////////////
+	//武器用
+
+	Math::Matrix m_weponParentMatrix;
+
+	///////////////////////////////////////////
+	//カメラ
+	std::weak_ptr<CameraBase>m_wpCamera;
 };

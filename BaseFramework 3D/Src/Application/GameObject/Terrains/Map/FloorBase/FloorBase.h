@@ -23,12 +23,15 @@ public:
 
 	int GetRoomID() { return m_roomID; }
 
+
 private:
 
 	GroundType m_groundType;
 
 	//部屋なら部屋番号を保存
 	int m_roomID = -999;
+
+
 
 };
 

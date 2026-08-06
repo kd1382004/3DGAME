@@ -107,6 +107,30 @@ void KeyInfo::UpdateKey()
 			KeySpace.m_pushS = 0;
 		}
 	}
+
+
+	for (int i = 0; i < MousebuttonNum; i++)
+	{
+		if (!Mousebutton[i].m_validFlg) { continue; }
+
+		int key = VK_LBUTTON + i;
+
+		if (GetAsyncKeyState(key) & 0x8000)
+		{
+			Mousebutton[i].m_pushFlg = true;
+
+			if (Mousebutton[i].m_useFlg)
+			{
+				Mousebutton[i].m_pushS++;
+			}
+		}
+		else
+		{
+			Mousebutton[i].m_useFlg = false;
+			Mousebutton[i].m_pushFlg = false;
+			Mousebutton[i].m_pushS = 0;
+		}
+	}
 }
 
 

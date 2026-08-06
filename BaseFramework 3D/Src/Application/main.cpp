@@ -318,7 +318,7 @@ void Application::Execute()
 
 		m_fpsController.Update();
 
-
+		DeltaTime::Instance().Update(m_fpsController.GetDeltaTime());
 
 
 		//=========================================

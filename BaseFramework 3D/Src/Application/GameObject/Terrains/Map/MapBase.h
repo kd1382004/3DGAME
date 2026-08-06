@@ -10,11 +10,34 @@ enum MapObjType
 	Wall        // 壁
 };
 
+
+enum RoomType
+{
+	//部屋じゃない
+	RoomType_NORoom,
+
+	//敵が多く出てくる部屋
+	RoomType_EnemyRoom,
+
+	//宝箱が多い部屋
+	RoomType_TreasureChestRoom,
+
+	//トラップが多い部屋
+	RoomType_TrapRoom,
+
+	//敵がわかない部屋
+	RoomType_SafeRoom,
+};
+
+
+
+
 class MapBase :public KdGameObject
 {
 public:
 	MapBase() {};
 	~MapBase() {};
+
 
 
 	void Init()override;
@@ -33,7 +56,12 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase> _spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
 
+	void SetRoomType(RoomType _roomType) { m_roomType = _roomType; }
+
+	RoomType GetRoomType() { return m_roomType; }
 protected:
+
+
 
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
 
@@ -48,5 +76,9 @@ protected:
 
 
 	MapObjType m_mapObjType = MapObjType::None;
+
+	//部屋の種類を監理
+	RoomType m_roomType = RoomType_NORoom;
+
 };
 

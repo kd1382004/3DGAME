@@ -4,6 +4,11 @@
 #include"../../../Scene/GameScene/GameScene.h"
 #include"Action/NextFloorAction/NextFloorAction.h"
 
+
+//武器
+#include"../../Weapon/WeaponBase.h"
+
+
 void PlayerBase::Init()
 {
 	m_keyConfigFilePath = "Asset/Data/KeyConfig/KeyConfig.json";
@@ -25,21 +30,21 @@ void PlayerBase::Init()
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveBackward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.jump);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.interact);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.attack);
 
 
 	m_pos = {};
 
 
 	m_spCharaModel = std::make_shared<KdModelWork>();
-	m_spCharaModel->SetModelData("Asset/Models/Character/Player/Player.gltf");
+	m_spCharaModel->SetModelData("Asset/Models/Character/Player/Rogue.gltf");
 
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 
 
 	//アニメータの準備
 	m_spAnimetor = std::make_shared<KdAnimator>();
-	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation("Walk"), true);
-
+	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.IdleAnime), true);
 
 
 	if (!m_spNextFloorAction)
@@ -48,7 +53,11 @@ void PlayerBase::Init()
 		m_spNextFloorAction->Init();
 		m_spNextFloorAction->SetActionKey(m_keyConfig.interact);
 	}
+}
 
+void PlayerBase::PreUpdate()
+{
+	m_oldPlayerAnimeMode = m_nowPlayerAnimeMode;
 }
 
 void PlayerBase::Update()
@@ -57,25 +66,45 @@ void PlayerBase::Update()
 	//移動
 	Move();
 
-
-
-	//次の階に行くアクションをするかどうか
+	//ジャンプ&重力処理
+	JumpAndGravity();
 
 	if (m_spNextFloorAction)
 	{
+		//次の階に行くアクション
 		m_spNextFloorAction->Update(m_nextFloorActionFlg);
 	}
 
 
 
-
-	//ジャンプ&重力処理
-	JumpAndGravity();
-
 	AngeleUpdate();
 
-	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes());
-	m_spCharaModel->CalcNodeMatrices();
+
+	if (GetAsyncKeyState(m_keyConfig.attack))
+	{
+		m_nowPlayerAnimeMode = PlayerBase::SwordAttackAnime;
+	}
+
+
+	static float m_slowTimer = 0;
+
+	if (GetAsyncKeyState(VK_RBUTTON))
+	{
+		m_nowPlayerAnimeMode = PlayerBase::PunchAttackAnime;
+		DeltaTime::Instance().SetTimeScale(0.1f); // 10%速度にする（重いスロー）
+		m_slowTimer = 2;
+	}
+
+	if (m_slowTimer > 0.0f)
+	{
+		m_slowTimer -= DeltaTime::Instance().GetRealDeltaTime();
+		if (m_slowTimer <= 0.0f)
+		{
+			DeltaTime::Instance().SetTimeScale(1.0f); // 通常速度に戻す
+		}
+	}
+
+	WeaponUpdate();
 
 	//座標行列を作る
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
@@ -85,7 +114,19 @@ void PlayerBase::Update()
 
 	//行列の合成(S * R * T)
 	m_mWorld = rMat * tMat;
+
+
+	PlayerAnimeModeUpdate();
 }
+
+void PlayerBase::PostUpdate()
+{
+
+	CharacterBase::PostUpdate();
+
+
+}
+
 
 void PlayerBase::SetGameScene(const std::shared_ptr<GameScene>& _GameScene)
 {
@@ -104,6 +145,11 @@ void PlayerBase::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _N
 	{
 		m_spNextFloorAction->SetNextFloorGaugeUI(_NextFloorGaugeUI);
 	}
+}
+
+void PlayerBase::WeaponUpdate()
+{
+
 }
 
 void PlayerBase::LoadKeyConfig(std::string _filePath)
@@ -166,6 +212,18 @@ void PlayerBase::LoadKeyConfig(std::string _filePath)
 		cfg.jump = ans;
 	}
 
+	ans = getInt("attack");
+	if (ans != -999)
+	{
+		cfg.attack = ans;
+	}
+
+	ans = getInt("interact");
+	if (ans != -999)
+	{
+		cfg.interact = ans;
+	}
+
 	m_keyConfig = cfg;
 }
 
@@ -178,6 +236,7 @@ void PlayerBase::SaveKeyConfig(std::string _filePath)
 	data["moveRight"] = m_keyConfig.moveRight;
 	data["moveLeft"] = m_keyConfig.moveLeft;
 	data["jump"] = m_keyConfig.jump;
+	data["attack"] = m_keyConfig.attack;
 	data["interact"] = m_keyConfig.interact;
 
 	std::ofstream ofs(_filePath);
@@ -236,8 +295,8 @@ void PlayerBase::Move()
 		//移動状態から移動速度を求める
 		MoveNowSpeedDecision();
 
-
-		m_moveVec *= m_status.moveSpeed.nowSpeed;
+		m_status.moveSpeed.nowSpeed = 10;
+		m_moveVec *= m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 		m_pos += m_moveVec;
 
 		//////////////////////////////////////////////////////////////
@@ -248,6 +307,7 @@ void PlayerBase::Move()
 	{
 		//動いてないならストップを入れる
 		m_moveMode = MoveMode::MoveStop;
+		m_nowPlayerAnimeMode = PlayerBase::IdleAnime;
 	}
 	//////////////////////////////////////////////////////////////
 }
@@ -258,9 +318,11 @@ void PlayerBase::MoveNowSpeedDecision()
 	{
 	case PlayerBase::MoveWalk:
 		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
+		m_nowPlayerAnimeMode = PlayerBase::WalkAnime;
 		break;
 	case PlayerBase::MoveRun:
 		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
+		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
 		break;
 	default:
 		break;
@@ -281,7 +343,7 @@ void PlayerBase::JumpAndGravity()
 	{
 		if (m_jumpFlg)
 		{
-			m_jumpPower = 0.5;
+			m_jumpPower = 1;
 			m_Gravity = -m_jumpPower;
 			m_jumpFlg = false;
 		}
@@ -299,3 +361,84 @@ void PlayerBase::JumpAndGravity()
 	//////////////////////////////////////////////////////////////
 }
 
+void PlayerBase::PlayerAnimeModeUpdate()
+{
+
+
+	if (!m_spAnimetor) { return; }
+	if (!m_spCharaModel) { return; }
+
+	switch (m_oldPlayerAnimeMode)
+	{
+	case PlayerBase::PickUpAnime:
+	case PlayerBase::SwordAttackAnime:
+	case PlayerBase::PunchAttackAnime:
+
+		if (!m_spAnimetor->IsAnimationEnd())
+		{
+			m_nowPlayerAnimeMode = m_oldPlayerAnimeMode;
+		}
+
+		break;
+	default:
+		break;
+	}
+
+	if (m_nowPlayerAnimeMode != m_oldPlayerAnimeMode)
+	{
+		switch (m_nowPlayerAnimeMode)
+		{
+		case PlayerBase::IdleAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.IdleAnime), true);
+			break;
+		case PlayerBase::WalkAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.WalkAnime), true);
+			break;
+		case PlayerBase::RunAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.RunAnime), true);
+			break;
+		case PlayerBase::PickUpAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.PickUpAnime), false);
+			break;
+		case PlayerBase::SwordAttackAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.SwordAttackAnime), false);
+			break;
+		case PlayerBase::PunchAttackAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.PunchAttackAnime), false);
+			break;
+		default:
+			break;
+		}
+	}
+
+
+
+	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 100);
+	m_spCharaModel->CalcNodeMatrices();
+
+
+	//
+	auto* handNode = m_spCharaModel->FindNode("Weapon.R");
+	Math::Vector3 handPos = handNode->m_worldTransform.Translation();
+
+	// モデルのワールド行列
+	Math::Matrix modelWorld = GetMatrix();
+
+	Math::Vector3 rot = { 0,0,70 };
+
+	Math::Matrix rMat = Math::Matrix::CreateFromYawPitchRoll(
+		DirectX::XMConvertToRadians(rot.y),
+		DirectX::XMConvertToRadians(rot.x),
+		DirectX::XMConvertToRadians(rot.z));
+
+	m_weponParentMatrix = rMat * handNode->m_worldTransform * modelWorld;
+
+	//武器の親行列を設定
+	std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+	if (spWeapon)
+	{
+		spWeapon->SetParentMatrix(m_weponParentMatrix);
+		spWeapon->SetParentRotation(rot);
+	}
+
+}

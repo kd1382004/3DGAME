@@ -174,7 +174,7 @@ void KdAnimator::AdvanceTime(std::vector<KdModelWork::Node>& rNodes, float speed
 	}
 
 	// アニメーションのフレームを進める
-	m_time += speed;
+	m_time += speed * DeltaTime::Instance().GetGameDeltaTime();
 
 	// アニメーションデータの最後のフレームを超えたら
 	if (m_time >= m_spAnimation->m_maxLength)

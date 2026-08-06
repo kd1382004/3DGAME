@@ -5,6 +5,7 @@
 class CharacterBase;
 class MapManager;
 class PlayerBase;
+class EnemyManager;
 
 class GameScene : public BaseScene,public std::enable_shared_from_this<GameScene>
 {
@@ -17,6 +18,9 @@ public:
 
 	void GenerateMap();
 	void Init()  override;
+
+	//敵生成
+	void EnemySpawn();
 private:
 
 	void Event() override;
@@ -25,6 +29,7 @@ private:
 	std::list<std::shared_ptr<CharacterBase>>m_spCharacterStatus;
 	std::shared_ptr<MapManager>m_spMapManager;
 	std::shared_ptr<PlayerBase>m_spPlayer;
+	std::shared_ptr<EnemyManager>m_spEnemyManager;
 
 
 

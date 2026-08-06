@@ -13,6 +13,13 @@
 //UI
 #include"../../GameObject/UI/UIManager.h"
 
+//武器
+#include"../../GameObject/Weapon/Dagger/Dagger.h"
+
+//敵
+#include"../../GameObject/Character/Enemy/EnemyManager.h"
+
+
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
@@ -23,7 +30,15 @@ void GameScene::ImGUi()
 
 void GameScene::Event()
 {
-	
+	if (GetAsyncKeyState(VK_RETURN))
+	{
+		GenerateMap();
+	}
+}
+
+void GameScene::EnemySpawn()
+{
+	m_spEnemyManager;
 }
 
 
@@ -36,6 +51,7 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	auto self = shared_from_this();
 
+
 	/////////////////////////////////////////
 	//プレイヤー
 	/////////////////////////////////////////
@@ -45,12 +61,24 @@ void GameScene::Init()
 
 	m_spCharacterStatus.push_back(m_spPlayer);
 
+	/////////////////////////////////////////
+	//武器
+	/////////////////////////////////////////
+	std::shared_ptr<WeaponBase> spWeapon = std::make_shared<Dagger>();
+	spWeapon->Init();
+	m_objList.push_back(spWeapon);
+
+	/////////////////////////////////////////
+	//敵
+	/////////////////////////////////////////
+	m_spEnemyManager = std::make_shared<EnemyManager>();
+	m_spEnemyManager->Init();
+	m_objList.push_back(m_spEnemyManager);
 
 
 	/////////////////////////////////////////
 	//カメラ
 	/////////////////////////////////////////
-
 	std::shared_ptr<TPSCamera>camera = std::make_shared<TPSCamera>();
 	camera->Init();
 	m_objList.push_back(camera);
@@ -77,6 +105,13 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spPlayer->SetCamera(camera);
 	m_spPlayer->SetGameScene(self);
+	m_spPlayer->SetWepon(spWeapon);
+
+	/////////////////////////////////////////
+	//敵にセット
+	/////////////////////////////////////////
+	m_spEnemyManager->SetPlayer(m_spPlayer);
+	m_spEnemyManager->SetMapManager(m_spMapManager);
 
 	/////////////////////////////////////////
 	//カメラにセット
@@ -88,7 +123,7 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spMapManager->SetCamera(camera);
 	m_spMapManager->SetPlayer(m_spPlayer);
-
+	m_spMapManager->SetEnemyManager(m_spEnemyManager);
 	//マップ生成
 	GenerateMap();
 }
@@ -98,11 +133,14 @@ void GameScene::GenerateMap()
 {
 	if (!m_spMapManager) { return; }
 	if (!m_spPlayer) { return; }
+	if (!m_spEnemyManager) { return; }
+	m_spEnemyManager->EnemyListReset();
 	m_spMapManager->GenerateMap();
 	m_spMapManager->MapHit(m_spPlayer);
 
+	Math::Vector3 playerSpawn = m_spMapManager->GetPlayerSpawnPos();
+	playerSpawn.y += 1;
+	m_spPlayer->SetPos(playerSpawn);
 
-	Math::Vector3 playerSpwn = m_spMapManager->GetPlayerSpawnPos();
-	playerSpwn.y += 1;
-	m_spPlayer->SetPos(playerSpwn);
+
 }
