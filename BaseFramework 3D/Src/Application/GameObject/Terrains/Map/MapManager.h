@@ -6,6 +6,25 @@ class EnemyBase;
 class EnemyManager;
 
 
+struct Node {
+	Math::Vector2 pos;
+
+	// 通れるかどうか
+	bool walkable;   
+
+	// スタートからのコスト
+	float gCost;   
+
+	// ゴールまでの推定コスト
+	float hCost;    
+
+	// 経路復元用
+	Node* parent;  
+
+	float fCost() const { return gCost + hCost; }
+};
+
+
 class MapManager :public KdGameObject
 {
 public:
@@ -37,7 +56,33 @@ public:
 	void SetPlayer(std::shared_ptr<PlayerBase> _spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
 	void SetEnemyManager(std::shared_ptr<EnemyManager> _spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
 
+
+	////////////////////////////////////////////
+	/// <ノード>
+	
+	//ノードからワールド座標に変換
+	Math::Vector3 NodeToWorld(const Node* node);
+
+	//ワールド座標からノードに変換
+	Node* WorldToNode(const Math::Vector3& worldPos);
+
+	/// </ノード>
+	////////////////////////////////////////////
 private:
+
+	////////////////////////////////////////////
+	/// <ノード>
+
+	//ノード配列初期化
+	void CreateNodeGrid(int width, int height, float tileSize);
+
+	//歩けるかどうかを設定
+	void ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapData);
+
+	std::vector<std::vector<Node>> m_nodes;
+
+	/// </ノード>
+	////////////////////////////////////////////
 
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
 	std::weak_ptr<EnemyManager> m_wpEnemyManager;

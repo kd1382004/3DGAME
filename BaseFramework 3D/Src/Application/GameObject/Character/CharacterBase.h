@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 class CameraBase;
-  
+
 class CharacterBase : public KdGameObject
 {
 public:
@@ -163,7 +163,11 @@ protected:
 
 	///////////////////////////////////////////
 
-	bool m_groundHit;
+	//地面と当たってるか
+	bool m_groundHit = false;
+
+	//壁と当たってるか
+	bool m_wallHit = false;
 
 	///////////////////////////////////////////
 	//武器用

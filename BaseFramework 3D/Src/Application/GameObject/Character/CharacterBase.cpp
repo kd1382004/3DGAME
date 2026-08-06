@@ -224,9 +224,11 @@ void CharacterBase::CollisionUpdate()
 		if (bumpHit)
 		{
 			SetPos(GetPos() + maxPush);
+			m_wallHit = true;
 		}
 		else
 		{
+			m_wallHit = false;
 			break; // 衝突が無くなればループ終了
 		}
 	}

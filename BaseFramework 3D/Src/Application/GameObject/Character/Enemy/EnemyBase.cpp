@@ -10,15 +10,16 @@ void EnemyBase::Init()
 
 void EnemyBase::PreUpdate()
 {
-}
-
-void EnemyBase::Update()
-{
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
 	if (spPlayer)
 	{
 		m_playerPos = spPlayer->GetPos();
 	}
+}
+
+void EnemyBase::Update()
+{
+	
 
 
 }

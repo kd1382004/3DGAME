@@ -26,5 +26,7 @@ private:
 	//目的地
 	Math::Vector3 m_targetPos;
 
+	float m_moveTimeoutTimer = 0;
+	float m_moveTimeoutMax = 3.0f;
 
 };

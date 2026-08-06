@@ -110,6 +110,11 @@ public:
 	}
 
 
+	void ClearHitObjectList()
+	{
+		m_wpHitObjectList.clear();
+	}
+
 	//Hit後処理
 	virtual void IsHit() {};
 

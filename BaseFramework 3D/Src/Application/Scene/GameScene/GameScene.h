@@ -19,8 +19,6 @@ public:
 	void GenerateMap();
 	void Init()  override;
 
-	//敵生成
-	void EnemySpawn();
 private:
 
 	void Event() override;

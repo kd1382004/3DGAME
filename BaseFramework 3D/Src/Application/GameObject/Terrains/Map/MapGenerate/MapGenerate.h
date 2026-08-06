@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class MapBase;
 
@@ -58,6 +58,9 @@ struct RoomI
 	int m_roomEnemyNum=0;
 };
 
+
+
+
 class MapGenerate
 {
 public:
@@ -71,12 +74,23 @@ public:
 	//_type				...マップの種類
 	//ret				...生成結果を格納する先
 	//_playerSpawnPos	...	プレイヤーのスポーン位置
-	void Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos);
+	//戻り値...ノード用のマップデータ
+	std::vector<std::vector<int>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos);
 
 
 	// 部屋ごとの情報リストを取得
 	const std::vector<std::vector<RoomI>>& GetRoomInfoList() const { return m_roomInfoList; }
+
+
+	enum class TileType
+	{
+		None = 0,   // 何もない
+		Floor,  // 床（通路）
+		Room    // 部屋
+	};
+
 private:
+
 
 	//部屋IDの初期値
 	static const int m_ionitialRoomID = 1;
@@ -98,15 +112,6 @@ private:
 
 	RoomEnemyPercent m_roomEnemyPercent;
 
-private:
-
-
-	enum class TileType
-	{
-		None = 0,   // 何もない
-		Floor,  // 床（通路）
-		Room    // 部屋
-	};
 
 	//部屋のサイズ
 	int roomMax = 0; //最大値

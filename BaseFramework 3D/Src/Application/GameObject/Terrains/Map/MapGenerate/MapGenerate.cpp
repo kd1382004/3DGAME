@@ -11,7 +11,7 @@ MapGenerate::MapGenerate()
 	LoadRoomSiz(m_roomSizPath);
 }
 
-void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos)
+std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos)
 {
 	if (roomMine <= 0 && roomMax <= 0)
 	{
@@ -377,6 +377,9 @@ void MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, Ma
 			}
 		}
 	}
+
+
+	return map;
 }
  
 

@@ -56,13 +56,20 @@ void MapManager::MapHit(std::shared_ptr<KdGameObject> obj)
 {
 	if (!obj) { return; }
 
+	//あたり判定リストをクリア
+	obj->ClearHitObjectList();
 	Math::Vector3 objPos = obj->GetPos();
+	const float hitCheckDistSq = 15.0f * 15.0f;
 
+	//近くにあるオブジェクトだけを新たに登録
 	for (const auto& mapObj : m_mapObj)
 	{
 		if (!mapObj) continue;
-
-		obj->RegistHitObject(mapObj);
+		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
+		if (distSq <= hitCheckDistSq)
+		{
+			obj->RegistHitObject(mapObj);
+		}
 	}
 }
 
@@ -70,12 +77,20 @@ void MapManager::MapHitEnemy(std::shared_ptr<EnemyBase> obj)
 {
 	if (!obj) { return; }
 
+	//あたり判定リストをクリア
+	obj->ClearHitObjectList();
+	Math::Vector3 objPos = obj->GetPos();
+	const float hitCheckDistSq = 15.0f * 15.0f;
+
+	//近くにあるオブジェクトだけを新たに登録
 	for (const auto& mapObj : m_mapObj)
 	{
 		if (!mapObj) continue;
-
-
-		obj->RegistHitObject(mapObj);
+		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
+		if (distSq <= hitCheckDistSq)
+		{
+			obj->RegistHitObject(mapObj);
+		}
 	}
 }
 
@@ -96,7 +111,17 @@ void MapManager::GenerateMap()
 	m_mapObj.clear();
 
 	std::shared_ptr<MapGenerate>map = std::make_shared<MapGenerate>();
-	map->Generate({ 50,50 }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj, &m_playerSpawnPos);
+
+	std::vector<std::vector<int>> mapDate;
+
+
+	float mapW = 50;
+	float mapH = 50;
+
+	mapDate = map->Generate({ mapH,mapW }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj, &m_playerSpawnPos);
+
+	CreateNodeGrid(mapW, mapH,m_mapTileSiz);
+	ApplyWalkableFromMap(mapDate);
 
 	if (!m_wpCamera.expired())
 	{
@@ -118,8 +143,6 @@ void MapManager::GenerateMap()
 	if (spEnemyManager)
 	{
 		const auto& mapRoomList = map->GetRoomInfoList();
-
-		// 乱数生成器はループ外で作成
 		std::random_device rd;
 		std::mt19937 mt(rd());
 
@@ -157,4 +180,69 @@ void MapManager::GenerateMap()
 			}
 		}
 	}
+}
+
+void MapManager::CreateNodeGrid(int width, int height, float tileSize)
+{
+	m_nodes.resize(height);
+	for (int y = 0; y < height; y++)
+	{
+		m_nodes[y].resize(width);
+
+		for (int x = 0; x < width; x++)
+		{
+			Node& node = m_nodes[y][x];
+
+			// グリッド座標
+			node.pos = Math::Vector2(x, y);
+
+			// 初期値(通れないで初期化)
+			node.walkable = false;
+
+			// A* 用の初期化
+			node.gCost = FLT_MAX;
+			node.hCost = 0;
+			node.parent = nullptr;
+		}
+	}
+}
+
+void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapData)
+{
+	for (int y = 0; y < mapData.size(); y++)
+	{
+		for (int x = 0; x < mapData[y].size(); x++)
+		{
+			int tile = mapData[y][x];
+
+			if (tile != (int)MapGenerate::TileType::None)
+			{
+				m_nodes[y][x].walkable = true;
+			}
+
+		}
+	}
+
+	int a = 0;
+}
+
+Math::Vector3 MapManager::NodeToWorld(const Node* node)
+{
+
+	return Math::Vector3(
+		node->pos.x * m_mapTileSiz,
+		0.0f,
+		node->pos.y * m_mapTileSiz
+	);
+}
+
+Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
+{
+	int x = (int)(worldPos.x / m_mapTileSiz);
+	int y = (int)(worldPos.z / m_mapTileSiz);
+
+	if (x < 0 || y < 0 || y >= m_nodes.size() || x >= m_nodes[0].size())
+		return nullptr;
+
+	return &m_nodes[y][x];
 }

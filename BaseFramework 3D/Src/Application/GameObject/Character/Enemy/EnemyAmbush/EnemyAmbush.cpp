@@ -13,9 +13,6 @@ void EnemyAmbush::Update()
 {
 	m_status.moveSpeed.nowSpeed =5;
 
-
-	EnemyBase::Update();
-
 	if (!m_playerChaseFlg)
 	{
 		//徘徊
@@ -49,16 +46,17 @@ void EnemyAmbush::Wander()
 {
 	if (!m_isMovingToTarget)
 	{
-		//目的地に向かっていない場合、ランダムな方向にランダムな距離だけ進む目的地を決める
-
 		if (m_stayTime > 0) 
 		{
 			m_stayTime -= DeltaTime::Instance().GetGameDeltaTime();
 			return; 
 		}
 
+		//目的地に向かっていない場合、ランダムな方向にランダムな距離だけ進む目的地を決める
+
 		//ランダム方向
 		Math::Vector3 nextDir = Math::Vector3(KdRandom::GetFloat(-1, 1), 0, KdRandom::GetFloat(-1, 1));
+		nextDir.Normalize();
 
 		//スポーン位置から見てどれだけ進むか
 		Math::Vector3 distance = Math::Vector3(KdRandom::GetFloat(0, wanderRadius), 0, KdRandom::GetFloat(0, wanderRadius));
@@ -67,6 +65,7 @@ void EnemyAmbush::Wander()
 		m_targetPos = m_spawnPos + (nextDir * distance);
 
 		m_isMovingToTarget = true;
+		m_moveTimeoutTimer = m_moveTimeoutMax;
 	}
 	else
 	{
@@ -76,12 +75,21 @@ void EnemyAmbush::Wander()
 		m_pos += m_moveDir * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 
 
-		//目的地に到達したかどうかの判定
-		if ((m_targetPos - m_pos).Length() < 0.1f)
+		//目的地に到達したかどうかor壁に当たってるかどうか
+		if ((m_targetPos - m_pos).LengthSquared()< 0.1f)
 		{
 			m_isMovingToTarget = false;
 			m_stayTime = m_arrivalWaitTime;
 		}
+
+		m_moveTimeoutTimer -= DeltaTime::Instance().GetGameDeltaTime();
+
+		if (m_moveTimeoutTimer <= 0.0f)
+		{
+			m_isMovingToTarget = false;
+			m_stayTime = m_arrivalWaitTime;
+		}
+
 	}
 }
 

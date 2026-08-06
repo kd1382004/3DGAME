@@ -34,11 +34,18 @@ void GameScene::Event()
 	{
 		GenerateMap();
 	}
-}
 
-void GameScene::EnemySpawn()
-{
-	m_spEnemyManager;
+
+
+
+	//プレイヤーのあたり判定リストを毎フレーム更新
+	m_spMapManager->MapHit(m_spPlayer);
+
+	//敵のあたり判定リストを毎フレーム更新
+	for (auto enemy : m_spEnemyManager->GetEnemyList())
+	{
+		m_spMapManager->MapHitEnemy(enemy);
+	}
 }
 
 
