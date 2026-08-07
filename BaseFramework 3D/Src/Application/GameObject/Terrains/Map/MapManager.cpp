@@ -6,6 +6,7 @@
 #include"../../Character/Enemy/EnemyBase.h"
 #include"../../Character/Enemy/EnemyManager.h"
 #include<random>
+#include<cmath>
 
 void MapManager::Init()
 {
@@ -219,7 +220,6 @@ void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapDa
 			{
 				m_nodes[y][x].walkable = true;
 			}
-
 		}
 	}
 
@@ -228,21 +228,161 @@ void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapDa
 
 Math::Vector3 MapManager::NodeToWorld(const Node* node)
 {
+	if (!node) return Math::Vector3::Zero;
 
-	return Math::Vector3(
-		node->pos.x * m_mapTileSiz,
-		0.0f,
-		node->pos.y * m_mapTileSiz
-	);
+	int width = (int)m_nodes[0].size();
+	int height = (int)m_nodes.size();
+
+	float startX = -(width * m_mapTileSiz) * 0.5f;
+	float startZ = (height * m_mapTileSiz) * 0.5f;
+
+	float worldX = startX + node->pos.x * m_mapTileSiz + m_mapTileSiz * 0.5f;
+	float worldZ = startZ - node->pos.y * m_mapTileSiz - m_mapTileSiz * 0.5f;
+
+	return Math::Vector3(worldX, 0.0f, worldZ);
 }
 
 Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 {
-	int x = (int)(worldPos.x / m_mapTileSiz);
-	int y = (int)(worldPos.z / m_mapTileSiz);
+	int width = (int)m_nodes[0].size();
+	int height = (int)m_nodes.size();
 
-	if (x < 0 || y < 0 || y >= m_nodes.size() || x >= m_nodes[0].size())
+	float startX = -(width * m_mapTileSiz) * 0.5f;
+	float startZ = (height * m_mapTileSiz) * 0.5f;
+
+	int x = (int)floor((worldPos.x - startX) / m_mapTileSiz);
+	int y = (int)floor((startZ - worldPos.z) / m_mapTileSiz);
+
+	if (x < 0 || y < 0 || x >= width || y >= height)
+	{
 		return nullptr;
+	}
+
 
 	return &m_nodes[y][x];
+}
+
+std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
+{
+
+	for (auto& row : m_nodes)
+	{
+		for (auto& node : row)
+		{
+			node.gCost = FLT_MAX;
+			node.hCost = 0;
+			node.parent = nullptr;
+		}
+	}
+
+	// openList = 探索候補
+	std::vector<Node*> openList;
+
+	// closedList = 探索済み
+	std::vector<Node*> closedList;
+
+	// 初期化
+	start->gCost = 0.0f;
+	start->hCost = Heuristic(start, goal);
+	start->parent = nullptr;
+
+	openList.push_back(start);
+
+	while (!openList.empty())
+	{
+		// ★ openList の中で fCost が最小のノードを探す
+		Node* current = openList[0];
+		for (auto* node : openList)
+		{
+			if (node->fCost() < current->fCost() ||
+				(node->fCost() == current->fCost() && node->hCost < current->hCost))
+			{
+				current = node;
+			}
+		}
+
+		// openList から current を削除
+		openList.erase(std::remove(openList.begin(), openList.end(), current), openList.end());
+		closedList.push_back(current);
+
+		// ★ ゴールに到達したら経路復元
+		if (current == goal)
+		{
+			return BuildPath(goal);
+		}
+
+		// ★ 隣接ノードを取得
+		auto neighbors = GetNeighbors(current);
+
+		for (auto* neighbor : neighbors)
+		{
+			// 通れない or 探索済みならスキップ
+			if (!neighbor->walkable ||
+				std::find(closedList.begin(), closedList.end(), neighbor) != closedList.end())
+			{
+				continue;
+			}
+
+			float newCost = current->gCost + 1.0f; // タイル移動コスト
+
+			// 新しいルートの方が安いなら更新
+			if (newCost < neighbor->gCost ||
+				std::find(openList.begin(), openList.end(), neighbor) == openList.end())
+			{
+				neighbor->gCost = newCost;
+				neighbor->hCost = Heuristic(neighbor, goal);
+				neighbor->parent = current;
+
+				// openList に未登録なら追加
+				if (std::find(openList.begin(), openList.end(), neighbor) == openList.end())
+				{
+					openList.push_back(neighbor);
+				}
+			}
+		}
+	}
+
+	// 経路なし
+	return {};
+}
+
+std::vector<Node*> MapManager::BuildPath(Node* goal)
+{
+	std::vector<Node*> path;
+	Node* current = goal;
+
+	while (current != nullptr)
+	{
+		path.push_back(current);
+		current = current->parent;
+	}
+
+	std::reverse(path.begin(), path.end());
+	return path;
+}
+
+std::vector<Node*> MapManager::GetNeighbors(Node* node)
+{
+	std::vector<Node*> neighbors;
+
+	int x = (int)node->pos.x;
+	int y = (int)node->pos.y;
+
+	// 上
+	if (y > 0)
+		neighbors.push_back(&m_nodes[y - 1][x]);
+
+	// 下
+	if (y < m_nodes.size() - 1)
+		neighbors.push_back(&m_nodes[y + 1][x]);
+
+	// 左
+	if (x > 0)
+		neighbors.push_back(&m_nodes[y][x - 1]);
+
+	// 右
+	if (x < m_nodes[0].size() - 1)
+		neighbors.push_back(&m_nodes[y][x + 1]);
+
+	return neighbors;
 }

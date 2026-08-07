@@ -1,4 +1,5 @@
 ﻿#include "EnemyAmbush.h"
+#include"../../../Terrains/Map/MapManager.h"
 
 void EnemyAmbush::Init()
 {
@@ -7,6 +8,10 @@ void EnemyAmbush::Init()
 	wanderRadius = 15;
 
 	m_isMovingToTarget = false;
+
+
+
+
 }
 
 void EnemyAmbush::Update()
@@ -15,8 +20,19 @@ void EnemyAmbush::Update()
 
 	if (!m_playerChaseFlg)
 	{
-		//徘徊
-		Wander();
+
+		if (m_returnSpawnPosFlg)
+		{
+			//スポーン地点に戻る
+			ReturnSpawnPos();
+		}
+		else
+		{
+			//徘徊
+			Wander();
+		}
+
+
 
 
 		//プレイヤーが視界にいるかどうか
@@ -26,6 +42,9 @@ void EnemyAmbush::Update()
 	{
 		PlayerChase();
 	}
+
+	
+
 
 
 	//座標行列を作る
@@ -38,7 +57,7 @@ void EnemyAmbush::Update()
 	if (m_pDebugWire)
 	{
 		m_pDebugWire->AddDebugSphere(GetPos(), 1.0f);
-		m_pDebugWire->AddDebugSphere(m_spawnPos, wanderRadius, { 1,0,0,1 });
+		m_pDebugWire->AddDebugSphere(m_spawnPos, wanderRadius, { 1,1,1,1 });
 	}
 }
 
@@ -89,7 +108,6 @@ void EnemyAmbush::Wander()
 			m_isMovingToTarget = false;
 			m_stayTime = m_arrivalWaitTime;
 		}
-
 	}
 }
 

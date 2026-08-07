@@ -89,9 +89,11 @@ void EnemyManager::SetEnemyListPlayer()
 void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
 	std::shared_ptr<EnemyAmbush>spEnemyAmbush = std::make_shared<EnemyAmbush>();
+	spEnemyAmbush->SetPlayer(m_wpPlayer.lock());
+	spEnemyAmbush->SetMapManager(m_wpMapManager.lock());
 	spEnemyAmbush->Init();
 	spEnemyAmbush->SetSpawnPos(_spawnPos);
-	spEnemyAmbush->SetPlayer(m_wpPlayer.lock());
+
 
 
 	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();

@@ -244,13 +244,11 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 			if (map[y][x] != static_cast<int>(TileType::None))
 			{
 				//床と通路を保存
-				float xPos = -(_mapSiz.x / 2.0f * tileSiz);
-				float zPos = (_mapSiz.y / 2.0f * tileSiz);
+				float xPos = -(_mapSiz.x * tileSiz) * 0.5f + tileSiz * x + tileSiz * 0.5f;
+				float zPos = (_mapSiz.y * tileSiz) * 0.5f - tileSiz * y - tileSiz * 0.5f;
 
 				std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
 
-				xPos += tileSiz * x;
-				zPos -= tileSiz * y;
 
 				Math::Vector3 pos = { xPos,0,zPos };
 
@@ -633,6 +631,8 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>
 
 void MapGenerate::CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret)
 {
+	return;
+
 	if (isStairs)
 	{
 		auto stairs = std::make_shared<StairsBase>();

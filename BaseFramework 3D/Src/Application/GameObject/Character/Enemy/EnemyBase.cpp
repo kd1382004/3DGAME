@@ -4,8 +4,20 @@
 //プレイヤー
 #include"../Player/PlayerBase.h"
 
+
+#include"../../Terrains/Map/MapManager.h"
 void EnemyBase::Init()
 {
+	std::shared_ptr<MapManager>m_spMapManager = m_wpMapManager.lock();
+
+	if (m_spMapManager)
+	{
+		Node* spawnNode = m_spMapManager->WorldToNode(m_spawnPos);
+		if (spawnNode)
+		{
+			m_spawnPos = m_spMapManager->NodeToWorld(spawnNode);
+		}
+	}
 }
 
 void EnemyBase::PreUpdate()
@@ -19,7 +31,7 @@ void EnemyBase::PreUpdate()
 
 void EnemyBase::Update()
 {
-	
+
 
 
 }
@@ -39,9 +51,29 @@ void EnemyBase::PreDraw()
 	}
 }
 
+void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
+{
+
+	m_spawnPos = _pos;
+	m_pos = _pos;
+	std::shared_ptr<MapManager>m_spMapManager = m_wpMapManager.lock();
+
+	if (m_spMapManager)
+	{
+		Node* spawnNode = m_spMapManager->WorldToNode(m_spawnPos);
+		if (spawnNode)
+		{
+			m_spawnPos = m_spMapManager->NodeToWorld(spawnNode);
+		}
+	}
+
+
+
+}
+
 void EnemyBase::SearchPlayer()
 {
-	Math::Vector3 dir = m_moveDir;             
+	Math::Vector3 dir = m_moveDir;
 	Math::Vector3 toPlayer = (m_playerPos - m_pos);
 	toPlayer.Normalize();
 
@@ -78,7 +110,7 @@ void EnemyBase::PlayerChase()
 
 	if (dist > m_loseSightDistance)
 	{
-		
+
 		if (m_stayTime > 0)
 		{
 			m_stayTime -= DeltaTime::Instance().GetGameDeltaTime();
@@ -87,6 +119,11 @@ void EnemyBase::PlayerChase()
 		else
 		{
 			m_playerChaseFlg = false;
+			m_returnSpawnPosFlg = true;
+
+
+
+
 		}
 	}
 	else
@@ -104,4 +141,127 @@ void EnemyBase::PlayerChase()
 		m_pDebugWire->AddDebugLine(m_pos, m_moveDir, m_loseSightDistance);
 	}
 
+}
+
+void EnemyBase::ReturnSpawnPos()
+{
+	// スポーン地点に到達しているか判定
+	Math::Vector3 toSpawn = m_spawnPos - m_pos;
+	toSpawn.y = 0;
+	if (toSpawn.Length() < wanderRadius)
+	{
+		m_returnSpawnPosFlg = false;
+		m_path.clear();
+		m_pathIndex = 0;
+		return;
+	}
+
+	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
+	if (spMapManager)
+	{
+
+
+		m_repathTimer -= DeltaTime::Instance().GetGameDeltaTime();
+
+		// 経路が空、末尾到達、またはタイマー満了で経路再計算
+		if (m_repathTimer <= 0.0f || m_path.empty() || m_pathIndex >= m_path.size())
+		{
+			m_repathTimer = 0.3f;
+			Node* start = spMapManager->WorldToNode(m_pos);
+			Node* goal = spMapManager->WorldToNode(m_spawnPos);
+
+			if (start && goal)
+			{
+				m_path = spMapManager->FindPath(start, goal);
+				m_pathIndex = 0;
+			}
+		}
+
+		if (!m_path.empty() && m_pathIndex < m_path.size())
+		{
+			Node* targetNode = m_path[m_pathIndex];
+			Math::Vector3 targetPos = spMapManager->NodeToWorld(targetNode);
+
+			Math::Vector3 dir = targetPos - m_pos;
+			dir.y = 0;
+			float distToNode = dir.Length();
+
+			// ノード方向ベクトル
+			Math::Vector3 toNode = targetPos - m_pos;
+			toNode.y = 0;
+
+			// 敵の進行方向とノード方向の内積
+			float dot = toNode.Dot(m_moveDir);
+
+			// 1. 距離が近い
+			bool nearF = false;
+
+			if (toNode.Length() < 0.5f)
+			{
+				nearF = true;
+			}
+
+			// 2. ノードを通り過ぎた（進行方向と逆向きになった）
+			bool passed=false;
+			if (dot < 0.0f)
+			{
+				passed = true;
+			}
+
+			if (nearF || passed)
+			{
+				m_pathIndex++;
+
+				if (m_pathIndex < m_path.size())
+				{
+					targetNode = m_path[m_pathIndex];
+					targetPos = spMapManager->NodeToWorld(targetNode);
+
+					dir = targetPos - m_pos;
+					dir.y = 0;
+				}
+			}
+
+			if (dir.LengthSquared() > 0.0001f)
+			{
+				dir.Normalize();
+				m_moveDir = dir; // 進行方向を更新
+				m_pos += m_moveDir * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+			}
+		}
+		else
+		{
+			// ノードが見つからない場合はスポーン地点に向かって直線移動（フォールバック）
+			if (toSpawn.LengthSquared() > 0.0001f)
+			{
+				toSpawn.Normalize();
+				m_moveDir = toSpawn;
+				m_pos += m_moveDir * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+			}
+		}
+	}
+
+	if (m_pDebugWire)
+	{
+		m_pDebugWire->AddDebugLine(m_pos, m_moveDir, m_loseSightDistance);
+
+
+		// ノード位置に点を描く
+		for (auto* node : m_path)
+		{
+			Math::Vector3 pos = spMapManager->NodeToWorld(node);
+
+			// 小さな点（短い線）
+			m_pDebugWire->AddDebugLine(pos, Math::Vector3(0, 1, 0), 10, { 0,0,0,1 });
+		}
+
+		// ノード間の線を描く
+		for (size_t i = 0; i < m_path.size() - 1; i++)
+		{
+			Math::Vector3 a = spMapManager->NodeToWorld(m_path[i]);
+			Math::Vector3 b = spMapManager->NodeToWorld(m_path[i + 1]);
+
+			m_pDebugWire->AddDebugLine(a, b - a, (b - a).Length(), { 0,1,0,1 });
+		}
+	}
 }

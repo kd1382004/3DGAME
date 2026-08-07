@@ -66,6 +66,9 @@ public:
 	//ワールド座標からノードに変換
 	Node* WorldToNode(const Math::Vector3& worldPos);
 
+	//
+	std::vector<Node*>FindPath(Node* start, Node* goal);
+
 	/// </ノード>
 	////////////////////////////////////////////
 private:
@@ -80,6 +83,18 @@ private:
 	void ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapData);
 
 	std::vector<std::vector<Node>> m_nodes;
+
+	//経路復元
+	std::vector<Node*>BuildPath(Node* goal);
+
+	//上下左右を返す
+	std::vector<Node*>GetNeighbors(Node* node);
+
+	//マンハッタン
+	float Heuristic(Node* a, Node* b)
+	{
+		return fabs(a->pos.x - b->pos.x) + fabs(a->pos.y - b->pos.y);
+	}
 
 	/// </ノード>
 	////////////////////////////////////////////
