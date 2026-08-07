@@ -1,7 +1,7 @@
 ﻿#include "EnemyManager.h"
 #include"EnemyBase.h"
 
-#include"EnemyAmbush/EnemyAmbush.h"
+#include"Goblin/Enemy_Goblin.h"
 
 #include"../../Terrains/Map/MapManager.h"
 void EnemyManager::Init()
@@ -88,7 +88,7 @@ void EnemyManager::SetEnemyListPlayer()
 
 void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
-	std::shared_ptr<EnemyAmbush>spEnemyAmbush = std::make_shared<EnemyAmbush>();
+	std::shared_ptr<Goblin>spEnemyAmbush = std::make_shared<Goblin>();
 	spEnemyAmbush->SetPlayer(m_wpPlayer.lock());
 	spEnemyAmbush->SetMapManager(m_wpMapManager.lock());
 	spEnemyAmbush->Init();

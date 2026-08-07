@@ -8,16 +8,38 @@
 #include"../../Terrains/Map/MapManager.h"
 void EnemyBase::Init()
 {
-	std::shared_ptr<MapManager>m_spMapManager = m_wpMapManager.lock();
+	if (!m_spCharaModel) { return; }
 
-	if (m_spMapManager)
+	auto spData = m_spCharaModel->GetData();
+
+	if (!spData) { return; }
+
+	const auto& meshNodeIndices = spData->GetDrawMeshNodeIndices();
+
+	if (meshNodeIndices.empty()) { return; }
+
+	// 全メッシュの頂点をまとめる（複数メッシュ対応）
+	std::vector<Math::Vector3> allPositions;
+	for (int nodeIndex : meshNodeIndices)
 	{
-		Node* spawnNode = m_spMapManager->WorldToNode(m_spawnPos);
-		if (spawnNode)
-		{
-			m_spawnPos = m_spMapManager->NodeToWorld(spawnNode);
-		}
+		const auto& node = spData->GetOriginalNodes()[nodeIndex];
+		if (!node.m_spMesh) { continue; }
+		const auto& positions = node.m_spMesh->GetVertexPositions();
+		allPositions.insert(allPositions.end(), positions.begin(), positions.end());
 	}
+
+	if (allPositions.empty()) { return; }
+
+	// ローカル空間の OBB を生成
+	DirectX::BoundingOrientedBox localOBB;
+	DirectX::BoundingOrientedBox::CreateFromPoints(
+		localOBB,
+		allPositions.size(),
+		allPositions.data(),
+		sizeof(Math::Vector3)
+	);
+
+	m_frustumBox = KdCollider::BoxInfo(0, localOBB);
 }
 
 void EnemyBase::PreUpdate()
@@ -39,6 +61,7 @@ void EnemyBase::Update()
 void EnemyBase::PostUpdate()
 {
 	CharacterBase::PostUpdate();
+	EnemyAnimeModeUpdate();
 }
 
 void EnemyBase::PreDraw()
@@ -73,7 +96,7 @@ void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 
 void EnemyBase::SearchPlayer()
 {
-	Math::Vector3 dir = m_moveDir;
+	Math::Vector3 dir = m_moveVec;
 	Math::Vector3 toPlayer = (m_playerPos - m_pos);
 	toPlayer.Normalize();
 
@@ -101,9 +124,9 @@ void EnemyBase::SearchPlayer()
 
 void EnemyBase::PlayerChase()
 {
-	m_moveDir = m_playerPos - m_pos;
-	m_moveDir.y = 0;
-	m_moveDir.Normalize();
+	m_moveVec = m_playerPos - m_pos;
+	m_moveVec.y = 0;
+	m_moveVec.Normalize();
 
 
 	float dist = (m_playerPos - m_pos).Length();
@@ -131,17 +154,27 @@ void EnemyBase::PlayerChase()
 		m_stayTime = m_lostSightWaitTime;
 
 		//Chase範囲内なら座標更新
-		m_pos += m_moveDir * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 	}
 
 
 
 	if (m_pDebugWire)
 	{
-		m_pDebugWire->AddDebugLine(m_pos, m_moveDir, m_loseSightDistance);
+		m_pDebugWire->AddDebugLine(m_pos, m_moveVec, m_loseSightDistance);
 	}
 
 }
+
+void EnemyBase::EnemyAnimeModeUpdate()
+{
+	if (!m_spAnimetor) { return; }
+	if (!m_spCharaModel) { return; }
+
+	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 100);
+	m_spCharaModel->CalcNodeMatrices();
+}
+
 
 void EnemyBase::ReturnSpawnPos()
 {
@@ -191,7 +224,7 @@ void EnemyBase::ReturnSpawnPos()
 			toNode.y = 0;
 
 			// 敵の進行方向とノード方向の内積
-			float dot = toNode.Dot(m_moveDir);
+			float dot = toNode.Dot(m_moveVec);
 
 			// 1. 距離が近い
 			bool nearF = false;
@@ -225,8 +258,8 @@ void EnemyBase::ReturnSpawnPos()
 			if (dir.LengthSquared() > 0.0001f)
 			{
 				dir.Normalize();
-				m_moveDir = dir; // 進行方向を更新
-				m_pos += m_moveDir * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+				m_moveVec = dir; // 進行方向を更新
+				m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 			}
 		}
 		else
@@ -235,15 +268,15 @@ void EnemyBase::ReturnSpawnPos()
 			if (toSpawn.LengthSquared() > 0.0001f)
 			{
 				toSpawn.Normalize();
-				m_moveDir = toSpawn;
-				m_pos += m_moveDir * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+				m_moveVec = toSpawn;
+				m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 			}
 		}
 	}
 
 	if (m_pDebugWire)
 	{
-		m_pDebugWire->AddDebugLine(m_pos, m_moveDir, m_loseSightDistance);
+		m_pDebugWire->AddDebugLine(m_pos, m_moveVec, m_loseSightDistance);
 
 
 		// ノード位置に点を描く

@@ -35,17 +35,16 @@ void PlayerBase::Init()
 
 	m_pos = {};
 
+	if (!m_spCharaModel)
+	{
+		m_spCharaModel = std::make_shared<KdModelWork>();
+		m_spCharaModel->SetModelData("Asset/Models/Character/Player/Rogue.gltf");
 
-	m_spCharaModel = std::make_shared<KdModelWork>();
-	m_spCharaModel->SetModelData("Asset/Models/Character/Player/Rogue.gltf");
+		//アニメータの準備
+		m_spAnimetor = std::make_shared<KdAnimator>();
+		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.IdleAnime), true);
 
-	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
-
-
-	//アニメータの準備
-	m_spAnimetor = std::make_shared<KdAnimator>();
-	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.IdleAnime), true);
-
+	}
 
 	if (!m_spNextFloorAction)
 	{

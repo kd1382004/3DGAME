@@ -631,8 +631,6 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>
 
 void MapGenerate::CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret)
 {
-	return;
-
 	if (isStairs)
 	{
 		auto stairs = std::make_shared<StairsBase>();

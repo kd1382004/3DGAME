@@ -31,8 +31,7 @@ public:
 	void SetMapManager(std::shared_ptr<MapManager>_spMapManager) { m_wpMapManager = _spMapManager; };
 protected:
 
-
-
+	void EnemyAnimeModeUpdate();
 
 	///////////////////////////////////////////
 	//マップマネージャー1
@@ -50,9 +49,6 @@ protected:
 	///////////////////////////////////////////
 	//出現位置
 	Math::Vector3 m_spawnPos = { 0,0,0 };
-
-	//移動方向
-	Math::Vector3 m_moveDir;
 
 	//視野角(度数法)
 	float m_viewAngle = 90;

@@ -322,7 +322,6 @@ void CharacterBase::AngeleUpdate()
 			angle = 5;
 		}
 
-
 		//回転軸
 		//外積
 		Math::Vector3 cross = nowDir.Cross(toDir);

@@ -8,8 +8,8 @@ public:
 	~EnemyAmbush()override {};
 
 
-	void Init()override;
-	void Update()override;
+	virtual void Init()override;
+	virtual void Update()override;
 
 	//徘徊
 	void  Wander();

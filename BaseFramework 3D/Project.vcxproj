@@ -283,6 +283,7 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyManager.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Enemy_Goblin.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Ground\Ground.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Enemy_Goblin.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Ground\Ground.cpp" />

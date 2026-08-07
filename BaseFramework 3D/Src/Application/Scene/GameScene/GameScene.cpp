@@ -18,7 +18,7 @@
 
 //敵
 #include"../../GameObject/Character/Enemy/EnemyManager.h"
-
+#include"../../GameObject/Character/Enemy/EnemyBase.h"
 
 void GameScene::ImGUi()
 {
@@ -36,7 +36,8 @@ void GameScene::Event()
 	}
 
 
-
+	///////////////////////////////////////////////////
+	//マップとのあたり判定
 
 	//プレイヤーのあたり判定リストを毎フレーム更新
 	m_spMapManager->MapHit(m_spPlayer);
@@ -45,6 +46,28 @@ void GameScene::Event()
 	for (auto enemy : m_spEnemyManager->GetEnemyList())
 	{
 		m_spMapManager->MapHitEnemy(enemy);
+	}
+
+	///////////////////////////////////////////////////
+	//敵同士のあたり判定
+	auto& enemies = m_spEnemyManager->GetEnemyList();
+
+	for (auto itA = enemies.begin(); itA != enemies.end(); ++itA)
+	{
+		auto itB = itA;
+		++itB;
+
+		for (; itB != enemies.end(); ++itB)
+		{
+			auto enemyA = *itA;
+			auto enemyB = *itB;
+
+			Math::Vector3 dic = enemyA->GetPos() - enemyB->GetPos();
+			if (dic.Length() < 10)
+			{
+				enemyA->RegistHitObject(enemyB);
+			}
+		}
 	}
 }
 

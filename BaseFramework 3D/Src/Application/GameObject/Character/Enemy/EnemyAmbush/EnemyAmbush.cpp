@@ -3,15 +3,9 @@
 
 void EnemyAmbush::Init()
 {
-	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
-
 	wanderRadius = 15;
 
 	m_isMovingToTarget = false;
-
-
-
-
 }
 
 void EnemyAmbush::Update()
@@ -45,6 +39,8 @@ void EnemyAmbush::Update()
 
 	
 
+	AngeleUpdate();
+
 
 
 	//座標行列を作る
@@ -59,6 +55,9 @@ void EnemyAmbush::Update()
 		m_pDebugWire->AddDebugSphere(GetPos(), 1.0f);
 		m_pDebugWire->AddDebugSphere(m_spawnPos, wanderRadius, { 1,1,1,1 });
 	}
+
+
+
 }
 
 void EnemyAmbush::Wander()
@@ -89,9 +88,9 @@ void EnemyAmbush::Wander()
 	else
 	{
 		//目的地に向かって移動する
-		m_moveDir = m_targetPos - m_pos;
-		m_moveDir.Normalize();
-		m_pos += m_moveDir * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+		m_moveVec = m_targetPos - m_pos;
+		m_moveVec.Normalize();
+		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 
 
 		//目的地に到達したかどうかor壁に当たってるかどうか
