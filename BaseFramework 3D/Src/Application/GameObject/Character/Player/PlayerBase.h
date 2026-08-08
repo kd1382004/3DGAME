@@ -27,6 +27,10 @@ public:
 	void SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _NextFloorGaugeUI);
 
 	void SetWepon(const std::shared_ptr<WeaponBase>& _wepon) { m_wpWepon = _wepon; }
+
+
+
+
 protected:
 
 	std::weak_ptr<GameScene> m_wpGameScene;
@@ -155,4 +159,5 @@ protected:
 	PlayerAnimeMode m_oldPlayerAnimeMode;
 
 	void PlayerAnimeModeUpdate();
+
 };

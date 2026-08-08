@@ -10,11 +10,9 @@ void EnemyAmbush::Init()
 
 void EnemyAmbush::Update()
 {
-	m_status.moveSpeed.nowSpeed =5;
-
 	if (!m_playerChaseFlg)
 	{
-
+		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
 		if (m_returnSpawnPosFlg)
 		{
 			//スポーン地点に戻る
@@ -34,10 +32,11 @@ void EnemyAmbush::Update()
 	}
 	else
 	{
+		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
 		PlayerChase();
 	}
 
-	
+
 
 	AngeleUpdate();
 
@@ -64,10 +63,10 @@ void EnemyAmbush::Wander()
 {
 	if (!m_isMovingToTarget)
 	{
-		if (m_stayTime > 0) 
+		if (m_stayTime > 0)
 		{
 			m_stayTime -= DeltaTime::Instance().GetGameDeltaTime();
-			return; 
+			return;
 		}
 
 		//目的地に向かっていない場合、ランダムな方向にランダムな距離だけ進む目的地を決める
@@ -84,6 +83,10 @@ void EnemyAmbush::Wander()
 
 		m_isMovingToTarget = true;
 		m_moveTimeoutTimer = m_moveTimeoutMax;
+
+		//アニメーション
+		m_AnimeChangeFlg = true;
+		m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Walk;
 	}
 	else
 	{
@@ -94,10 +97,14 @@ void EnemyAmbush::Wander()
 
 
 		//目的地に到達したかどうかor壁に当たってるかどうか
-		if ((m_targetPos - m_pos).LengthSquared()< 0.1f)
+		if ((m_targetPos - m_pos).LengthSquared() < 0.1f)
 		{
 			m_isMovingToTarget = false;
 			m_stayTime = m_arrivalWaitTime;
+
+			//アニメーション
+			m_AnimeChangeFlg = true;
+			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
 		}
 
 		m_moveTimeoutTimer -= DeltaTime::Instance().GetGameDeltaTime();
@@ -106,6 +113,10 @@ void EnemyAmbush::Wander()
 		{
 			m_isMovingToTarget = false;
 			m_stayTime = m_arrivalWaitTime;
+
+			//アニメーション
+			m_AnimeChangeFlg = true;
+			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
 		}
 	}
 }

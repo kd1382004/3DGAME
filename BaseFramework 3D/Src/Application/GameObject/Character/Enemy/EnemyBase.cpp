@@ -8,6 +8,9 @@
 #include"../../Terrains/Map/MapManager.h"
 void EnemyBase::Init()
 {
+
+	LoadCharaStatus(m_charaStatusFilePath);
+
 	if (!m_spCharaModel) { return; }
 
 	auto spData = m_spCharaModel->GetData();
@@ -112,6 +115,11 @@ void EnemyBase::SearchPlayer()
 		if (dist < m_viewDistance)
 		{
 			m_playerChaseFlg = true;
+
+			//アニメーション
+			m_AnimeChangeFlg = true;
+			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
+
 		}
 	}
 
@@ -136,6 +144,15 @@ void EnemyBase::PlayerChase()
 
 		if (m_stayTime > 0)
 		{
+
+			if (m_stayTime == m_lostSightWaitTime)
+			{
+				//アニメーション
+				m_AnimeChangeFlg = true;
+				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
+			}
+
+
 			m_stayTime -= DeltaTime::Instance().GetGameDeltaTime();
 			return;
 		}
@@ -144,17 +161,30 @@ void EnemyBase::PlayerChase()
 			m_playerChaseFlg = false;
 			m_returnSpawnPosFlg = true;
 
-
-
-
+			//アニメーション
+			m_AnimeChangeFlg = true;
+			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Walk;
 		}
 	}
 	else
 	{
+		if (m_stayTime != m_lostSightWaitTime)
+		{
+			//アニメーション
+			m_AnimeChangeFlg = true;
+			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
+		}
+
+
 		m_stayTime = m_lostSightWaitTime;
 
 		//Chase範囲内なら座標更新
-		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+
+		if (dist > 1)
+		{
+			m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+		}
+
 	}
 
 
@@ -170,8 +200,9 @@ void EnemyBase::EnemyAnimeModeUpdate()
 {
 	if (!m_spAnimetor) { return; }
 	if (!m_spCharaModel) { return; }
+	if (!m_isInView) { return; }
 
-	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 100);
+	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 60);
 	m_spCharaModel->CalcNodeMatrices();
 }
 
@@ -192,8 +223,6 @@ void EnemyBase::ReturnSpawnPos()
 	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
 	if (spMapManager)
 	{
-
-
 		m_repathTimer -= DeltaTime::Instance().GetGameDeltaTime();
 
 		// 経路が空、末尾到達、またはタイマー満了で経路再計算

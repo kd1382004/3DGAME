@@ -51,7 +51,7 @@ protected:
 	Math::Vector3 m_spawnPos = { 0,0,0 };
 
 	//視野角(度数法)
-	float m_viewAngle = 90;
+	float m_viewAngle = 180;
 
 	//視界の距離
 	float m_viewDistance = 10;
@@ -85,6 +85,32 @@ protected:
 
 	//徘徊半径
 	float wanderRadius;
+
+	/////////////////////////////////////
+	//アニメーション
+	enum EnemyAnimeMode
+	{
+		//待機
+		EnemyAnimeMode_Idel,
+
+		//歩き
+		EnemyAnimeMode_Walk,
+
+		//走り
+		EnemyAnimeMode_Run,
+
+		//攻撃
+		EnemyAnimeMode_Attck,
+
+		//死亡
+		EnemyAnimeMode_Die
+	};
+
+	EnemyAnimeMode m_enemyAnimeMode = EnemyAnimeMode_Idel;
+
+	//アニメーション変更フラグ
+	bool m_AnimeChangeFlg = false;
+
 private:
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;

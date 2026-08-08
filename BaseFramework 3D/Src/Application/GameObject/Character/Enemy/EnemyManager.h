@@ -2,6 +2,7 @@
 class EnemyBase;
 class PlayerBase;
 class MapManager;
+class CameraBase;
 
 
 enum EnemyType
@@ -29,6 +30,7 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPalyer);
 	void SetMapManager(std::shared_ptr<MapManager>_spMapManager) { m_wpMapManager = _spMapManager; }
+	void SetCamera(std::shared_ptr<CameraBase>_wpCamera) { m_wpCamera = _wpCamera; }
 
 	std::list<std::shared_ptr<EnemyBase>>& GetEnemyList(){ return m_enemyList; }
 
@@ -45,6 +47,8 @@ protected:
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 
 	std::weak_ptr<MapManager>m_wpMapManager;
+
+	std::weak_ptr<CameraBase>m_wpCamera;
 
 	//敵リスト
 	std::list<std::shared_ptr<EnemyBase>> m_enemyList;

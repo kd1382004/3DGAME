@@ -142,6 +142,7 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spEnemyManager->SetPlayer(m_spPlayer);
 	m_spEnemyManager->SetMapManager(m_spMapManager);
+	m_spEnemyManager->SetCamera(camera);
 
 	/////////////////////////////////////////
 	//カメラにセット

@@ -33,7 +33,14 @@ public:
 	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
 
 
-
+	//攻撃をくらった処理
+	//_damage ... ダメージ量
+	//_knockbackDistance ... ふっとばし距離
+	//_knockbackDir ... ふっとばし方向
+	// _hitStunTime ... のけぞり時間
+	//_isCritical ... クリティカルかどうか
+	//__ignoreRate ... 防御無視
+	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate);
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
@@ -46,6 +53,11 @@ private:
 
 
 protected:
+
+	//ダメージ計算式
+	//ダメージ量を返す
+	float DamagecClculationFormula(float _damage,float _ignoreRate);
+
 	std::shared_ptr<KdModelWork> m_spCharaModel = nullptr;
 	std::shared_ptr<KdAnimator>	m_spAnimetor = nullptr;
 
@@ -177,4 +189,11 @@ protected:
 	///////////////////////////////////////////
 	//カメラ
 	std::weak_ptr<CameraBase>m_wpCamera;
+
+
+
+	///////////////////////////
+	//のけぞり時間
+	float m_hitStunTimer;
+	bool m_hitStunFlg = false;
 };

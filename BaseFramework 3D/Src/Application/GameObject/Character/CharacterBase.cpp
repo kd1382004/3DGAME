@@ -87,6 +87,28 @@ void CharacterBase::ImGUI()
 	ImGui::End();
 }
 
+void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
+{	
+	// ダメージ処理
+	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
+
+	// のけぞり
+	if (_hitStunTime > 0)
+	{
+		m_hitStunTimer = _hitStunTime;
+		m_hitStunFlg = true;
+	}
+
+	// ふっとばし
+	if (_knockbackDistance > 0)
+	{
+		m_pos += _knockbackDir * _knockbackDistance;
+	}
+
+
+	SetPos(m_pos);
+}
+
 void CharacterBase::CollisionUpdate()
 {
 
@@ -239,6 +261,18 @@ void CharacterBase::Release()
 	m_spCharaModel = nullptr;
 }
 
+float CharacterBase::DamagecClculationFormula(float _damage,float _ignoreRate)
+{
+	//100超えないようにクランプ
+	_ignoreRate = std::clamp(_ignoreRate, 0.0f, 1.0f);
+
+	float effectiveDefense = m_status.defense.nowDefense * (1.0f - _ignoreRate);
+	float defense = 100.0f / (100.0f + effectiveDefense);
+	float returnDamage = _damage * defense;
+
+	return returnDamage;
+}
+
 void CharacterBase::LoadCharaStatus(std::string _filePath)
 {
 	Status status;
@@ -317,9 +351,9 @@ void CharacterBase::AngeleUpdate()
 	if (angle >= 0.1f)
 	{
 		//回転角度の上限
-		if (angle > 5)
+		if (angle > 10)
 		{
-			angle = 5;
+			angle = 10;
 		}
 
 		//回転軸

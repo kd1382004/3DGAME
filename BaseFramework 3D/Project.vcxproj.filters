@@ -169,6 +169,12 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy\Goblin">
       <UniqueIdentifier>{ff82b1af-fba1-4a5d-9b3b-d718285bbb6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack">
+      <UniqueIdentifier>{d4132b02-0a34-4a9b-9769-c01cb82e43f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming">
+      <UniqueIdentifier>{04ee9edf-83ee-4853-8c4e-7f35f6c46306}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -432,6 +438,12 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Enemy_Goblin.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Goblin</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming\Attack_Slamming.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\AttackBase.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Goblin\Attack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -661,6 +673,12 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Enemy_Goblin.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Goblin</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming\Attack_Slamming.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\AttackBase.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Goblin\Attack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

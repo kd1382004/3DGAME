@@ -52,11 +52,30 @@ void PlayerBase::Init()
 		m_spNextFloorAction->Init();
 		m_spNextFloorAction->SetActionKey(m_keyConfig.interact);
 	}
+
+
+	if (!m_pCollider)
+	{
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape("Player", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeDamage);
+	}
 }
 
 void PlayerBase::PreUpdate()
 {
 	m_oldPlayerAnimeMode = m_nowPlayerAnimeMode;
+
+	if (m_hitStunFlg)
+	{
+		m_hitStunTimer -= DeltaTime::Instance().GetRealDeltaTime();
+		if (m_hitStunTimer <= 0)
+		{
+			m_hitStunFlg = false;
+		}
+	}
+
+	
+
 }
 
 void PlayerBase::Update()
@@ -244,6 +263,10 @@ void PlayerBase::SaveKeyConfig(std::string _filePath)
 
 void PlayerBase::Move()
 {
+	//スタンなら移動できない
+	if (m_hitStunFlg) { return; }
+
+
 	//////////////////////////////////////////////////////////////
 	//どの方向に行きたいかベクトルを取る
 	m_moveVec = Math::Vector3::Zero;
@@ -294,7 +317,6 @@ void PlayerBase::Move()
 		//移動状態から移動速度を求める
 		MoveNowSpeedDecision();
 
-		m_status.moveSpeed.nowSpeed = 10;
 		m_moveVec *= m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 		m_pos += m_moveVec;
 
@@ -330,6 +352,14 @@ void PlayerBase::MoveNowSpeedDecision()
 
 void PlayerBase::JumpAndGravity()
 {
+	//スタンなら移動できない
+	if (m_hitStunFlg) 
+	{
+		m_pos.y -= m_Gravity;
+		m_Gravity += m_gravityPower;
+		return;
+	}
+
 	if (m_groundHit)
 	{
 		m_jumpFlg = true;

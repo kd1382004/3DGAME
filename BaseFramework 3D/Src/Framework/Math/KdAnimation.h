@@ -69,6 +69,17 @@ public:
 	//speed...１秒で何フレーム進むか
 	void AdvanceTime(std::vector<KdModelWork::Node>& rNodes, float speed = 1.0f);
 
+	float GetTime() const
+	{
+		return m_time;
+	}
+
+	float GetMaxLength() const
+	{
+		if (!m_spAnimation) return 0.0f;
+		return m_spAnimation->m_maxLength;
+	}
+
 private:
 
 	std::shared_ptr<KdAnimationData>	m_spAnimation = nullptr;	// 再生するアニメーションデータ
