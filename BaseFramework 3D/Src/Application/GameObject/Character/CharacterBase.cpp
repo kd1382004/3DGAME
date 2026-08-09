@@ -1,4 +1,5 @@
 ﻿#include "CharacterBase.h"
+#include"../../Info/DeltaTime/DeltaTime.h"
 
 void CharacterBase::Init()
 {
@@ -7,7 +8,7 @@ void CharacterBase::Init()
 
 void CharacterBase::Update()
 {
-
+	UpdateKnockback();
 }
 
 void CharacterBase::PostUpdate()
@@ -88,7 +89,7 @@ void CharacterBase::ImGUI()
 }
 
 void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
-{	
+{
 	// ダメージ処理
 	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
 
@@ -102,11 +103,12 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 	// ふっとばし
 	if (_knockbackDistance > 0)
 	{
-		m_pos += _knockbackDir * _knockbackDistance;
+		m_knockbackEndPos = m_pos + _knockbackDir * _knockbackDistance * 10;
+		m_knockbackStartPos = m_pos;
+		m_knockbackSpeed = 5;
+		m_isKnockbackFlg = true;
+		m_knockbackProgress = 0;
 	}
-
-
-	SetPos(m_pos);
 }
 
 void CharacterBase::CollisionUpdate()
@@ -261,7 +263,7 @@ void CharacterBase::Release()
 	m_spCharaModel = nullptr;
 }
 
-float CharacterBase::DamagecClculationFormula(float _damage,float _ignoreRate)
+float CharacterBase::DamagecClculationFormula(float _damage, float _ignoreRate)
 {
 	//100超えないようにクランプ
 	_ignoreRate = std::clamp(_ignoreRate, 0.0f, 1.0f);
@@ -388,6 +390,97 @@ void CharacterBase::AngeleUpdate()
 void CharacterBase::StatusEditor()
 {
 
+}
+
+void CharacterBase::UpdateKnockback()
+{
+	if (!m_isKnockbackFlg) { return; }
+
+	// 1. 進捗度の更新
+	m_knockbackProgress += DeltaTime::Instance().GetGameDeltaTime() / m_knockbackSpeed;
+	float progress = std::clamp(m_knockbackProgress, 0.0f, 1.0f);
+
+	// 2. 移動方向ベクトル
+	Math::Vector3 towardEndVec = m_knockbackEndPos - m_knockbackStartPos;
+
+	// 3. Ease を使って位置を補間（仮の位置）
+	Math::Vector3 nextPos = m_knockbackStartPos + towardEndVec * EaseInOutSine(progress);
+
+	// 3.5 壁衝突判定
+	if (RaycastFromTo(nextPos))
+	{
+		// 壁にぶつかったらノックバック終了
+		m_isKnockbackFlg = false;
+		m_knockbackProgress = 0.0f;
+	}
+	else
+	{
+		// 4. 実際の位置に反映
+		m_pos = nextPos;
+	}
+
+
+	// 4. 終了判定（必要なら）
+	if (progress >= 1.0f)
+	{
+		m_isKnockbackFlg = false;
+	}
+
+}
+
+bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
+{
+	KdCollider::RayInfo rayInfo;
+	rayInfo.m_pos = m_pos;
+	rayInfo.m_dir = (_nextPos - m_pos);
+	rayInfo.m_dir.Normalize();
+	rayInfo.m_range = (_nextPos - m_pos).Length();
+	rayInfo.m_type = KdCollider::TypeBump;
+
+	float maxOverLap = 0;
+	Math::Vector3 hitPos = {};
+	bool hit = false;
+
+	// HIT判定対象オブジェクトに総当たり
+	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
+	{
+		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
+		if (spGameObj)
+		{
+			float dist = (GetPos() - spGameObj->GetPos()).Length();
+
+			std::list<KdCollider::CollisionResult> retRayList;
+			spGameObj->Intersects(rayInfo, &retRayList);
+
+			// 結果を使って座標を補完する
+			// レイに当たったリストから一番近いオブジェクトを検出
+			for (auto& ret : retRayList)
+			{
+				// レイを遮断しオーバーした長さが
+				// 一番長いものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hitPos = ret.m_hitPos;
+					hit = true;
+				}
+			}
+		}
+	}
+
+	if (hit)
+	{
+		Math::Vector3 safePos = m_pos + rayInfo.m_dir * (rayInfo.m_range - maxOverLap);
+		m_pos = safePos;
+	}
+
+
+	if (m_pDebugWire)
+	{
+		m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
+	}
+
+	return hit;
 }
 
 void CharacterBase::SaveCharaStatus(std::string _filePath)

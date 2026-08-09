@@ -56,7 +56,7 @@ protected:
 
 	//ダメージ計算式
 	//ダメージ量を返す
-	float DamagecClculationFormula(float _damage,float _ignoreRate);
+	float DamagecClculationFormula(float _damage, float _ignoreRate);
 
 	std::shared_ptr<KdModelWork> m_spCharaModel = nullptr;
 	std::shared_ptr<KdAnimator>	m_spAnimetor = nullptr;
@@ -196,4 +196,24 @@ protected:
 	//のけぞり時間
 	float m_hitStunTimer;
 	bool m_hitStunFlg = false;
+
+	/////////////////////////////
+	//ふっとばし
+	Math::Vector3 m_knockbackStartPos;
+	Math::Vector3 m_knockbackEndPos;
+	bool m_isKnockbackFlg = false;
+
+
+	//何秒で飛ばしきるか
+	float m_knockbackSpeed = 1;
+	void UpdateKnockback();
+
+	float m_knockbackProgress = 0;
+
+
+	///////////////////////////////////
+
+	//スイープ判定
+	//当たったかどうかを返す(座標の補正もおこなっている)
+	bool RaycastFromTo(Math::Vector3 _nextPos);
 };

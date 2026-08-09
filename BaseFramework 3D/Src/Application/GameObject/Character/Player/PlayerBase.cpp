@@ -59,6 +59,11 @@ void PlayerBase::Init()
 		m_pCollider = std::make_unique<KdCollider>();
 		m_pCollider->RegisterCollisionShape("Player", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeDamage);
 	}
+
+	if (!m_pDebugWire)
+	{
+		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
+	}
 }
 
 void PlayerBase::PreUpdate()
@@ -74,7 +79,7 @@ void PlayerBase::PreUpdate()
 		}
 	}
 
-	
+
 
 }
 
@@ -123,6 +128,9 @@ void PlayerBase::Update()
 	}
 
 	WeaponUpdate();
+
+
+	CharacterBase::Update();
 
 	//座標行列を作る
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
@@ -266,6 +274,9 @@ void PlayerBase::Move()
 	//スタンなら移動できない
 	if (m_hitStunFlg) { return; }
 
+	//ふっとばしなら移動できない
+	if (m_isKnockbackFlg) { return; }
+
 
 	//////////////////////////////////////////////////////////////
 	//どの方向に行きたいかベクトルを取る
@@ -352,8 +363,8 @@ void PlayerBase::MoveNowSpeedDecision()
 
 void PlayerBase::JumpAndGravity()
 {
-	//スタンなら移動できない
-	if (m_hitStunFlg) 
+	//スタンならorふっとばしなら　移動できない
+	if (m_hitStunFlg || m_isKnockbackFlg)
 	{
 		m_pos.y -= m_Gravity;
 		m_Gravity += m_gravityPower;
