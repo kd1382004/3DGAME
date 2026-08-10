@@ -19,7 +19,7 @@ public:
 	void FinishAttack_Slamming() { m_isExpired = true; }
 
 	void SetAttckFlg(bool _flg = true) { m_hitFlg = _flg; }
-	void SetAttckFlg(float _attackPower) { m_attckPower = _attackPower; }
+	void SetAttckPower(float _attackPower) { m_attckPower = _attackPower; }
 
 	//ふっとばし方向セット
 	void SetKnockbackDir(Math::Vector3 _dir) { m_knockbackDir = _dir; }

@@ -1,6 +1,6 @@
 {
     "HP": {
-        "baseHP": 0.0
+        "baseHP": 100.0
     },
     "attck": {
         "baseAttckPowe": 0.0

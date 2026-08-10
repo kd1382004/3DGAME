@@ -29,9 +29,14 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPalyer) { m_wpPlayer = _spPalyer; };
 	void SetMapManager(std::shared_ptr<MapManager>_spMapManager) { m_wpMapManager = _spMapManager; };
+
+
+	void AddUIList(std::shared_ptr<UIManager>_spUIManager);
 protected:
 
 	void EnemyAnimeModeUpdate();
+
+	void HPPosPostUpdate();
 
 	///////////////////////////////////////////
 	//マップマネージャー1

@@ -136,6 +136,7 @@ void GameScene::Init()
 	m_spPlayer->SetCamera(camera);
 	m_spPlayer->SetGameScene(self);
 	m_spPlayer->SetWepon(spWeapon);
+	m_spPlayer->AddUIList(spUIManager);
 
 	/////////////////////////////////////////
 	//敵にセット
@@ -143,6 +144,7 @@ void GameScene::Init()
 	m_spEnemyManager->SetPlayer(m_spPlayer);
 	m_spEnemyManager->SetMapManager(m_spMapManager);
 	m_spEnemyManager->SetCamera(camera);
+	m_spEnemyManager->AddUIList(spUIManager);
 
 	/////////////////////////////////////////
 	//カメラにセット

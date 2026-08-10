@@ -38,7 +38,7 @@ void Attack_Slamming::SetAttackStatus()
 	m_attckMagnification = 1.3;
 
 	//ふっとばし距離
-	m_knockbackDistance = 10;
+	m_knockbackDistance = 1;
 
 	//スタン時間
 	m_hitStunTime = 1;

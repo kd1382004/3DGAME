@@ -74,8 +74,6 @@ void EnemyManager::SetPlayer(std::shared_ptr<PlayerBase> _spPalyer)
 	}
 }
 
-
-
 void EnemyManager::SetEnemyListPlayer()
 {
 	for (const auto& enemy : m_enemyList)
@@ -95,6 +93,7 @@ void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 	spEnemyAmbush->SetSpawnPos(_spawnPos);
 	spEnemyAmbush->SetCamera(m_wpCamera.lock());
 
+	spEnemyAmbush->AddUIList(m_wpUIManager.lock());
 
 	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
 	if (spMapManager)

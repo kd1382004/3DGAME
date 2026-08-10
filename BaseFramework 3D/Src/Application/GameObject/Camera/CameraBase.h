@@ -42,6 +42,19 @@ public:
 		m_wpHitObjectList.push_back(object);
 	}
 
+
+
+
+	//自分追加
+	//ターゲットとカメラの間にオブジェクトがあるかどうか
+	void ResolveCameraOcclusion();
+
+	//ターゲットとカメラの間にあるかどうか確認したいものを入れる
+	void ResolveCameraOcclusionObject(const std::shared_ptr<KdGameObject>& object)
+	{
+		m_cameraOcclusionObjects.push_back(object);
+	}
+
 	DirectX::BoundingFrustum GetBoundingFrustum()
 	{
 		DirectX::BoundingFrustum worldFrustum;
@@ -55,17 +68,6 @@ public:
 		localFrustum.Transform(worldFrustum, invView);
 
 		return worldFrustum;
-	}
-
-
-	//自分追加
-	//ターゲットとカメラの間にオブジェクトがあるかどうか
-	void ResolveCameraOcclusion();
-
-	//ターゲットとカメラの間にあるかどうか確認したいものを入れる
-	void ResolveCameraOcclusionObject(const std::shared_ptr<KdGameObject>& object)
-	{
-		m_cameraOcclusionObjects.push_back(object);
 	}
 
 protected:

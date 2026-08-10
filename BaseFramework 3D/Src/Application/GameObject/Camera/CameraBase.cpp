@@ -62,7 +62,7 @@ void CameraBase::ResolveCameraOcclusion()
 	bool hit = false;
 
 	m_detectRange = (GetPos() - spTarget->GetPos()).Length() + 1.0f;
-
+	if (rayInfo.m_dir.LengthSquared() == 0.0f) { return; }
 	for (auto& wpObj : m_cameraOcclusionObjects)
 	{
 		if (auto spObj = wpObj.lock())

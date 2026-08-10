@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 class CameraBase;
+class UIManager;
+class HPBar;
 
 class CharacterBase : public KdGameObject
 {
@@ -41,6 +43,9 @@ public:
 	//_isCritical ... クリティカルかどうか
 	//__ignoreRate ... 防御無視
 	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate);
+
+
+	virtual void AddUIList(std::shared_ptr<UIManager>_spUIManager);
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
@@ -216,4 +221,9 @@ protected:
 	//スイープ判定
 	//当たったかどうかを返す(座標の補正もおこなっている)
 	bool RaycastFromTo(Math::Vector3 _nextPos);
+
+	///////////////////////////////////
+	//UI
+	//HPBar
+	std::weak_ptr<HPBar>m_wpHPBar;
 };

@@ -4,6 +4,9 @@
 #include"../../../Scene/GameScene/GameScene.h"
 #include"Action/NextFloorAction/NextFloorAction.h"
 
+//UI
+#include"../../UI/UIManager.h"
+#include"../../UI/HPBar/HPBar.h"
 
 //武器
 #include"../../Weapon/WeaponBase.h"
@@ -78,9 +81,6 @@ void PlayerBase::PreUpdate()
 			m_hitStunFlg = false;
 		}
 	}
-
-
-
 }
 
 void PlayerBase::Update()
@@ -170,6 +170,21 @@ void PlayerBase::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _N
 	if (m_spNextFloorAction)
 	{
 		m_spNextFloorAction->SetNextFloorGaugeUI(_NextFloorGaugeUI);
+	}
+}
+
+void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
+{
+	if (_spUIManager)
+	{
+		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
+		spHPBar->Init();
+		spHPBar->Set2DPos({ 0,-300 });
+		spHPBar->SetDrawFlg(true);
+		spHPBar->SetSiz(2);
+		m_wpHPBar = spHPBar;
+		_spUIManager->AddUIObj(spHPBar);
+
 	}
 }
 

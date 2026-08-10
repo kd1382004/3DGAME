@@ -170,6 +170,7 @@ void Goblin::AttacksSlammingDown()
 			{
 				m_hitTriggered = true;
 				spAttack->SetAttckFlg();
+				spAttack->SetAttckPower(m_status.attck.nowAttck);
 			}
 		}
 	}

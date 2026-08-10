@@ -175,6 +175,9 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming">
       <UniqueIdentifier>{04ee9edf-83ee-4853-8c4e-7f35f6c46306}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\HPBar">
+      <UniqueIdentifier>{8bf2daf3-9d52-4194-b38c-6e76a8c2e28f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -444,6 +447,9 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\AttackBase.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Goblin\Attack</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h">
+      <Filter>Src\Application\GameObject\UI\HPBar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -679,6 +685,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\AttackBase.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Goblin\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp">
+      <Filter>Src\Application\GameObject\UI\HPBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

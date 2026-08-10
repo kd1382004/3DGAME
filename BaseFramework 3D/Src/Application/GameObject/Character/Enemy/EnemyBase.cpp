@@ -4,8 +4,12 @@
 //プレイヤー
 #include"../Player/PlayerBase.h"
 
-
+//マップ
 #include"../../Terrains/Map/MapManager.h"
+
+//UI
+#include"../../UI/UIManager.h"
+#include"../../UI/HPBar/HPBar.h"
 void EnemyBase::Init()
 {
 
@@ -65,6 +69,7 @@ void EnemyBase::PostUpdate()
 {
 	CharacterBase::PostUpdate();
 	EnemyAnimeModeUpdate();
+	HPPosPostUpdate();
 }
 
 void EnemyBase::PreDraw()
@@ -74,6 +79,32 @@ void EnemyBase::PreDraw()
 	if (spCamera)
 	{
 		m_isInView = CheckInScreen(spCamera->GetBoundingFrustum(), m_frustumBox);
+
+
+		std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+		if (spHPBar)
+		{
+			if (m_isInView)
+			{
+				Math::Vector3 dist = m_playerPos - m_pos;
+
+				if (dist.Length() < 100)
+				{
+					spHPBar->SetDrawFlg(true);
+				}
+				else 
+				{
+					spHPBar->SetDrawFlg(false);
+				}
+			}
+			else
+			{
+				spHPBar->SetDrawFlg(false);
+			}
+
+
+
+		}
 	}
 }
 
@@ -196,6 +227,18 @@ void EnemyBase::PlayerChase()
 
 }
 
+void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
+{
+	if (_spUIManager)
+	{
+		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
+		spHPBar->Init();
+		m_wpHPBar = spHPBar;
+		_spUIManager->AddUIObj(spHPBar);
+
+	}
+}
+
 void EnemyBase::EnemyAnimeModeUpdate()
 {
 	if (!m_spAnimetor) { return; }
@@ -204,6 +247,25 @@ void EnemyBase::EnemyAnimeModeUpdate()
 
 	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 60);
 	m_spCharaModel->CalcNodeMatrices();
+}
+
+void EnemyBase::HPPosPostUpdate()
+{
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		Math::Vector3 set2DPos;
+
+		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+		if (spCamera)
+		{
+			Math::Vector3 set3DPos = m_pos;
+			set3DPos.y += 5;
+			spCamera->GetCamera()->ConvertWorldToScreenDetail(set3DPos, set2DPos);
+		}
+		spHPBar->Set2DPos({ set2DPos.x,set2DPos.y });
+
+	}
 }
 
 
@@ -264,7 +326,7 @@ void EnemyBase::ReturnSpawnPos()
 			}
 
 			// 2. ノードを通り過ぎた（進行方向と逆向きになった）
-			bool passed=false;
+			bool passed = false;
 			if (dot < 0.0f)
 			{
 				passed = true;

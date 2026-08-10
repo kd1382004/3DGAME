@@ -1,12 +1,17 @@
 ﻿#pragma once
 #include"../CharacterBase.h"
 
+
+
 class CameraBase;
 class GameScene;
 
 //次の階シリーズ
 class NextFloorAction;
 class NextFloorGaugeUI;
+
+//UI
+class UIManager;
 
 class WeaponBase;
 
@@ -30,7 +35,7 @@ public:
 
 
 
-
+	void AddUIList(std::shared_ptr<UIManager>_spUIManager);
 protected:
 
 	std::weak_ptr<GameScene> m_wpGameScene;

@@ -64,8 +64,8 @@ bool KdGameObject::Intersects(const KdCollider::RayInfo& targetShape, std::list<
 }
 
 bool KdGameObject::CheckInScreen(const DirectX::BoundingFrustum& frustum, const KdCollider::BoxInfo& targetBox)
-{
-	
+{	
+
 	if (targetBox.CheckBoxType(KdCollider::BoxInfo::BoxType::BoxOBB))
 	{
 		// OBB 判定

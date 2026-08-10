@@ -1,6 +1,8 @@
 ﻿#include "CharacterBase.h"
 #include"../../Info/DeltaTime/DeltaTime.h"
 
+#include"../UI/HPBar/HPBar.h"
+#include"../UI/UIManager.h"
 void CharacterBase::Init()
 {
 
@@ -93,6 +95,14 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 	// ダメージ処理
 	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
 
+
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		spHPBar->SetHPBarTexPercent(percent);
+	}
+
 	// のけぞり
 	if (_hitStunTime > 0)
 	{
@@ -103,12 +113,17 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 	// ふっとばし
 	if (_knockbackDistance > 0)
 	{
-		m_knockbackEndPos = m_pos + _knockbackDir * _knockbackDistance * 10;
+		m_knockbackEndPos = m_pos + _knockbackDir * _knockbackDistance;
 		m_knockbackStartPos = m_pos;
-		m_knockbackSpeed = 5;
+		m_knockbackSpeed = 1;
 		m_isKnockbackFlg = true;
 		m_knockbackProgress = 0;
 	}
+}
+
+void CharacterBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
+{
+
 }
 
 void CharacterBase::CollisionUpdate()
@@ -322,10 +337,10 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 	m_status.HP.nowHP = m_status.HP.maxHP;
 
 	// 攻撃力
-	m_status.attck.baseAttckPowe = m_status.attck.baseAttckPowe;
+	m_status.attck.nowAttck = m_status.attck.baseAttckPowe;
 
 	// 防御力
-	m_status.defense.baseDefensePowe = m_status.defense.baseDefensePowe;
+	m_status.defense.nowDefense = m_status.defense.baseDefensePowe;
 
 	// 移動速度
 	m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed;
@@ -420,7 +435,7 @@ void CharacterBase::UpdateKnockback()
 	}
 
 
-	// 4. 終了判定（必要なら）
+	// 4. 終了判定（進捗度が1以上）
 	if (progress >= 1.0f)
 	{
 		m_isKnockbackFlg = false;
@@ -440,6 +455,9 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 	float maxOverLap = 0;
 	Math::Vector3 hitPos = {};
 	bool hit = false;
+
+
+	if (rayInfo.m_dir.LengthSquared() == 0.0f) { return false; }
 
 	// HIT判定対象オブジェクトに総当たり
 	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
