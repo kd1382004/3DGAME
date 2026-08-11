@@ -288,7 +288,6 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Enemy_Goblin.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h" />
-    <ClInclude Include="Src\Application\GameObject\Terrains\Ground\Ground.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h" />
@@ -299,6 +298,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIBase.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIManager.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMapManager.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\WeaponBase.h" />
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h" />
@@ -373,7 +375,6 @@
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Enemy_Goblin.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp" />
-    <ClCompile Include="Src\Application\GameObject\Terrains\Ground\Ground.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp" />
@@ -384,6 +385,9 @@
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMapManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\WeaponBase.cpp" />
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp" />

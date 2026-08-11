@@ -157,6 +157,8 @@ void GameScene::Init()
 	m_spMapManager->SetCamera(camera);
 	m_spMapManager->SetPlayer(m_spPlayer);
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
+	m_spMapManager->SetUIManager(spUIManager);
+
 	//マップ生成
 	GenerateMap();
 }

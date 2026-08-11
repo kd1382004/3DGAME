@@ -12,6 +12,7 @@ class NextFloorGaugeUI;
 
 //UI
 class UIManager;
+class UIMap_Player;
 
 class WeaponBase;
 
@@ -165,4 +166,8 @@ protected:
 
 	void PlayerAnimeModeUpdate();
 
+
+	////////////////////////////////////////
+	//UI
+	std::weak_ptr<UIMap_Player>m_wpUIMap_Player;
 };

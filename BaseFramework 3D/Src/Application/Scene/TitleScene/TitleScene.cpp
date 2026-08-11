@@ -26,11 +26,6 @@ void TitleScene::Init()
 		return obj;
 		});
 
-	g_factory.RegisterCreateFunction("Ground", []() {
-		std::shared_ptr<Ground>obj = std::make_shared<Ground>();
-		obj->Init();
-		return obj;
-		});
 
 	SetObjeList();
 }

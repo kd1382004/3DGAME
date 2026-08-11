@@ -4,6 +4,7 @@ class CameraBase;
 class PlayerBase;
 class EnemyBase;
 class EnemyManager;
+class UIManager;
 
 
 struct Node {
@@ -57,6 +58,8 @@ public:
 	void SetEnemyManager(std::shared_ptr<EnemyManager> _spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
 
 
+
+	void SetUIManager(std::shared_ptr<UIManager> _spUIManager) { m_wpUIManager = _spUIManager; }
 	////////////////////////////////////////////
 	/// <ノード>
 	
@@ -110,4 +113,8 @@ private:
 	std::list<std::shared_ptr<MapBase>> m_mapObj;
 
 	float m_mapTileSiz = 10;
+
+	////////////////////////////////////////
+	//UI用マップ
+	std::weak_ptr< UIManager>m_wpUIManager;
 };

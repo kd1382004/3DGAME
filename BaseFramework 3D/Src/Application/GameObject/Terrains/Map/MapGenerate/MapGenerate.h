@@ -74,8 +74,9 @@ public:
 	//_type				...マップの種類
 	//ret				...生成結果を格納する先
 	//_playerSpawnPos	...	プレイヤーのスポーン位置
+	//_basePos	...	プレイヤーのスポーン位置
 	//戻り値...ノード用のマップデータ
-	std::vector<std::vector<int>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos);
+	std::vector<std::vector<int>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos,Math::Vector3* _basePos);
 
 
 	// 部屋ごとの情報リストを取得

@@ -5,8 +5,10 @@
 #include"../../Character/Player/PlayerBase.h"
 #include"../../Character/Enemy/EnemyBase.h"
 #include"../../Character/Enemy/EnemyManager.h"
-#include<random>
-#include<cmath>
+
+#include"../../UI/UIManager.h"
+#include"../../UI/UIMap/UIMapManager.h"
+#include"../../UI/UIMap/UIMap_Map/UIMap_Map.h"
 
 void MapManager::Init()
 {
@@ -119,7 +121,9 @@ void MapManager::GenerateMap()
 	float mapW = 50;
 	float mapH = 50;
 
-	mapDate = map->Generate({ mapH,mapW }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj, &m_playerSpawnPos);
+
+	Math::Vector3 basePos;
+	mapDate = map->Generate({ mapH,mapW }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj, &m_playerSpawnPos,&basePos);
 
 	CreateNodeGrid(mapW, mapH,m_mapTileSiz);
 	ApplyWalkableFromMap(mapDate);
@@ -181,6 +185,34 @@ void MapManager::GenerateMap()
 			}
 		}
 	}
+
+
+
+	//UIのマップ生成
+	std::shared_ptr<UIManager>spUIManager = m_wpUIManager.lock();
+	if (spUIManager)
+	{
+		
+
+		std::shared_ptr<UIMapManager>spUIMapManager= spUIManager->GetUIMapManager();
+		if (spUIMapManager)
+		{
+			spUIMapManager->SetBase3DPos(basePos);
+			spUIMapManager->SetTileSiz(m_mapTileSiz);
+			/*spUIMapManager->GetUIMap_Map()->CreateNavMap(mapDate);	*/		
+
+			for (const auto& mapObj : m_mapObj)
+			{
+
+				if (mapObj->GetMapObjType() == MapObjType::Ground)
+				{
+					spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
+				}
+
+				
+			}
+		}
+	}
 }
 
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)
@@ -230,34 +262,27 @@ Math::Vector3 MapManager::NodeToWorld(const Node* node)
 {
 	if (!node) return Math::Vector3::Zero;
 
-	int width = (int)m_nodes[0].size();
-	int height = (int)m_nodes.size();
-
-	float startX = -(width * m_mapTileSiz) * 0.5f;
-	float startZ = (height * m_mapTileSiz) * 0.5f;
-
-	float worldX = startX + node->pos.x * m_mapTileSiz + m_mapTileSiz * 0.5f;
-	float worldZ = startZ - node->pos.y * m_mapTileSiz - m_mapTileSiz * 0.5f;
+	float worldX = m_mapTileSiz * node->pos.x + m_mapTileSiz * 0.5f;
+	float worldZ = -(m_mapTileSiz * node->pos.y + m_mapTileSiz * 0.5f);
 
 	return Math::Vector3(worldX, 0.0f, worldZ);
 }
 
 Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 {
+	// X は右へプラス
+	int x = (int)floor(worldPos.x / m_mapTileSiz);
+
+	// Z は下へマイナス → -Z がタイル番号
+	int y = (int)floor((-worldPos.z) / m_mapTileSiz);
+
 	int width = (int)m_nodes[0].size();
 	int height = (int)m_nodes.size();
-
-	float startX = -(width * m_mapTileSiz) * 0.5f;
-	float startZ = (height * m_mapTileSiz) * 0.5f;
-
-	int x = (int)floor((worldPos.x - startX) / m_mapTileSiz);
-	int y = (int)floor((startZ - worldPos.z) / m_mapTileSiz);
 
 	if (x < 0 || y < 0 || x >= width || y >= height)
 	{
 		return nullptr;
 	}
-
 
 	return &m_nodes[y][x];
 }
@@ -370,19 +395,27 @@ std::vector<Node*> MapManager::GetNeighbors(Node* node)
 
 	// 上
 	if (y > 0)
+	{
 		neighbors.push_back(&m_nodes[y - 1][x]);
+	}
 
 	// 下
 	if (y < m_nodes.size() - 1)
+	{
 		neighbors.push_back(&m_nodes[y + 1][x]);
+	}
 
 	// 左
 	if (x > 0)
+	{
 		neighbors.push_back(&m_nodes[y][x - 1]);
+	}
 
 	// 右
 	if (x < m_nodes[0].size() - 1)
+	{
 		neighbors.push_back(&m_nodes[y][x + 1]);
+	}
 
 	return neighbors;
 }

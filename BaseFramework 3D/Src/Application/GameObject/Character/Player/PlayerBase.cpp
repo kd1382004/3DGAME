@@ -7,6 +7,8 @@
 //UI
 #include"../../UI/UIManager.h"
 #include"../../UI/HPBar/HPBar.h"
+#include"../../UI/UIMap/UIMapManager.h"
+#include"../../UI/UIMap/UIMap_Player/UIMap_Player.h"
 
 //武器
 #include"../../Weapon/WeaponBase.h"
@@ -150,6 +152,11 @@ void PlayerBase::PostUpdate()
 
 	CharacterBase::PostUpdate();
 
+	std::shared_ptr<UIMap_Player>spUIMap_Player = m_wpUIMap_Player.lock();
+	if (spUIMap_Player)
+	{
+		spUIMap_Player->SetPlayer3DPos(m_pos);
+	}
 
 }
 
@@ -185,7 +192,13 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
+
+
+		m_wpUIMap_Player = _spUIManager->GetUIMapManager()->GetUIMap_Player();
 	}
+
+
+
 }
 
 void PlayerBase::WeaponUpdate()

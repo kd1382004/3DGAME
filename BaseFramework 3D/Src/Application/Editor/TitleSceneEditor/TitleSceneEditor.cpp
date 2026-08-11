@@ -4,18 +4,10 @@
 
 #include"../../GameObject/Button/GameButton/GameButton.h"
 
-#include"../../GameObject/Terrains/Ground/Ground.h"
-
 TitleSceneEditor::TitleSceneEditor()
 {
 	g_factory.RegisterCreateFunction("GameButton", []() {
 		std::shared_ptr<GameButton>obj = std::make_shared<GameButton>();
-		obj->Init();
-		return obj;
-		});
-
-	g_factory.RegisterCreateFunction("Ground", []() {
-		std::shared_ptr<Ground>obj = std::make_shared<Ground>();
 		obj->Init();
 		return obj;
 		});

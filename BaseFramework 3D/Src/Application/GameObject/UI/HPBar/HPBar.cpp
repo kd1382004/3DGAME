@@ -50,6 +50,7 @@ void HPBar::PreDraw()
 	m_HPBarTexRect = { 0,0,(long)m_HPBarTexLength.x * (long)m_HPBarTexPercent,(long)m_HPBarTexLength.y };
 }
 
+
 void HPBar::DrawSprite()
 {
 	if (!m_drawFlg) { return; }

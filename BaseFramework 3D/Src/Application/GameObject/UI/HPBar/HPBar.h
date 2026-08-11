@@ -10,6 +10,7 @@ public:
 	void Init()override;
 	void Update()override;
 	void PreDraw()override;
+
 	void DrawSprite()override;
 
 

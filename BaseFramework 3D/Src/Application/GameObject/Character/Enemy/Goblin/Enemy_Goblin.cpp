@@ -22,6 +22,11 @@ void Goblin::Init()
 			m_pCollider->RegisterCollisionShape("Goblin", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion);
 		}
 
+		if (!m_pDebugWire)
+		{
+			m_pDebugWire = std::make_unique<KdDebugWireFrame>();
+		}
+
 		EnemyBase::Init();
 	}
 

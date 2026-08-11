@@ -88,7 +88,7 @@ void EnemyBase::PreDraw()
 			{
 				Math::Vector3 dist = m_playerPos - m_pos;
 
-				if (dist.Length() < 100)
+				if (dist.Length() < 20)
 				{
 					spHPBar->SetDrawFlg(true);
 				}

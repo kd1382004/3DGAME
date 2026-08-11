@@ -11,7 +11,7 @@ MapGenerate::MapGenerate()
 	LoadRoomSiz(m_roomSizPath);
 }
 
-std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos)
+std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
 	if (roomMine <= 0 && roomMax <= 0)
 	{
@@ -226,7 +226,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 	}
 
 	//階段設置したかどうか
-	bool stairsPlaced=false;
+	bool stairsPlaced = false;
 
 
 
@@ -244,8 +244,14 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 			if (map[y][x] != static_cast<int>(TileType::None))
 			{
 				//床と通路を保存
-				float xPos = -(_mapSiz.x * tileSiz) * 0.5f + tileSiz * x + tileSiz * 0.5f;
-				float zPos = (_mapSiz.y * tileSiz) * 0.5f - tileSiz * y - tileSiz * 0.5f;
+				float xPos = tileSiz * x + tileSiz * 0.5f;
+				float zPos = -(tileSiz * y + tileSiz * 0.5f);
+
+
+				if (y == 0 && x == 0)
+				{
+					*_basePos = { xPos,0,zPos };
+				}
 
 				std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
 
@@ -324,7 +330,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 				for (size_t i = 0; i < wallDirs.size(); ++i)
 				{
 					int rndIndex = KdRandom::GetInt(0, wallDirs.size() - 1);
-					std::swap(wallDirs[i], wallDirs[rndIndex]); 
+					std::swap(wallDirs[i], wallDirs[rndIndex]);
 				}
 
 				for (const auto& dir : wallDirs)
@@ -379,7 +385,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 
 	return map;
 }
- 
+
 
 void MapGenerate::LoadRoomSiz(std::string _filePath)
 {
@@ -624,7 +630,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>
 	if (nx < 0 || nx >= static_cast<int>(map[ny].size())) { return true; }
 
 	// 隣のマスが None（空き地）なら壁を作る
-	if(map[ny][nx] == static_cast<int>(TileType::None)){ return true;}
+	if (map[ny][nx] == static_cast<int>(TileType::None)) { return true; }
 
 	return false;
 }

@@ -109,12 +109,6 @@
     <Filter Include="Src\Application\Info\MouseInfo">
       <UniqueIdentifier>{fc01923c-66d5-4d5e-9b37-210e7bc7cafc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\Application\GameObject\Terrains">
-      <UniqueIdentifier>{26448d13-fb9e-4b77-b9d0-46cdeeadd89a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\Terrains\Ground">
-      <UniqueIdentifier>{002fbbc5-d1a8-4d08-ba35-5b641197268c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\Application\Info\KeyInfo">
       <UniqueIdentifier>{b8384455-1786-4a13-87cd-240aa1430fc6}</UniqueIdentifier>
     </Filter>
@@ -123,21 +117,6 @@
     </Filter>
     <Filter Include="Src\Application\GameObject\Character\Player">
       <UniqueIdentifier>{ad30c110-8139-46e1-a70c-704456c8e0ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\Terrains\Map">
-      <UniqueIdentifier>{488be9f7-d4fd-42a5-8e63-7a8b3186aedf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\Terrains\Map\MapGenerate">
-      <UniqueIdentifier>{5eb411ab-05a2-4739-9e79-88da03259723}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\Terrains\Map\WallBase">
-      <UniqueIdentifier>{c501f1a2-5f51-44db-9490-b4b5e60564dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\Terrains\Map\FloorBase">
-      <UniqueIdentifier>{53a660c9-1d9e-4856-b75b-47227e8f0c1d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\Terrains\Map\Stairs">
-      <UniqueIdentifier>{75191ae0-bdc8-48e0-bf85-64b2f188b541}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Application\GameObject\UI">
       <UniqueIdentifier>{3d30c56b-4f5b-4b1d-b471-e86605bdda76}</UniqueIdentifier>
@@ -177,6 +156,33 @@
     </Filter>
     <Filter Include="Src\Application\GameObject\UI\HPBar">
       <UniqueIdentifier>{8bf2daf3-9d52-4194-b38c-6e76a8c2e28f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\UIMap">
+      <UniqueIdentifier>{b4cbc8ee-6336-4412-b696-6b65a9642443}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\UIMap\UIMap_Map">
+      <UniqueIdentifier>{18a819d1-830c-41e6-a3cf-dd6275b90cbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\UIMap\UIMap_Player">
+      <UniqueIdentifier>{2964d2ea-b23d-4e8d-89ad-c36e9d443fb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains">
+      <UniqueIdentifier>{afa2eed1-e803-421c-99fb-b9cb1fa03247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map">
+      <UniqueIdentifier>{c2c5ec10-61c6-4599-98d2-ccbe04b860fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\FloorBase">
+      <UniqueIdentifier>{feeb742c-6b70-4806-99ea-6048a9318a79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\MapGenerate">
+      <UniqueIdentifier>{6b9bdeb3-97ea-4b36-9c2f-3729676a1c62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\Stairs">
+      <UniqueIdentifier>{bd2b2ffb-8f8a-4705-9511-7154cd426c2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Map\WallBase">
+      <UniqueIdentifier>{d95d64b4-6d1e-4111-9013-db90df4ff7bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -378,9 +384,6 @@
     <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h">
       <Filter>Src\Application\Info\MouseInfo</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\Ground\Ground.h">
-      <Filter>Src\Application\GameObject\Terrains\Ground</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Application\Info\KeyInfo\KeyInfo.h">
       <Filter>Src\Application\Info\KeyInfo</Filter>
     </ClInclude>
@@ -389,24 +392,6 @@
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h">
       <Filter>Src\Application\GameObject\Character\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h">
-      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapManager.h">
-      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h">
-      <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.h">
-      <Filter>Src\Application\GameObject\Terrains\Map\FloorBase</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h">
-      <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h">
-      <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\UI\UIBase.h">
       <Filter>Src\Application\GameObject\UI</Filter>
@@ -449,6 +434,33 @@
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h">
       <Filter>Src\Application\GameObject\UI\HPBar</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMapManager.h">
+      <Filter>Src\Application\GameObject\UI\UIMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.h">
+      <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.h">
+      <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapManager.h">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\FloorBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h">
+      <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -620,9 +632,6 @@
     <ClCompile Include="Src\Application\Info\MouseInfo\MouseInfo.cpp">
       <Filter>Src\Application\Info\MouseInfo</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\Ground\Ground.cpp">
-      <Filter>Src\Application\GameObject\Terrains\Ground</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp">
       <Filter>Src\Application\Info\KeyInfo</Filter>
     </ClCompile>
@@ -631,24 +640,6 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp">
       <Filter>Src\Application\GameObject\Character\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp">
-      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapManager.cpp">
-      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp">
-      <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.cpp">
-      <Filter>Src\Application\GameObject\Terrains\Map\FloorBase</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp">
-      <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp">
-      <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp">
       <Filter>Src\Application\GameObject\UI</Filter>
@@ -688,6 +679,33 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp">
       <Filter>Src\Application\GameObject\UI\HPBar</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMapManager.cpp">
+      <Filter>Src\Application\GameObject\UI\UIMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.cpp">
+      <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.cpp">
+      <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapManager.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\FloorBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\MapGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\Stairs</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
