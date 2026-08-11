@@ -10,7 +10,7 @@ class EnemyBase :public CharacterBase
 {
 public:
 	EnemyBase() {};
-	~EnemyBase() override {};
+	~EnemyBase() override { Release(); };
 
 	virtual void Init()override;
 	virtual void PreUpdate()override;
@@ -32,7 +32,11 @@ public:
 
 
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager);
+
+	float GetAngle() { return m_angle; }
 protected:
+
+	void Release()override;
 
 	void EnemyAnimeModeUpdate();
 

@@ -26,7 +26,15 @@ public:
 	void SetTileSiz(float _siz) { m_tileSiz = _siz; }
 
 	void SetAngle(float _angle) { m_angle = _angle; }
+
+	Math::Vector2 GetPos();
+
+	void SetMapTexSiz(Math::Vector2 _siz) { m_mapTexSiz = _siz; }
 private:
+
+	Math::Vector2 m_mapTexSiz = { };
+
+	float m_siz = 1.0f;
 
 	float m_angle;
 

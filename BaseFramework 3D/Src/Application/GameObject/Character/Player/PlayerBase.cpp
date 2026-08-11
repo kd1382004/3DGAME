@@ -156,6 +156,9 @@ void PlayerBase::PostUpdate()
 	if (spUIMap_Player)
 	{
 		spUIMap_Player->SetPlayer3DPos(m_pos);
+
+		float miniMapAngle = -(m_angle);
+		spUIMap_Player->SetAngle(miniMapAngle);
 	}
 
 }
@@ -177,6 +180,21 @@ void PlayerBase::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _N
 	if (m_spNextFloorAction)
 	{
 		m_spNextFloorAction->SetNextFloorGaugeUI(_NextFloorGaugeUI);
+	}
+}
+
+void PlayerBase::SetPos(const Math::Vector3& pos)
+{
+	m_pos = pos;
+	m_mWorld.Translation(m_pos);
+
+	std::shared_ptr<UIMap_Player>spUIMap_Player = m_wpUIMap_Player.lock();
+	if (spUIMap_Player)
+	{
+		spUIMap_Player->SetPlayer3DPos(m_pos);
+
+		float miniMapAngle = -(m_angle);
+		spUIMap_Player->SetAngle(miniMapAngle);
 	}
 }
 

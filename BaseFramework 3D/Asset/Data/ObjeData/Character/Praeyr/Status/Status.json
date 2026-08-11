@@ -9,7 +9,7 @@
         "baseDefensePowe": 0.0
     },
     "moveSpeed": {
-        "baseSpeed": 5.0,
+        "baseSpeed": 10.0,
         "runMovePowe": 5.0,
         "walkMovePowe": 3.0
     }

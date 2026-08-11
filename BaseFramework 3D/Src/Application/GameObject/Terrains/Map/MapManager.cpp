@@ -199,7 +199,7 @@ void MapManager::GenerateMap()
 		{
 			spUIMapManager->SetBase3DPos(basePos);
 			spUIMapManager->SetTileSiz(m_mapTileSiz);
-			/*spUIMapManager->GetUIMap_Map()->CreateNavMap(mapDate);	*/		
+			spUIMapManager->GetUIMap_Map()->PosListReset();
 
 			for (const auto& mapObj : m_mapObj)
 			{

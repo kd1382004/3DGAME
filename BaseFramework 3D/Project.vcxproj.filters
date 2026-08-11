@@ -184,6 +184,9 @@
     <Filter Include="Src\Application\GameObject\Terrains\Map\WallBase">
       <UniqueIdentifier>{d95d64b4-6d1e-4111-9013-db90df4ff7bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy">
+      <UniqueIdentifier>{a9b4d7f4-14bf-4d87-a274-a3b13d65a5e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -462,6 +465,9 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h">
       <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy\UIMap_Enemy.h">
+      <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -706,6 +712,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp">
       <Filter>Src\Application\GameObject\Terrains\Map\WallBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy\UIMap_Enemy.cpp">
+      <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -61,10 +61,10 @@ public:
 	// ・srcRect		… 元画像のRECT nullptrで全体
 	// ・color			… 色(RGBA) nullptrで色はセットしない(前回の描画時の色が使用される)
 	// ・pivot			… 基準点 0.0～1.0の範囲で指定する
-	void DrawTex(const KdTexture* tex, int x, int y, int w, int h, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f });
+	void DrawTex(const KdTexture* tex, int x, int y, int w, int h, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f }, const float& degree = 0);
 	void DrawTex(const std::weak_ptr<KdTexture> tex, int x, int y, int w, int h, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f })
 	{
-		if(tex.expired())return;
+		if (tex.expired())return;
 		DrawTex(tex.lock().get(), x, y, w, h, srcRect, color, pivot);
 	}
 
@@ -76,12 +76,18 @@ public:
 	// ・srcRect		… 元画像のRECT
 	// ・color			… 色(RGBA)
 	// ・pivot			… 基準点 0.0～1.0の範囲で指定する
-	void DrawTex(const KdTexture* tex, int x, int y, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f })
+	void DrawTex(const KdTexture* tex, int x, int y, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f }, const float& degree = 0)
 	{
 		if (tex == nullptr)return;
-		DrawTex(tex, x, y, tex->GetInfo().Width, tex->GetInfo().Height, srcRect, color, pivot);
+		DrawTex(tex, x, y, tex->GetInfo().Width, tex->GetInfo().Height, srcRect, color, pivot, degree);
 	}
-	void DrawTex(const std::weak_ptr<KdTexture> tex, int x, int y, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f })
+	void DrawTex(const std::weak_ptr<KdTexture> tex, int x, int y, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f }, const float& degree = 0)
+	{
+		if (tex.expired())return;
+		DrawTex(tex.lock().get(), x, y, tex.lock().get()->GetInfo().Width, tex.lock().get()->GetInfo().Height, srcRect, color, pivot, degree);
+	}
+
+	void DrawTex(const std::weak_ptr<KdTexture> tex, int x, int y, float degree, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f })
 	{
 		if (tex.expired())return;
 		DrawTex(tex.lock().get(), x, y, tex.lock().get()->GetInfo().Width, tex.lock().get()->GetInfo().Height, srcRect, color, pivot);
@@ -139,10 +145,10 @@ private:
 	// フォント描画
 	void DrawFont(std::shared_ptr<KdFontSprite>& fontSprite, const Math::Vector2& Pos, const Math::Color* color, const int antiAliasingFlag);
 
-	ID3D11VertexShader*		m_VS = nullptr;				// 頂点シェーダー
-	ID3D11InputLayout*		m_VLayout = nullptr;		// 頂点レイアウト
+	ID3D11VertexShader* m_VS = nullptr;				// 頂点シェーダー
+	ID3D11InputLayout* m_VLayout = nullptr;		// 頂点レイアウト
 
-	ID3D11PixelShader*		m_PS = nullptr;				// ピクセルシェーダー
+	ID3D11PixelShader* m_PS = nullptr;				// ピクセルシェーダー
 
 	// 定数バッファ
 	struct cbSprite {

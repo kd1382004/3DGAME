@@ -1,6 +1,7 @@
 ﻿#include "UIMapManager.h"
 #include"UIMap_Map/UIMap_Map.h"
 #include"UIMap_Player/UIMap_Player.h"
+#include"UIMap_Enemy/UIMap_Enemy.h"
 void UIMapManager::Init()
 {
 	m_basePos = { -600,350 };
@@ -11,15 +12,26 @@ void UIMapManager::Init()
 		m_UIMap_Map = std::make_shared<UIMap_Map>();
 		m_UIMap_Map->Init();
 		m_UIMap_Map->SetBasePos(m_basePos);
-	}
 
-	if (!m_UIMap_Player)
-	{
-		m_UIMap_Player = std::make_shared<UIMap_Player>();
-		m_UIMap_Player->Init();
-		m_UIMap_Player->SetBasePos(m_basePos);
-	}
 
+		if (!m_UIMap_Player)
+		{
+			m_UIMap_Player = std::make_shared<UIMap_Player>();
+			m_UIMap_Player->Init();
+			m_UIMap_Player->SetBasePos(m_basePos);
+			m_UIMap_Player->SetMapTexSiz(m_UIMap_Map->GetMapTexSiz());
+		}
+
+		if (!m_UIMap_Enemy)
+		{
+			m_UIMap_Enemy = std::make_shared<UIMap_EnemyManage>();
+			m_UIMap_Enemy->Init();
+			m_UIMap_Enemy->SetBasePos(m_basePos);
+			m_UIMap_Enemy->SetUIMap_Map(m_UIMap_Map);
+			m_UIMap_Enemy->SetMapTexSiz(m_UIMap_Map->GetMapTexSiz());
+		}
+
+	}
 }
 
 void UIMapManager::Update()
@@ -35,7 +47,13 @@ void UIMapManager::DrawSprite()
 {
 	if (m_UIMap_Map)
 	{
+		m_UIMap_Map->SetMinMapPlayerPos(m_UIMap_Player->GetPos());
 		m_UIMap_Map->DrawSprit();
+	}
+
+	if (m_UIMap_Enemy)
+	{
+		m_UIMap_Enemy->DrawSprit();
 	}
 
 	if (m_UIMap_Player)
@@ -57,6 +75,11 @@ void UIMapManager::SetBase3DPos(Math::Vector3 _base3DPos)
 	{
 		m_UIMap_Map->SetBase3DPos(m_base3DPos);
 	}
+
+	if (m_UIMap_Enemy)
+	{
+		m_UIMap_Enemy->SetBase3DPos(m_base3DPos);
+	}
 }
 
 void UIMapManager::SetTileSiz(float _siz)
@@ -68,4 +91,8 @@ void UIMapManager::SetTileSiz(float _siz)
 		m_UIMap_Player->SetTileSiz(m_tileSiz);
 	}
 
+	if (m_UIMap_Enemy)
+	{
+		m_UIMap_Enemy->SetTileSiz(m_tileSiz);
+	}
 }

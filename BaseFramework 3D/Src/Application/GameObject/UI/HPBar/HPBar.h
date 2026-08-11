@@ -28,6 +28,8 @@ public:
 	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
 
 	void SetSiz(float _siz) { m_siz = _siz; }
+
+	void Delete();
 private:
 
 	bool m_drawFlg = false;

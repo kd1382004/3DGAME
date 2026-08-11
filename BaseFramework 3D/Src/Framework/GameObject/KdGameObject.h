@@ -121,7 +121,7 @@ public:
 protected:
 
 
-	void Release() {}
+	virtual void Release() {}
 
 	// 描画タイプ・何の描画を行うのかを決める / 最適な描画リスト作成用
 	UINT m_drawType = 0;

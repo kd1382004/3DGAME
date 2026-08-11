@@ -139,24 +139,21 @@ void KdSpriteShader::End()
 	KdShaderManager::Instance().UndoRasterizerState();
 }
 
-void KdSpriteShader::DrawTex(const KdTexture* tex, int x, int y, int w, int h, const Math::Rectangle* srcRect, const Math::Color* color, const Math::Vector2& pivot)
+void KdSpriteShader::DrawTex(const KdTexture* tex, int x, int y, int w, int h, const Math::Rectangle* srcRect, const Math::Color* color, const Math::Vector2& pivot, const float& degree)
 {
-	if (tex == nullptr)return;
+	if (!tex) return;
 
-	// もし開始していない場合は開始する(最後にEnd())
 	bool bBgn = m_isBegin;
-	if (!bBgn)Begin();
+	if (!bBgn) Begin();
 
-	// テクスチャ(ShaderResourceView)セット
 	KdDirect3D::Instance().WorkDevContext()->PSSetShaderResources(0, 1, tex->WorkSRViewAddress());
 
-	// 色
 	if (color) {
 		m_cb0.Work().Color = *color;
 	}
 	m_cb0.Write();
 
-	// UV
+	// UV計算（既存）
 	Math::Vector2 uvMin = { 0, 0 };
 	Math::Vector2 uvMax = { 1, 1 };
 	if (srcRect)
@@ -168,35 +165,49 @@ void KdSpriteShader::DrawTex(const KdTexture* tex, int x, int y, int w, int h, c
 		uvMax.y = (srcRect->y + srcRect->height) / (float)tex->GetInfo().Height;
 	}
 
-	// 頂点作成
-	float x1 = (float)x;
-	float y1 = (float)y;
-	float x2 = (float)(x + w);
-	float y2 = (float)(y + h);
+	// ★ 回転の準備
+	float rad = DirectX::XMConvertToRadians(degree);
+	float cosA = cosf(rad);
+	float sinA = sinf(rad);
 
-	// 基準点(Pivot)ぶんずらす
-	x1 -= pivot.x * w;
-	x2 -= pivot.x * w;
-	y1 -= pivot.y * h;
-	y2 -= pivot.y * h;
+	// ★ pivot を考慮したローカル座標（中心基準）
+	float cx = w * pivot.x;
+	float cy = h * pivot.y;
 
-	Vertex vertex[] = {
-		{ {x1, y1, 0},	{uvMin.x, uvMax.y} },
-		{ {x1, y2, 0},	{uvMin.x, uvMin.y} },
-		{ {x2, y1, 0},	{uvMax.x, uvMax.y} },
-		{ {x2, y2, 0},	{uvMax.x, uvMin.y} }
-
+	// ★ 4頂点のローカル座標
+	Math::Vector2 local[4] =
+	{
+		{ -cx,     -cy     }, // 左上
+		{ -cx,      h - cy }, // 左下
+		{ w - cx,  -cy     }, // 右上
+		{ w - cx,   h - cy }  // 右下
 	};
 
-	// 描画
+	// ★ 回転してスクリーン座標へ
+	Math::Vector2 screen[4];
+	for (int i = 0; i < 4; i++)
+	{
+		float rx = local[i].x * cosA - local[i].y * sinA;
+		float ry = local[i].x * sinA + local[i].y * cosA;
+
+		screen[i].x = x + rx;
+		screen[i].y = y + ry;
+	}
+
+	// 頂点作成
+	Vertex vertex[] = {
+		{ {screen[0].x, screen[0].y, 0}, {uvMin.x, uvMax.y} },
+		{ {screen[1].x, screen[1].y, 0}, {uvMin.x, uvMin.y} },
+		{ {screen[2].x, screen[2].y, 0}, {uvMax.x, uvMax.y} },
+		{ {screen[3].x, screen[3].y, 0}, {uvMax.x, uvMin.y} }
+	};
+
 	KdDirect3D::Instance().DrawVertices(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
 
-	// セットしたテクスチャを解除しておく
 	ID3D11ShaderResourceView* srv = nullptr;
 	KdDirect3D::Instance().WorkDevContext()->PSSetShaderResources(0, 1, &srv);
 
-	// この関数でBeginした場合は、Endしておく
-	if (!bBgn)End();
+	if (!bBgn) End();
 }
 
 void KdSpriteShader::DrawPoint(int x, int y, const Math::Color* color)

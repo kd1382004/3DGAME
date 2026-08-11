@@ -112,6 +112,11 @@ void HPBar::SetHPBarTexPercent(float _percent)
 
 }
 
+void HPBar::Delete()
+{
+	m_isExpired = true;
+}
+
 void HPBar::HPBarDelayPreDraw()
 {
 	if (m_HPBarTexProgres <= 0) { return; }

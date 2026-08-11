@@ -239,6 +239,15 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	}
 }
 
+void EnemyBase::Release()
+{
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		spHPBar->Delete();
+	}
+}
+
 void EnemyBase::EnemyAnimeModeUpdate()
 {
 	if (!m_spAnimetor) { return; }

@@ -12,6 +12,7 @@ public:
 
 	void Init()override;
 
+	void PreUpdate()override;
 	void Update()override;
 
 	void PreDraw()override;

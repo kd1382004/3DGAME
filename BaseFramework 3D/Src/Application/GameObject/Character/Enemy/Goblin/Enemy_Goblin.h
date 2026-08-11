@@ -8,7 +8,7 @@ class Goblin :public EnemyAmbush
 {
 public:
 	Goblin() {};
-	~Goblin()override {};
+	~Goblin()override { Release(); };
 
 
 	void Init()override;

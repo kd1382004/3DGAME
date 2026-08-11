@@ -30,6 +30,26 @@ void UIManager::Init()
 
 }
 
+void UIManager::PreUpdate()
+{
+	// Updateの前の更新処理
+	// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
+	auto it = m_spUIList.begin();
+
+	while (it != m_spUIList.end())
+	{
+		if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+		{
+			// 無効なオブジェクトをリストから削除
+			it = m_spUIList.erase(it);
+		}
+		else
+		{
+			++it;	// 次の要素へイテレータを進める
+		}
+	}
+}
+
 void UIManager::Update()
 {
 	for (auto UI : m_spUIList)

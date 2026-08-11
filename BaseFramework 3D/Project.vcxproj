@@ -299,6 +299,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\UIBase.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIManager.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMapManager.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy\UIMap_Enemy.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
@@ -386,6 +387,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMapManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy\UIMap_Enemy.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp" />

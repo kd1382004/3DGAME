@@ -34,6 +34,7 @@ public:
 
 	void SetWepon(const std::shared_ptr<WeaponBase>& _wepon) { m_wpWepon = _wepon; }
 
+	void SetPos(const Math::Vector3& pos)override;
 
 
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager);

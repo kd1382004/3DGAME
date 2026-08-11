@@ -4,6 +4,10 @@
 #include"Goblin/Enemy_Goblin.h"
 
 #include"../../Terrains/Map/MapManager.h"
+
+#include"../../UI/UIManager.h"
+#include"../../UI/UIMap/UIMapManager.h"
+#include"../../UI/UIMap/UIMap_Enemy/UIMap_Enemy.h"
 void EnemyManager::Init()
 {
 	SetEnemyListPlayer();
@@ -35,9 +39,20 @@ void EnemyManager::PostUpdate()
 
 void EnemyManager::PreDraw()
 {
-	for (const auto& enemy : m_enemyList)
+	std::shared_ptr<UIManager>spUIManager = m_wpUIManager.lock();
+	if (spUIManager)
 	{
-		enemy->PreDraw();
+		std::shared_ptr<UIMapManager>spUIMapManager = spUIManager->GetUIMapManager();
+		if (spUIMapManager)
+		{
+
+			spUIMapManager->GetUIMap_Enemy()->PosListRiseto();
+			for (const auto& enemy : m_enemyList)
+			{
+				enemy->PreDraw();
+				spUIMapManager->GetUIMap_Enemy()->SetEnemyPosAngleList(enemy->GetPos(), enemy->GetAngle());
+			}
+		}
 	}
 }
 
