@@ -40,6 +40,18 @@ public:
 
 
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager);
+
+
+	//攻撃をくらった処理
+	//_damage ... ダメージ量
+	//_knockbackDistance ... ふっとばし距離
+	//_knockbackDir ... ふっとばし方向
+	// _hitStunTime ... のけぞり時間
+	//_isCritical ... クリティカルかどうか
+	//__ignoreRate ... 防御無視
+	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)override;
+
+
 protected:
 
 	std::weak_ptr<GameScene> m_wpGameScene;
@@ -75,6 +87,9 @@ protected:
 
 		//ダッシュ
 		int dash = VK_SHIFT;
+
+		//回避
+		int evasion = VK_RBUTTON;
 
 		//攻撃
 		int attack = VK_LBUTTON;
@@ -153,6 +168,7 @@ protected:
 		std::string PickUpAnime = "PickUp";
 		std::string SwordAttackAnime = "Dagger_Attack";
 		std::string PunchAttackAnime = "Punch";
+		std::string EvasionAnime = "Roll";
 	};
 
 	enum PlayerAnimeMode
@@ -162,7 +178,8 @@ protected:
 		RunAnime,
 		PickUpAnime,
 		SwordAttackAnime,
-		PunchAttackAnime
+		PunchAttackAnime,
+		RollAnime,
 	};
 
 	PlayerAnimeName m_playerAnimeName;
@@ -195,4 +212,16 @@ protected:
 	bool ConsumeStamina(float _amount);
 
 	void StaminaManager();
+
+	///////////////////////////////////
+	//回避
+	bool m_evasionAnimeFlg = false;
+	bool m_evasionFlg = false;
+	float m_evasionCost = 10;
+	float m_evasionSpeed = 10;
+
+	const float m_kEvasionAccelEnd = 0.3f;
+	const float m_kEvasionMaxSpeedEnd = 0.8f;
+
+	void EvasionUpdate();
 };

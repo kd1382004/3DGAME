@@ -42,7 +42,7 @@ public:
 	// _hitStunTime ... のけぞり時間
 	//_isCritical ... クリティカルかどうか
 	//__ignoreRate ... 防御無視
-	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate);
+	virtual void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate);
 
 
 	virtual void AddUIList(std::shared_ptr<UIManager>_spUIManager);

@@ -36,6 +36,7 @@ void PlayerBase::Init()
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveBackward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.jump);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.dash);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.evasion);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.interact);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.attack);
 
@@ -97,6 +98,9 @@ void PlayerBase::Update()
 	//ジャンプ&重力処理
 	JumpAndGravity();
 
+	//回避
+	EvasionUpdate();
+
 	if (m_spNextFloorAction)
 	{
 		//次の階に行くアクション
@@ -114,23 +118,15 @@ void PlayerBase::Update()
 	}
 
 
-	static float m_slowTimer = 0;
+	//static float m_slowTimer = 0;
 
-	if (GetAsyncKeyState(VK_RBUTTON))
+	if (GetAsyncKeyState(VK_LBUTTON))
 	{
 		m_nowPlayerAnimeMode = PlayerBase::PunchAttackAnime;
 		DeltaTime::Instance().SetTimeScale(0.1f); // 10%速度にする（重いスロー）
-		m_slowTimer = 2;
+		DeltaTime::Instance().SetSlowTimer(2);
 	}
 
-	if (m_slowTimer > 0.0f)
-	{
-		m_slowTimer -= DeltaTime::Instance().GetRealDeltaTime();
-		if (m_slowTimer <= 0.0f)
-		{
-			DeltaTime::Instance().SetTimeScale(1.0f); // 通常速度に戻す
-		}
-	}
 
 	WeaponUpdate();
 
@@ -226,11 +222,52 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		spStaminaGage->SetSiz(2);
 		m_wpStaminaGage = spStaminaGage;
 		_spUIManager->AddUIObj(spStaminaGage);
-		
+
 	}
 
 
 
+}
+
+void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
+{
+	if (m_evasionFlg)
+	{
+		DeltaTime::Instance().SetTimeScale(0.1f);
+		DeltaTime::Instance().SetSlowTimer(2);
+
+		//回避成功演出入れる
+
+		return;
+	}
+
+
+	// ダメージ処理
+	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
+
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		spHPBar->SetHPBarTexPercent(percent);
+	}
+
+	// のけぞり
+	if (_hitStunTime > 0)
+	{
+		m_hitStunTimer = _hitStunTime;
+		m_hitStunFlg = true;
+	}
+
+	// ふっとばし
+	if (_knockbackDistance > 0)
+	{
+		m_knockbackEndPos = m_pos + _knockbackDir * _knockbackDistance;
+		m_knockbackStartPos = m_pos;
+		m_knockbackSpeed = 1;
+		m_isKnockbackFlg = true;
+		m_knockbackProgress = 0;
+	}
 }
 
 void PlayerBase::WeaponUpdate()
@@ -304,6 +341,12 @@ void PlayerBase::LoadKeyConfig(std::string _filePath)
 		cfg.dash = ans;
 	}
 
+	ans = getInt("evasion");
+	if (ans != -999)
+	{
+		cfg.evasion = ans;
+	}
+
 	ans = getInt("attack");
 	if (ans != -999)
 	{
@@ -329,6 +372,7 @@ void PlayerBase::SaveKeyConfig(std::string _filePath)
 	data["moveLeft"] = m_keyConfig.moveLeft;
 	data["jump"] = m_keyConfig.jump;
 	data["dash"] = m_keyConfig.dash;
+	data["evasion"] = m_keyConfig.evasion;
 	data["attack"] = m_keyConfig.attack;
 	data["interact"] = m_keyConfig.interact;
 
@@ -343,6 +387,9 @@ void PlayerBase::Move()
 
 	//ふっとばしなら移動できない
 	if (m_isKnockbackFlg) { return; }
+
+	//回避中は移動できない
+	if (m_evasionAnimeFlg) { return; }
 
 
 	//////////////////////////////////////////////////////////////
@@ -449,8 +496,8 @@ void PlayerBase::MoveNowSpeedDecision()
 
 void PlayerBase::JumpAndGravity()
 {
-	//スタンならorふっとばしなら　移動できない
-	if (m_hitStunFlg || m_isKnockbackFlg)
+	//スタンならorふっとばし or 回避中 なら　移動できない
+	if (m_hitStunFlg || m_isKnockbackFlg || m_evasionAnimeFlg)
 	{
 		m_pos.y -= m_Gravity;
 		m_Gravity += m_gravityPower;
@@ -499,11 +546,23 @@ void PlayerBase::PlayerAnimeModeUpdate()
 	case PlayerBase::PickUpAnime:
 	case PlayerBase::SwordAttackAnime:
 	case PlayerBase::PunchAttackAnime:
+	case PlayerBase::RollAnime:
 
 		if (!m_spAnimetor->IsAnimationEnd())
 		{
 			m_nowPlayerAnimeMode = m_oldPlayerAnimeMode;
 		}
+		else
+		{
+
+			if (m_evasionAnimeFlg)
+			{
+				m_evasionAnimeFlg = false;
+			}
+		}
+
+
+
 
 		break;
 	default:
@@ -531,6 +590,9 @@ void PlayerBase::PlayerAnimeModeUpdate()
 			break;
 		case PlayerBase::PunchAttackAnime:
 			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.PunchAttackAnime), false);
+			break;
+		case PlayerBase::RollAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.EvasionAnime), false);
 			break;
 		default:
 			break;
@@ -590,7 +652,62 @@ void PlayerBase::StaminaManager()
 	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
 	if (spStaminaGage)
 	{
-		spStaminaGage->SetStaminaBarTexPercent(m_staminaNow/ m_staminaMax);
+		spStaminaGage->SetStaminaBarTexPercent(m_staminaNow / m_staminaMax);
 	}
+
+}
+
+void PlayerBase::EvasionUpdate()
+{
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.evasion, true))
+	{
+
+		if (!m_evasionAnimeFlg && ConsumeStamina(m_evasionCost))
+		{
+			m_evasionAnimeFlg = true;
+			m_evasionFlg = true;
+			m_nowPlayerAnimeMode = PlayerBase::RollAnime;
+
+			std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
+			if (camera)
+			{
+				m_moveVec = { 0,0,1 };
+				m_moveVec = Math::Vector3::TransformNormal(m_moveVec, camera->GetRotationYMatrix());
+				m_moveVec.y = 0;
+				m_moveVec.Normalize();
+			}
+		}
+	}
+
+	if (m_evasionAnimeFlg)
+	{
+		float t = m_spAnimetor->GetAnimeProgress();
+
+		// 回避の速度カーブ
+		float evasionSpeed = 0.0f;
+
+		if (t < m_kEvasionAccelEnd)
+		{
+			evasionSpeed = 0.0f + (m_evasionSpeed - 0.0) * t / m_kEvasionAccelEnd;
+		}
+		else if (t < m_kEvasionMaxSpeedEnd)
+		{
+			evasionSpeed = m_evasionSpeed; // 最大速度
+		}
+		else
+		{
+			m_evasionFlg = false;
+			evasionSpeed = m_evasionSpeed + (0.0 - m_evasionSpeed) * (t - m_kEvasionMaxSpeedEnd) / (1.0 - m_kEvasionMaxSpeedEnd);
+		}
+
+		float dt = DeltaTime::Instance().GetGameDeltaTime();
+		Math::Vector3 nextPos = m_pos + m_moveVec * evasionSpeed * dt;
+
+		if (!RaycastFromTo(nextPos))
+		{
+			m_pos = nextPos;
+		}
+	}
+
 
 }

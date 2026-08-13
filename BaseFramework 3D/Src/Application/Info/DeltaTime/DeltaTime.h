@@ -12,6 +12,12 @@ public:
 
 		m_realDeltaTaime = realDelta;
 
+		m_slowTimer -= DeltaTime::Instance().GetRealDeltaTime();
+		if (m_slowTimer <= 0.0f)
+		{
+			SetTimeScale(1.0f);
+		}
+
 		// ヒットストップ中なら時間を止める
 		if (m_hitStopTimer > 0.0f)
 		{
@@ -37,6 +43,11 @@ public:
 		m_timeScale = scale;
 	}
 
+	void SetSlowTimer(float slowTimer)
+	{
+		m_slowTimer = slowTimer;
+	}
+
 private:
 	DWORD m_prevTime = timeGetTime();
 	float m_gameDeltaTime = 0.0f;
@@ -45,6 +56,10 @@ private:
 	float m_maxDelta = 0.033f; // 最大33ms
 
 	float m_realDeltaTaime = 0;
+
+
+
+	float m_slowTimer = 0;
 	//=====================================================
 	// シングルトンパターン
 	//=====================================================

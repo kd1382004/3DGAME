@@ -80,6 +80,16 @@ public:
 		return m_spAnimation->m_maxLength;
 	}
 
+
+	//自分追加
+	//アニメーション進み具合(0.0～1.0)
+	float GetAnimeProgress()
+	{
+		if (!m_spAnimation) { return 0.0f; }
+
+		return m_time / m_spAnimation->m_maxLength;
+	}
+
 private:
 
 	std::shared_ptr<KdAnimationData>	m_spAnimation = nullptr;	// 再生するアニメーションデータ

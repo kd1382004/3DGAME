@@ -32,7 +32,7 @@ void StaminaGage::Update()
 
 void StaminaGage::PreDraw()
 {
-	m_staminaBarTexColor =kBlueColor;
+	m_staminaBarTexColor = Math::Color{ 1.0f,0.9f,0.1f,1.0f };
 	m_staminaBarTexRect = { 0,0,(long)m_staminaBarTexLength.x * (long)m_staminaBarTexPercent,(long)m_staminaBarTexLength.y };
 }
 

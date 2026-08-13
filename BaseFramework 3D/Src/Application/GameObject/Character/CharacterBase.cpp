@@ -466,8 +466,6 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
 		if (spGameObj)
 		{
-			float dist = (GetPos() - spGameObj->GetPos()).Length();
-
 			std::list<KdCollider::CollisionResult> retRayList;
 			spGameObj->Intersects(rayInfo, &retRayList);
 
