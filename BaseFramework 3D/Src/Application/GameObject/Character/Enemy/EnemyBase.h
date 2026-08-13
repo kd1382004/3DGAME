@@ -120,6 +120,8 @@ protected:
 	//アニメーション変更フラグ
 	bool m_AnimeChangeFlg = false;
 
+	void SetDead();
+
 private:
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;

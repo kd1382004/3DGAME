@@ -47,7 +47,11 @@ void HPBar::PreDraw()
 	HPBarDelayPreDraw();
 
 	m_HPBarTexColor = kGreenColor;
-	m_HPBarTexRect = { 0,0,(long)m_HPBarTexLength.x * (long)m_HPBarTexPercent,(long)m_HPBarTexLength.y };
+	m_HPBarTexRect = { 0, 0, static_cast<long>(m_HPBarTexLength.x * m_HPBarTexPercent), static_cast<long>(m_HPBarTexLength.y) };
+
+	//遅延バーの座標補正
+	float HPBarDelayOffset = m_HPBarTexLength.x * m_siz * m_HPBarTexPercent;
+	m_HPBarDelayTex2DPos = { m_HPBarTex2DPos.x + HPBarDelayOffset, m_HPBarTex2DPos.y };
 }
 
 
@@ -100,15 +104,13 @@ void HPBar::SetHPBarTexPercent(float _percent)
 	m_HPBarDelayTex2DPos.x = m_HPBarTex2DPos.x + HPBarDelayOffset;
 
 	// rectを計算
-	long totalSrcWidth = (long)m_HPBarTexLength.x;
-	long HPBarDelayPixels = totalSrcWidth * percent;
-	long w = totalSrcWidth - HPBarDelayPixels;
-
-	long left = HPBarDelayPixels;
+	float totalSrcWidth = m_HPBarTexLength.x;
+	long left = static_cast<long>(totalSrcWidth * percent);
+	long w = static_cast<long>(totalSrcWidth * m_HPBarDelayTexPercent);
 	long top = 0;
-	long height = (long)m_HPBarTexLength.y;
+	long height = static_cast<long>(m_HPBarTexLength.y);
 	m_HPBarDelayTexRect = { left, top, w, height };
-	m_HPBarTexProgres = 1;
+	m_HPBarTexProgres = 1.0f;
 
 }
 

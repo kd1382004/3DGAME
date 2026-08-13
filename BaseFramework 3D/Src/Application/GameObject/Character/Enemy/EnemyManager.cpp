@@ -15,6 +15,23 @@ void EnemyManager::Init()
 
 void EnemyManager::PreUpdate()
 {
+	auto it = m_enemyList.begin();
+
+	while (it != m_enemyList.end())
+	{
+		if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+		{
+			// 無効なオブジェクトをリストから削除
+			it = m_enemyList.erase(it);
+		}
+		else
+		{
+			++it;	// 次の要素へイテレータを進める
+		}
+	}
+
+
+
 	for (const auto& enemy : m_enemyList)
 	{
 		enemy->PreUpdate();

@@ -19,8 +19,30 @@ public:
 	void SetParentMatrix(Math::Matrix _mat) { m_weponParentMat = _mat; }
 	void SetParentRotation(Math::Vector3 _rot) { m_weponParentRot = _rot; }
 
+	void SetAttackFlg(bool _flg);
 
+	void AddAttackHitCharacterList(std::shared_ptr<CharacterBase>_character) { m_attackHitCharacterList.push_back(_character); }
+
+	void ClearAttackHitCharacterList() { m_attackHitCharacterList.clear(); }
+	
+	//attackHitCharacterListの中から一番近い対象の座標を返す
+	Math::Vector3 GetCloseAttackHitCharacter();
+
+	void SetCharacterAttackPower(float _power) { m_characterAttackPower = _power; }
 protected:
+
+	float m_characterAttackPower = 0;
+
+	//攻撃判定を出すか
+	bool m_attackFlg = false;
+
+	//あたり判定をするリスト
+	std::list<std::weak_ptr<CharacterBase>>m_attackHitCharacterList;
+
+	//既に当たったキャラリスト
+	std::list<std::weak_ptr<CharacterBase>>m_hitCharactersList;
+
+
 
 	std::shared_ptr<KdModelWork> m_spWeaponModel = nullptr;
 

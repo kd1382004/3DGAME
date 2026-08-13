@@ -1,4 +1,4 @@
-﻿#include "StaminaGage.h"
+#include "StaminaGage.h"
 
 void StaminaGage::Init()
 {
@@ -33,7 +33,7 @@ void StaminaGage::Update()
 void StaminaGage::PreDraw()
 {
 	m_staminaBarTexColor = Math::Color{ 1.0f,0.9f,0.1f,1.0f };
-	m_staminaBarTexRect = { 0,0,(long)m_staminaBarTexLength.x * (long)m_staminaBarTexPercent,(long)m_staminaBarTexLength.y };
+	m_staminaBarTexRect = { 0, 0, static_cast<long>(m_staminaBarTexLength.x * m_staminaBarTexPercent), static_cast<long>(m_staminaBarTexLength.y) };
 }
 
 void StaminaGage::DrawSprite()

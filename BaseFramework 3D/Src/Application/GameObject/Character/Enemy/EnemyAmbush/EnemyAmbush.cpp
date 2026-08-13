@@ -10,6 +10,9 @@ void EnemyAmbush::Init()
 
 void EnemyAmbush::Update()
 {
+	if (m_isDead) { return; }
+
+
 	if (!m_playerChaseFlg)
 	{
 		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;

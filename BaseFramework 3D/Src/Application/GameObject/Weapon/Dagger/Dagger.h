@@ -18,4 +18,6 @@ private:
 	//武器の先端のローカル座標
 	Math::Vector3 tipLocalPos = {0,m_weaponLength,0};
 
+	//初ヒットか
+	bool Hit(std::shared_ptr<CharacterBase> _chara);
 };

@@ -92,8 +92,16 @@ void CharacterBase::ImGUI()
 
 void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
 {
+	if (m_isDead) { return; }
+
 	// ダメージ処理
 	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
+
+	if (m_status.HP.nowHP <= 0)
+	{
+		m_isDead = true;
+		SetDead();
+	}
 
 
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
@@ -498,6 +506,11 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 	}
 
 	return hit;
+}
+
+void CharacterBase::SetDead()
+{
+
 }
 
 void CharacterBase::SaveCharaStatus(std::string _filePath)

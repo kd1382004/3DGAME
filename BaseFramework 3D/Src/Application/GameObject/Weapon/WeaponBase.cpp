@@ -2,6 +2,8 @@
 
 #include"../Character/CharacterBase.h"
 
+
+#include"../../Scene/SceneManager.h"
 void WeaponBase::Init()
 {
 	LoadWeaponStatus(m_WeaponStatusFilePath);
@@ -11,7 +13,6 @@ void WeaponBase::Init()
 void WeaponBase::Update()
 {
 	m_mWorld = m_localMat * m_weponParentMat;
-	
 }
 
 void WeaponBase::DrawLit()
@@ -20,6 +21,48 @@ void WeaponBase::DrawLit()
 
 void WeaponBase::CreateWeaponHitCollider()
 {
+}
+
+void WeaponBase::SetAttackFlg(bool _flg)
+{
+	m_attackFlg = _flg; 
+
+	if (m_attackFlg)
+	{
+		m_hitCharactersList.clear();
+	}
+
+}
+
+Math::Vector3 WeaponBase::GetCloseAttackHitCharacter()
+{
+	Math::Vector3 ClosePos;
+
+	float nearestDist = FLT_MAX;
+
+
+	
+	for (auto& wpGameObj : m_attackHitCharacterList)
+	{
+		auto spGameObj = wpGameObj.lock();
+		if (!spGameObj) continue;
+
+		float dist = (spGameObj->GetPos() - GetPos()).Length();
+
+		dist = abs(dist);
+
+
+		if (dist < nearestDist)
+		{
+			nearestDist = dist;
+			ClosePos = spGameObj->GetPos();
+		}
+
+
+	}
+
+
+	return ClosePos;
 }
 
 void WeaponBase::LoadWeaponStatus(const std::string& filePath)

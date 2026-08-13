@@ -49,17 +49,21 @@ void GameScene::Event()
 	}
 
 	///////////////////////////////////////////////////
+	if (m_spWeapon)
+	{
+		m_spWeapon->ClearAttackHitCharacterList();
+	}
 	//敵同士のあたり判定
 	auto& enemies = m_spEnemyManager->GetEnemyList();
 
-	for (auto itA = enemies.begin(); itA != enemies.end(); ++itA)
+	for (auto itA = enemies.begin(); itA != enemies.end(); itA++)
 	{
 		auto itB = itA;
-		++itB;
-
-		for (; itB != enemies.end(); ++itB)
+		itB++;
+		auto enemyA = *itA;
+		for (; itB != enemies.end(); itB++)
 		{
-			auto enemyA = *itA;
+			
 			auto enemyB = *itB;
 
 			Math::Vector3 dic = enemyA->GetPos() - enemyB->GetPos();
@@ -68,6 +72,18 @@ void GameScene::Event()
 				enemyA->RegistHitObject(enemyB);
 			}
 		}
+
+
+		//武器とのあたり判定
+		if (m_spWeapon)
+		{
+			Math::Vector3 dic = enemyA->GetPos() - m_spWeapon->GetPos();
+			if (dic.Length() < 10)
+			{
+				m_spWeapon->AddAttackHitCharacterList(enemyA);
+			}
+		}
+
 	}
 }
 
@@ -94,9 +110,9 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	//武器
 	/////////////////////////////////////////
-	std::shared_ptr<WeaponBase> spWeapon = std::make_shared<Dagger>();
-	spWeapon->Init();
-	m_objList.push_back(spWeapon);
+	m_spWeapon = std::make_shared<Dagger>();
+	m_spWeapon->Init();
+	m_objList.push_back(m_spWeapon);
 
 	/////////////////////////////////////////
 	//敵
@@ -135,7 +151,7 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spPlayer->SetCamera(camera);
 	m_spPlayer->SetGameScene(self);
-	m_spPlayer->SetWepon(spWeapon);
+	m_spPlayer->SetWepon(m_spWeapon);
 	m_spPlayer->AddUIList(spUIManager);
 
 	/////////////////////////////////////////

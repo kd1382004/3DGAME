@@ -398,3 +398,9 @@ void EnemyBase::ReturnSpawnPos()
 		}
 	}
 }
+
+void EnemyBase::SetDead()
+{
+	m_AnimeChangeFlg = true;
+	m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Die;
+}

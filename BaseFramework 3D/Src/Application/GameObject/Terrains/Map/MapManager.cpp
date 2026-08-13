@@ -1,14 +1,18 @@
 ﻿#include "MapManager.h"
-#include"MapBase.h"
-#include"MapGenerate/MapGenerate.h"
-#include"../../Camera/CameraBase.h"
-#include"../../Character/Player/PlayerBase.h"
-#include"../../Character/Enemy/EnemyBase.h"
-#include"../../Character/Enemy/EnemyManager.h"
+#include "MapBase.h"
+#include "MapGenerate/MapGenerate.h"
+#include "../../Camera/CameraBase.h"
+#include "../../Character/Player/PlayerBase.h"
+#include "../../Character/Enemy/EnemyBase.h"
+#include "../../Character/Enemy/EnemyManager.h"
+#include "../../UI/UIManager.h"
+#include "../../UI/UIMap/UIMapManager.h"
+#include "../../UI/UIMap/UIMap_Map/UIMap_Map.h"
 
-#include"../../UI/UIManager.h"
-#include"../../UI/UIMap/UIMapManager.h"
-#include"../../UI/UIMap/UIMap_Map/UIMap_Map.h"
+#include <algorithm>
+#include <cmath>
+#include <cfloat>
+#include <random>
 
 void MapManager::Init()
 {
@@ -25,10 +29,7 @@ void MapManager::Update()
 
 void MapManager::PostUpdate()
 {
-	/*for (const auto& mapObj : m_mapObj)
-	{
-		mapObj->PostUpdate();
-	}*/
+
 }
 
 void MapManager::DrawLit()
@@ -55,16 +56,16 @@ void MapManager::GenerateDepthMapFromLight()
 	}
 }
 
-void MapManager::MapHit(std::shared_ptr<KdGameObject> obj)
+void MapManager::MapHit(const std::shared_ptr<KdGameObject>& obj)
 {
 	if (!obj) { return; }
 
-	//あたり判定リストをクリア
+	// 当たり判定リストをクリア
 	obj->ClearHitObjectList();
-	Math::Vector3 objPos = obj->GetPos();
-	const float hitCheckDistSq = 15.0f * 15.0f;
+	const Math::Vector3 objPos = obj->GetPos();
+	constexpr float hitCheckDistSq = 15.0f * 15.0f;
 
-	//近くにあるオブジェクトだけを新たに登録
+	// 近くにあるオブジェクトだけを新たに登録
 	for (const auto& mapObj : m_mapObj)
 	{
 		if (!mapObj) continue;
@@ -76,36 +77,19 @@ void MapManager::MapHit(std::shared_ptr<KdGameObject> obj)
 	}
 }
 
-void MapManager::MapHitEnemy(std::shared_ptr<EnemyBase> obj)
+void MapManager::MapHitEnemy(const std::shared_ptr<EnemyBase>& obj)
 {
-	if (!obj) { return; }
-
-	//あたり判定リストをクリア
-	obj->ClearHitObjectList();
-	Math::Vector3 objPos = obj->GetPos();
-	const float hitCheckDistSq = 15.0f * 15.0f;
-
-	//近くにあるオブジェクトだけを新たに登録
-	for (const auto& mapObj : m_mapObj)
-	{
-		if (!mapObj) continue;
-		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
-		if (distSq <= hitCheckDistSq)
-		{
-			obj->RegistHitObject(mapObj);
-		}
-	}
+	MapHit(obj);
 }
 
-void MapManager::SetCamera(std::shared_ptr<CameraBase> _spCamera)
+void MapManager::SetCamera(const std::shared_ptr<CameraBase>& spCamera)
 {
-	m_wpCamera = _spCamera;
+	m_wpCamera = spCamera;
 
 	for (const auto& mapObj : m_mapObj)
 	{
-		mapObj->SetCamera(_spCamera);
-
-		_spCamera->ResolveCameraOcclusionObject(mapObj);
+		mapObj->SetCamera(spCamera);
+		spCamera->ResolveCameraOcclusionObject(mapObj);
 	}
 }
 
@@ -113,28 +97,25 @@ void MapManager::GenerateMap()
 {
 	m_mapObj.clear();
 
-	std::shared_ptr<MapGenerate>map = std::make_shared<MapGenerate>();
+	std::shared_ptr<MapGenerate> map = std::make_shared<MapGenerate>();
 
-	std::vector<std::vector<int>> mapDate;
+	std::vector<std::vector<int>> mapData;
 
-
-	float mapW = 50;
-	float mapH = 50;
-
+	float mapW = 50.0f;
+	float mapH = 50.0f;
 
 	Math::Vector3 basePos;
-	mapDate = map->Generate({ mapH,mapW }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj, &m_playerSpawnPos,&basePos);
+	mapData = map->Generate({ mapH, mapW }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj, &m_playerSpawnPos, &basePos);
 
-	CreateNodeGrid(mapW, mapH,m_mapTileSiz);
-	ApplyWalkableFromMap(mapDate);
+	CreateNodeGrid(static_cast<int>(mapW), static_cast<int>(mapH), m_mapTileSiz);
+	ApplyWalkableFromMap(mapData);
 
 	if (!m_wpCamera.expired())
 	{
 		SetCamera(m_wpCamera.lock());
 	}
 
-	std::shared_ptr<PlayerBase>spPlayerBase = m_wpPlayerBase.lock();
-
+	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
 	if (spPlayerBase)
 	{
 		for (const auto& mapObj : m_mapObj)
@@ -143,8 +124,8 @@ void MapManager::GenerateMap()
 		}
 	}
 
-	//敵の生成
-	std::shared_ptr<EnemyManager>spEnemyManager = m_wpEnemyManager.lock();
+	// 敵の生成
+	std::shared_ptr<EnemyManager> spEnemyManager = m_wpEnemyManager.lock();
 	if (spEnemyManager)
 	{
 		const auto& mapRoomList = map->GetRoomInfoList();
@@ -186,15 +167,11 @@ void MapManager::GenerateMap()
 		}
 	}
 
-
-
-	//UIのマップ生成
-	std::shared_ptr<UIManager>spUIManager = m_wpUIManager.lock();
+	// UIのマップ生成
+	std::shared_ptr<UIManager> spUIManager = m_wpUIManager.lock();
 	if (spUIManager)
 	{
-		
-
-		std::shared_ptr<UIMapManager>spUIMapManager= spUIManager->GetUIMapManager();
+		std::shared_ptr<UIMapManager> spUIMapManager = spUIManager->GetUIMapManager();
 		if (spUIMapManager)
 		{
 			spUIMapManager->SetBase3DPos(basePos);
@@ -203,13 +180,10 @@ void MapManager::GenerateMap()
 
 			for (const auto& mapObj : m_mapObj)
 			{
-
 				if (mapObj->GetMapObjType() == MapObjType::Ground)
 				{
 					spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
 				}
-
-				
 			}
 		}
 	}
@@ -227,7 +201,7 @@ void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 			Node& node = m_nodes[y][x];
 
 			// グリッド座標
-			node.pos = Math::Vector2(x, y);
+			node.pos = Math::Vector2(static_cast<float>(x), static_cast<float>(y));
 
 			// 初期値(通れないで初期化)
 			node.walkable = false;
@@ -242,23 +216,21 @@ void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 
 void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapData)
 {
-	for (int y = 0; y < mapData.size(); y++)
+	for (size_t y = 0; y < mapData.size(); y++)
 	{
-		for (int x = 0; x < mapData[y].size(); x++)
+		for (size_t x = 0; x < mapData[y].size(); x++)
 		{
 			int tile = mapData[y][x];
 
-			if (tile != (int)MapGenerate::TileType::None)
+			if (tile != static_cast<int>(MapGenerate::TileType::None))
 			{
 				m_nodes[y][x].walkable = true;
 			}
 		}
 	}
-
-	int a = 0;
 }
 
-Math::Vector3 MapManager::NodeToWorld(const Node* node)
+Math::Vector3 MapManager::NodeToWorld(const Node* node) const
 {
 	if (!node) return Math::Vector3::Zero;
 
@@ -271,13 +243,15 @@ Math::Vector3 MapManager::NodeToWorld(const Node* node)
 Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 {
 	// X は右へプラス
-	int x = (int)floor(worldPos.x / m_mapTileSiz);
+	int x = static_cast<int>(floor(worldPos.x / m_mapTileSiz));
 
 	// Z は下へマイナス → -Z がタイル番号
-	int y = (int)floor((-worldPos.z) / m_mapTileSiz);
+	int y = static_cast<int>(floor((-worldPos.z) / m_mapTileSiz));
 
-	int width = (int)m_nodes[0].size();
-	int height = (int)m_nodes.size();
+	if (m_nodes.empty() || m_nodes[0].empty()) return nullptr;
+
+	int width = static_cast<int>(m_nodes[0].size());
+	int height = static_cast<int>(m_nodes.size());
 
 	if (x < 0 || y < 0 || x >= width || y >= height)
 	{
@@ -289,13 +263,14 @@ Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 
 std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 {
+	if (!start || !goal) return {};
 
 	for (auto& row : m_nodes)
 	{
 		for (auto& node : row)
 		{
 			node.gCost = FLT_MAX;
-			node.hCost = 0;
+			node.hCost = 0.0f;
 			node.parent = nullptr;
 		}
 	}
@@ -315,7 +290,7 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 
 	while (!openList.empty())
 	{
-		// ★ openList の中で fCost が最小のノードを探す
+		// openList の中で fCost が最小のノードを探す
 		Node* current = openList[0];
 		for (auto* node : openList)
 		{
@@ -330,13 +305,13 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 		openList.erase(std::remove(openList.begin(), openList.end(), current), openList.end());
 		closedList.push_back(current);
 
-		// ★ ゴールに到達したら経路復元
+		// ゴールに到達したら経路復元
 		if (current == goal)
 		{
 			return BuildPath(goal);
 		}
 
-		// ★ 隣接ノードを取得
+		// 隣接ノードを取得
 		auto neighbors = GetNeighbors(current);
 
 		for (auto* neighbor : neighbors)
@@ -371,7 +346,7 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 	return {};
 }
 
-std::vector<Node*> MapManager::BuildPath(Node* goal)
+std::vector<Node*> MapManager::BuildPath(Node* goal) const
 {
 	std::vector<Node*> path;
 	Node* current = goal;
@@ -389,9 +364,10 @@ std::vector<Node*> MapManager::BuildPath(Node* goal)
 std::vector<Node*> MapManager::GetNeighbors(Node* node)
 {
 	std::vector<Node*> neighbors;
+	if (!node) return neighbors;
 
-	int x = (int)node->pos.x;
-	int y = (int)node->pos.y;
+	int x = static_cast<int>(node->pos.x);
+	int y = static_cast<int>(node->pos.y);
 
 	// 上
 	if (y > 0)
@@ -400,7 +376,7 @@ std::vector<Node*> MapManager::GetNeighbors(Node* node)
 	}
 
 	// 下
-	if (y < m_nodes.size() - 1)
+	if (y < static_cast<int>(m_nodes.size()) - 1)
 	{
 		neighbors.push_back(&m_nodes[y + 1][x]);
 	}
@@ -412,10 +388,10 @@ std::vector<Node*> MapManager::GetNeighbors(Node* node)
 	}
 
 	// 右
-	if (x < m_nodes[0].size() - 1)
+	if (x < static_cast<int>(m_nodes[0].size()) - 1)
 	{
 		neighbors.push_back(&m_nodes[y][x + 1]);
 	}
 
 	return neighbors;
-}
+}

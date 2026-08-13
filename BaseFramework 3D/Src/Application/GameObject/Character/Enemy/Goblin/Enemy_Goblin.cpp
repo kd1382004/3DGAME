@@ -40,7 +40,14 @@ void Goblin::Update()
 
 
 
-
+	if (m_isDead)
+	{
+		if (!m_spAnimetor) { return; }
+		if (m_spAnimetor->IsAnimationEnd())
+		{
+			m_isExpired = true;
+		}
+	}
 
 
 	if (m_AnimeChangeFlg)
@@ -72,7 +79,7 @@ void Goblin::ChangeAnime()
 		m_attackFlg = true;
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.WalkAnime), true);
+		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.DieAnime), false);
 		break;
 	default:
 		break;
@@ -83,6 +90,8 @@ void Goblin::ChangeAnime()
 
 void Goblin::Attack()
 {
+	if (m_isDead) { return; }
+
 	//もし見失ってたら何もしない
 	if (!m_playerChaseFlg)
 	{

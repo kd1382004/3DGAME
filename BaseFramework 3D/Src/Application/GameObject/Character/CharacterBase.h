@@ -226,4 +226,8 @@ protected:
 	//UI
 	//HPBar
 	std::weak_ptr<HPBar>m_wpHPBar;
+
+	bool m_isDead = false;
+
+	virtual void SetDead();
 };

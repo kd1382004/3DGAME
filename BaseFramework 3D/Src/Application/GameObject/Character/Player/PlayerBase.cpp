@@ -108,27 +108,10 @@ void PlayerBase::Update()
 	}
 
 
+	WeaponUpdate();
 
 	AngeleUpdate();
 
-
-	if (GetAsyncKeyState(m_keyConfig.attack))
-	{
-		m_nowPlayerAnimeMode = PlayerBase::SwordAttackAnime;
-	}
-
-
-	//static float m_slowTimer = 0;
-
-	if (GetAsyncKeyState(VK_LBUTTON))
-	{
-		m_nowPlayerAnimeMode = PlayerBase::PunchAttackAnime;
-		DeltaTime::Instance().SetTimeScale(0.1f); // 10%速度にする（重いスロー）
-		DeltaTime::Instance().SetSlowTimer(2);
-	}
-
-
-	WeaponUpdate();
 
 
 	CharacterBase::Update();
@@ -245,6 +228,12 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 	// ダメージ処理
 	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
 
+	if (m_status.HP.nowHP <= 0)
+	{
+		m_isDead = true;
+		SetDead();
+	}
+
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
@@ -272,7 +261,36 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 
 void PlayerBase::WeaponUpdate()
 {
+	//回避中は移動できない
+	if (m_evasionAnimeFlg) { return; }
 
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack,true))
+	{
+		m_nowPlayerAnimeMode = PlayerBase::SwordAttackAnime;
+		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+		if (spWeapon)
+		{
+			spWeapon->SetAttackFlg(true);
+			spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
+			// キャラの向きを敵の方向に補正
+			const Math::Vector3 targetPos = spWeapon->GetCloseAttackHitCharacter();
+			if (targetPos != Math::Vector3::Zero)
+			{
+				Math::Vector3 dir = targetPos - GetPos();
+				dir.y = 0.0f; // XZ平面上の方向ベクトル
+				if (dir.LengthSquared() > 0.0001f)
+				{
+					dir.Normalize();
+					m_moveVec = dir;
+
+					// XZ平面上の絶対向き(Y軸回転角度)を計算
+					float angle = DirectX::XMConvertToDegrees(std::atan2(dir.x, dir.z));
+					if (angle < 0.0f) { angle += 360.0f; }
+					m_angle = angle;
+				}
+			}
+		}
+	}
 }
 
 void PlayerBase::LoadKeyConfig(std::string _filePath)
@@ -463,15 +481,17 @@ void PlayerBase::MoveNowSpeedDecision()
 	//移動モードの切り替え
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash))
 	{
-		if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
+	/*	if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
 		{
 			m_moveMode = MoveRun;
 		}
 		else
 		{
 			m_moveMode = MoveWalk;
-		}
+		}*/
 
+
+		m_moveMode = MoveRun;
 	}
 	else
 	{
@@ -558,6 +578,12 @@ void PlayerBase::PlayerAnimeModeUpdate()
 			if (m_evasionAnimeFlg)
 			{
 				m_evasionAnimeFlg = false;
+			}
+
+			std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+			if (spWeapon)
+			{
+				spWeapon->SetAttackFlg(false);
 			}
 		}
 
