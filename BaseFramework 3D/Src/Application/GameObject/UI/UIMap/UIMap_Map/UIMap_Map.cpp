@@ -57,26 +57,6 @@ void UIMap_Map::PosListReset()
 	m_posList.clear();
 }
 
-void UIMap_Map::CreateNavMap(std::vector<std::vector<int>> mapDate)
-{
-	//m_posList.clear();
-	//for (int y = 0;y < mapDate.size();y++)
-	//{
-	//	for (int x = 0;x < mapDate[y].size();x++)
-	//	{
-	//		int tile = mapDate[y][x];
-
-	//		if (tile == (int)MapGenerate::TileType::None)
-	//		{
-	//			Math::Vector2 pos;
-	//			pos.x = m_basePos.x + m_mapTexSiz.x * x;
-	//			pos.y = m_basePos.y + m_mapTexSiz.y * y;
-	//			m_posList.push_back({ pos,false });
-	//		}
-	//	}
-	//}
-
-}
 
 void UIMap_Map::DiscoverTile()
 {

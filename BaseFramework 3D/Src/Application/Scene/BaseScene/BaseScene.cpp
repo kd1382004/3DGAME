@@ -59,11 +59,12 @@ void BaseScene::Draw()
 {
 	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 	// 光を遮るオブジェクト(影を生み出す要因となるオブジェクト)をBeginとEndの間にまとめてDrawする
+
+
 	KdShaderManager::Instance().m_StandardShader.BeginGenerateDepthMapFromLight();
 	{
 		for (auto& obj : m_objList)
 		{
-
 			continue;
 			obj->GenerateDepthMapFromLight();
 		}

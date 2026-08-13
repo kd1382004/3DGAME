@@ -9,6 +9,7 @@
 #include"../../UI/HPBar/HPBar.h"
 #include"../../UI/UIMap/UIMapManager.h"
 #include"../../UI/UIMap/UIMap_Player/UIMap_Player.h"
+#include"../../UI/StaminaGage/StaminaGage.h"
 
 //武器
 #include"../../Weapon/WeaponBase.h"
@@ -34,6 +35,7 @@ void PlayerBase::Init()
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveForward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveBackward);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.jump);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.dash);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.interact);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.attack);
 
@@ -65,10 +67,10 @@ void PlayerBase::Init()
 		m_pCollider->RegisterCollisionShape("Player", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeDamage);
 	}
 
-	if (!m_pDebugWire)
+	/*if (!m_pDebugWire)
 	{
 		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
-	}
+	}*/
 }
 
 void PlayerBase::PreUpdate()
@@ -87,7 +89,8 @@ void PlayerBase::PreUpdate()
 
 void PlayerBase::Update()
 {
-	//////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////]
+
 	//移動
 	Move();
 
@@ -150,6 +153,7 @@ void PlayerBase::Update()
 void PlayerBase::PostUpdate()
 {
 
+
 	CharacterBase::PostUpdate();
 
 	std::shared_ptr<UIMap_Player>spUIMap_Player = m_wpUIMap_Player.lock();
@@ -161,6 +165,9 @@ void PlayerBase::PostUpdate()
 		spUIMap_Player->SetAngle(miniMapAngle);
 	}
 
+
+	// スタミナ管理
+	StaminaManager();
 }
 
 
@@ -210,9 +217,16 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
-
-
 		m_wpUIMap_Player = _spUIManager->GetUIMapManager()->GetUIMap_Player();
+
+
+		std::shared_ptr<StaminaGage>spStaminaGage = std::make_shared<StaminaGage>();
+		spStaminaGage->Init();
+		spStaminaGage->Set2DPos({ 0,-330 });
+		spStaminaGage->SetSiz(2);
+		m_wpStaminaGage = spStaminaGage;
+		_spUIManager->AddUIObj(spStaminaGage);
+		
 	}
 
 
@@ -284,6 +298,12 @@ void PlayerBase::LoadKeyConfig(std::string _filePath)
 		cfg.jump = ans;
 	}
 
+	ans = getInt("dash");
+	if (ans != -999)
+	{
+		cfg.dash = ans;
+	}
+
 	ans = getInt("attack");
 	if (ans != -999)
 	{
@@ -308,6 +328,7 @@ void PlayerBase::SaveKeyConfig(std::string _filePath)
 	data["moveRight"] = m_keyConfig.moveRight;
 	data["moveLeft"] = m_keyConfig.moveLeft;
 	data["jump"] = m_keyConfig.jump;
+	data["dash"] = m_keyConfig.dash;
 	data["attack"] = m_keyConfig.attack;
 	data["interact"] = m_keyConfig.interact;
 
@@ -392,6 +413,25 @@ void PlayerBase::Move()
 
 void PlayerBase::MoveNowSpeedDecision()
 {
+	//移動モードの切り替え
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash))
+	{
+		if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
+		{
+			m_moveMode = MoveRun;
+		}
+		else
+		{
+			m_moveMode = MoveWalk;
+		}
+
+	}
+	else
+	{
+		m_moveMode = MoveWalk;
+	}
+
+
 	switch (m_moveMode)
 	{
 	case PlayerBase::MoveWalk:
@@ -525,6 +565,32 @@ void PlayerBase::PlayerAnimeModeUpdate()
 	{
 		spWeapon->SetParentMatrix(m_weponParentMatrix);
 		spWeapon->SetParentRotation(rot);
+	}
+
+}
+
+bool PlayerBase::ConsumeStamina(float _amount)
+{
+	//今のスタミナが減少量未満なら減らせない
+	if (m_staminaNow < _amount) { return false; }
+
+
+	m_staminaNow = std::max(0.0f, m_staminaNow - _amount);
+	return true;
+}
+
+void PlayerBase::StaminaManager()
+{
+	m_staminaNow += m_staminaRegenPerSec * DeltaTime::Instance().GetGameDeltaTime();
+
+	if (m_staminaNow < 0.0f) { m_staminaNow = 0.0f; }
+
+	if (m_staminaNow > m_staminaMax) { m_staminaNow = m_staminaMax; }
+
+	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
+	if (spStaminaGage)
+	{
+		spStaminaGage->SetStaminaBarTexPercent(m_staminaNow/ m_staminaMax);
 	}
 
 }

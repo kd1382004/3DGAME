@@ -58,7 +58,15 @@ void StairsBase::Update()
 
 	}
 
+	auto r = m_mWorld.Right();
+	auto u = m_mWorld.Up();
+	auto b = m_mWorld.Backward();
 
+	
+	KdDebugGUI::Instance().ClearLog();
+	KdDebugGUI::Instance().AddLog("Right: %f %f %f\n", r.x, r.y, r.z);
+	KdDebugGUI::Instance().AddLog("Up: %f %f %f\n", u.x, u.y, u.z);
+	KdDebugGUI::Instance().AddLog("Back: %f %f %f\n", b.x, b.y, b.z);
 
 }
 

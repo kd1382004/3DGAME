@@ -1,5 +1,6 @@
 {
     "attack": 1,
+    "dash": 16,
     "interact": 69,
     "jump": 32,
     "moveBackward": 83,

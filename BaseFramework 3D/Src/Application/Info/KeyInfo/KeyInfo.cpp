@@ -33,6 +33,10 @@ void KeyInfo::SetKeyValid(int _key)
 		int Num = _key - '0';
 		KeyNum[Num].m_validFlg = true;
 	}
+	else if(_key==VK_SHIFT) //シフト
+	{
+		Shift.m_validFlg = true;
+	}
 }
 
 void KeyInfo::KeyvalidReset()
@@ -88,7 +92,7 @@ void KeyInfo::UpdateKey()
 		}
 	}
 
-
+	//スペース
 	if (KeySpace.m_validFlg)
 	{
 		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
@@ -108,7 +112,7 @@ void KeyInfo::UpdateKey()
 		}
 	}
 
-
+	//マウスボタン
 	for (int i = 0; i < MousebuttonNum; i++)
 	{
 		if (!Mousebutton[i].m_validFlg) { continue; }
@@ -129,6 +133,27 @@ void KeyInfo::UpdateKey()
 			Mousebutton[i].m_useFlg = false;
 			Mousebutton[i].m_pushFlg = false;
 			Mousebutton[i].m_pushS = 0;
+		}
+	}
+
+
+	//シフト
+	if (Shift.m_validFlg)
+	{
+		if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
+		{
+			Shift.m_pushFlg = true;
+
+			if (Shift.m_useFlg)
+			{
+				Shift.m_pushS++;
+			}
+		}
+		else
+		{
+			Shift.m_useFlg = false;
+			Shift.m_pushFlg = false;
+			Shift.m_pushS = 0;
 		}
 	}
 }
@@ -170,6 +195,11 @@ bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
 	{
 		int Num = _key - '0';
 		flg = GetValidKeyPush(&KeyNum[Num], _useFlg, _flg);
+	}
+	else if (_key ==VK_SHIFT)
+	{
+		int Num = _key - '0';
+		flg = GetValidKeyPush(&Shift, _useFlg, _flg);
 	}
 
 

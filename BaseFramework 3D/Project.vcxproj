@@ -296,6 +296,7 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h" />
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIBase.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIManager.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMapManager.h" />
@@ -384,6 +385,7 @@
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMapManager.cpp" />

@@ -23,8 +23,6 @@ public:
 
 	void PosListReset();
 
-	void CreateNavMap(std::vector<std::vector<int>> mapDate);
-
 	void SetBase3DPos(Math::Vector3 _3dPos)
 	{
 		m_base3DPos = _3dPos;

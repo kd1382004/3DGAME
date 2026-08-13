@@ -11,6 +11,6 @@
     "moveSpeed": {
         "baseSpeed": 10.0,
         "runMovePowe": 5.0,
-        "walkMovePowe": 3.0
+        "walkMovePowe": 0.0
     }
 }

@@ -187,6 +187,9 @@
     <Filter Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy">
       <UniqueIdentifier>{a9b4d7f4-14bf-4d87-a274-a3b13d65a5e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\StaminaGage">
+      <UniqueIdentifier>{6b21d683-e228-49b1-b64f-40313d592abe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -468,6 +471,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy\UIMap_Enemy.h">
       <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.h">
+      <Filter>Src\Application\GameObject\UI\StaminaGage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -715,6 +721,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Enemy\UIMap_Enemy.cpp">
       <Filter>Src\Application\GameObject\UI\UIMap\UIMap_Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.cpp">
+      <Filter>Src\Application\GameObject\UI\StaminaGage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

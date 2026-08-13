@@ -18,6 +18,18 @@
 			"name":"\u7acb\u65b9\u4f53"
 		}
 	],
+	"materials":[
+		{
+			"doubleSided":true,
+			"name":"\u30de\u30c6\u30ea\u30a2\u30eb",
+			"pbrMetallicRoughness":{
+				"baseColorTexture":{
+					"index":0
+				},
+				"metallicFactor":0
+			}
+		}
+	],
 	"meshes":[
 		{
 			"name":"\u7acb\u65b9\u4f53",
@@ -28,9 +40,23 @@
 						"NORMAL":1,
 						"TEXCOORD_0":2
 					},
-					"indices":3
+					"indices":3,
+					"material":0
 				}
 			]
+		}
+	],
+	"textures":[
+		{
+			"sampler":0,
+			"source":0
+		}
+	],
+	"images":[
+		{
+			"mimeType":"image/png",
+			"name":"stone_2_c",
+			"uri":"stone_2_c.png"
 		}
 	],
 	"accessors":[
@@ -39,14 +65,14 @@
 			"componentType":5126,
 			"count":24,
 			"max":[
-				5,
-				9.714408874511719,
-				1.000000238418579
+				5.000835418701172,
+				-0.004474163055419922,
+				5.000835418701172
 			],
 			"min":[
-				-5,
-				-0.28559064865112305,
-				-1.000000238418579
+				-5.000835418701172,
+				-2.004808187484741,
+				-5.000835418701172
 			],
 			"type":"VEC3"
 		},
@@ -93,6 +119,12 @@
 			"byteLength":72,
 			"byteOffset":768,
 			"target":34963
+		}
+	],
+	"samplers":[
+		{
+			"magFilter":9729,
+			"minFilter":9987
 		}
 	],
 	"buffers":[

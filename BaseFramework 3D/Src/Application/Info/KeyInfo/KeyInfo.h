@@ -70,6 +70,8 @@ private:
 	static const int MousebuttonNum = 2;
 	Key Mousebutton[MousebuttonNum];
 
+	//シフト
+	Key Shift;
 
 	static const int m_pushMax = 20;
 

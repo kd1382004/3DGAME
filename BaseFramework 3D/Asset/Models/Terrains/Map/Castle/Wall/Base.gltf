@@ -15,7 +15,23 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"\u7acb\u65b9\u4f53"
+			"name":"\u7acb\u65b9\u4f53",
+			"rotation":[
+				0.7071068286895752,
+				0,
+				0,
+				0.7071068286895752
+			],
+			"scale":[
+				5,
+				1,
+				5
+			],
+			"translation":[
+				0,
+				4.714409351348877,
+				0
+			]
 		}
 	],
 	"materials":[
@@ -26,7 +42,8 @@
 				"baseColorTexture":{
 					"index":0
 				},
-				"metallicFactor":0
+				"metallicFactor":0,
+				"roughnessFactor":0.5
 			}
 		}
 	],
@@ -55,8 +72,8 @@
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"stone_2_c",
-			"uri":"stone_2_c.png"
+			"name":"stone_c",
+			"uri":"stone_c.png"
 		}
 	],
 	"accessors":[
@@ -65,14 +82,14 @@
 			"componentType":5126,
 			"count":24,
 			"max":[
-				5.000835418701172,
-				-0.004474163055419922,
-				5.000835418701172
+				1,
+				1,
+				1
 			],
 			"min":[
-				-5.000835418701172,
-				-2.004808187484741,
-				-5.000835418701172
+				-1,
+				-1,
+				-1
 			],
 			"type":"VEC3"
 		},

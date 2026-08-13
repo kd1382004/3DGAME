@@ -217,8 +217,9 @@ void CharacterBase::CollisionUpdate()
 	for (int pass = 0; pass < 3; pass++)
 	{
 		DirectX::BoundingSphere sphere;
-		sphere.Center = GetPos() + Math::Vector3(0, 0.5f, 0);
 		sphere.Radius = 1.0f;
+		sphere.Center = GetPos() + Math::Vector3(0, sphere.Radius, 0);
+	
 		KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
 
 		if (m_pDebugWire && pass == 0)

@@ -13,7 +13,9 @@ class NextFloorGaugeUI;
 //UI
 class UIManager;
 class UIMap_Player;
+class StaminaGage;
 
+//武器
 class WeaponBase;
 
 class PlayerBase :public CharacterBase
@@ -70,6 +72,9 @@ protected:
 
 		//ジャンプ
 		int jump = VK_SPACE;
+
+		//ダッシュ
+		int dash = VK_SHIFT;
 
 		//攻撃
 		int attack = VK_LBUTTON;
@@ -171,4 +176,23 @@ protected:
 	////////////////////////////////////////
 	//UI
 	std::weak_ptr<UIMap_Player>m_wpUIMap_Player;
+	std::weak_ptr<StaminaGage>m_wpStaminaGage;
+
+	////////////////////////////////////////
+	//スタミナ
+	float m_staminaMax = 100;
+	float m_staminaNow = m_staminaMax;
+
+	//dashでの減少量(1秒あたり)
+	float m_dashStaminaDrainPerSec = 10;
+
+	//自然回復速度(1秒あたり)
+	float m_staminaRegenPerSec = 1;
+
+	//スタミナ減少
+	// _amount...実際に減らす量
+	//戻り値 ... _amount分減少できたかどうか
+	bool ConsumeStamina(float _amount);
+
+	void StaminaManager();
 };
