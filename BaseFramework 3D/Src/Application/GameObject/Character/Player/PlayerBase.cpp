@@ -10,6 +10,7 @@
 #include"../../UI/UIMap/UIMapManager.h"
 #include"../../UI/UIMap/UIMap_Player/UIMap_Player.h"
 #include"../../UI/StaminaGage/StaminaGage.h"
+#include"../../UI/SkillGage/SkillGage.h"
 
 //武器
 #include"../../Weapon/WeaponBase.h"
@@ -86,6 +87,8 @@ void PlayerBase::PreUpdate()
 			m_hitStunFlg = false;
 		}
 	}
+
+	m_IsDetectedByEnemyNum = 0;
 }
 
 void PlayerBase::Update()
@@ -147,6 +150,12 @@ void PlayerBase::PostUpdate()
 
 	// スタミナ管理
 	StaminaManager();
+
+
+	if (m_IsDetectedByEnemyNum == 0)
+	{
+		m_IsDetectedByEnemy = false;
+	}
 }
 
 
@@ -206,6 +215,12 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		m_wpStaminaGage = spStaminaGage;
 		_spUIManager->AddUIObj(spStaminaGage);
 
+		std::shared_ptr<SkillGage>spSkillGage = std::make_shared<SkillGage>();
+		spSkillGage->Init();
+		spSkillGage->Set2DPos({ 500,-330 });
+		m_wpSkillGage = spSkillGage;
+		_spUIManager->AddUIObj(spSkillGage);
+
 	}
 
 
@@ -264,8 +279,11 @@ void PlayerBase::WeaponUpdate()
 	//回避中は移動できない
 	if (m_evasionAnimeFlg) { return; }
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack,true))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack,true)&& m_normalAttack)
 	{
+		m_normalAttack = false;
+		m_normalAttackWaitNow = 0;
+
 		m_nowPlayerAnimeMode = PlayerBase::SwordAttackAnime;
 		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
 		if (spWeapon)
@@ -289,6 +307,24 @@ void PlayerBase::WeaponUpdate()
 					m_angle = angle;
 				}
 			}
+		}
+	}
+
+	if (m_nowPlayerAnimeMode != PlayerBase::SwordAttackAnime)
+	{
+		m_normalAttackWaitNow+= 1*DeltaTime::Instance().GetGameDeltaTime();
+
+		if (m_normalAttackWaitNow > m_normalAttackWaitMax)
+		{
+			m_normalAttackWaitNow = m_normalAttackWaitMax;
+			m_normalAttack = true;
+		}
+
+
+		std::shared_ptr<SkillGage>spSkillGage = m_wpSkillGage.lock();
+		if (spSkillGage)
+		{
+			spSkillGage->SetGaugePercent(m_normalAttackWaitNow/ m_normalAttackWaitMax);
 		}
 	}
 }
@@ -481,17 +517,25 @@ void PlayerBase::MoveNowSpeedDecision()
 	//移動モードの切り替え
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash))
 	{
-	/*	if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
+
+		if (m_IsDetectedByEnemy)
 		{
-			m_moveMode = MoveRun;
+			if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
+			{
+				m_moveMode = MoveRun;
+			}
+			else
+			{
+				m_moveMode = MoveWalk;
+			}
+
 		}
 		else
 		{
-			m_moveMode = MoveWalk;
-		}*/
+			m_moveMode = MoveRun;
+		}
+		
 
-
-		m_moveMode = MoveRun;
 	}
 	else
 	{

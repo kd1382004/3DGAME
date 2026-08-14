@@ -28,6 +28,13 @@ struct Node
 	float fCost() const { return gCost + hCost; }
 };
 
+enum MapType
+{
+	//草原
+	MapType_Grassland
+
+};
+
 class MapManager : public KdGameObject
 {
 public:
@@ -52,7 +59,12 @@ public:
 	const Math::Vector3& GetPlayerSpawnPos() const { return m_playerSpawnPos; }
 	void SetPlayerSpawnPos(const Math::Vector3& playerSpawnPos) { m_playerSpawnPos = playerSpawnPos; }
 
-	void GenerateMap();
+
+	//マップ生成
+	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
+	//roomNum			...部屋の最大個数
+	//_type				...マップの種類
+	void GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _type);
 
 	void SetPlayer(const std::shared_ptr<PlayerBase>& spPlayerBase) { m_wpPlayerBase = spPlayerBase; }
 	void SetEnemyManager(const std::shared_ptr<EnemyManager>& spEnemyManager) { m_wpEnemyManager = spEnemyManager; }

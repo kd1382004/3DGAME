@@ -31,6 +31,6 @@ private:
 	std::shared_ptr<EnemyManager>m_spEnemyManager;
 	std::shared_ptr<WeaponBase>m_spWeapon;
 
-
+	int m_displayFloor;
 
 };

@@ -93,7 +93,7 @@ void MapManager::SetCamera(const std::shared_ptr<CameraBase>& spCamera)
 	}
 }
 
-void MapManager::GenerateMap()
+void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapType)
 {
 	m_mapObj.clear();
 
@@ -101,13 +101,10 @@ void MapManager::GenerateMap()
 
 	std::vector<std::vector<int>> mapData;
 
-	float mapW = 50.0f;
-	float mapH = 50.0f;
-
 	Math::Vector3 basePos;
-	mapData = map->Generate({ mapH, mapW }, 50, m_mapTileSiz, MapType::MapType_Grassland, &m_mapObj, &m_playerSpawnPos, &basePos);
+	mapData = map->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
 
-	CreateNodeGrid(static_cast<int>(mapW), static_cast<int>(mapH), m_mapTileSiz);
+	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
 	ApplyWalkableFromMap(mapData);
 
 	if (!m_wpCamera.expired())

@@ -190,6 +190,9 @@
     <Filter Include="Src\Application\GameObject\UI\StaminaGage">
       <UniqueIdentifier>{6b21d683-e228-49b1-b64f-40313d592abe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\SkillGage">
+      <UniqueIdentifier>{f19f20b9-b6b7-4bec-be24-daa1f74846ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -474,6 +477,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.h">
       <Filter>Src\Application\GameObject\UI\StaminaGage</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h">
+      <Filter>Src\Application\GameObject\UI\SkillGage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -724,6 +730,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.cpp">
       <Filter>Src\Application\GameObject\UI\StaminaGage</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp">
+      <Filter>Src\Application\GameObject\UI\SkillGage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

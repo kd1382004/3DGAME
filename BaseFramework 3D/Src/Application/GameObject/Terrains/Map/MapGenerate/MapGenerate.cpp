@@ -11,7 +11,7 @@ MapGenerate::MapGenerate()
 	LoadRoomSiz(m_roomSizPath);
 }
 
-std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, MapType _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
+std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
 	if (roomMine <= 0 && roomMax <= 0)
 	{
@@ -112,6 +112,8 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 			// 空いてるなら作る
 			if (canPlace)
 			{
+
+
 				for (int y = roomY; y < roomY + roomH; y++)
 				{
 					for (int x = roomX; x < roomX + roomW; x++)
@@ -137,6 +139,8 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 							info.m_roomEnd.downEnd = roomY + roomH - 1;
 
 							m_roomInfo.push_back(info);
+						
+
 						}
 
 					}
@@ -179,12 +183,18 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 
 		for (auto& a : ans)
 		{
+			int x = static_cast<int>(a.x);
+			int y = static_cast<int>(a.y);
 
-			if (map[(int)a.y][(int)a.x] == static_cast<int>(TileType::None))
+			// ★ 範囲外チェックを追加
+			if (y >= 0 && y < static_cast<int>(map.size()) &&
+				x >= 0 && x < static_cast<int>(map[y].size()))
 			{
-				map[(int)a.y][(int)a.x] = static_cast<int>(TileType::Floor);
+				if (map[y][x] == static_cast<int>(TileType::None))
+				{
+					map[y][x] = static_cast<int>(TileType::Floor);
+				}
 			}
-
 		}
 
 	}
@@ -292,6 +302,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 
 
 							m_roomInfoList[rID].push_back(room);
+
 						}
 
 					}
@@ -498,11 +509,12 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(c
 	std::sort(loopEdges.begin(), loopEdges.end(), [](const Edge& a, const Edge& b) {return a.dist < b.dist; });
 
 	/////////////////////////
-	//上位30%だけ残す (resize で一括処理し超高速化)
+	// 上位30%だけ残すが、最低3個は残す
+	size_t minKeep = 3;  // 部屋数が少なくてもショートカット候補が生まれる
 	size_t siz = static_cast<size_t>(loopEdges.size() * 0.3f);
-	if (loopEdges.size() > siz)
-	{
-		loopEdges.resize(siz);
+
+	if (siz < minKeep) {
+		siz = std::min(loopEdges.size(), minKeep);
 	}
 	/////////////////////////
 
@@ -512,12 +524,24 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(c
 		float maxDist = loopEdges.back().dist;
 		for (const auto& e : loopEdges)
 		{
-			float percent = (maxDist > 0.0f) ? (1.0f - e.dist / maxDist) * 100.0f : 0.0f;
+			float percent = 0.0f;
 
-			if (KdRandom::GetInt(1, 100) < percent && count < 5)
+			if (maxDist > 0.0f)
 			{
-				count++;
-				pairList.push_back({ _roomInfo[e.roomA], _roomInfo[e.roomB] });
+				// 距離を0〜1に正規化
+				float ratio = e.dist / maxDist;
+
+				// 距離が短いほど大きくなる
+				float inverted = 1.0f - ratio;
+
+				// 0〜100の確率に変換
+				percent = inverted * 100.0f;
+
+				if (KdRandom::GetInt(1, 100) < percent && count < 5)
+				{
+					count++;
+					pairList.push_back({ _roomInfo[e.roomA], _roomInfo[e.roomB] });
+				}
 			}
 		}
 	}
@@ -530,7 +554,7 @@ std::vector<Math::Vector2> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 	//return用
 	std::vector<Math::Vector2> ans;
 
-	// A の端候補 (std::array を使用して動的メモリ割り当てを排除)
+	// A の端候補 
 	float roomHA = (_A.m_roomEnd.topEnd + _A.m_roomEnd.downEnd) / 2.0f;
 	float roomWA = (_A.m_roomEnd.FarLeft + _A.m_roomEnd.FarRight) / 2.0f;
 	std::array<Math::Vector2, 4> Aends = {

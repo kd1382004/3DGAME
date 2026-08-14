@@ -85,6 +85,10 @@ void GameScene::Event()
 		}
 
 	}
+
+
+	KdDebugGUI::Instance().ClearLog();
+	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);
 }
 
 
@@ -92,11 +96,13 @@ void GameScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
 
+
+
 	/////////////////////////////////////////
 	//ゲームシーン
 	/////////////////////////////////////////
 	auto self = shared_from_this();
-
+	m_displayFloor = 0;
 
 	/////////////////////////////////////////
 	//プレイヤー
@@ -185,8 +191,18 @@ void GameScene::GenerateMap()
 	if (!m_spMapManager) { return; }
 	if (!m_spPlayer) { return; }
 	if (!m_spEnemyManager) { return; }
+
+	int baseSize = 30;              // 1階のマップサイズ
+	float growth = 1.01f;
+	int mapSizeX = static_cast<int>((baseSize + m_displayFloor * 8) * std::pow(growth, m_displayFloor));
+	int mapSizeY = static_cast<int>((baseSize + m_displayFloor * 8) * std::pow(growth, m_displayFloor));
+
+	int baseRoomCount = 3;
+	int roomCount = baseRoomCount + m_displayFloor * 2;
+
+	m_displayFloor++;
 	m_spEnemyManager->EnemyListReset();
-	m_spMapManager->GenerateMap();
+	m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
 	m_spMapManager->MapHit(m_spPlayer);
 
 	Math::Vector3 playerSpawn = m_spMapManager->GetPlayerSpawnPos();

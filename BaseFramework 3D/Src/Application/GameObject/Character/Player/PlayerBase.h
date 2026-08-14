@@ -14,6 +14,7 @@ class NextFloorGaugeUI;
 class UIManager;
 class UIMap_Player;
 class StaminaGage;
+class SkillGage;
 
 //武器
 class WeaponBase;
@@ -51,8 +52,20 @@ public:
 	//__ignoreRate ... 防御無視
 	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)override;
 
-
+	void SetIsDetectedByEnemy(bool _flg)
+	{
+		m_IsDetectedByEnemy = _flg;
+		if (_flg)
+		{
+			m_IsDetectedByEnemyNum++;
+		}
+	}
 protected:
+
+	//敵に見つかってるか
+	bool m_IsDetectedByEnemy = false;
+	//今フレーム敵身見つかった数
+	int m_IsDetectedByEnemyNum = 0;
 
 	std::weak_ptr<GameScene> m_wpGameScene;
 
@@ -194,6 +207,7 @@ protected:
 	//UI
 	std::weak_ptr<UIMap_Player>m_wpUIMap_Player;
 	std::weak_ptr<StaminaGage>m_wpStaminaGage;
+	std::weak_ptr<SkillGage>m_wpSkillGage;
 
 	////////////////////////////////////////
 	//スタミナ
@@ -224,4 +238,9 @@ protected:
 	const float m_kEvasionMaxSpeedEnd = 0.8f;
 
 	void EvasionUpdate();
+
+	//通常攻撃
+	bool m_normalAttack = false;
+	float m_normalAttackWaitMax = 5;
+	float m_normalAttackWaitNow = 0;
 };

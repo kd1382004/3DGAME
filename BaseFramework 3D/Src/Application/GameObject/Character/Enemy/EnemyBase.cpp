@@ -159,6 +159,8 @@ void EnemyBase::SearchPlayer()
 		m_pDebugWire->AddDebugLine(m_pos, dir, m_viewDistance);
 	}
 
+
+
 }
 
 void EnemyBase::PlayerChase()
@@ -216,6 +218,8 @@ void EnemyBase::PlayerChase()
 			m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 		}
 
+
+
 	}
 
 
@@ -223,6 +227,12 @@ void EnemyBase::PlayerChase()
 	if (m_pDebugWire)
 	{
 		m_pDebugWire->AddDebugLine(m_pos, m_moveVec, m_loseSightDistance);
+	}
+
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
+	if (spPlayer)
+	{
+		spPlayer->SetIsDetectedByEnemy(m_playerChaseFlg);
 	}
 
 }
