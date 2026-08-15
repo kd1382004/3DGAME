@@ -294,6 +294,8 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapManager.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h" />
+    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChest.h" />
+    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h" />
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h" />
@@ -384,6 +386,8 @@
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChest.cpp" />
+    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp" />

@@ -7,6 +7,7 @@ class MapManager;
 class PlayerBase;
 class EnemyManager;
 class WeaponBase;
+class TreasureChestManager;
 
 class GameScene : public BaseScene,public std::enable_shared_from_this<GameScene>
 {
@@ -30,7 +31,13 @@ private:
 	std::shared_ptr<PlayerBase>m_spPlayer;
 	std::shared_ptr<EnemyManager>m_spEnemyManager;
 	std::shared_ptr<WeaponBase>m_spWeapon;
+	std::shared_ptr<TreasureChestManager>m_spTreasureChestManager;
 
+
+
+	//階層
 	int m_displayFloor;
 
+	//ボス戦になる倍数(割り切れたらボス戦)
+	int m_bossInterval = 3;
 };

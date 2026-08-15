@@ -193,6 +193,9 @@
     <Filter Include="Src\Application\GameObject\UI\SkillGage">
       <UniqueIdentifier>{f19f20b9-b6b7-4bec-be24-daa1f74846ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\TreasureChest">
+      <UniqueIdentifier>{806fb0d8-a18b-4d9f-8633-b2ebbe1f2bdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -480,6 +483,12 @@
     <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h">
       <Filter>Src\Application\GameObject\UI\SkillGage</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChest.h">
+      <Filter>Src\Application\GameObject\TreasureChest</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.h">
+      <Filter>Src\Application\GameObject\TreasureChest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -733,6 +742,12 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp">
       <Filter>Src\Application\GameObject\UI\SkillGage</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChest.cpp">
+      <Filter>Src\Application\GameObject\TreasureChest</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.cpp">
+      <Filter>Src\Application\GameObject\TreasureChest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

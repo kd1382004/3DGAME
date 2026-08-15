@@ -19,6 +19,38 @@ class SkillGage;
 //武器
 class WeaponBase;
 
+
+struct ActionKeyConfig
+{
+	// Z+に移動
+	int moveForward = 'W';
+
+	// Z-に移動
+	int moveBackward = 'S';
+
+	// X+に移動
+	int moveRight = 'D';
+
+	// X-に移動
+	int moveLeft = 'A';
+
+	//ジャンプ
+	int jump = VK_SPACE;
+
+	//ダッシュ
+	int dash = VK_SHIFT;
+
+	//回避
+	int evasion = VK_RBUTTON;
+
+	//攻撃
+	int attack = VK_LBUTTON;
+
+	//インタラクト
+	int interact = 'E';
+};
+
+
 class PlayerBase :public CharacterBase
 {
 public:
@@ -60,6 +92,9 @@ public:
 			m_IsDetectedByEnemyNum++;
 		}
 	}
+
+	ActionKeyConfig GetActionKeyConfig() { return m_keyConfig; }
+
 protected:
 
 	//敵に見つかってるか
@@ -80,36 +115,6 @@ protected:
 
 	//Keyの設定が入ってるファイル名
 	std::string m_keyConfigFilePath;
-
-	struct ActionKeyConfig
-	{
-		// Z+に移動
-		int moveForward = 'W';
-
-		// Z-に移動
-		int moveBackward = 'S';
-
-		// X+に移動
-		int moveRight = 'D';
-
-		// X-に移動
-		int moveLeft = 'A';
-
-		//ジャンプ
-		int jump = VK_SPACE;
-
-		//ダッシュ
-		int dash = VK_SHIFT;
-
-		//回避
-		int evasion = VK_RBUTTON;
-
-		//攻撃
-		int attack = VK_LBUTTON;
-
-		//インタラクト
-		int interact = 'E';
-	};
 
 	ActionKeyConfig m_keyConfig;
 

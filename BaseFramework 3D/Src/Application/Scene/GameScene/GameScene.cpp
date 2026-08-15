@@ -20,6 +20,9 @@
 #include"../../GameObject/Character/Enemy/EnemyManager.h"
 #include"../../GameObject/Character/Enemy/EnemyBase.h"
 
+//宝箱
+#include"../../GameObject/TreasureChest/TreasureChestManager.h"
+
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
@@ -142,7 +145,14 @@ void GameScene::Init()
 	m_spMapManager = std::make_shared<MapManager>();
 	m_spMapManager->Init();
 	m_objList.push_back(m_spMapManager);
-	
+
+	/////////////////////////////////////////
+	//宝箱
+	/////////////////////////////////////////
+	m_spTreasureChestManager = std::make_shared<TreasureChestManager>();
+	m_spTreasureChestManager->Init();
+	m_objList.push_back(m_spTreasureChestManager);
+
 	/////////////////////////////////////////
 	//UI
 	/////////////////////////////////////////	
@@ -181,6 +191,12 @@ void GameScene::Init()
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
 	m_spMapManager->SetUIManager(spUIManager);
 
+
+	/////////////////////////////////////////
+	//宝箱にセット
+	/////////////////////////////////////////
+	m_spTreasureChestManager->SetPlayer(m_spPlayer);
+
 	//マップ生成
 	GenerateMap();
 }
@@ -201,13 +217,27 @@ void GameScene::GenerateMap()
 	int roomCount = baseRoomCount + m_displayFloor * 2;
 
 	m_displayFloor++;
+
 	m_spEnemyManager->EnemyListReset();
-	m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
-	m_spMapManager->MapHit(m_spPlayer);
+
+	if (m_displayFloor % m_bossInterval != 0)
+	{	
+		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
+	}
+	else
+	{
+
+	}
+
 
 	Math::Vector3 playerSpawn = m_spMapManager->GetPlayerSpawnPos();
-	playerSpawn.y += 1;
 	m_spPlayer->SetPos(playerSpawn);
+
+	//宝箱生成
+	std::list<Math::Vector3>posList;
+	posList.push_back(playerSpawn);
+	m_spTreasureChestManager->GenerateTreasureChest(posList);
+	m_spMapManager->MapHit(m_spPlayer);
 
 
 }
