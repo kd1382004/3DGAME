@@ -34,6 +34,17 @@ public:
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager);
 
 	float GetAngle() { return m_angle; }
+
+
+	//攻撃をくらった処理
+	//_damage ... ダメージ量
+	//_knockbackDistance ... ふっとばし距離
+	//_knockbackDir ... ふっとばし方向
+	// _hitStunTime ... のけぞり時間
+	//_isCritical ... クリティカルかどうか
+	//__ignoreRate ... 防御無視
+	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)override;
+
 protected:
 
 	void Release()override;

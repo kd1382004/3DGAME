@@ -249,6 +249,13 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	}
 }
 
+void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
+{
+	m_playerChaseFlg = true;
+
+	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate);
+}
+
 void EnemyBase::Release()
 {
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();

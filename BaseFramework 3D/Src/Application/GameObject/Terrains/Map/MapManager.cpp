@@ -8,6 +8,7 @@
 #include "../../UI/UIManager.h"
 #include "../../UI/UIMap/UIMapManager.h"
 #include "../../UI/UIMap/UIMap_Map/UIMap_Map.h"
+#include"../../TreasureChest/TreasureChestManager.h"
 
 #include <algorithm>
 #include <cmath>
@@ -99,19 +100,14 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 	std::shared_ptr<MapGenerate> map = std::make_shared<MapGenerate>();
 
-	std::vector<std::vector<int>> mapData;
+	//敵が歩ける一覧
+	std::vector<std::vector<bool>> mapData;
 
 	Math::Vector3 basePos;
 	mapData = map->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
 
-	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
-	ApplyWalkableFromMap(mapData);
 
-	if (!m_wpCamera.expired())
-	{
-		SetCamera(m_wpCamera.lock());
-	}
-
+	//プレイヤーを設定
 	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
 	if (spPlayerBase)
 	{
@@ -121,11 +117,16 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 		}
 	}
 
+
+
+	////////////////////////////////////////////////////
+	auto mapRoomList = map->GetRoomInfoList();
+
 	// 敵の生成
 	std::shared_ptr<EnemyManager> spEnemyManager = m_wpEnemyManager.lock();
 	if (spEnemyManager)
 	{
-		const auto& mapRoomList = map->GetRoomInfoList();
+
 		std::random_device rd;
 		std::mt19937 mt(rd());
 
@@ -137,7 +138,8 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 			struct EnemySpawnList {
 				Math::Vector3 m_pos;
-				bool SpawnFlg = false;
+				int roomID = 0;
+				int floorNum = 0;
 			};
 
 			std::vector<EnemySpawnList> enemySpawnList;
@@ -145,12 +147,19 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 			for (size_t j = 0; j < mapRoomList[i].size(); j++)
 			{
-				enemySpawnList.push_back({ mapRoomList[i][j].m_pos, false });
+				//何か設置されてたらスキップ
+				if (mapRoomList[i][j].m_Installation) { continue; }
+
+				EnemySpawnList enemySpawn;
+				enemySpawn.m_pos = mapRoomList[i][j].m_pos;
+				enemySpawn.roomID = mapRoomList[i][j].m_roomID;
+				enemySpawn.floorNum = j;
+				enemySpawnList.push_back(enemySpawn);
 			}
 
-			if (enemySpawnList.empty()) continue;
+			if (enemySpawnList.empty()) { continue; }
 
-			// 敵数を安全に制限
+			// 敵数を制限
 			roomEnemyNum = std::min(roomEnemyNum, static_cast<int>(enemySpawnList.size()));
 
 			// ランダムシャッフル
@@ -160,11 +169,73 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			for (int n = 0; n < roomEnemyNum; n++)
 			{
 				spEnemyManager->SpawnEnemy(RoomEnemy, enemySpawnList[n].m_pos);
+				mapRoomList[enemySpawnList[n].roomID][enemySpawnList[n].floorNum].m_Installation = true;
 			}
 		}
 	}
 
-	// UIのマップ生成
+
+	////////////////////////////////////////////////////
+	//宝箱生成
+	std::shared_ptr<TreasureChestManager>spTreasureChestManager = m_wpTreasureChestManager.lock();
+	if (spTreasureChestManager)
+	{
+		std::list<Math::Vector3> TreasureChestPosList;
+
+		for (size_t i = 0; i < mapRoomList.size(); i++)
+		{
+			if (mapRoomList[i].empty()) { continue; }
+			int chestNum = mapRoomList[i][0].m_roomTreasuerChestNum;
+			int roomType = mapRoomList[i][0].m_roomType;
+
+			while (true)
+			{
+
+				int LoomNum = KdRandom::GetInt(0, mapRoomList[i].size() - 1);
+				if (mapRoomList[i][LoomNum].m_Installation)
+				{
+					continue;
+				}
+
+				float spawnRate = 0;
+
+				if (roomType == RoomType::RoomType_TreasureChestRoom|| roomType ==RoomType::RoomType_SafeRoom)
+				{
+					spawnRate = 1;
+				}
+				else
+				{
+					spawnRate = 0.4;
+				}
+
+
+				if (KdRandom::GetFloat(0.0f, 1.0f) <= spawnRate)
+				{
+					Math::Vector3 pos = mapRoomList[i][LoomNum].m_pos;
+					mapRoomList[i][LoomNum].m_Installation = true;
+
+					int x = mapRoomList[i][LoomNum].m_xy.x;
+					int y = mapRoomList[i][LoomNum].m_xy.y;
+					mapData[y][x] = false;
+					TreasureChestPosList.push_back(pos);
+				}
+
+
+				chestNum--;
+				if (chestNum <= 0)
+				{
+					break;
+				}
+			}
+		}
+
+		spTreasureChestManager->GenerateTreasureChest(TreasureChestPosList);
+	}
+
+
+
+	////////////////////////////////////////////////////
+	// ミニマップ生成
 	std::shared_ptr<UIManager> spUIManager = m_wpUIManager.lock();
 	if (spUIManager)
 	{
@@ -184,6 +255,20 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			}
 		}
 	}
+
+
+
+	//A*の初期化
+	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
+	//A*の設定
+	ApplyWalkableFromMap(mapData);
+
+	//カメラセット
+	if (!m_wpCamera.expired())
+	{
+		SetCamera(m_wpCamera.lock());
+	}
+
 }
 
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)
@@ -211,15 +296,13 @@ void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 	}
 }
 
-void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapData)
+void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapData)
 {
 	for (size_t y = 0; y < mapData.size(); y++)
 	{
 		for (size_t x = 0; x < mapData[y].size(); x++)
 		{
-			int tile = mapData[y][x];
-
-			if (tile != static_cast<int>(MapGenerate::TileType::None))
+			if (mapData[y][x])
 			{
 				m_nodes[y][x].walkable = true;
 			}
@@ -391,4 +474,4 @@ std::vector<Node*> MapManager::GetNeighbors(Node* node)
 	}
 
 	return neighbors;
-}
+}

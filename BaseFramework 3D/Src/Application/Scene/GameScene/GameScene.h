@@ -40,4 +40,9 @@ private:
 
 	//ボス戦になる倍数(割り切れたらボス戦)
 	int m_bossInterval = 3;
+
+	//マップ成長率
+	int m_mapLinearGrowthPerFloor;
+	float m_mapLinearGrowthPerFloorX;
+	float m_mapLinearGrowthPerFloorY;
 };

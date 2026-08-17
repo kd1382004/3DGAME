@@ -239,39 +239,8 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 		return;
 	}
 
+	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate);
 
-	// ダメージ処理
-	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
-
-	if (m_status.HP.nowHP <= 0)
-	{
-		m_isDead = true;
-		SetDead();
-	}
-
-	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
-	if (spHPBar)
-	{
-		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
-		spHPBar->SetHPBarTexPercent(percent);
-	}
-
-	// のけぞり
-	if (_hitStunTime > 0)
-	{
-		m_hitStunTimer = _hitStunTime;
-		m_hitStunFlg = true;
-	}
-
-	// ふっとばし
-	if (_knockbackDistance > 0)
-	{
-		m_knockbackEndPos = m_pos + _knockbackDir * _knockbackDistance;
-		m_knockbackStartPos = m_pos;
-		m_knockbackSpeed = 1;
-		m_isKnockbackFlg = true;
-		m_knockbackProgress = 0;
-	}
 }
 
 void PlayerBase::WeaponUpdate()

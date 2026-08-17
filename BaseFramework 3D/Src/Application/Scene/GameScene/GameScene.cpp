@@ -45,10 +45,14 @@ void GameScene::Event()
 	//プレイヤーのあたり判定リストを毎フレーム更新
 	m_spMapManager->MapHit(m_spPlayer);
 
+	//プレイヤーと宝箱のあたり判定
+	m_spTreasureChestManager->TreasureChestHit(m_spPlayer);
+
 	//敵のあたり判定リストを毎フレーム更新
 	for (auto enemy : m_spEnemyManager->GetEnemyList())
 	{
 		m_spMapManager->MapHitEnemy(enemy);
+		m_spTreasureChestManager->TreasureChestHit(enemy);
 	}
 
 	///////////////////////////////////////////////////
@@ -190,12 +194,21 @@ void GameScene::Init()
 	m_spMapManager->SetPlayer(m_spPlayer);
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
 	m_spMapManager->SetUIManager(spUIManager);
+	m_spMapManager->SetTreasureChestManager(m_spTreasureChestManager);
 
 
 	/////////////////////////////////////////
 	//宝箱にセット
 	/////////////////////////////////////////
 	m_spTreasureChestManager->SetPlayer(m_spPlayer);
+	m_spTreasureChestManager->SetCamera(camera);
+
+
+
+	//マップの成長率を設定
+	m_mapLinearGrowthPerFloor = 5;
+	m_mapLinearGrowthPerFloorX = 5 * KdRandom::GetFloat(0.8f, 1.2f);
+	m_mapLinearGrowthPerFloorY = 5 * KdRandom::GetFloat(0.8f, 1.2f);
 
 	//マップ生成
 	GenerateMap();
@@ -210,8 +223,10 @@ void GameScene::GenerateMap()
 
 	int baseSize = 30;              // 1階のマップサイズ
 	float growth = 1.01f;
-	int mapSizeX = static_cast<int>((baseSize + m_displayFloor * 8) * std::pow(growth, m_displayFloor));
-	int mapSizeY = static_cast<int>((baseSize + m_displayFloor * 8) * std::pow(growth, m_displayFloor));
+
+
+	int mapSizeX = static_cast<int>((baseSize + m_displayFloor * m_mapLinearGrowthPerFloorX) * std::pow(growth, m_displayFloor));
+	int mapSizeY = static_cast<int>((baseSize + m_displayFloor * m_mapLinearGrowthPerFloorY) * std::pow(growth, m_displayFloor));
 
 	int baseRoomCount = 3;
 	int roomCount = baseRoomCount + m_displayFloor * 2;
@@ -226,6 +241,8 @@ void GameScene::GenerateMap()
 	}
 	else
 	{
+		//ボス戦用マップ生成
+
 
 	}
 
@@ -233,11 +250,6 @@ void GameScene::GenerateMap()
 	Math::Vector3 playerSpawn = m_spMapManager->GetPlayerSpawnPos();
 	m_spPlayer->SetPos(playerSpawn);
 
-	//宝箱生成
-	std::list<Math::Vector3>posList;
-	posList.push_back(playerSpawn);
-	m_spTreasureChestManager->GenerateTreasureChest(posList);
-	m_spMapManager->MapHit(m_spPlayer);
 
 
 }

@@ -50,7 +50,16 @@ struct RoomI
 	int m_roomType;
 
 	//部屋あたりの敵の数
-	int m_roomEnemyNum=0;
+	int m_roomEnemyNum = 0;
+
+	//床番号
+	Math::Vector2 m_xy;
+
+	//部屋あたりの宝箱の数
+	int m_roomTreasuerChestNum = 0;
+
+	//この床に何か置いたか
+	bool m_Installation = false;
 };
 
 
@@ -70,8 +79,8 @@ public:
 	//ret				...生成結果を格納する先
 	//_playerSpawnPos	...	プレイヤーのスポーン位置
 	//_basePos	...	プレイヤーのスポーン位置
-	//戻り値...ノード用のマップデータ
-	std::vector<std::vector<int>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos,Math::Vector3* _basePos);
+	//戻り値...ノード用のマップデータ(歩けるか歩けないか)
+	std::vector<std::vector<bool>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
 
 
 	// 部屋ごとの情報リストを取得
@@ -98,7 +107,7 @@ private:
 	//部屋の一覧情報が入る
 	std::vector<std::vector<RoomI>> m_roomInfoList;
 
-	//部屋のTypeごとの敵の枠割合(部屋のタイル数にかける)
+	//部屋のTypeごとの敵の割合(部屋のタイル数にかける)
 	struct RoomEnemyPercent
 	{
 		float m_EnemyRoom = 0.15f;
@@ -107,6 +116,28 @@ private:
 	};
 
 	RoomEnemyPercent m_roomEnemyPercent;
+
+
+
+	//部屋のTypeごとの宝箱の数
+	struct RoomTreasuerChestNum
+	{
+		float m_TreasuerChestRoomMaxNum = 5;
+		float m_TreasuerChestRoomMineNum = 2;
+
+		float m_NotTreasuerChestRoomMaxNum = 2;
+		float m_NotTreasuerChestRoomMineNum = 0;
+	};
+
+	//部屋のTypeごとの宝箱の割合(部屋のタイル数にかける)
+	struct RoomreasuerChestPercent
+	{
+		float m_TreasuerChestRoom = 0.15f;
+		float m_NotTreasuerChestRoom = 0.1f;
+	};
+
+	RoomTreasuerChestNum m_roomTreasuerChestNum;
+	RoomreasuerChestPercent m_roomTreasuerChestPercent;
 
 
 	//部屋のサイズ
@@ -137,7 +168,7 @@ private:
 	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>& map);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	void CreateWallOrStairs(const Math::Vector3& pos,float rotYDegree,bool isStairs,std::list<std::shared_ptr<MapBase>>* ret);
+	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;

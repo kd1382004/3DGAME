@@ -3,10 +3,19 @@
 
 class MapBase;
 class CameraBase;
+
+//Plyer
 class PlayerBase;
+
+//Enemy
 class EnemyBase;
 class EnemyManager;
+
+//UI
 class UIManager;
+
+//宝箱
+class TreasureChestManager;
 
 // ノード構造体 (A* 経路探索用)
 struct Node
@@ -57,6 +66,7 @@ public:
 	void SetCamera(const std::shared_ptr<CameraBase>& spCamera);
 
 	const Math::Vector3& GetPlayerSpawnPos() const { return m_playerSpawnPos; }
+
 	void SetPlayerSpawnPos(const Math::Vector3& playerSpawnPos) { m_playerSpawnPos = playerSpawnPos; }
 
 
@@ -69,6 +79,7 @@ public:
 	void SetPlayer(const std::shared_ptr<PlayerBase>& spPlayerBase) { m_wpPlayerBase = spPlayerBase; }
 	void SetEnemyManager(const std::shared_ptr<EnemyManager>& spEnemyManager) { m_wpEnemyManager = spEnemyManager; }
 	void SetUIManager(const std::shared_ptr<UIManager>& spUIManager) { m_wpUIManager = spUIManager; }
+	void SetTreasureChestManager(const std::shared_ptr<TreasureChestManager>& spTreasureChestManager) { m_wpTreasureChestManager = spTreasureChestManager; }
 
 	////////////////////////////////////////////
 	/// <ノード>
@@ -94,7 +105,7 @@ private:
 	void CreateNodeGrid(int width, int height, float tileSize);
 
 	// 歩けるかどうかを設定
-	void ApplyWalkableFromMap(const std::vector<std::vector<int>>& mapData);
+	void ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapData);
 
 	std::vector<std::vector<Node>> m_nodes;
 
@@ -114,9 +125,12 @@ private:
 	////////////////////////////////////////////
 
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
-	std::weak_ptr<EnemyManager> m_wpEnemyManager;
-
 	Math::Vector3 m_playerSpawnPos = Math::Vector3::Zero;
+
+	std::weak_ptr<EnemyManager> m_wpEnemyManager;
+	std::weak_ptr<TreasureChestManager> m_wpTreasureChestManager;
+
+
 
 	std::weak_ptr<CameraBase> m_wpCamera;
 

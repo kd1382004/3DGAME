@@ -27,6 +27,9 @@ enum RoomType
 
 	//敵がわかない部屋
 	RoomType_SafeRoom,
+
+	//プレイヤースポーン部屋
+	RoomType_PlayerSpawn
 };
 
 

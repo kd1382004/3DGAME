@@ -11,7 +11,7 @@ MapGenerate::MapGenerate()
 	LoadRoomSiz(m_roomSizPath);
 }
 
-std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
+std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
 	if (roomMine <= 0 && roomMax <= 0)
 	{
@@ -28,6 +28,9 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 	//TileType::Noneで初期化(何もない)
 	std::vector<std::vector<int>> map(static_cast<size_t>(_mapSiz.y), std::vector<int>(static_cast<size_t>(_mapSiz.x), static_cast<int>(TileType::None)));
 	std::vector<std::vector<int>> roomIDVector(static_cast<size_t>(_mapSiz.y), std::vector<int>(static_cast<size_t>(_mapSiz.x), -1));
+
+	//戻り値用のデータ
+	std::vector<std::vector<bool>> returnMapDate(static_cast<size_t>(_mapSiz.y), std::vector<bool>(static_cast<size_t>(_mapSiz.x), false));
 
 
 
@@ -139,7 +142,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 							info.m_roomEnd.downEnd = roomY + roomH - 1;
 
 							m_roomInfo.push_back(info);
-						
+
 
 						}
 
@@ -158,12 +161,15 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 	//部屋の数
 	std::vector<RoomType> roomTypeList(roomID);
 
+	/////////////////////////////////////////////////////
+	//それぞれの数とかのちに調整
 	for (int i = 0;i < roomID;i++)
 	{
 		//何用の部屋か決める
 		roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_SafeRoom);
 	}
 
+	/////////////////////////////////////////////////////
 
 	/////////////////////////////////////////////////////
 
@@ -186,7 +192,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 			int x = static_cast<int>(a.x);
 			int y = static_cast<int>(a.y);
 
-			// ★ 範囲外チェックを追加
+			//   範囲外チェックを追加
 			if (y >= 0 && y < static_cast<int>(map.size()) &&
 				x >= 0 && x < static_cast<int>(map[y].size()))
 			{
@@ -210,6 +216,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 		if (room.m_roomID == playerSpwanRoomID)
 		{
 			room.m_playerSpwanRoom = true;
+			roomTypeList[room.m_roomID] = RoomType_PlayerSpawn;
 			break;
 		}
 	}
@@ -253,6 +260,9 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 			/////////////////////////////////////////////////////
 			if (map[y][x] != static_cast<int>(TileType::None))
 			{
+				returnMapDate[y][x] = true;
+
+
 				//床と通路を保存
 				float xPos = tileSiz * x + tileSiz * 0.5f;
 				float zPos = -(tileSiz * y + tileSiz * 0.5f);
@@ -286,24 +296,52 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 					if (rID == playerSpwanRoomID)
 					{
 						*_playerSpawnPos = pos;
+						mapA->SetRoomType(RoomType_SafeRoom);
 					}
 					else
 					{
 						mapA->SetRoomType(roomTypeList[rID]);
+					}
 
 
-						// 部屋ごとに部屋IDとワールド座標情報を保存
-						if (rID >= 0 && rID < static_cast<int>(m_roomInfoList.size()))
+					// 部屋ごとに部屋IDとワールド座標情報を保存
+					if (rID >= 0 && rID < static_cast<int>(m_roomInfoList.size()))
+					{
+						RoomI room;
+						room.m_roomID = rID;
+						room.m_pos = pos;
+						room.m_roomType = static_cast<int>(roomTypeList[rID]);
+						room.m_xy = { (float)x,(float)y };
+						room.m_Installation = false;
+
+
+
+
+
+						//通路につながってるか確認
+						if (y - 1 >= 0 && y + 1 < map.size() &&
+							x - 1 >= 0 && x + 1 < map[y].size())
 						{
-							RoomI room;
-							room.m_roomID = rID;
-							room.m_pos = pos;
-							room.m_roomType = static_cast<int>(roomTypeList[rID]);
-
-
-							m_roomInfoList[rID].push_back(room);
-
+							//通路につながってたら設置物がある判定に
+							if (map[y - 1][x] == static_cast<int>(TileType::Floor))
+							{
+								room.m_Installation = true;
+							}
+							if (map[y + 1][x] == static_cast<int>(TileType::Floor))
+							{
+								room.m_Installation = true;
+							}
+							if (map[y][x - 1] == static_cast<int>(TileType::Floor))
+							{
+								room.m_Installation = true;
+							}
+							if (map[y][x + 1] == static_cast<int>(TileType::Floor))
+							{
+								room.m_Installation = true;
+							}
 						}
+
+						m_roomInfoList[rID].push_back(room);
 
 					}
 				}
@@ -355,7 +393,7 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 						bool createStairs = dir.allowStairs && isStairsRoom && !stairsPlaced;
 						if (createStairs)
 						{
-							stairsPlaced = true; // 1つ作ったらフラグを立てて2つ目以降を作らない
+							stairsPlaced = true;
 						}
 
 						Math::Vector3 wallPos = { xPos + dir.offset.x, 0.0f, zPos + dir.offset.z };
@@ -367,17 +405,20 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 		}
 	}
 
-	// 部屋の生成・全タイル保存完了後、部屋ごとの敵出現数を一括計算
+	//部屋ごとの色々を計算
 	for (size_t i = 0; i < m_roomInfoList.size(); i++)
 	{
 		if (m_roomInfoList[i].empty()) { continue; }
 
 		for (size_t j = 0; j < m_roomInfoList[i].size(); j++)
 		{
+			//////////////////////////////////////////////////////
+			//部屋ごとの敵出現数を計算
 			switch (m_roomInfoList[i][j].m_roomType)
 			{
 			case RoomType_EnemyRoom:
 				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_EnemyRoom);
+				if (m_roomInfoList[i][j].m_roomEnemyNum == 0) { m_roomInfoList[i][j].m_roomEnemyNum = 1; }
 				break;
 			case RoomType_TreasureChestRoom:
 			case RoomType_TrapRoom:
@@ -385,16 +426,43 @@ std::vector<std::vector<int>> MapGenerate::Generate(Math::Vector2 _mapSiz, int r
 				if (m_roomInfoList[i][j].m_roomEnemyNum == 0) { m_roomInfoList[i][j].m_roomEnemyNum = 1; }
 				break;
 			case RoomType_SafeRoom:
+			case RoomType_PlayerSpawn:
 				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_SafeRoom);
 				break;
 			default:
 				break;
 			}
+
+
+
+			//////////////////////////////////////////////////////
+			// 宝箱の数を計算
+			float num = 0.0f;
+			float mine = 0.0f;
+			float max = 0.0f;
+
+			switch (m_roomInfoList[i][j].m_roomType)
+			{
+			case RoomType_TreasureChestRoom:
+				num = static_cast<float>(m_roomInfoList[i].size()) * m_roomTreasuerChestPercent.m_TreasuerChestRoom;
+				mine = m_roomTreasuerChestNum.m_TreasuerChestRoomMineNum;
+				max = m_roomTreasuerChestNum.m_TreasuerChestRoomMaxNum;
+				break;
+
+			default:
+				num = static_cast<float>(m_roomInfoList[i].size()) * m_roomTreasuerChestPercent.m_NotTreasuerChestRoom;
+				mine = m_roomTreasuerChestNum.m_NotTreasuerChestRoomMineNum;
+				max = m_roomTreasuerChestNum.m_NotTreasuerChestRoomMaxNum;
+				break;
+			}
+
+			num = std::clamp(num, mine, max);
+			m_roomInfoList[i][j].m_roomTreasuerChestNum = static_cast<int>(num);
+
 		}
 	}
 
-
-	return map;
+	return returnMapDate;
 }
 
 

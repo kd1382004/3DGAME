@@ -156,8 +156,6 @@ protected:
 	//オブジェ名
 	std::string m_objNemu;
 
-
-
 	//当り判定をするオブジェクトを入れる
 	std::vector<std::weak_ptr<KdGameObject>> m_wpHitObjectList{};
 };

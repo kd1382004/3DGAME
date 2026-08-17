@@ -5,6 +5,7 @@
 
 class TreasureChest;
 class PlayerBase;
+class CameraBase;
 
 class TreasureChestManager :public KdGameObject
 {
@@ -13,16 +14,23 @@ public:
 	~TreasureChestManager() override {};
 
 	void Init()override;
+	void PreUpdate()override;
 	void Update()override;
 	void GenerateDepthMapFromLight()override;
 	void DrawLit()override;
+	void PreDraw()override;
 
 	void GenerateTreasureChest(std::list<Math::Vector3> _treasureChestPosList);
 
 
 	void SetPlayer(std::shared_ptr<PlayerBase> _spPlayer) { m_wpPlayer = _spPlayer; };
+	void SetCamera(std::shared_ptr<CameraBase> _spCamera) { m_wpCamera = _spCamera; };
+
+	//宝箱とあたり判定したい対象
+	void TreasureChestHit(const std::shared_ptr<KdGameObject>& obj);
 private:
 	std::weak_ptr<PlayerBase>m_wpPlayer;
+	std::weak_ptr<CameraBase>m_wpCamera;
 
 
 	std::list<std::shared_ptr<TreasureChest>> m_treasureChestList;
