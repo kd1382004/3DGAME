@@ -202,6 +202,7 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spTreasureChestManager->SetPlayer(m_spPlayer);
 	m_spTreasureChestManager->SetCamera(camera);
+	m_spTreasureChestManager->SetUIManager(spUIManager);
 
 
 

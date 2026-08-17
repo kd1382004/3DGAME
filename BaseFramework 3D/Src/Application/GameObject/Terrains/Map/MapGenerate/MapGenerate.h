@@ -123,7 +123,7 @@ private:
 	struct RoomTreasuerChestNum
 	{
 		float m_TreasuerChestRoomMaxNum = 5;
-		float m_TreasuerChestRoomMineNum = 2;
+		float m_TreasuerChestRoomMineNum = 3;
 
 		float m_NotTreasuerChestRoomMaxNum = 2;
 		float m_NotTreasuerChestRoomMineNum = 0;

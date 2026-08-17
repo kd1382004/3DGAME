@@ -23,8 +23,6 @@ void UIMap_Player::DrawSprit()
 
 Math::Vector2 UIMap_Player::GetPos()
 {
-
-
 	return { m_basePos.x + m_player2DPos.x * m_siz, m_basePos.y + m_player2DPos.y * m_siz };
 }
 

@@ -4,6 +4,10 @@
 #include"../../Info/KeyInfo/KeyInfo.h"
 
 #include"../Camera/CameraBase.h"
+
+#include"../UI/UIMap/UIMap_TreasureChest/UIMap_TreasureChest.h"
+#include"../UI/UIManager.h"
+#include"../UI\UIMap/UIMapManager.h"
 void TreasureChest::Init()
 {
 	if (!m_treasureChestModel)
@@ -21,6 +25,7 @@ void TreasureChest::Init()
 		m_pCollider->RegisterCollisionShape("TreasureChest", m_treasureChestModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion|KdCollider::TypeGround);
 	}
 
+	
 
 
 	if (!m_treasureChestModel) { return; }
@@ -66,6 +71,7 @@ void TreasureChest::Update()
 	{ 
 		m_treasureChestAnimetor->AdvanceTime(m_treasureChestModel->WorkNodes(), 100);
 		m_treasureChestModel->CalcNodeMatrices();
+
 		return;
 	}
 
@@ -123,4 +129,17 @@ void TreasureChest::DrawLit()
 	{
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_treasureChestModel, m_mWorld);
 	}
+}
+
+void TreasureChest::SetUIManager(std::shared_ptr<UIManager> _spUIManager)
+{
+	if (!_spUIManager) { return; }
+
+	m_wpUIManager = _spUIManager;
+
+	std::shared_ptr<UIMap_TreasureChest> spUIMap_TreasureChest = std::make_shared<UIMap_TreasureChest>();
+	m_wpUIMap_TreasureChest = spUIMap_TreasureChest;
+
+	_spUIManager->GetUIMapManager()->AddUIMap_TreasureChest(spUIMap_TreasureChest,GetPos());
+
 }

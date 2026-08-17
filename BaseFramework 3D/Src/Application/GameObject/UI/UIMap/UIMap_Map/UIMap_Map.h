@@ -19,6 +19,8 @@ public:
 
 	void AddPosList(Math::Vector3 _3DPos,float _worldTileSize);
 
+	void AddStairsPos(Math::Vector3 _3DPos,float _worldTileSize);
+
 	void SetBasePos(Math::Vector2 _basePos) { m_basePos = _basePos; }
 
 	void PosListReset();
@@ -43,6 +45,7 @@ private:
 
 
 	std::shared_ptr<KdTexture>m_mapTex;
+	std::shared_ptr<KdTexture>m_mapStairsTex;
 
 	Math::Vector2 m_mapTexSiz;
 
@@ -55,4 +58,6 @@ private:
 
 	std::list<MineMapInfo>m_posList;
 
+
+	MineMapInfo m_StairsMineMapInfo;
 };

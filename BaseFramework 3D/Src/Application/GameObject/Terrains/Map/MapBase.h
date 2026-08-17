@@ -7,7 +7,8 @@ enum MapObjType
 {
 	None,       // 何でもない
 	Ground,     // 地面
-	Wall        // 壁
+	Wall,        // 壁
+	Stairs        // 階段
 };
 
 

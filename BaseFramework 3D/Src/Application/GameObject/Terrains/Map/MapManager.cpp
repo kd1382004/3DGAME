@@ -105,7 +105,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 	Math::Vector3 basePos;
 	mapData = map->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
-
+	auto mapRoomList = map->GetRoomInfoList();
 
 	//プレイヤーを設定
 	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
@@ -118,10 +118,34 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 	}
 
 
+	////////////////////////////////////////////////////
+	// ミニマップ生成
+	std::shared_ptr<UIManager> spUIManager = m_wpUIManager.lock();
+	if (spUIManager)
+	{
+		std::shared_ptr<UIMapManager> spUIMapManager = spUIManager->GetUIMapManager();
+		if (spUIMapManager)
+		{
+			spUIMapManager->SetBase3DPos(basePos);
+			spUIMapManager->SetTileSiz(m_mapTileSiz);
+			spUIMapManager->GetUIMap_Map()->PosListReset();
+
+			for (const auto& mapObj : m_mapObj)
+			{
+				if (mapObj->GetMapObjType() == MapObjType::Ground)
+				{
+					spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
+				}
+
+				if (mapObj->GetMapObjType() == MapObjType::Stairs)
+				{
+					spUIMapManager->GetUIMap_Map()->AddStairsPos(mapObj->GetPos(), m_mapTileSiz);
+				}
+			}
+		}
+	}
 
 	////////////////////////////////////////////////////
-	auto mapRoomList = map->GetRoomInfoList();
-
 	// 敵の生成
 	std::shared_ptr<EnemyManager> spEnemyManager = m_wpEnemyManager.lock();
 	if (spEnemyManager)
@@ -234,27 +258,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 
 
-	////////////////////////////////////////////////////
-	// ミニマップ生成
-	std::shared_ptr<UIManager> spUIManager = m_wpUIManager.lock();
-	if (spUIManager)
-	{
-		std::shared_ptr<UIMapManager> spUIMapManager = spUIManager->GetUIMapManager();
-		if (spUIMapManager)
-		{
-			spUIMapManager->SetBase3DPos(basePos);
-			spUIMapManager->SetTileSiz(m_mapTileSiz);
-			spUIMapManager->GetUIMap_Map()->PosListReset();
-
-			for (const auto& mapObj : m_mapObj)
-			{
-				if (mapObj->GetMapObjType() == MapObjType::Ground)
-				{
-					spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
-				}
-			}
-		}
-	}
+	
 
 
 

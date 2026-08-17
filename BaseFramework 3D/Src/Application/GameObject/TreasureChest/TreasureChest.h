@@ -2,6 +2,8 @@
 
 class PlayerBase;
 class CameraBase;
+class UIManager;
+class UIMap_TreasureChest;
 
 class TreasureChest:public KdGameObject
 {
@@ -17,10 +19,13 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase> _spPlayer) { m_wpPlayer = _spPlayer; };
 	void SetCamera(std::shared_ptr<CameraBase> _spCamera) { m_wpCamera = _spCamera; };
+	void SetUIManager(std::shared_ptr<UIManager> _spUIManager);
+
 private:
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 	std::weak_ptr<CameraBase>m_wpCamera;
-
+	std::weak_ptr<UIManager>m_wpUIManager;
+	std::weak_ptr<UIMap_TreasureChest>m_wpUIMap_TreasureChest;
 
 	std::shared_ptr<KdModelWork>m_treasureChestModel = nullptr;
 	std::shared_ptr<KdAnimator>	m_treasureChestAnimetor = nullptr;

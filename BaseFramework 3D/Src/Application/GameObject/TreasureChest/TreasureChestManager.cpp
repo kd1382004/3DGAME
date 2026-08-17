@@ -64,6 +64,7 @@ void TreasureChestManager::GenerateTreasureChest(std::list<Math::Vector3> _treas
 		spTreasureChest = std::make_shared<TreasureChest>();
 		spTreasureChest->Init();
 		spTreasureChest->SetPos(pos);
+		spTreasureChest->SetUIManager(m_wpUIManager.lock());
 		spTreasureChest->SetPlayer(m_wpPlayer.lock());
 		spTreasureChest->SetCamera(m_wpCamera.lock());
 		m_treasureChestList.push_back(spTreasureChest);

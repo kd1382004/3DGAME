@@ -295,7 +295,6 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					//プレイヤースポーン位置を保存
 					if (rID == playerSpwanRoomID)
 					{
-						*_playerSpawnPos = pos;
 						mapA->SetRoomType(RoomType_SafeRoom);
 					}
 					else
@@ -340,6 +339,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 								room.m_Installation = true;
 							}
 						}
+
 
 						m_roomInfoList[rID].push_back(room);
 
@@ -405,10 +405,28 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 		}
 	}
 
+
+
+
+	bool playerSpwan = false;
 	//部屋ごとの色々を計算
 	for (size_t i = 0; i < m_roomInfoList.size(); i++)
 	{
 		if (m_roomInfoList[i].empty()) { continue; }
+
+		if (!playerSpwan)
+		{
+			//プレイヤーのスポーン位置
+			if (m_roomInfoList[i][0].m_roomID == playerSpwanRoomID)
+			{
+				int j = KdRandom::GetInt(0, m_roomInfoList[i].size() - 1);
+
+				m_roomInfoList[i][j].m_Installation = true;
+				*_playerSpawnPos = m_roomInfoList[i][j].m_pos;
+			}
+		}
+
+
 
 		for (size_t j = 0; j < m_roomInfoList[i].size(); j++)
 		{
@@ -739,6 +757,7 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree,
 			stairs->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(rotYDegree)));
 		}
 
+		stairs->SetMapObjType(MapObjType::Stairs);
 		ret->push_back(stairs);
 	}
 	else

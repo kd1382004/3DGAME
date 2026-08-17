@@ -2,6 +2,7 @@
 #include"UIMap_Map/UIMap_Map.h"
 #include"UIMap_Player/UIMap_Player.h"
 #include"UIMap_Enemy/UIMap_Enemy.h"
+#include"UIMap_TreasureChest/UIMap_TreasureChest.h"
 void UIMapManager::Init()
 {
 	m_basePos = { -600,350 };
@@ -34,8 +35,22 @@ void UIMapManager::Init()
 	}
 }
 
-void UIMapManager::Update()
+void UIMapManager::PreUpdate()
 {
+	auto it = m_UIMap_TreasureChest.begin();
+
+	while (it != m_UIMap_TreasureChest.end())
+	{
+		if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+		{
+			// 無効なオブジェクトをリストから削除
+			it = m_UIMap_TreasureChest.erase(it);
+		}
+		else
+		{
+			++it;	// 次の要素へイテレータを進める
+		}
+	}
 }
 
 void UIMapManager::PreDraw()
@@ -59,6 +74,12 @@ void UIMapManager::DrawSprite()
 	if (m_UIMap_Player)
 	{
 		m_UIMap_Player->DrawSprit();
+	}
+
+	for (auto Map_TreasureChest : m_UIMap_TreasureChest)
+	{
+		Map_TreasureChest->SetMinMapPlayerPos(m_UIMap_Player->GetPos());
+		Map_TreasureChest->DrawSprite();
 	}
 }
 
@@ -95,4 +116,16 @@ void UIMapManager::SetTileSiz(float _siz)
 	{
 		m_UIMap_Enemy->SetTileSiz(m_tileSiz);
 	}
+}
+
+void UIMapManager::AddUIMap_TreasureChest(std::shared_ptr<UIMap_TreasureChest> _TreasureChest,Math::Vector3 _3Dpos)
+{
+	_TreasureChest->Init();
+	_TreasureChest->SetMapTexSiz(m_UIMap_Map->GetMapTexSiz());
+	_TreasureChest->SetUIMap_Map(m_UIMap_Map);
+	_TreasureChest->SetBase3DPos(m_base3DPos);
+	_TreasureChest->SetBasePos(m_basePos);
+	_TreasureChest->SetTileSiz(m_tileSiz);
+	_TreasureChest->SetPos(_3Dpos, m_tileSiz);
+	m_UIMap_TreasureChest.push_back(_TreasureChest);
 }
