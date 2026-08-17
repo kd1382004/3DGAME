@@ -199,6 +199,9 @@
     <Filter Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest">
       <UniqueIdentifier>{737d2806-8719-492d-9e3b-c95ffe66fd2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\PlayerInventoryUI">
+      <UniqueIdentifier>{fc8462d5-14f2-4221-aeaf-d88140d75093}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -495,6 +498,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.h">
       <Filter>Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.h">
+      <Filter>Src\Application\GameObject\UI\PlayerInventoryUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -757,6 +763,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.cpp">
       <Filter>Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.cpp">
+      <Filter>Src\Application\GameObject\UI\PlayerInventoryUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

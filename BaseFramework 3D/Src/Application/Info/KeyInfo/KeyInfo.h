@@ -63,6 +63,9 @@ private:
 	//スペースキー
 	Key KeySpace;
 
+	//タブ
+	Key KeyTAB;
+
 	//エンターキー
 	Key KeyEnter;
 

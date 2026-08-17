@@ -21,30 +21,66 @@ void BaseScene::PreUpdate()
 
 	// ↑の後には有効なオブジェクトだけのリストになっている
 
+
 	for (auto& obj : m_objList)
 	{
-		obj->PreUpdate();
+		if (m_poseFlg)
+		{
+			if (!obj->GetPauseStop())
+			{
+				obj->PreUpdate();
+			}
+		}
+		else
+		{
+			obj->PreUpdate();
+		}
 	}
 }
 
 void BaseScene::Update()
 {
 	// シーン毎のイベント処理
-	Event();
-
+	if (!m_poseFlg)
+	{
+		Event();
+	}
+	
 	// KdGameObjectを継承した全てのオブジェクトの更新 (ポリモーフィズム)
 	for (auto& obj : m_objList)
 	{
-		obj->Update();
+		if (m_poseFlg)
+		{
+			if (!obj->GetPauseStop())
+			{
+				obj->Update();
+			}
+		}
+		else
+		{
+			obj->Update();
+		}
 	}
 }
 
 void BaseScene::PostUpdate()
 {
+
 	for (auto& obj : m_objList)
 	{
-		obj->PostUpdate();
+		if (m_poseFlg)
+		{
+			if (!obj->GetPauseStop())
+			{
+				obj->PostUpdate();
+			}
+		}
+		else
+		{
+			obj->PostUpdate();
+		}
 	}
+
 }
 
 void BaseScene::PreDraw()

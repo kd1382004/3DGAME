@@ -28,8 +28,9 @@ public:
 	void SetMapTexSiz(Math::Vector2 _siz) { m_mapTexSiz = _siz; }
 
 	void SetUIMap_Map(std::shared_ptr<UIMap_Map> _UIMap_Map) { m_wpUIMap_Map = _UIMap_Map; }
-private:
 
+	void SetExpired(bool _flg) { m_isExpired = _flg; }
+private:
 
 	std::weak_ptr<UIMap_Map>m_wpUIMap_Map;
 
@@ -40,7 +41,6 @@ private:
 	struct List
 	{
 		Math::Vector3 m_pos;
-		float m_angle;
 		bool m_drawFlg = false;
 	};
 

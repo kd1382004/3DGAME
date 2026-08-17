@@ -9,11 +9,15 @@
 
 
 #include"UIMap/UIMapManager.h"
+
+#include"PlayerInventoryUI/PlayerInventoryUI.h"
 void UIManager::Init()
 {
 	std::shared_ptr<NextFloorGaugeUI> spNextFloorGaugeUI = std::make_shared<NextFloorGaugeUI>();
 	spNextFloorGaugeUI->Init();
 	m_spUIList.push_back(spNextFloorGaugeUI);
+
+
 
 	//プレイヤーにUIを渡す
 	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
@@ -28,6 +32,12 @@ void UIManager::Init()
 	m_wpUIMapManager = spUIMapManager;
 	m_spUIList.push_back(spUIMapManager);
 
+
+	m_pauseStop = false;
+
+	m_spPlayerInventoryUI = std::make_shared<PlayerInventoryUI>();
+	m_spPlayerInventoryUI->Init();
+	m_spUIList.push_back(m_spPlayerInventoryUI);
 }
 
 void UIManager::PreUpdate()
@@ -47,6 +57,11 @@ void UIManager::PreUpdate()
 		{
 			++it;	// 次の要素へイテレータを進める
 		}
+	}
+
+	for (auto UI : m_spUIList)
+	{
+		UI->PreUpdate();
 	}
 }
 
@@ -71,6 +86,16 @@ void UIManager::DrawSprite()
 	for (auto UI : m_spUIList)
 	{
 		UI->DrawSprite();
+	}
+}
+
+void UIManager::SetGameScene(std::shared_ptr<GameScene> _spGameScene)
+{
+	m_wpGameScene = _spGameScene;
+
+	if (m_spPlayerInventoryUI)
+	{
+		m_spPlayerInventoryUI->SetGameScene(_spGameScene);
 	}
 }
 

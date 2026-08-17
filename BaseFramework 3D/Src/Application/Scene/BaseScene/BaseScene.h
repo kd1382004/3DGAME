@@ -33,6 +33,7 @@ public :
 	//ImGUIをいじるならこの中で
 	virtual void ImGUi();
 	virtual void Init();
+	void SetPoseFlg(bool _flg) { m_poseFlg = _flg; }
 protected :
 
 	// 継承先シーンで必要ならオーバーライドする
@@ -41,4 +42,7 @@ protected :
 
 	// 全オブジェクトのアドレスをリストで管理
 	std::list<std::shared_ptr<KdGameObject>> m_objList;
+
+
+	bool m_poseFlg=false;
 };

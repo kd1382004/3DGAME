@@ -3,6 +3,8 @@
 class UIBase;
 class PlayerBase;
 class UIMapManager;
+class PlayerInventoryUI;
+class GameScene;
 
 class UIManager:public KdGameObject
 {
@@ -18,7 +20,7 @@ public:
 	void PreDraw()override;
 	void DrawSprite()override;
 	void SetPlayer(std::shared_ptr<PlayerBase> _spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
-
+	void SetGameScene(std::shared_ptr<GameScene> _spGameScene);
 
 	void AddUIObj(std::shared_ptr<UIBase> _spUI) { m_spUIList.push_back(_spUI); }
 
@@ -28,6 +30,8 @@ private:
 
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
 	std::weak_ptr<UIMapManager> m_wpUIMapManager;
+	std::weak_ptr<GameScene> m_wpGameScene;
+	std::shared_ptr<PlayerInventoryUI> m_spPlayerInventoryUI;
 
 	std::list<std::shared_ptr<UIBase>> m_spUIList;
 

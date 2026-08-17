@@ -71,7 +71,11 @@ void TreasureChest::Update()
 	{ 
 		m_treasureChestAnimetor->AdvanceTime(m_treasureChestModel->WorkNodes(), 100);
 		m_treasureChestModel->CalcNodeMatrices();
-
+		if (m_treasureChestAnimetor->IsAnimationEnd())
+		{
+			m_isExpired = true;
+			m_wpUIMap_TreasureChest.lock()->SetExpired(true);
+		}
 		return;
 	}
 
@@ -85,8 +89,6 @@ void TreasureChest::Update()
 
 		if (dist < 10)
 		{
-
-
 			int key = spPlayer->GetActionKeyConfig().interact;
 
 

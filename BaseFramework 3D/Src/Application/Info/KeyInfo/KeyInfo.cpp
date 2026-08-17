@@ -37,6 +37,10 @@ void KeyInfo::SetKeyValid(int _key)
 	{
 		Shift.m_validFlg = true;
 	}
+	else if (_key == VK_TAB)//TAB
+	{
+		KeyTAB.m_validFlg = true;
+	}
 }
 
 void KeyInfo::KeyvalidReset()
@@ -156,6 +160,26 @@ void KeyInfo::UpdateKey()
 			Shift.m_pushS = 0;
 		}
 	}
+
+
+	if (KeyTAB.m_validFlg)
+	{
+		if (GetAsyncKeyState(VK_TAB) & 0x8000)
+		{
+			KeyTAB.m_pushFlg = true;
+
+			if (KeyTAB.m_useFlg)
+			{
+				KeyTAB.m_pushS++;
+			}
+		}
+		else
+		{
+			KeyTAB.m_useFlg = false;
+			KeyTAB.m_pushFlg = false;
+			KeyTAB.m_pushS = 0;
+		}
+	}
 }
 
 
@@ -198,8 +222,12 @@ bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
 	}
 	else if (_key ==VK_SHIFT)
 	{
-		int Num = _key - '0';
+		int Num = _key;
 		flg = GetValidKeyPush(&Shift, _useFlg, _flg);
+	}else if(_key==VK_TAB)
+	{
+		int Num = _key;
+		flg = GetValidKeyPush(&KeyTAB, _useFlg, _flg);
 	}
 
 

@@ -118,6 +118,9 @@ public:
 	//Hit後処理
 	virtual void IsHit() {};
 
+
+	bool GetPauseStop() { return m_pauseStop; }
+	void SetPauseStop(bool _flg) { m_pauseStop= _flg; }
 protected:
 
 
@@ -158,4 +161,8 @@ protected:
 
 	//当り判定をするオブジェクトを入れる
 	std::vector<std::weak_ptr<KdGameObject>> m_wpHitObjectList{};
+
+
+	//ポーズでアップデート関係を止めるか(trueが止める)
+	bool m_pauseStop = true;
 };

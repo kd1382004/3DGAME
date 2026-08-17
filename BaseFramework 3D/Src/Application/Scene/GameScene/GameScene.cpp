@@ -161,10 +161,14 @@ void GameScene::Init()
 	//UI
 	/////////////////////////////////////////	
 	std::shared_ptr<UIManager> spUIManager = std::make_shared<UIManager>();
-	spUIManager->SetPlayer(m_spPlayer);
 	spUIManager->Init();
 	m_objList.push_back(spUIManager);
 
+	/////////////////////////////////////////
+	//UIにセット
+	/////////////////////////////////////////
+	spUIManager->SetPlayer(m_spPlayer);
+	spUIManager->SetGameScene(self);
 	
 	/////////////////////////////////////////
 	//プレイヤーにセット

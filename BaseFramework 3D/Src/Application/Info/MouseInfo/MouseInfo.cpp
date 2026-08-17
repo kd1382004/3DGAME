@@ -49,6 +49,13 @@ void MouseInfo::Init()
 	{
 		SetCursorPos(pos.x, pos.y);
 	}
+
+
+	if (!m_mousePointer)
+	{
+		m_mousePointer = std::make_shared<KdTexture>();
+		m_mousePointer->Load("Asset/Textures/Mouse/MousePointer.png");
+	}
 }
 
 void MouseInfo::Update()
@@ -73,7 +80,7 @@ void MouseInfo::Update()
 		}
 
 	}
-
+	ShowCursor(false);
 
 	//************************************************
 
@@ -96,13 +103,11 @@ void MouseInfo::Update()
 	if (m_mouseFreeFlg)
 	{
 		m_mouseType = MouseType::MouseType_Nomal;
-		ShowCursor(true);
 
 	}
 	else
 	{
 		m_mouseType = MouseType::MouseType_NotFree;
-		ShowCursor(false);
 	}
 
 	//************************************************
@@ -131,5 +136,25 @@ void MouseInfo::Update()
 
 void MouseInfo::DrawSprite()
 {
+	if (!m_mousePointer) { return; }
+	Math::Rectangle rec;
+	switch (m_mouseType)
+	{
+	case MouseInfo::MouseType_Nomal:
+		rec = { 0,0,(long)m_mousePointer->GetWidth() / 2,(long)m_mousePointer->GetHeight() };
+		break;
+	case MouseInfo::MouseType_HIT:
+		rec = { (long)m_mousePointer->GetWidth() / 2,0,(long)m_mousePointer->GetWidth() / 2,(long)m_mousePointer->GetHeight() };
+		break;
+	case MouseInfo::MouseType_Click:
+		break;
+	case MouseInfo::MouseType_NotFree:
+		return;
+		break;
+	default:
+		break;
+	}
+
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, &rec);
 
 }

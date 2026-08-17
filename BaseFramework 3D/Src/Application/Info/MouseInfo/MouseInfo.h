@@ -67,6 +67,8 @@ private:
 	//ウィンドウ単位でのフォーカスがあるかどうか
 	bool m_FocusWindowFlg = false;
 
+
+	std::shared_ptr<KdTexture> m_mousePointer;
 public:
 
 	// シングルトンパターン
