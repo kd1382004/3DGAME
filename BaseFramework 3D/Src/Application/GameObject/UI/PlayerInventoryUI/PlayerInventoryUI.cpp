@@ -45,12 +45,6 @@ void PlayerInventoryUI::Init()
 		m_UseTex2DPos = { x,y };
 	}
 
-	if (!m_spPotionTexInfo)
-	{
-		m_spPotionTexInfo = std::make_shared<PotionTexInfo>();
-	}
-
-
 	m_iconDimensions = { 40,40 };
 	m_layerPriority = 1;
 }
@@ -189,10 +183,11 @@ void PlayerInventoryUI::AddPotionTexInfo()
 			itemIconInfo.m_num = potion.m_num;
 			itemIconInfo.m_name = potion.m_name;
 
-			if (m_spPotionTexInfo)
+			std::shared_ptr<PotionTexInfo>_spPotionTexInfo = m_wpPotionTexInfo.lock();
+			if (_spPotionTexInfo)
 			{
-				itemIconInfo.m_IconTex = m_spPotionTexInfo->GetIcon(itemIconInfo.m_ItemID);
-				itemIconInfo.m_ExplanationTex = m_spPotionTexInfo->GetExplanation(itemIconInfo.m_ItemID);
+				itemIconInfo.m_IconTex = _spPotionTexInfo->GetIcon(itemIconInfo.m_ItemID);
+				itemIconInfo.m_ExplanationTex = _spPotionTexInfo->GetExplanation(itemIconInfo.m_ItemID);
 			}
 
 

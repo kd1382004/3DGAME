@@ -21,6 +21,7 @@
 //バフ
 #include"PlayerBuffManager/PlayerBuffManager.h"
 
+
 void PlayerBase::Init()
 {
 	m_keyConfigFilePath = "Asset/Data/KeyConfig/KeyConfig.json";

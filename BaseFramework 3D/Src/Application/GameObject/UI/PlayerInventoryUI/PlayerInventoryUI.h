@@ -25,6 +25,7 @@ public:
 
 	void SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController) { m_wpPotionUseController = _spPotionUseController; }
 	void SetPlayerBase(std::shared_ptr<PlayerBase> _spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
+	void SetPotionTexInfo(std::shared_ptr<PotionTexInfo> _spPotionTexInfo) { m_wpPotionTexInfo = _spPotionTexInfo; }
 private:
 
 	std::weak_ptr<GameScene> m_wpGameScene;
@@ -51,7 +52,7 @@ private:
 	Math::Vector2 m_UseTex2DPos;
 
 
-	std::shared_ptr<PotionTexInfo>m_spPotionTexInfo;
+	std::weak_ptr<PotionTexInfo>m_wpPotionTexInfo;
 
 	//あるものを入れてく関数
 	void AddPotionTexInfo();

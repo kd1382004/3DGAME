@@ -16,6 +16,7 @@
 
 //UI
 #include"../../GameObject/UI/UIManager.h"
+#include"../../GameObject/UI/BuffUI/BuffUI.h"
 
 //武器
 #include"../../GameObject/Weapon/Dagger/Dagger.h"
@@ -182,6 +183,13 @@ void GameScene::Init()
 	spUIManager->SetPlayer(m_spPlayer);
 	spUIManager->SetGameScene(self);
 	spUIManager->SetPotionUseController(m_spPotionUseController);
+
+	std::shared_ptr<BuffUI>spBuffUI = std::make_shared<BuffUI>();
+	spBuffUI->Init();
+	spBuffUI->Set2DPos({-80,-320});
+	spBuffUI->SetPotionTexInfo(spUIManager->GetPotionTexInfo());
+	spBuffUI->SetPlayer(m_spPlayer);
+	spUIManager->AddUIObj(spBuffUI);
 
 	/////////////////////////////////////////
 	//プレイヤーにセット

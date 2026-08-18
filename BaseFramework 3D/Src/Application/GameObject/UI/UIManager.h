@@ -6,6 +6,7 @@ class UIMapManager;
 class PlayerInventoryUI;
 class GameScene;
 class PotionUseController;
+class PotionTexInfo;
 
 class UIManager :public KdGameObject
 {
@@ -27,6 +28,7 @@ public:
 
 
 	std::shared_ptr<UIMapManager> GetUIMapManager() { return  m_wpUIMapManager.lock(); }
+	std::shared_ptr<PotionTexInfo> GetPotionTexInfo() { return  m_spPotionTexInfo; }
 
 	void SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController);
 
@@ -36,6 +38,7 @@ private:
 	std::weak_ptr<UIMapManager> m_wpUIMapManager;
 	std::weak_ptr<GameScene> m_wpGameScene;
 	std::shared_ptr<PlayerInventoryUI> m_spPlayerInventoryUI;
+	std::shared_ptr<PotionTexInfo> m_spPotionTexInfo;
 
 	std::list<std::shared_ptr<UIBase>> m_spUIList;
 	int m_spUIListOldSiz = 0;

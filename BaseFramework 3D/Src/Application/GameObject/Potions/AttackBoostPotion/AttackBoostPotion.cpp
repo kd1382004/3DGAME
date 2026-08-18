@@ -2,7 +2,7 @@
 #include"../../Character/Player/PlayerBase.h"
 #include"../../Character/Player/PlayerBuffManager/PlayerBuffManager.h"
 
-void AttackBoostPotion::UseAttackBoostPotion()
+void AttackBoostPotion::UseAttackBoostPotion(int ID)
 {
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
 	if (spPlayer)
@@ -16,6 +16,7 @@ void AttackBoostPotion::UseAttackBoostPotion()
 			buff.m_buffAttck += 10;
 			buff.m_maxSeconds = 100;
 			buff.m_nowSeconds = buff.m_maxSeconds;
+			buff.m_ID = ID;
 			spPlayerBuffManager->AddStatusBuff(buff);
 		}
 	}

@@ -11,8 +11,17 @@
 #include"UIMap/UIMapManager.h"
 
 #include"PlayerInventoryUI/PlayerInventoryUI.h"
+
+#include"../Potions/PotionTexInfo/PotionTexInfo.h"
 void UIManager::Init()
 {
+	if (!m_spPotionTexInfo)
+	{
+		m_spPotionTexInfo = std::make_shared<PotionTexInfo>();
+	}
+
+
+
 	std::shared_ptr<UIMapManager> spUIMapManager = std::make_shared<UIMapManager>();
 	spUIMapManager->Init();
 	m_wpUIMapManager = spUIMapManager;
@@ -23,6 +32,7 @@ void UIManager::Init()
 
 	m_spPlayerInventoryUI = std::make_shared<PlayerInventoryUI>();
 	m_spPlayerInventoryUI->Init();
+	m_spPlayerInventoryUI->SetPotionTexInfo(m_spPotionTexInfo);
 	m_spUIList.push_back(m_spPlayerInventoryUI);
 }
 

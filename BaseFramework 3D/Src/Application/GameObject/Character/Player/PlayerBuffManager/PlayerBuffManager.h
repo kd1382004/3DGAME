@@ -38,6 +38,8 @@ public:
 	void BuffFinish(const StatusBuff& _statusBuff);
 
 	void AddStatusBuff(StatusBuff _statusBuff);
+
+	std::list<StatusBuff> GetStatusBuff() { return m_statusBuffList; }
 private:
 
 	std::weak_ptr<PlayerBase>m_wpPlayer;

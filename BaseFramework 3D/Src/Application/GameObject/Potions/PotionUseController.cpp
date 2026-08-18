@@ -48,5 +48,5 @@ void PotionUseController::UseAttackBoostPotion()
 {
 	std::shared_ptr<AttackBoostPotion>spAttackBoostPotion = std::make_shared<AttackBoostPotion>();
 	spAttackBoostPotion->SetPlayer(m_wpPlayerBase.lock());
-	spAttackBoostPotion->UseAttackBoostPotion();
+	spAttackBoostPotion->UseAttackBoostPotion(PotionsType_AttackBoostPotion);
 }

@@ -8,7 +8,8 @@ public:
 	~AttackBoostPotion() {};
 
 	//攻撃力増加(永久的)
-	void UseAttackBoostPotion();
+	//ID...ポーションID
+	void UseAttackBoostPotion(int ID);
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
 
