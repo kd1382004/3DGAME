@@ -275,6 +275,73 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 }
 
+void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
+{
+
+	m_mapObj.clear();
+
+	std::shared_ptr<MapGenerate> map = std::make_shared<MapGenerate>();
+
+	//敵が歩ける一覧
+	std::vector<std::vector<bool>> mapData;
+
+	Math::Vector3 basePos;
+	map->GenerateBoss(_mapSiz,m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &basePos);
+	auto mapRoomList = map->GetRoomInfoList();
+
+	//プレイヤーを設定
+	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
+	if (spPlayerBase)
+	{
+		for (const auto& mapObj : m_mapObj)
+		{
+			mapObj->SetPlayer(spPlayerBase);
+		}
+	}
+	////////////////////////////////////////////////////
+	//ボス生成
+	std::shared_ptr<EnemyManager> spEnemyManager = m_wpEnemyManager.lock();
+	if (spEnemyManager)
+	{
+		spEnemyManager->SpawnBoss(map->GetBossSpawnPos());
+	}
+
+
+	////////////////////////////////////////////////////
+	// ミニマップ生成
+	std::shared_ptr<UIManager> spUIManager = m_wpUIManager.lock();
+	if (spUIManager)
+	{
+		std::shared_ptr<UIMapManager> spUIMapManager = spUIManager->GetUIMapManager();
+		if (spUIMapManager)
+		{
+			spUIMapManager->SetBase3DPos(basePos);
+			spUIMapManager->SetTileSiz(m_mapTileSiz);
+			spUIMapManager->GetUIMap_Map()->PosListReset();
+
+			for (const auto& mapObj : m_mapObj)
+			{
+				if (mapObj->GetMapObjType() == MapObjType::Ground)
+				{
+					spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
+				}
+
+				if (mapObj->GetMapObjType() == MapObjType::Stairs)
+				{
+					spUIMapManager->GetUIMap_Map()->AddStairsPos(mapObj->GetPos(), m_mapTileSiz);
+				}
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////
+	//カメラセット
+	if (!m_wpCamera.expired())
+	{
+		SetCamera(m_wpCamera.lock());
+	}
+}
+
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 {
 	m_nodes.resize(height);

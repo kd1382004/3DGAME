@@ -483,6 +483,111 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	return returnMapDate;
 }
 
+void MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
+{
+	m_roomInfo.clear();
+	m_roomInfoList.clear();
+	m_roomInfoList.resize(1);
+	if ((int)_mapSiz.x % 2 == 0)
+	{
+		_mapSiz.x++;
+	}
+
+	if ((int)_mapSiz.y % 2 == 0)
+	{
+		_mapSiz.y++;
+	}
+
+	//マップのサイズを作る
+	//TileType::Roomで初期化(ボス戦部屋は巨大な一部屋)
+	std::vector<std::vector<int>> map(static_cast<size_t>(_mapSiz.y), std::vector<int>(static_cast<size_t>(_mapSiz.x), static_cast<int>(TileType::Room)));
+
+	int centerX = _mapSiz.x / 2;
+	int centerY = _mapSiz.y / 2;
+
+	for (int y = 0; y < map.size(); y++)
+	{
+		for (int x = 0; x < map[y].size(); x++)
+		{
+			//床保存
+			float xPos = tileSiz * x + tileSiz * 0.5f;
+			float zPos = -(tileSiz * y + tileSiz * 0.5f);
+
+
+			if (x == centerX && y == map.size() - 1)
+			{
+				*_playerSpawnPos = { xPos ,0,zPos };
+			}
+
+			if (x == centerX && y == centerY)
+			{
+				m_bossSpawnPos = { xPos ,30,zPos };
+			}
+
+
+
+			if (y == 0 && x == 0)
+			{
+				*_basePos = { xPos,0,zPos };
+			}
+
+
+
+
+			std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
+
+
+			Math::Vector3 pos = { xPos,0,zPos };
+
+			mapA->Init();
+			mapA->SetPos(pos);
+			mapA->SetMapObjType(MapObjType::Ground);
+			mapA->SetGroundType(GroundType::Room);
+			mapA->SerRoomID(0);
+			ret->push_back(mapA);
+
+			//壁を生成
+			// 4方向の定義データ構造
+			struct WallDirectionInfo
+			{
+				int dx, dy;              // マップインデックスの移動量
+				Math::Vector3 offset;    // 座標オフセット
+				float rotY;              // Y軸回転角度
+				bool allowStairs;        // 階段の生成を許可するか
+			};
+
+			const float halfTile = tileSiz / 2.0f;
+			// 上、下、左、右の定義
+			std::vector<WallDirectionInfo> wallDirs = {
+			{  0, -1, { 0.0f, 0.0f,  halfTile },   0.0f, true }, // 上 (0度)
+			{  0,  1, { 0.0f, 0.0f, -halfTile }, 180.0f, true }, // 下 (180度)
+			{ -1,  0, {-halfTile, 0.0f, 0.0f  }, 270.0f, true }, // 左 (270度)
+			{  1,  0, { halfTile, 0.0f, 0.0f  }, 90.0f, true }, // 右 (90度)
+			};
+
+			//階段の設定位置をランダムにしたいから配列シャッフル
+			for (size_t i = 0; i < wallDirs.size(); ++i)
+			{
+				int rndIndex = KdRandom::GetInt(0, wallDirs.size() - 1);
+				std::swap(wallDirs[i], wallDirs[rndIndex]);
+			}
+
+			for (const auto& dir : wallDirs)
+			{
+				int nx = x + dir.dx;
+				int ny = y + dir.dy;
+				// 隣接マスに壁が必要か判定
+				if (IsNeedWall(nx, ny, map))
+				{
+					Math::Vector3 wallPos = { xPos + dir.offset.x, 0.0f, zPos + dir.offset.z };
+					CreateWallOrStairs(wallPos, dir.rotY, false, ret);
+				}
+			}
+		}
+	}
+
+}
+
 
 void MapGenerate::LoadRoomSiz(std::string _filePath)
 {

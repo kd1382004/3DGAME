@@ -3,6 +3,8 @@
 
 #include"Goblin/Enemy_Goblin.h"
 
+#include"Boss/Giant/Giant.h"
+
 #include"../../Terrains/Map/MapManager.h"
 
 #include"../../UI/UIManager.h"
@@ -104,6 +106,25 @@ void EnemyManager::SetPlayer(std::shared_ptr<PlayerBase> _spPalyer)
 	{
 		enemy->SetPlayer(m_wpPlayer.lock());
 	}
+}
+
+void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
+{
+	std::shared_ptr<Giant>spBoss = std::make_shared<Giant>();
+	spBoss->SetPlayer(m_wpPlayer.lock());
+	spBoss->SetMapManager(m_wpMapManager.lock());
+	spBoss->Init();
+	spBoss->SetSpawnPos(_spawnPos);
+	spBoss->SetCamera(m_wpCamera.lock());
+	spBoss->AddUIList(m_wpUIManager.lock());
+	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
+	if (spMapManager)
+	{
+		spMapManager->MapHitEnemy(spBoss);
+	}
+
+
+	m_enemyList.push_back(spBoss);
 }
 
 void EnemyManager::SetEnemyListPlayer()

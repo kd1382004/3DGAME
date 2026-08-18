@@ -41,6 +41,8 @@ public:
 	void EnemyListReset() { m_enemyList.clear(); }
 
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager) { m_wpUIManager = _spUIManager; }
+
+	void SpawnBoss(Math::Vector3 _spawnPos);
 protected:
 
 	std::weak_ptr<UIManager>m_wpUIManager;

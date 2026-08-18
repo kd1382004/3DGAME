@@ -229,6 +229,12 @@
     <Filter Include="Src\Application\GameObject\UI\BuffUI">
       <UniqueIdentifier>{283fc555-d4f2-4e2a-a37d-6427ad6e0510}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss">
+      <UniqueIdentifier>{603c404f-db26-4f16-b3db-eae41d58d805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Giant">
+      <UniqueIdentifier>{2a2c3c87-b855-43dc-8521-51303524c223}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -558,6 +564,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\BuffUI\BuffUI.h">
       <Filter>Src\Application\GameObject\UI\BuffUI</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -850,6 +859,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\BuffUI\BuffUI.cpp">
       <Filter>Src\Application\GameObject\UI\BuffUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

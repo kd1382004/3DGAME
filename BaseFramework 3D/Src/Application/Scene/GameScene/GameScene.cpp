@@ -266,6 +266,7 @@ void GameScene::GenerateMap()
 	m_displayFloor++;
 
 	m_spEnemyManager->EnemyListReset();
+	m_spTreasureChestManager->TreasureChestReset();
 
 	if (m_displayFloor % m_bossInterval != 0)
 	{	
@@ -274,7 +275,9 @@ void GameScene::GenerateMap()
 	else
 	{
 		//ボス戦用マップ生成
-
+		mapSizeX = 11;
+		mapSizeY = 11;
+		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
 
 	}
 

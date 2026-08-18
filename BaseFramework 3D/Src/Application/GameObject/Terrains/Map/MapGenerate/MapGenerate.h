@@ -81,6 +81,9 @@ public:
 	//_basePos	...	プレイヤーのスポーン位置
 	//戻り値...ノード用のマップデータ(歩けるか歩けないか)
 	std::vector<std::vector<bool>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
+	
+	
+	void GenerateBoss(Math::Vector2 _mapSiz,float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
 
 
 	// 部屋ごとの情報リストを取得
@@ -93,6 +96,8 @@ public:
 		Floor,  // 床（通路）
 		Room    // 部屋
 	};
+
+	Math::Vector3 GetBossSpawnPos() { return m_bossSpawnPos; }
 
 private:
 
@@ -175,4 +180,7 @@ private:
 
 	//敵のスポーン位置を決める
 	void EnemySpawnListDecision(std::vector<std::vector<int>> map);
+
+	//ボスの出現位置
+	Math::Vector3 m_bossSpawnPos;
 };

@@ -76,6 +76,10 @@ public:
 	//_type				...マップの種類
 	void GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _type);
 
+	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
+	//_type				...マップの種類
+	void GenerateBossMap(Math::Vector2 _mapSiz, MapType _type);
+
 	void SetPlayer(const std::shared_ptr<PlayerBase>& spPlayerBase) { m_wpPlayerBase = spPlayerBase; }
 	void SetEnemyManager(const std::shared_ptr<EnemyManager>& spEnemyManager) { m_wpEnemyManager = spEnemyManager; }
 	void SetUIManager(const std::shared_ptr<UIManager>& spUIManager) { m_wpUIManager = spUIManager; }

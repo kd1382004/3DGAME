@@ -43,7 +43,7 @@ private:
 	int m_displayFloor;
 
 	//ボス戦になる倍数(割り切れたらボス戦)
-	int m_bossInterval = 3;
+	int m_bossInterval = 1;
 
 	//マップ成長率
 	int m_mapLinearGrowthPerFloor;

@@ -32,6 +32,8 @@ public:
 
 	//宝箱とあたり判定したい対象
 	void TreasureChestHit(const std::shared_ptr<KdGameObject>& obj);
+
+	void TreasureChestReset() { m_treasureChestList.clear(); }
 private:
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 	std::weak_ptr<CameraBase>m_wpCamera;
