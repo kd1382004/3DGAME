@@ -97,6 +97,9 @@ protected:
 
 		//現在攻撃力
 		float nowAttck = 0;
+
+		//増加攻撃力(期間限定の攻撃力アップの数値などを入れる)
+		float addAttack = 0;
 	};
 
 	struct StatusDefense
@@ -106,6 +109,9 @@ protected:
 
 		//現在防御力
 		float nowDefense = 0;
+
+		//増加防御力(期間限定の防御力アップの数値などを入れる)
+		float addDefense = 0;
 	};
 
 	struct StatusMoveSpeed

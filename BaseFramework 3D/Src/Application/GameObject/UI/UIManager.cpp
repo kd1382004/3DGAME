@@ -13,20 +13,6 @@
 #include"PlayerInventoryUI/PlayerInventoryUI.h"
 void UIManager::Init()
 {
-	std::shared_ptr<NextFloorGaugeUI> spNextFloorGaugeUI = std::make_shared<NextFloorGaugeUI>();
-	spNextFloorGaugeUI->Init();
-	m_spUIList.push_back(spNextFloorGaugeUI);
-
-
-
-	//プレイヤーにUIを渡す
-	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
-	if (spPlayerBase)
-	{
-		spPlayerBase->SetNextFloorGaugeUI(spNextFloorGaugeUI);
-	}
-
-
 	std::shared_ptr<UIMapManager> spUIMapManager = std::make_shared<UIMapManager>();
 	spUIMapManager->Init();
 	m_wpUIMapManager = spUIMapManager;
@@ -58,6 +44,19 @@ void UIManager::PreUpdate()
 			++it;	// 次の要素へイテレータを進める
 		}
 	}
+	//ソートする(描画優先が大きいほど後に)
+	if (m_spUIListOldSiz != m_spUIList.size())
+	{
+		m_spUIList.sort(
+			[](const std::shared_ptr<UIBase>& a, const std::shared_ptr<UIBase>& b)
+			{
+				return a->GetLayerPriority() > b->GetLayerPriority();
+			}
+		);
+
+		m_spUIListOldSiz = m_spUIList.size();
+	}
+
 
 	for (auto UI : m_spUIList)
 	{
@@ -78,7 +77,7 @@ void UIManager::PreDraw()
 	for (auto UI : m_spUIList)
 	{
 		UI->PreDraw();
-	}
+	}	
 }
 
 void UIManager::DrawSprite()
@@ -89,6 +88,24 @@ void UIManager::DrawSprite()
 	}
 }
 
+void UIManager::SetPlayer(std::shared_ptr<PlayerBase> _spPlayerBase)
+{
+	m_wpPlayerBase = _spPlayerBase;
+	m_spPlayerInventoryUI->SetPlayerBase(_spPlayerBase);
+
+	std::shared_ptr<NextFloorGaugeUI> spNextFloorGaugeUI = std::make_shared<NextFloorGaugeUI>();
+	spNextFloorGaugeUI->Init();
+	m_spUIList.push_back(spNextFloorGaugeUI);
+
+	//プレイヤーにUIを渡す
+	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
+	if (spPlayerBase)
+	{
+		spPlayerBase->SetNextFloorGaugeUI(spNextFloorGaugeUI);
+	}
+
+}
+
 void UIManager::SetGameScene(std::shared_ptr<GameScene> _spGameScene)
 {
 	m_wpGameScene = _spGameScene;
@@ -97,5 +114,10 @@ void UIManager::SetGameScene(std::shared_ptr<GameScene> _spGameScene)
 	{
 		m_spPlayerInventoryUI->SetGameScene(_spGameScene);
 	}
+}
+
+void UIManager::SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController)
+{
+	m_spPlayerInventoryUI->SetPotionUseController(_spPotionUseController);
 }
 

@@ -10,6 +10,12 @@ class GameScene;
 class NextFloorAction;
 class NextFloorGaugeUI;
 
+//インベントリ
+class PlayerInventory;
+
+//バフ
+class PlayerBuffManager;
+
 //UI
 class UIManager;
 class UIMap_Player;
@@ -55,6 +61,9 @@ class PlayerBase :public CharacterBase
 {
 public:
 
+	PlayerBase() {};
+	~PlayerBase() {};
+
 	void Init()override;
 	void PreUpdate()override;
 	void Update()override;
@@ -95,7 +104,55 @@ public:
 
 	ActionKeyConfig GetActionKeyConfig() { return m_keyConfig; }
 
+
+
+	/////////////////////////////////////
+	//HP
+
+	void HPHeal(int _Heal);
+	
+	//MaxのHPを返す
+	int GetMaxHP() { return m_status.HP.maxHP; }
+
+	//HPMax増加
+	//flg...増加分体力を回復するか
+	void AddMaxHP(int _Bosst,bool flg=false);
+
+	/////////////////////////////////////
+	//攻撃力
+
+	//基礎攻撃力アップ
+	void BoostAttackBase(int _Bosst) { m_status.attck.baseAttckPowe += _Bosst; }
+
+	//基礎攻撃力を返す
+	int GetAttackBase() { return m_status.attck.baseAttckPowe; }
+
+	//増加攻撃力アップ
+	void BoostAddAttack(int _Bosst) { m_status.attck.addAttack += _Bosst; }
+
+	/////////////////////////////////////
+	//防御力
+
+	//基礎防御力アップ
+	void BoostDefenseBase(int _Bosst) { m_status.defense.baseDefensePowe += _Bosst; }
+
+	//基礎防御力を返す
+	int GetDefenseBase() { return m_status.defense.baseDefensePowe; }
+
+	//増加防御力アップ
+	void BoostAddDefense(int _Bosst) { m_status.defense.addDefense += _Bosst; }
+
+	////////////////////////////////////////
+	//インベントリ
+	std::shared_ptr<PlayerInventory> GetPlayerInventory() { return m_spPlayerInventory; }
+
+	//////////////////////////////////////////
+	//バフ
+	std::shared_ptr<PlayerBuffManager> GetPlayerBuffManager() { return m_spPlayerBuffManager; }
+
 protected:
+	std::shared_ptr<PlayerInventory> m_spPlayerInventory;
+
 
 	//敵に見つかってるか
 	bool m_IsDetectedByEnemy = false;
@@ -244,8 +301,13 @@ protected:
 
 	void EvasionUpdate();
 
+	////////////////////////////////////
 	//通常攻撃
 	bool m_normalAttack = false;
 	float m_normalAttackWaitMax = 5;
 	float m_normalAttackWaitNow = 0;
+
+	/////////////////////////////////////
+	//バフ
+	std::shared_ptr<PlayerBuffManager>m_spPlayerBuffManager;
 };

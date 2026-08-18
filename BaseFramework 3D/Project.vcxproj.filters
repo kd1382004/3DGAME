@@ -202,6 +202,33 @@
     <Filter Include="Src\Application\GameObject\UI\PlayerInventoryUI">
       <UniqueIdentifier>{fc8462d5-14f2-4221-aeaf-d88140d75093}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Potions">
+      <UniqueIdentifier>{88395ff0-eb3e-4d0c-b953-0fc6f19e1679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Potions\InstantHealPotion">
+      <UniqueIdentifier>{ffb527d0-4da1-450f-a2d5-94c4523a0389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Player\PlayerInventory">
+      <UniqueIdentifier>{ea7d426c-ade2-4d4c-9252-ea16b2ab180d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\TreasureChest\LootTableManager">
+      <UniqueIdentifier>{2171e6a2-b5e2-41a6-afed-4aaf66fb7586}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Potions\PotionTexInfo">
+      <UniqueIdentifier>{f7cb4c0d-a512-48cc-bc5f-3b298cb3283d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Potions\AttackBaseUPtPotion">
+      <UniqueIdentifier>{42ddfd82-5fd6-4d56-96bd-4fd9d59909ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Player\PlayerBuffManager">
+      <UniqueIdentifier>{7956a10a-c7b9-4da6-b8d3-af6a946ee93f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Potions\AttackBoostPotion">
+      <UniqueIdentifier>{1958ce4f-5db7-40f9-8a46-531ff6997c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\BuffUI">
+      <UniqueIdentifier>{283fc555-d4f2-4e2a-a37d-6427ad6e0510}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -501,6 +528,36 @@
     <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.h">
       <Filter>Src\Application\GameObject\UI\PlayerInventoryUI</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Potions\PotionUseController.h">
+      <Filter>Src\Application\GameObject\Potions</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Potions\PotionsType.h">
+      <Filter>Src\Application\GameObject\Potions</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Potions\InstantHealPotion\InstantHealPotion.h">
+      <Filter>Src\Application\GameObject\Potions\InstantHealPotion</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.h">
+      <Filter>Src\Application\GameObject\Character\Player\PlayerInventory</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.h">
+      <Filter>Src\Application\GameObject\TreasureChest\LootTableManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.h">
+      <Filter>Src\Application\GameObject\Potions\PotionTexInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Potions\AttackBaseUPPotion\AttackBaseUPPotion.h">
+      <Filter>Src\Application\GameObject\Potions\AttackBaseUPtPotion</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.h">
+      <Filter>Src\Application\GameObject\Character\Player\PlayerBuffManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Potions\AttackBoostPotion\AttackBoostPotion.h">
+      <Filter>Src\Application\GameObject\Potions\AttackBoostPotion</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\BuffUI\BuffUI.h">
+      <Filter>Src\Application\GameObject\UI\BuffUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -766,6 +823,33 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.cpp">
       <Filter>Src\Application\GameObject\UI\PlayerInventoryUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Potions\PotionUseController.cpp">
+      <Filter>Src\Application\GameObject\Potions</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Potions\InstantHealPotion\InstantHealPotion.cpp">
+      <Filter>Src\Application\GameObject\Potions\InstantHealPotion</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.cpp">
+      <Filter>Src\Application\GameObject\Character\Player\PlayerInventory</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.cpp">
+      <Filter>Src\Application\GameObject\TreasureChest\LootTableManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.cpp">
+      <Filter>Src\Application\GameObject\Potions\PotionTexInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Potions\AttackBaseUPPotion\AttackBaseUPPotion.cpp">
+      <Filter>Src\Application\GameObject\Potions\AttackBaseUPtPotion</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.cpp">
+      <Filter>Src\Application\GameObject\Character\Player\PlayerBuffManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Potions\AttackBoostPotion\AttackBoostPotion.cpp">
+      <Filter>Src\Application\GameObject\Potions\AttackBoostPotion</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\BuffUI\BuffUI.cpp">
+      <Filter>Src\Application\GameObject\UI\BuffUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

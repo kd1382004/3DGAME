@@ -1,8 +1,14 @@
 ﻿#include "TreasureChestManager.h"
 #include"TreasureChest.h"
+#include"LootTableManager/LootTableManager.h"
 
 void TreasureChestManager::Init()
-{}
+{
+	if (!m_spLootTableManager)
+	{
+		m_spLootTableManager = std::make_shared<LootTableManager>();
+	}
+}
 
 void TreasureChestManager::PreUpdate()
 {
@@ -67,6 +73,7 @@ void TreasureChestManager::GenerateTreasureChest(std::list<Math::Vector3> _treas
 		spTreasureChest->SetUIManager(m_wpUIManager.lock());
 		spTreasureChest->SetPlayer(m_wpPlayer.lock());
 		spTreasureChest->SetCamera(m_wpCamera.lock());
+		spTreasureChest->SetLootTableManager(m_spLootTableManager);
 		m_treasureChestList.push_back(spTreasureChest);
 	}
 }

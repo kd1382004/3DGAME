@@ -33,6 +33,8 @@ void UIMapManager::Init()
 		}
 
 	}
+
+	m_layerPriority = 2;
 }
 
 void UIMapManager::PreUpdate()

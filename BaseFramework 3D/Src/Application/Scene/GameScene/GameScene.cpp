@@ -1,6 +1,10 @@
 ﻿#include "GameScene.h"
 #include"../SceneManager.h"
+
+//プレイヤー
 #include"../../GameObject/Character/Player/PlayerBase.h"
+#include"../../GameObject/Character/Player/PlayerBuffManager/PlayerBuffManager.h"
+
 #include"../../GameObject/Terrains/Ground/Ground.h"
 #include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
 
@@ -23,6 +27,8 @@
 //宝箱
 #include"../../GameObject/TreasureChest/TreasureChestManager.h"
 
+//ポーション
+#include"../../GameObject/Potions/PotionUseController.h"
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
@@ -164,12 +170,19 @@ void GameScene::Init()
 	spUIManager->Init();
 	m_objList.push_back(spUIManager);
 
+
+	/////////////////////////////////////////
+	//ポーション使用コントローラー
+	/////////////////////////////////////////	
+	m_spPotionUseController = std::make_shared<PotionUseController>();
+
 	/////////////////////////////////////////
 	//UIにセット
 	/////////////////////////////////////////
 	spUIManager->SetPlayer(m_spPlayer);
 	spUIManager->SetGameScene(self);
-	
+	spUIManager->SetPotionUseController(m_spPotionUseController);
+
 	/////////////////////////////////////////
 	//プレイヤーにセット
 	/////////////////////////////////////////
@@ -177,6 +190,7 @@ void GameScene::Init()
 	m_spPlayer->SetGameScene(self);
 	m_spPlayer->SetWepon(m_spWeapon);
 	m_spPlayer->AddUIList(spUIManager);
+	m_spPlayer->GetPlayerBuffManager()->SetPlayer(m_spPlayer);
 
 	/////////////////////////////////////////
 	//敵にセット
@@ -208,6 +222,11 @@ void GameScene::Init()
 	m_spTreasureChestManager->SetCamera(camera);
 	m_spTreasureChestManager->SetUIManager(spUIManager);
 
+
+	/////////////////////////////////////////
+	//ポーション使用コントローラーにセット
+	/////////////////////////////////////////	
+	m_spPotionUseController->SetPlayer(m_spPlayer);
 
 
 	//マップの成長率を設定

@@ -1,0 +1,29 @@
+{
+	"rank_weights": {
+		"common": 1.0,
+		"uncommon": 0.5,
+		"rare": 0.2,
+		"epic": 0.05,
+		"legendary": 0.01
+	},
+
+	"slots": {
+		"treasure_slot_1": [
+			{
+				"id": 0,
+				"name": "InstantHealPotion",
+				"rank": "common"
+			},
+			{
+				"id": 1,
+				"name": "AttackBoostPotion",
+				"rank": "common"
+			},
+			{
+				"id": 2,
+				"name": "AttackBoostPotion",
+				"rank": "common"
+			}
+		]
+	}
+} 

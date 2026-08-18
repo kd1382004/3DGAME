@@ -1,5 +1,8 @@
 ﻿#include "TreasureChest.h"
 #include"../Character/Player/PlayerBase.h"
+#include"../Character/Player/PlayerInventory/PlayerInventory.h"
+
+
 
 #include"../../Info/KeyInfo/KeyInfo.h"
 
@@ -8,6 +11,9 @@
 #include"../UI/UIMap/UIMap_TreasureChest/UIMap_TreasureChest.h"
 #include"../UI/UIManager.h"
 #include"../UI\UIMap/UIMapManager.h"
+
+
+#include"LootTableManager/LootTableManager.h"
 void TreasureChest::Init()
 {
 	if (!m_treasureChestModel)
@@ -96,6 +102,15 @@ void TreasureChest::Update()
 			{
 				m_IsOpen = true;
 				m_treasureChestAnimetor->SetAnimation(m_treasureChestModel->GetAnimation("Open"), false);
+
+
+				std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
+				if (m_spLootTableManager)
+				{
+					LootItem item = m_spLootTableManager->GetRandomLoot("treasure_slot_1");
+
+					spPlayer->GetPlayerInventory()->AddPotionsInventory(item.id);
+				}
 			}
 		}
 	}

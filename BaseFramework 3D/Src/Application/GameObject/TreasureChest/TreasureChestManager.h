@@ -8,6 +8,7 @@ class PlayerBase;
 class CameraBase;
 class UIManager;
 class UIMap_TreasureChest;
+class LootTableManager;
 
 class TreasureChestManager :public KdGameObject
 {
@@ -37,6 +38,7 @@ private:
 	std::weak_ptr<UIManager>m_wpUIManager;
 	std::weak_ptr<UIMap_TreasureChest>m_wpUIMap_TreasureChest;
 
+	std::shared_ptr<LootTableManager>m_spLootTableManager;
 
 	std::list<std::shared_ptr<TreasureChest>> m_treasureChestList;
 	};

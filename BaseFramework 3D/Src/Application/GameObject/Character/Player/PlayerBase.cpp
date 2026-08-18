@@ -15,6 +15,11 @@
 //武器
 #include"../../Weapon/WeaponBase.h"
 
+//インベントリ
+#include"PlayerInventory/PlayerInventory.h"
+
+//バフ
+#include"PlayerBuffManager/PlayerBuffManager.h"
 
 void PlayerBase::Init()
 {
@@ -62,12 +67,24 @@ void PlayerBase::Init()
 		m_spNextFloorAction->SetActionKey(m_keyConfig.interact);
 	}
 
+	if (!m_spPlayerInventory)
+	{
+		m_spPlayerInventory = std::make_shared<PlayerInventory>();
+		m_spPlayerInventory->Init();
+	}
+
 
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
 		m_pCollider->RegisterCollisionShape("Player", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeDamage);
 	}
+
+	if (!m_spPlayerBuffManager)
+	{
+		m_spPlayerBuffManager= std::make_shared<PlayerBuffManager>();
+	}
+
 
 	/*if (!m_pDebugWire)
 	{
@@ -93,6 +110,13 @@ void PlayerBase::PreUpdate()
 
 void PlayerBase::Update()
 {
+	//バフのアップデート
+	if (m_spPlayerBuffManager)
+	{
+		m_spPlayerBuffManager->Update();
+	}
+
+
 	//////////////////////////////////////////////////////////////]
 
 	//移動
@@ -199,7 +223,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	{
 		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
 		spHPBar->Init();
-		spHPBar->Set2DPos({ 0,-300 });
+		spHPBar->Set2DPos({ 0,-260 });
 		spHPBar->SetDrawFlg(true);
 		spHPBar->SetSiz(2);
 		m_wpHPBar = spHPBar;
@@ -210,7 +234,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 
 		std::shared_ptr<StaminaGage>spStaminaGage = std::make_shared<StaminaGage>();
 		spStaminaGage->Init();
-		spStaminaGage->Set2DPos({ 0,-330 });
+		spStaminaGage->Set2DPos({ 0,-290 });
 		spStaminaGage->SetSiz(2);
 		m_wpStaminaGage = spStaminaGage;
 		_spUIManager->AddUIObj(spStaminaGage);
@@ -243,10 +267,48 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 
 }
 
+void PlayerBase::HPHeal(int _Heal)
+{
+	m_status.HP.nowHP += _Heal;
+	if (m_status.HP.nowHP >= m_status.HP.maxHP)
+	{
+		m_status.HP.nowHP = m_status.HP.maxHP;
+	}
+
+
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		spHPBar->SetHPBarTexPercent(percent);
+	}
+}
+
+void PlayerBase::AddMaxHP(int _Bosst, bool flg)
+{
+
+	m_status.HP.maxHP += _Bosst;
+
+	if (flg)
+	{
+		m_status.HP.nowHP += _Bosst;
+	}
+
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		spHPBar->SetHPBarTexPercent(percent);
+	}
+}
+
 void PlayerBase::WeaponUpdate()
 {
 	//回避中は移動できない
 	if (m_evasionAnimeFlg) { return; }
+
+	//攻撃力の更新
+	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
 
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack,true)&& m_normalAttack)
 	{

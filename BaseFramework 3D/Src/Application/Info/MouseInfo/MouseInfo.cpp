@@ -155,6 +155,7 @@ void MouseInfo::DrawSprite()
 		break;
 	}
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, &rec);
+	Math::Vector2 piv = { 0,1 };
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, &rec,nullptr, piv);
 
 }

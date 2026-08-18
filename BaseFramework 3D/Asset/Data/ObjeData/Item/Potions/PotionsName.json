@@ -1,0 +1,17 @@
+{
+	"inventory": [
+		{
+			"id": 0,
+			"name": "InstantHealPotion"
+		},
+		{
+			"id": 1,
+			"name": "AttackBaseUPPotion"
+		},
+		{
+			"id": 2,
+			"name": "AttackBoostPotion"
+		}
+	]
+}
+

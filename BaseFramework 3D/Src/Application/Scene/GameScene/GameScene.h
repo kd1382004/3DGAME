@@ -8,6 +8,7 @@ class PlayerBase;
 class EnemyManager;
 class WeaponBase;
 class TreasureChestManager;
+class PotionUseController;
 
 class GameScene : public BaseScene,public std::enable_shared_from_this<GameScene>
 {
@@ -21,6 +22,8 @@ public:
 	void GenerateMap();
 	void Init()  override;
 
+
+	std::shared_ptr<PotionUseController> GetPotionUseController() { return m_spPotionUseController; };
 private:
 
 	void Event() override;
@@ -32,6 +35,7 @@ private:
 	std::shared_ptr<EnemyManager>m_spEnemyManager;
 	std::shared_ptr<WeaponBase>m_spWeapon;
 	std::shared_ptr<TreasureChestManager>m_spTreasureChestManager;
+	std::shared_ptr<PotionUseController>m_spPotionUseController;
 
 
 
