@@ -256,8 +256,8 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 {
 	if (m_evasionFlg)
 	{
-		DeltaTime::Instance().SetTimeScale(0.1f);
-		DeltaTime::Instance().SetSlowTimer(2);
+		DeltaTime::Instance().SetTimeScale(0.5f);
+		DeltaTime::Instance().SetSlowTimer(0.5);
 
 		//回避成功演出入れる
 

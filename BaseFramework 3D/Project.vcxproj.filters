@@ -241,6 +241,15 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam">
       <UniqueIdentifier>{48d2e097-7aa6-4337-98bc-c8f1d9fdebaf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackLeftPunch">
+      <UniqueIdentifier>{38771f0f-6c5f-4765-aa9b-98a858a345de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\WarpGate">
+      <UniqueIdentifier>{da8791fd-dbac-44fe-813c-fced4ce2a2f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\WarpGate\EscapeGate">
+      <UniqueIdentifier>{ca92674c-70e6-4b4f-9e94-f83a2b23ecef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -576,6 +585,15 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackLeftPunch\AttackLeftPunch.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackLeftPunch</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateBase.h">
+      <Filter>Src\Application\GameObject\WarpGate</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateManager.h">
+      <Filter>Src\Application\GameObject\WarpGate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -874,6 +892,15 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackLeftPunch\AttackLeftPunch.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackLeftPunch</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateBase.cpp">
+      <Filter>Src\Application\GameObject\WarpGate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateManager.cpp">
+      <Filter>Src\Application\GameObject\WarpGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

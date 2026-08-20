@@ -281,6 +281,7 @@
     <ClInclude Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Character\CharacterBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackLeftPunch\AttackLeftPunch.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyBase.h" />
@@ -320,6 +321,8 @@
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.h" />
+    <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateBase.h" />
+    <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateManager.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\WeaponBase.h" />
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h" />
@@ -387,6 +390,7 @@
     <ClCompile Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\CharacterBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackLeftPunch\AttackLeftPunch.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyBase.cpp" />
@@ -425,6 +429,8 @@
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.cpp" />
+    <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\WeaponBase.cpp" />
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp" />

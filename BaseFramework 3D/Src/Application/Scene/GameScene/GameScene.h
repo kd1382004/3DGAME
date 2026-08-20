@@ -9,6 +9,7 @@ class EnemyManager;
 class WeaponBase;
 class TreasureChestManager;
 class PotionUseController;
+class WarpGateManager;
 
 class GameScene : public BaseScene,public std::enable_shared_from_this<GameScene>
 {
@@ -24,6 +25,9 @@ public:
 
 
 	std::shared_ptr<PotionUseController> GetPotionUseController() { return m_spPotionUseController; };
+
+
+	void WarpGateInit(Math::Vector3 _setPos);
 private:
 
 	void Event() override;
@@ -36,6 +40,7 @@ private:
 	std::shared_ptr<WeaponBase>m_spWeapon;
 	std::shared_ptr<TreasureChestManager>m_spTreasureChestManager;
 	std::shared_ptr<PotionUseController>m_spPotionUseController;
+	std::shared_ptr<WarpGateManager>m_spWarpGateManager;
 
 
 

@@ -3,7 +3,7 @@
         "baseHP": 100.0
     },
     "attck": {
-        "baseAttckPowe": 10.0
+        "baseAttckPowe": 1000.0
     },
     "defense": {
         "baseDefensePowe": 0.0

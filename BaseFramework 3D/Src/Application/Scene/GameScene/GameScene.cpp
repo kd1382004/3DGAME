@@ -30,12 +30,23 @@
 
 //ポーション
 #include"../../GameObject/Potions/PotionUseController.h"
+
+//ワープゲート
+#include"../../GameObject/WarpGate/WarpGateManager.h"
+
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
 	{
 		Camera->ImGUI();
 	}
+}
+
+void GameScene::WarpGateInit(Math::Vector3 _setPos)
+{
+	if (!m_spWarpGateManager) { return; }
+
+	m_spWarpGateManager->WarpGateInit(_setPos);
 }
 
 void GameScene::Event()
@@ -47,15 +58,19 @@ void GameScene::Event()
 
 
 	///////////////////////////////////////////////////
-	//マップとのあたり判定
+	//あたり判定セット
 
 	//プレイヤーのあたり判定リストを毎フレーム更新
+	if (!m_spMapManager) { return; }
+
 	m_spMapManager->MapHit(m_spPlayer);
 
 	//プレイヤーと宝箱のあたり判定
+	if (!m_spTreasureChestManager) { return; }
 	m_spTreasureChestManager->TreasureChestHit(m_spPlayer);
 
 	//敵のあたり判定リストを毎フレーム更新
+	if (!m_spEnemyManager) { return; }
 	for (auto enemy : m_spEnemyManager->GetEnemyList())
 	{
 		m_spMapManager->MapHitEnemy(enemy);
@@ -63,10 +78,9 @@ void GameScene::Event()
 	}
 
 	///////////////////////////////////////////////////
-	if (m_spWeapon)
-	{
-		m_spWeapon->ClearAttackHitCharacterList();
-	}
+	if (!m_spWeapon) { return; }
+	m_spWeapon->ClearAttackHitCharacterList();
+
 	//敵同士のあたり判定
 	auto& enemies = m_spEnemyManager->GetEnemyList();
 
@@ -77,7 +91,7 @@ void GameScene::Event()
 		auto enemyA = *itA;
 		for (; itB != enemies.end(); itB++)
 		{
-			
+
 			auto enemyB = *itB;
 
 			Math::Vector3 dic = enemyA->GetPos() - enemyB->GetPos();
@@ -171,6 +185,13 @@ void GameScene::Init()
 	spUIManager->Init();
 	m_objList.push_back(spUIManager);
 
+	/////////////////////////////////////////
+	//ワープゲートマネージャー
+	/////////////////////////////////////////	
+	m_spWarpGateManager = std::make_shared<WarpGateManager>();
+	m_spWarpGateManager->Init();
+	m_objList.push_back(m_spWarpGateManager);
+
 
 	/////////////////////////////////////////
 	//ポーション使用コントローラー
@@ -186,7 +207,7 @@ void GameScene::Init()
 
 	std::shared_ptr<BuffUI>spBuffUI = std::make_shared<BuffUI>();
 	spBuffUI->Init();
-	spBuffUI->Set2DPos({-80,-320});
+	spBuffUI->Set2DPos({ -80,-320 });
 	spBuffUI->SetPotionTexInfo(spUIManager->GetPotionTexInfo());
 	spBuffUI->SetPlayer(m_spPlayer);
 	spUIManager->AddUIObj(spBuffUI);
@@ -207,6 +228,7 @@ void GameScene::Init()
 	m_spEnemyManager->SetMapManager(m_spMapManager);
 	m_spEnemyManager->SetCamera(camera);
 	m_spEnemyManager->AddUIList(spUIManager);
+	m_spEnemyManager->SetGameScene(self);
 
 	/////////////////////////////////////////
 	//カメラにセット
@@ -236,6 +258,10 @@ void GameScene::Init()
 	/////////////////////////////////////////	
 	m_spPotionUseController->SetPlayer(m_spPlayer);
 
+	/////////////////////////////////////////
+	//ワープゲートマネージャーにセット
+	/////////////////////////////////////////	
+	m_spWarpGateManager->SetPlayer(m_spPlayer);
 
 	//マップの成長率を設定
 	m_mapLinearGrowthPerFloor = 5;
@@ -269,7 +295,7 @@ void GameScene::GenerateMap()
 	m_spTreasureChestManager->TreasureChestReset();
 
 	if (m_displayFloor % m_bossInterval != 0)
-	{	
+	{
 		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
 	}
 	else

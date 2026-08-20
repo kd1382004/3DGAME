@@ -1,7 +1,10 @@
 ﻿#pragma once
 #include"../../EnemyBase.h"
 
+class GameScene;
+
 class AttackJumpSlam;
+class AttackLeftPunch;
 
 class Giant :public EnemyBase
 {
@@ -16,14 +19,29 @@ public:
 	void PreDraw()override;
 	void GenerateDepthMapFromLight()override;
 	void DrawLit()override;
+
+
+	//攻撃をくらった処理
+	//_damage ... ダメージ量
+	//_knockbackDistance ... ふっとばし距離
+	//_knockbackDir ... ふっとばし方向
+	// _hitStunTime ... のけぞり時間
+	//_isCritical ... クリティカルかどうか
+	//__ignoreRate ... 防御無視
+	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)override;
+
+	//ゲームシーンセット
+	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
 private:
+	//ゲームシーン
+	std::weak_ptr<GameScene> m_wpGameScene;
 
 	////////////////////////
 	//攻撃モード
 	enum GiantAttackMode
 	{
 		//左パンチ
-		sLeftPunchAttack,
+		LeftPunchAttack,
 
 		//右パンチ
 		RightAttack,
@@ -40,6 +58,22 @@ private:
 
 	void ChangeAttackAnime();
 	void AttackUpdate();
+
+	float m_attackCoolTime = 0;
+
+	/////////////////////////////////////////////////
+	//左攻撃
+	std::weak_ptr<AttackLeftPunch> m_leftAttack;
+
+	void LeftAttackUpdate();
+
+	//あたり判定許可を出したか
+	bool m_IsAttackleftHITFlg = false;
+
+	//はじめ
+	float m_leftAttackHitStart = 0.5f;
+	float m_leftAttackHitEnd = 0.6f;
+
 
 	/////////////////////////////////////////////////
 	//ジャンプ攻撃
@@ -65,20 +99,14 @@ private:
 	//hitする時間
 
 	//あたり判定許可を出したか
-	bool m_IsAttackJumpSlamHITFlg=false;
+	bool m_IsAttackJumpSlamHITFlg = false;
 
 	//はじめ
 	float m_JumpSlamHitStart = 0.45f;
 	float m_JumpSlamHitEnd = 0.5f;
 
-	//何処に攻撃するか
-	Math::Vector3 m_targetPos;
-
 	//ジャンプ開始地点
 	Math::Vector3 m_jnpStartPos;
-
-	//ジャンプアニメ終了
-	bool m_animeJumpSlamEND = false;
 
 	//Idle時間MAX
 	float m_attackJumpSlamIdleMax = 5;

@@ -304,7 +304,7 @@ protected:
 	////////////////////////////////////
 	//通常攻撃
 	bool m_normalAttack = false;
-	float m_normalAttackWaitMax = 5;
+	float m_normalAttackWaitMax = 1;
 	float m_normalAttackWaitNow = 0;
 
 	/////////////////////////////////////
