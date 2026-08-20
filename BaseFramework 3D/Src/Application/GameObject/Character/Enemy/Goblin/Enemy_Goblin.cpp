@@ -56,12 +56,23 @@ void Goblin::Update()
 	}
 }
 
+void Goblin::PreUpdate()
+{
+	EnemyBase::PreUpdate();
+	HPPosPostUpdate();
+}
+
 void Goblin::ChangeAnime()
 {
 	if (!m_spAnimetor) { return; }
 
-	//攻撃中は変更しない
-	if (m_attackFlg) { return; }
+
+	if (!m_isDead)
+	{
+		//攻撃中は変更しない
+		if (m_attackFlg) { return; }
+	}
+
 
 	switch (m_enemyAnimeMode)
 	{

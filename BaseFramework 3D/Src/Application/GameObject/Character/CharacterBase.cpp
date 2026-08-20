@@ -454,40 +454,87 @@ void CharacterBase::UpdateKnockback()
 
 bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 {
-	KdCollider::RayInfo rayInfo;
-	rayInfo.m_pos = m_pos;
-	rayInfo.m_dir = (_nextPos - m_pos);
-	rayInfo.m_dir.Normalize();
-	rayInfo.m_range = (_nextPos - m_pos).Length();
-	rayInfo.m_type = KdCollider::TypeBump;
+	Math::Vector3 moveVec = _nextPos - m_pos;
+	float moveDist = moveVec.Length();
+	if (moveDist <= 0.00001f) { return false; }
 
-	float maxOverLap = 0;
-	Math::Vector3 hitPos = {};
-	bool hit = false;
+	Math::Vector3 moveDir = moveVec / moveDist;
 
+	// キャラクターの判定設定
+	const float charRadius = 0.5f;		// キャラクターの半径
+	const float margin = 0.05f;			// めり込み防止のマージン
+	const float bodyHeight = 1.0f;		// 胴体の高さ
+	const float footHeight = 0.2f;		// 足元の高さ
 
-	if (rayInfo.m_dir.LengthSquared() == 0.0f) { return false; }
-
-	// HIT判定対象オブジェクトに総当たり
-	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
+	// 移動方向に対する横方向ベクトル
+	Math::Vector3 sideDir = Math::Vector3::Up.Cross(moveDir);
+	if (sideDir.LengthSquared() < 0.0001f)
 	{
-		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
-		if (spGameObj)
-		{
-			std::list<KdCollider::CollisionResult> retRayList;
-			spGameObj->Intersects(rayInfo, &retRayList);
+		sideDir = Math::Vector3::Right;
+	}
+	else
+	{
+		sideDir.Normalize();
+	}
 
-			// 結果を使って座標を補完する
-			// レイに当たったリストから一番近いオブジェクトを検出
-			for (auto& ret : retRayList)
+	// 複数のレイを設定（胴体中央、胴体左、胴体右、足元）
+	struct RayConfig
+	{
+		Math::Vector3 offset;
+		bool isCenter;
+	};
+
+	RayConfig rayConfigs[] = {
+		{ Math::Vector3(0.0f, bodyHeight, 0.0f), true },                                 // 胴体中央
+		{ Math::Vector3(0.0f, bodyHeight, 0.0f) - sideDir * (charRadius * 0.8f), false }, // 胴体左
+		{ Math::Vector3(0.0f, bodyHeight, 0.0f) + sideDir * (charRadius * 0.8f), false }, // 胴体右
+		{ Math::Vector3(0.0f, footHeight, 0.0f), true }                                  // 足元
+	};
+
+	bool hit = false;
+	float minAllowedMoveDist = moveDist;
+
+	for (const auto& config : rayConfigs)
+	{
+		KdCollider::RayInfo rayInfo;
+		rayInfo.m_pos = m_pos + config.offset;
+		rayInfo.m_dir = moveDir;
+		// 中央レイはキャラ半径分先まで判定
+		rayInfo.m_range = config.isCenter ? (moveDist + charRadius) : moveDist;
+		rayInfo.m_type = KdCollider::TypeBump;
+
+		if (m_pDebugWire)
+		{
+			m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
+		}
+
+		for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
+		{
+			std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
+			if (!spGameObj) continue;
+
+			std::list<KdCollider::CollisionResult> retRayList;
+			if (spGameObj->Intersects(rayInfo, &retRayList))
 			{
-				// レイを遮断しオーバーした長さが
-				// 一番長いものを探す
-				if (maxOverLap < ret.m_overlapDistance)
+				for (const auto& ret : retRayList)
 				{
-					maxOverLap = ret.m_overlapDistance;
-					hitPos = ret.m_hitPos;
-					hit = true;
+					float hitDist = rayInfo.m_range - ret.m_overlapDistance;
+					float allowedDist = 0.0f;
+
+					if (config.isCenter)
+					{
+						allowedDist = hitDist - charRadius - margin;
+					}
+					else
+					{
+						allowedDist = hitDist - margin;
+					}
+
+					if (allowedDist < minAllowedMoveDist)
+					{
+						minAllowedMoveDist = allowedDist;
+						hit = true;
+					}
 				}
 			}
 		}
@@ -495,14 +542,52 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 
 	if (hit)
 	{
-		Math::Vector3 safePos = m_pos + rayInfo.m_dir * (rayInfo.m_range - maxOverLap);
-		m_pos = safePos;
+		minAllowedMoveDist = std::max(0.0f, minAllowedMoveDist);
+		m_pos = m_pos + moveDir * minAllowedMoveDist;
 	}
 
+	// 移動後の座標で球体判定(SphereInfo)を行い、壁に残っている場合は押し戻す
+	DirectX::BoundingSphere sphere;
+	sphere.Radius = charRadius;
+	sphere.Center = m_pos + Math::Vector3(0.0f, bodyHeight, 0.0f);
+	KdCollider::SphereInfo sphereInfo(KdCollider::TypeBump, sphere);
 
-	if (m_pDebugWire)
+	for (int pass = 0; pass < 2; pass++)
 	{
-		m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
+		Math::Vector3 maxPush = Math::Vector3::Zero;
+		float maxPushLen = 0.0f;
+		bool sphereHit = false;
+
+		for (auto& wpGameObj : m_wpHitObjectList)
+		{
+			auto spGameObj = wpGameObj.lock();
+			if (!spGameObj) continue;
+
+			std::list<KdCollider::CollisionResult> retBumpList;
+			if (spGameObj->Intersects(sphereInfo, &retBumpList))
+			{
+				for (auto& ret : retBumpList)
+				{
+					if (ret.m_overlapDistance > maxPushLen)
+					{
+						maxPushLen = ret.m_overlapDistance;
+						maxPush = ret.m_hitDir * ret.m_overlapDistance;
+						sphereHit = true;
+					}
+				}
+			}
+		}
+
+		if (sphereHit)
+		{
+			m_pos += maxPush;
+			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0.0f, bodyHeight, 0.0f);
+			hit = true;
+		}
+		else
+		{
+			break;
+		}
 	}
 
 	return hit;

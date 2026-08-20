@@ -235,6 +235,12 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Giant">
       <UniqueIdentifier>{2a2c3c87-b855-43dc-8521-51303524c223}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack">
+      <UniqueIdentifier>{e4c9170b-14d3-4b4a-a851-aff9059929c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam">
+      <UniqueIdentifier>{48d2e097-7aa6-4337-98bc-c8f1d9fdebaf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -567,6 +573,9 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -862,6 +871,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

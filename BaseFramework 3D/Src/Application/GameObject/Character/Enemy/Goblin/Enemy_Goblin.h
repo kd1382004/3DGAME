@@ -13,6 +13,7 @@ public:
 
 	void Init()override;
 	void Update()override;
+	void PreUpdate()override;
 
 private:
 

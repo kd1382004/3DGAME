@@ -280,6 +280,7 @@
     <ClInclude Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Character\CharacterBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyBase.h" />
@@ -385,6 +386,7 @@
     <ClCompile Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\CharacterBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyBase.cpp" />

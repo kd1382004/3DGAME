@@ -69,7 +69,6 @@ void EnemyBase::PostUpdate()
 {
 	CharacterBase::PostUpdate();
 	EnemyAnimeModeUpdate();
-	HPPosPostUpdate();
 }
 
 void EnemyBase::PreDraw()
@@ -101,9 +100,6 @@ void EnemyBase::PreDraw()
 			{
 				spHPBar->SetDrawFlg(false);
 			}
-
-
-
 		}
 	}
 }
@@ -269,7 +265,6 @@ void EnemyBase::EnemyAnimeModeUpdate()
 {
 	if (!m_spAnimetor) { return; }
 	if (!m_spCharaModel) { return; }
-	if (!m_isInView) { return; }
 
 	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 60);
 	m_spCharaModel->CalcNodeMatrices();

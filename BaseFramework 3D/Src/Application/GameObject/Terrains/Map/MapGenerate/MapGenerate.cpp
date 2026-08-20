@@ -521,7 +521,7 @@ void MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, 
 
 			if (x == centerX && y == centerY)
 			{
-				m_bossSpawnPos = { xPos ,30,zPos };
+				m_bossSpawnPos = { xPos ,0,zPos };
 			}
 
 
