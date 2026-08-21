@@ -49,6 +49,21 @@ void GameScene::WarpGateInit(Math::Vector3 _setPos)
 	m_spWarpGateManager->WarpGateInit(_setPos);
 }
 
+void GameScene::SetGameResult()
+{
+	GameResult gameResult;
+	gameResult.enemyKillCount = m_killEnemy;
+	gameResult.floorReached = m_displayFloor;
+	gameResult.playTime = 0;
+
+	SceneManager::Instance().SetGameResult(gameResult);
+}
+
+void GameScene::ChangeResultScene()
+{
+	SceneManager::Instance().SetNextScene(SceneManager::SceneType::Result);
+}
+
 void GameScene::Event()
 {
 	if (GetAsyncKeyState(VK_RETURN))
@@ -262,6 +277,7 @@ void GameScene::Init()
 	//ワープゲートマネージャーにセット
 	/////////////////////////////////////////	
 	m_spWarpGateManager->SetPlayer(m_spPlayer);
+	m_spWarpGateManager->SetGameScene(self);
 
 	//マップの成長率を設定
 	m_mapLinearGrowthPerFloor = 5;

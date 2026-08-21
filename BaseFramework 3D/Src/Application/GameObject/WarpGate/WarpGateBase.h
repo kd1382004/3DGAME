@@ -1,5 +1,6 @@
 ﻿#pragma once
 class PlayerBase;
+class GameScene;
 
 class WarpGateBase :public KdGameObject
 {
@@ -7,8 +8,8 @@ public:
 	WarpGateBase() {};
 	~WarpGateBase()override {};
 
-	void Init()override;
-	void Update()override;
+	virtual void Init()override;
+	virtual void Update()override;
 	void PreDraw() override;
 	void DrawLit()override;
 
@@ -20,8 +21,10 @@ public:
 	}
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayer) { m_wpPlayer = _spPlayer; }
-
+	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
 	
+	void SetIsExpired(bool _flg) { m_isExpired = _flg; };
+
 protected:
 
 	//プレイヤーが乗ってるかどうか
@@ -29,6 +32,7 @@ protected:
 
 	//プレイヤー
 	std::weak_ptr<PlayerBase>m_wpPlayer;
+	std::weak_ptr<GameScene>m_wpGameScene;
 
 	//3Dモデル
 	std::shared_ptr<KdModelData>m_spWarpGate;

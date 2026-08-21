@@ -34,6 +34,9 @@ public :
 	virtual void ImGUi();
 	virtual void Init();
 	void SetPoseFlg(bool _flg) { m_poseFlg = _flg; }
+
+	//ゲーム結果を保存
+	virtual void SetGameResult() {};
 protected :
 
 	// 継承先シーンで必要ならオーバーライドする

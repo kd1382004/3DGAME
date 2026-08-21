@@ -109,6 +109,9 @@ void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 
 	m_spawnPos = _pos;
 	m_pos = _pos;
+	
+
+	
 	std::shared_ptr<MapManager>m_spMapManager = m_wpMapManager.lock();
 
 	if (m_spMapManager)
@@ -121,7 +124,7 @@ void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 	}
 
 
-
+	m_mWorld.Translation(m_pos);
 }
 
 void EnemyBase::SearchPlayer()

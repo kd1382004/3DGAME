@@ -483,7 +483,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	return returnMapDate;
 }
 
-void MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
+std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
 	m_roomInfo.clear();
 	m_roomInfoList.clear();
@@ -501,6 +501,7 @@ void MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, 
 	//マップのサイズを作る
 	//TileType::Roomで初期化(ボス戦部屋は巨大な一部屋)
 	std::vector<std::vector<int>> map(static_cast<size_t>(_mapSiz.y), std::vector<int>(static_cast<size_t>(_mapSiz.x), static_cast<int>(TileType::Room)));
+	std::vector<std::vector<bool>> mapDate(static_cast<size_t>(_mapSiz.y), std::vector<bool>(static_cast<size_t>(_mapSiz.x),true));
 
 	int centerX = _mapSiz.x / 2;
 	int centerY = _mapSiz.y / 2;
@@ -586,6 +587,7 @@ void MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, 
 		}
 	}
 
+	return mapDate;
 }
 
 

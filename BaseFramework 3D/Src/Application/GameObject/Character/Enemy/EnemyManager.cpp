@@ -111,9 +111,9 @@ void EnemyManager::SetPlayer(std::shared_ptr<PlayerBase> _spPalyer)
 void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 {
 	std::shared_ptr<Giant>spBoss = std::make_shared<Giant>();
+	spBoss->Init();
 	spBoss->SetPlayer(m_wpPlayer.lock());
 	spBoss->SetMapManager(m_wpMapManager.lock());
-	spBoss->Init();
 	spBoss->SetSpawnPos(_spawnPos);
 	spBoss->SetCamera(m_wpCamera.lock());
 	spBoss->AddUIList(m_wpUIManager.lock());

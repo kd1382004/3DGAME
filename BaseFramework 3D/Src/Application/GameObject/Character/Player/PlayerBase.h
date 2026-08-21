@@ -102,7 +102,7 @@ public:
 		}
 	}
 
-	ActionKeyConfig GetActionKeyConfig() { return m_keyConfig; }
+	const ActionKeyConfig GetActionKeyConfig() { return m_keyConfig; }
 
 
 

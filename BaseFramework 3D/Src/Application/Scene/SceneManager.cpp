@@ -6,6 +6,7 @@
 #include "BaseScene/BaseScene.h"
 #include "TitleScene/TitleScene.h"
 #include "GameScene/GameScene.h"
+#include "ResultScene/ResultScene.h"
 
 void SceneManager::PreUpdate()
 {
@@ -71,6 +72,13 @@ void SceneManager::ImGUI()
 
 void SceneManager::ChangeScene(SceneType _sceneType)
 {
+	if (m_currentScene)
+	{
+		//ゲーム結果の保存
+		m_currentScene->SetGameResult();
+	}
+
+
 	// 次のシーンを作成し、現在のシーンにする
 	switch (_sceneType)
 	{
@@ -80,7 +88,11 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	case SceneType::Game:
 		m_currentScene = std::make_shared<GameScene>();
 		break;
+	case SceneType::Result:
+		m_currentScene = std::make_shared<ResultScene>();
+		break;
 	}
+
 
 	m_currentScene->Init();
 

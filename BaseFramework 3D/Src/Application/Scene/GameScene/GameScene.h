@@ -28,6 +28,12 @@ public:
 
 
 	void WarpGateInit(Math::Vector3 _setPos);
+
+	//ゲーム結果の保存
+	void SetGameResult()override;
+
+	//リザルトシーンに移行
+	void ChangeResultScene();
 private:
 
 	void Event() override;
@@ -54,4 +60,8 @@ private:
 	int m_mapLinearGrowthPerFloor;
 	float m_mapLinearGrowthPerFloorX;
 	float m_mapLinearGrowthPerFloorY;
+
+	//ゲーム結果
+	int m_killEnemy;
+	int m_killBoss;
 };

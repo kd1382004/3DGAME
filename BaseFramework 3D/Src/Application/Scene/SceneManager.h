@@ -1,16 +1,30 @@
 ﻿#pragma once
 
+//ゲームリザルト
+struct GameResult
+{
+	//敵を倒した数
+	int enemyKillCount = 0;
+
+	//到達した階層
+	int floorReached = 0;
+
+	//プレイ時間(秒)
+	float playTime = 0.0f;
+};
+
 class BaseScene;
 
 class SceneManager
 {
-public :
+public:
 
 	// シーン情報
 	enum class SceneType
 	{
 		Title,
 		Game,
+		Result,
 	};
 
 	void PreUpdate();
@@ -36,7 +50,10 @@ public :
 
 	//追加
 	void ImGUI();
-private :
+
+	GameResult GetGameResult() { return m_gameResult; }
+	void SetGameResult(GameResult gameResult) { m_gameResult = gameResult; }
+private:
 
 	// マネージャーの初期化
 	// インスタンス生成(アプリ起動)時にコンストラクタで自動実行
@@ -54,10 +71,15 @@ private :
 
 	// 現在のシーンの種類を保持している変数
 	SceneType m_currentSceneType = SceneType::Game;
-	
+
 	// 次のシーンの種類を保持している変数
 	SceneType m_nextSceneType = m_currentSceneType;
 
+
+	//自分追加
+
+	//ゲーム結果	
+	GameResult m_gameResult;
 private:
 
 	SceneManager() { Init(); }

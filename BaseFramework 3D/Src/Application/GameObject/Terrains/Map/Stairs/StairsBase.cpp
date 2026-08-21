@@ -2,6 +2,17 @@
 #include"../../../Character/Player/PlayerBase.h"
 
 
+StairsBase::~StairsBase()
+{
+
+	std::shared_ptr<PlayerBase>spPalyerBase = m_wpPlayerBase.lock();
+
+	if (spPalyerBase)
+	{
+		spPalyerBase->SetNextFloorActionFlg(false);
+	}
+}
+
 void StairsBase::Init()
 {
 	if (!m_spModel)
@@ -55,7 +66,6 @@ void StairsBase::Update()
 
 
 		spPalyerBase->SetNextFloorActionFlg(m_playerHit);
-
 	}
 }
 

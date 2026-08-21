@@ -83,7 +83,7 @@ public:
 	std::vector<std::vector<bool>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
 	
 	
-	void GenerateBoss(Math::Vector2 _mapSiz,float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
+	std::vector<std::vector<bool>> GenerateBoss(Math::Vector2 _mapSiz,float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
 
 
 	// 部屋ごとの情報リストを取得

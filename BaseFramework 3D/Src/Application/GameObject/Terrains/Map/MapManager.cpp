@@ -107,6 +107,12 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 	mapData = map->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
 	auto mapRoomList = map->GetRoomInfoList();
 
+	//A*の初期化
+	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
+	//A*の設定
+	ApplyWalkableFromMap(mapData);
+
+
 	//プレイヤーを設定
 	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
 	if (spPlayerBase)
@@ -223,7 +229,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 				float spawnRate = 0;
 
-				if (roomType == RoomType::RoomType_TreasureChestRoom|| roomType ==RoomType::RoomType_SafeRoom)
+				if (roomType == RoomType::RoomType_TreasureChestRoom || roomType == RoomType::RoomType_SafeRoom)
 				{
 					spawnRate = 1;
 				}
@@ -258,14 +264,10 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 
 
-	
 
 
 
-	//A*の初期化
-	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
-	//A*の設定
-	ApplyWalkableFromMap(mapData);
+
 
 	//カメラセット
 	if (!m_wpCamera.expired())
@@ -286,8 +288,12 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	std::vector<std::vector<bool>> mapData;
 
 	Math::Vector3 basePos;
-	map->GenerateBoss(_mapSiz,m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &basePos);
-	auto mapRoomList = map->GetRoomInfoList();
+	mapData = map->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &basePos);
+
+	//A*の初期化
+	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
+	//A*の設定
+	ApplyWalkableFromMap(mapData);
 
 	//プレイヤーを設定
 	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();

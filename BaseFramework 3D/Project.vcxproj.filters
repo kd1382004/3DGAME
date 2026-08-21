@@ -250,6 +250,9 @@
     <Filter Include="Src\Application\GameObject\WarpGate\EscapeGate">
       <UniqueIdentifier>{ca92674c-70e6-4b4f-9e94-f83a2b23ecef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Scene\ResultScene">
+      <UniqueIdentifier>{405b4930-e935-4c21-8390-4e9455d38767}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -594,6 +597,12 @@
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateManager.h">
       <Filter>Src\Application\GameObject\WarpGate</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.h">
+      <Filter>Src\Application\GameObject\WarpGate\EscapeGate</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Scene\ResultScene\ResultScene.h">
+      <Filter>Src\Application\Scene\ResultScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -901,6 +910,12 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateManager.cpp">
       <Filter>Src\Application\GameObject\WarpGate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.cpp">
+      <Filter>Src\Application\GameObject\WarpGate\EscapeGate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\ResultScene\ResultScene.cpp">
+      <Filter>Src\Application\Scene\ResultScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

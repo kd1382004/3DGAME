@@ -7,7 +7,7 @@ class StairsBase :public MapBase
 {
 public:
 	StairsBase() {};
-	~StairsBase() override{};
+	~StairsBase() override;
 
 	void Init()override;
 	void Update()override;

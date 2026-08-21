@@ -3,14 +3,6 @@
 
 void WarpGateBase::Init()
 {
-	if (!m_spWarpGate)
-	{
-		m_spWarpGate = std::make_shared<KdModelData>();
-		m_spWarpGate->Load("Asset/Models/WarpGate/WarpGateblend.gltf");
-	}
-
-
-
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
@@ -20,7 +12,6 @@ void WarpGateBase::Init()
 
 void WarpGateBase::Update()
 {
-	PlayerHit();
 }
 
 void WarpGateBase::PreDraw()

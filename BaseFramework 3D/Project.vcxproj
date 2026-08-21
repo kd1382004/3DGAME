@@ -321,6 +321,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.h" />
+    <ClInclude Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateBase.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateManager.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
@@ -332,6 +333,7 @@
     <ClInclude Include="Src\Application\main.h" />
     <ClInclude Include="Src\Application\Scene\BaseScene\BaseScene.h" />
     <ClInclude Include="Src\Application\Scene\GameScene\GameScene.h" />
+    <ClInclude Include="Src\Application\Scene\ResultScene\ResultScene.h" />
     <ClInclude Include="Src\Application\Scene\SceneManager.h" />
     <ClInclude Include="Src\Application\Scene\TitleScene\TitleScene.h" />
     <ClInclude Include="Src\Framework\Direct3D\KdMaterial.h" />
@@ -429,6 +431,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.cpp" />
+    <ClCompile Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp" />
@@ -439,6 +442,7 @@
     <ClCompile Include="Src\Application\main.cpp" />
     <ClCompile Include="Src\Application\Scene\BaseScene\BaseScene.cpp" />
     <ClCompile Include="Src\Application\Scene\GameScene\GameScene.cpp" />
+    <ClCompile Include="Src\Application\Scene\ResultScene\ResultScene.cpp" />
     <ClCompile Include="Src\Application\Scene\SceneManager.cpp" />
     <ClCompile Include="Src\Application\Scene\TitleScene\TitleScene.cpp" />
     <ClCompile Include="Src\Framework\Direct3D\KdMaterial.cpp">
