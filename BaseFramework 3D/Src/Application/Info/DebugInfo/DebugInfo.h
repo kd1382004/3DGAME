@@ -10,7 +10,7 @@ public:
 	bool GetSceneManagerImGUIFlg() { return m_SceneManagerImGUIFlg; }
 
 private:
-	bool m_SceneManagerImGUIFlg = true;
+	bool m_SceneManagerImGUIFlg = false;
 private:
 	DebugInfo() {};
 	~DebugInfo() {};

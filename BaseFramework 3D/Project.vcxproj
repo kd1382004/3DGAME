@@ -312,6 +312,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h" />
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.h" />
     <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIBase.h" />
@@ -422,6 +423,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp" />

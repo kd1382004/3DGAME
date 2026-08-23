@@ -253,6 +253,12 @@
     <Filter Include="Src\Application\Scene\ResultScene">
       <UniqueIdentifier>{405b4930-e935-4c21-8390-4e9455d38767}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\ResultUI">
+      <UniqueIdentifier>{42408c05-62f5-4145-9a02-900c0625578c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay">
+      <UniqueIdentifier>{39f90d11-68e5-4c2b-b9f9-11649c3dd57e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -603,6 +609,9 @@
     <ClInclude Include="Src\Application\Scene\ResultScene\ResultScene.h">
       <Filter>Src\Application\Scene\ResultScene</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.h">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -916,6 +925,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Scene\ResultScene\ResultScene.cpp">
       <Filter>Src\Application\Scene\ResultScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.cpp">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

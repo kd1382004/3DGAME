@@ -10,6 +10,7 @@
 
 #include"../../GameObject/Terrains/Ground/Ground.h"
 
+#include"../../Info/MouseInfo/MouseInfo.h"
 void TitleScene::Init()
 {
 	m_spTitleSceneEditor = std::make_shared<TitleSceneEditor>();
@@ -28,6 +29,8 @@ void TitleScene::Init()
 
 
 	SetObjeList();
+
+	MouseInfo::Instance().SetMouseFreeFlg(true);
 }
 
 void TitleScene::SetObjeList()

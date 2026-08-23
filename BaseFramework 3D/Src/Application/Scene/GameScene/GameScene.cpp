@@ -198,6 +198,9 @@ void GameScene::Init()
 	/////////////////////////////////////////	
 	std::shared_ptr<UIManager> spUIManager = std::make_shared<UIManager>();
 	spUIManager->Init();
+	spUIManager->SetpPotionTexInfo();
+	spUIManager->AddPlayerInventoryUI();
+	spUIManager->AddUIMapManager();
 	m_objList.push_back(spUIManager);
 
 	/////////////////////////////////////////

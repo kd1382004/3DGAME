@@ -15,25 +15,7 @@
 #include"../Potions/PotionTexInfo/PotionTexInfo.h"
 void UIManager::Init()
 {
-	if (!m_spPotionTexInfo)
-	{
-		m_spPotionTexInfo = std::make_shared<PotionTexInfo>();
-	}
-
-
-
-	std::shared_ptr<UIMapManager> spUIMapManager = std::make_shared<UIMapManager>();
-	spUIMapManager->Init();
-	m_wpUIMapManager = spUIMapManager;
-	m_spUIList.push_back(spUIMapManager);
-
-
 	m_pauseStop = false;
-
-	m_spPlayerInventoryUI = std::make_shared<PlayerInventoryUI>();
-	m_spPlayerInventoryUI->Init();
-	m_spPlayerInventoryUI->SetPotionTexInfo(m_spPotionTexInfo);
-	m_spUIList.push_back(m_spPlayerInventoryUI);
 }
 
 void UIManager::PreUpdate()
@@ -54,7 +36,8 @@ void UIManager::PreUpdate()
 			++it;	// 次の要素へイテレータを進める
 		}
 	}
-	//ソートする(描画優先が大きいほど後に)
+
+	//ソートする(描画優先数字が大きいほど後に)
 	if (m_spUIListOldSiz != m_spUIList.size())
 	{
 		m_spUIList.sort(
@@ -129,5 +112,29 @@ void UIManager::SetGameScene(std::shared_ptr<GameScene> _spGameScene)
 void UIManager::SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController)
 {
 	m_spPlayerInventoryUI->SetPotionUseController(_spPotionUseController);
+}
+
+void UIManager::AddUIMapManager()
+{
+	std::shared_ptr<UIMapManager> spUIMapManager = std::make_shared<UIMapManager>();
+	spUIMapManager->Init();
+	m_wpUIMapManager = spUIMapManager;
+	m_spUIList.push_back(spUIMapManager);
+}
+
+void UIManager::AddPlayerInventoryUI()
+{
+	m_spPlayerInventoryUI = std::make_shared<PlayerInventoryUI>();
+	m_spPlayerInventoryUI->Init();
+	m_spPlayerInventoryUI->SetPotionTexInfo(m_spPotionTexInfo);
+	m_spUIList.push_back(m_spPlayerInventoryUI);
+}
+
+void UIManager::SetpPotionTexInfo()
+{
+	if (!m_spPotionTexInfo)
+	{
+		m_spPotionTexInfo = std::make_shared<PotionTexInfo>();
+	}
 }
 

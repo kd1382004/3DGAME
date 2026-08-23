@@ -20,7 +20,7 @@ void GameButton::Init()
 		m_mWorld = scaleMat * transMat;
 
 
-		KeyInfo::Instance().SetKeyValid('A');
+		KeyInfo::Instance().SetKeyValid(VK_LBUTTON);
 	}
 
 
@@ -39,7 +39,7 @@ void GameButton::Update()
 
 		if (m_choseFlg)
 		{
-			if (KeyInfo::Instance().GetValidKeyPush('A', true, true))
+			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true, true))
 			{
 				SceneManager::Instance().SetNextScene
 				(

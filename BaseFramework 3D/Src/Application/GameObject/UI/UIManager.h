@@ -32,6 +32,15 @@ public:
 
 	void SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController);
 
+
+	//マップUIマネージャー
+	void AddUIMapManager();
+
+	//プレイヤーのインベントリ
+	void AddPlayerInventoryUI();
+
+	//ポーションの画像一覧
+	void SetpPotionTexInfo();
 private:
 
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
