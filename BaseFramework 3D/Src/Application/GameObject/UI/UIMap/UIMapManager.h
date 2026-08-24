@@ -30,6 +30,8 @@ public:
 
 	void AddUIMap_TreasureChest(std::shared_ptr<UIMap_TreasureChest> TreasureChest, Math::Vector3 _3Dpos);
 
+
+	void ResetTreasureChest() { m_UIMap_TreasureChest.clear(); }
 private:
 
 	std::shared_ptr<UIMap_Map>m_UIMap_Map;

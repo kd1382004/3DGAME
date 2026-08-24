@@ -5,9 +5,8 @@
 #include"../../GameObject/Character/Player/PlayerBase.h"
 #include"../../GameObject/Character/Player/PlayerBuffManager/PlayerBuffManager.h"
 
-#include"../../GameObject/Terrains/Ground/Ground.h"
 #include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
-
+#include"../../Info/MouseInfo/MouseInfo.h"
 
 //マップ
 #include"../../GameObject/Terrains/Map/MapManager.h"
@@ -138,7 +137,7 @@ void GameScene::Event()
 void GameScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
-
+	MouseInfo::Instance().SetMouseFreeFlg(false);
 
 
 	/////////////////////////////////////////
@@ -193,15 +192,6 @@ void GameScene::Init()
 	m_spTreasureChestManager->Init();
 	m_objList.push_back(m_spTreasureChestManager);
 
-	/////////////////////////////////////////
-	//UI
-	/////////////////////////////////////////	
-	std::shared_ptr<UIManager> spUIManager = std::make_shared<UIManager>();
-	spUIManager->Init();
-	spUIManager->SetpPotionTexInfo();
-	spUIManager->AddPlayerInventoryUI();
-	spUIManager->AddUIMapManager();
-	m_objList.push_back(spUIManager);
 
 	/////////////////////////////////////////
 	//ワープゲートマネージャー
@@ -215,6 +205,17 @@ void GameScene::Init()
 	//ポーション使用コントローラー
 	/////////////////////////////////////////	
 	m_spPotionUseController = std::make_shared<PotionUseController>();
+
+
+	/////////////////////////////////////////
+	//UI
+	/////////////////////////////////////////	
+	std::shared_ptr<UIManager> spUIManager = std::make_shared<UIManager>();
+	spUIManager->Init();
+	spUIManager->SetpPotionTexInfo();
+	spUIManager->AddPlayerInventoryUI();
+	spUIManager->AddUIMapManager();
+	m_objList.push_back(spUIManager);
 
 	/////////////////////////////////////////
 	//UIにセット
@@ -281,6 +282,8 @@ void GameScene::Init()
 	/////////////////////////////////////////	
 	m_spWarpGateManager->SetPlayer(m_spPlayer);
 	m_spWarpGateManager->SetGameScene(self);
+
+
 
 	//マップの成長率を設定
 	m_mapLinearGrowthPerFloor = 5;

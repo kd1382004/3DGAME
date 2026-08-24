@@ -164,7 +164,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	for (int i = 0;i < roomID;i++)
 	{
 		//何用の部屋か決める
-		roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_SafeRoom);
+		roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_TrapRoom);
 	}
 
 	/////////////////////////////////////////////////////
@@ -422,6 +422,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 				m_roomInfoList[i][j].m_Installation = true;
 				*_playerSpawnPos = m_roomInfoList[i][j].m_pos;
+				_playerSpawnPos->y += 1;
 			}
 		}
 

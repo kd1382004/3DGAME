@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+class ItemGetUIController;
 
 struct Inventory
 {
@@ -27,9 +28,13 @@ public:
 	void UsePotionsInventory(int _PotionsType);
 
 	int GetPotionsInventoryNum(int _PotionsType);
+
+	void SetItemGetUIController(std::shared_ptr<ItemGetUIController>_ItemGetUIController) { m_wpItemGetUIController = _ItemGetUIController; }
 private:
 
 	//各番号のポーションがどれだけあるか
 	std::vector<Inventory>m_potionsInventory;
 
+
+	std::weak_ptr<ItemGetUIController>m_wpItemGetUIController;
 };

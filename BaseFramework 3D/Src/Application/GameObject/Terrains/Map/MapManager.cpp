@@ -135,6 +135,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			spUIMapManager->SetBase3DPos(basePos);
 			spUIMapManager->SetTileSiz(m_mapTileSiz);
 			spUIMapManager->GetUIMap_Map()->PosListReset();
+			spUIMapManager->ResetTreasureChest();
 
 			for (const auto& mapObj : m_mapObj)
 			{
@@ -146,6 +147,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 				if (mapObj->GetMapObjType() == MapObjType::Stairs)
 				{
 					spUIMapManager->GetUIMap_Map()->AddStairsPos(mapObj->GetPos(), m_mapTileSiz);
+					spUIMapManager->GetUIMap_Map()->SetIsStairsMine(true);
 				}
 			}
 		}
@@ -324,17 +326,13 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 			spUIMapManager->SetBase3DPos(basePos);
 			spUIMapManager->SetTileSiz(m_mapTileSiz);
 			spUIMapManager->GetUIMap_Map()->PosListReset();
+			spUIMapManager->ResetTreasureChest();
 
 			for (const auto& mapObj : m_mapObj)
 			{
 				if (mapObj->GetMapObjType() == MapObjType::Ground)
 				{
 					spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
-				}
-
-				if (mapObj->GetMapObjType() == MapObjType::Stairs)
-				{
-					spUIMapManager->GetUIMap_Map()->AddStairsPos(mapObj->GetPos(), m_mapTileSiz);
 				}
 			}
 		}

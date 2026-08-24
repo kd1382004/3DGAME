@@ -57,7 +57,7 @@ void UIMapManager::PreUpdate()
 
 void UIMapManager::PreDraw()
 {
-	KdShaderManager::Instance().m_spriteShader.DrawCircle(m_basePos.x, m_basePos.y, 5);
+	
 }
 
 void UIMapManager::DrawSprite()

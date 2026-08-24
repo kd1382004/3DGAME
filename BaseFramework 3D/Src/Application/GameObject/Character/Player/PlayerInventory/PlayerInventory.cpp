@@ -1,6 +1,8 @@
 ﻿#include "PlayerInventory.h"
 #include"../../../Potions/PotionsType.h"
 
+
+#include"../../../UI/ItemGetUIController/ItemGetUIController.h"
 void PlayerInventory::Init()
 {
 	std::vector<Inventory> inventoryList;
@@ -31,6 +33,15 @@ void PlayerInventory::AddPotionsInventory(int _PotionsType)
 {
 	if (_PotionsType<0 || _PotionsType>m_potionsInventory.size() - 1) { return; }
 	m_potionsInventory[_PotionsType].m_num++;
+
+	//入手アクションを起こす
+	std::shared_ptr<ItemGetUIController>spItemGetUIController = m_wpItemGetUIController.lock();
+	if (!spItemGetUIController) { return; }
+
+	GetItem item;
+	item.GetNum = 1;
+	item.ID = _PotionsType;
+	spItemGetUIController->AddGetItemList(item);
 }
 
 void PlayerInventory::UsePotionsInventory(int _PotionsType)

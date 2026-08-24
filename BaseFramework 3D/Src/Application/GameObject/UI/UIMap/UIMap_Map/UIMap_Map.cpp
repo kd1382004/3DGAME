@@ -45,6 +45,7 @@ void UIMap_Map::DrawSprit()
 
 	if (!m_mapStairsTex) { return; }
 	if (!m_StairsMineMapInfo.m_drawFlg) { return; }
+	if (!m_isStairsMine) { return; }
 
 	float drawX = m_basePos.x + m_StairsMineMapInfo.m_pos.x * m_siz;
 	float drawY = m_basePos.y + m_StairsMineMapInfo.m_pos.y * m_siz;
@@ -87,6 +88,8 @@ void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize)
 void UIMap_Map::PosListReset()
 {
 	m_posList.clear();
+	m_StairsMineMapInfo.m_drawFlg = false;
+	m_isStairsMine = false;
 }
 
 

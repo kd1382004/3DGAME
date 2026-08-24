@@ -36,6 +36,8 @@ public:
 	const std::list<MineMapInfo>& GetMineMapInfo() const { return m_posList; }
 
 	Math::Vector2 GetMapTexSiz() { return m_mapTexSiz; }
+
+	void SetIsStairsMine(bool _flg) { m_isStairsMine = _flg; }
 private:
 
 	float m_siz = 1.0f;
@@ -60,4 +62,5 @@ private:
 
 
 	MineMapInfo m_StairsMineMapInfo;
+	bool m_isStairsMine=false;
 };

@@ -115,7 +115,7 @@ private:
 	//部屋のTypeごとの敵の割合(部屋のタイル数にかける)
 	struct RoomEnemyPercent
 	{
-		float m_EnemyRoom = 0.15f;
+		float m_EnemyRoom = 0.13f;
 		float m_NotEnemyRoom = 0.1f;
 		float m_SafeRoom = 0.0f;
 	};

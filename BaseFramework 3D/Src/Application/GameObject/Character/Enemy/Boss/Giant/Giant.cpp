@@ -60,6 +60,10 @@ void Giant::Update()
 		return;
 	}
 
+	////重力
+	//m_pos.y -= m_Gravity;
+	//m_Gravity += m_gravityPower;
+
 	//プレイヤー追跡
 	if (m_playerChaseFlg)
 	{

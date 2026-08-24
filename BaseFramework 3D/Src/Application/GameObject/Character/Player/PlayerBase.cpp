@@ -11,6 +11,8 @@
 #include"../../UI/UIMap/UIMap_Player/UIMap_Player.h"
 #include"../../UI/StaminaGage/StaminaGage.h"
 #include"../../UI/SkillGage/SkillGage.h"
+#include"../../UI/ItemGetUIController/ItemGetUIController.h"
+
 
 //武器
 #include"../../Weapon/WeaponBase.h"
@@ -145,7 +147,7 @@ void PlayerBase::Update()
 
 	if (m_spNextFloorAction)
 	{	//やられたらできない
-		if (m_isDead)
+		if (!m_isDead)
 		{
 			//次の階に行くアクション
 			m_spNextFloorAction->Update(m_nextFloorActionFlg);
@@ -264,6 +266,12 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		m_wpSkillGage = spSkillGage;
 		_spUIManager->AddUIObj(spSkillGage);
 
+
+
+		std::shared_ptr<ItemGetUIController>spItemGetUIController= std::make_shared<ItemGetUIController>();
+		spItemGetUIController->Init();
+		_spUIManager->AddUIObj(spItemGetUIController);
+		m_spPlayerInventory->SetItemGetUIController(spItemGetUIController);
 	}
 
 
