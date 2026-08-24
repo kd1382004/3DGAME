@@ -83,7 +83,7 @@ void PlayerBase::Init()
 
 	if (!m_spPlayerBuffManager)
 	{
-		m_spPlayerBuffManager= std::make_shared<PlayerBuffManager>();
+		m_spPlayerBuffManager = std::make_shared<PlayerBuffManager>();
 	}
 
 
@@ -111,6 +111,20 @@ void PlayerBase::PreUpdate()
 
 void PlayerBase::Update()
 {
+	if (m_isDead)
+	{
+		//デバック用プレイヤー死亡後Result移行
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		{
+			std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
+			if (spGameScene)
+			{
+				spGameScene->ChangeResultScene();
+			}
+		}
+	}
+
+
 	//バフのアップデート
 	if (m_spPlayerBuffManager)
 	{
@@ -130,9 +144,13 @@ void PlayerBase::Update()
 	EvasionUpdate();
 
 	if (m_spNextFloorAction)
-	{
-		//次の階に行くアクション
-		m_spNextFloorAction->Update(m_nextFloorActionFlg);
+	{	//やられたらできない
+		if (m_isDead)
+		{
+			//次の階に行くアクション
+			m_spNextFloorAction->Update(m_nextFloorActionFlg);
+		}
+
 	}
 
 
@@ -256,10 +274,10 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 {
 	if (m_evasionFlg)
 	{
-		DeltaTime::Instance().SetTimeScale(0.5f);
-		DeltaTime::Instance().SetSlowTimer(0.5);
+		//DeltaTime::Instance().SetTimeScale(0.5);
+		//DeltaTime::Instance().SetSlowTimer(0.1);
 
-		//回避成功演出入れる
+		////回避成功演出入れる
 
 		return;
 	}
@@ -303,15 +321,24 @@ void PlayerBase::AddMaxHP(int _Bosst, bool flg)
 	}
 }
 
+void PlayerBase::SetDead()
+{
+	m_nowPlayerAnimeMode = PlayerAnimeMode::DeathAnime;
+	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.DeathAnime), false);
+	m_isDead = true;
+}
+
 void PlayerBase::WeaponUpdate()
 {
-	//回避中は移動できない
+	//回避中はできない
 	if (m_evasionAnimeFlg) { return; }
+	//やられたらできない
+	if (m_isDead) { return; }
 
 	//攻撃力の更新
 	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack,true)&& m_normalAttack)
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack, true) && m_normalAttack)
 	{
 		m_normalAttack = false;
 		m_normalAttackWaitNow = 0;
@@ -344,7 +371,7 @@ void PlayerBase::WeaponUpdate()
 
 	if (m_nowPlayerAnimeMode != PlayerBase::SwordAttackAnime)
 	{
-		m_normalAttackWaitNow+= 1*DeltaTime::Instance().GetGameDeltaTime();
+		m_normalAttackWaitNow += 1 * DeltaTime::Instance().GetGameDeltaTime();
 
 		if (m_normalAttackWaitNow > m_normalAttackWaitMax)
 		{
@@ -356,7 +383,7 @@ void PlayerBase::WeaponUpdate()
 		std::shared_ptr<SkillGage>spSkillGage = m_wpSkillGage.lock();
 		if (spSkillGage)
 		{
-			spSkillGage->SetGaugePercent(m_normalAttackWaitNow/ m_normalAttackWaitMax);
+			spSkillGage->SetGaugePercent(m_normalAttackWaitNow / m_normalAttackWaitMax);
 		}
 	}
 }
@@ -477,6 +504,9 @@ void PlayerBase::Move()
 	//回避中は移動できない
 	if (m_evasionAnimeFlg) { return; }
 
+	//やられたら移動できない
+	if (m_isDead) { return; }
+
 
 	//////////////////////////////////////////////////////////////
 	//どの方向に行きたいかベクトルを取る
@@ -566,7 +596,7 @@ void PlayerBase::MoveNowSpeedDecision()
 		{
 			m_moveMode = MoveRun;
 		}
-		
+
 
 	}
 	else
@@ -593,7 +623,7 @@ void PlayerBase::MoveNowSpeedDecision()
 void PlayerBase::JumpAndGravity()
 {
 	//スタンならorふっとばし or 回避中 なら　移動できない
-	if (m_hitStunFlg || m_isKnockbackFlg || m_evasionAnimeFlg)
+	if (m_hitStunFlg || m_isKnockbackFlg || m_evasionAnimeFlg || m_isDead)
 	{
 		m_pos.y -= m_Gravity;
 		m_Gravity += m_gravityPower;
@@ -696,6 +726,9 @@ void PlayerBase::PlayerAnimeModeUpdate()
 		case PlayerBase::RollAnime:
 			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.EvasionAnime), false);
 			break;
+		case PlayerBase::DeathAnime:
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.DeathAnime), false);
+			break;
 		default:
 			break;
 		}
@@ -761,6 +794,10 @@ void PlayerBase::StaminaManager()
 
 void PlayerBase::EvasionUpdate()
 {
+
+	//やられたら回避できない
+	if (m_isDead) { return; }
+
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.evasion, true))
 	{
 

@@ -142,8 +142,6 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							info.m_roomEnd.downEnd = roomY + roomH - 1;
 
 							m_roomInfo.push_back(info);
-
-
 						}
 
 					}
@@ -174,7 +172,8 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	/////////////////////////////////////////////////////
 
 	//部屋のX値でソート(左から右へ)
-	std::sort(m_roomInfo.begin(), m_roomInfo.end(), [](const RoomInfo& a, const RoomInfo& b) {return a.m_center.x < b.m_center.x;});
+	//std::sort(m_roomInfo.begin(), m_roomInfo.end(), [](const RoomInfo& a, const RoomInfo& b) {return a.m_center.x < b.m_center.x;});
+
 
 	/////////////////////////////////////////////////////
 

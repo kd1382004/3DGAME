@@ -12,6 +12,8 @@
 #include"../../Character/Player/PlayerInventory/PlayerInventory.h"
 
 #include"../../Potions/PotionTexInfo/PotionTexInfo.h"
+
+#include"../../../Info/NumDraw/NumDraw.h"
 void PlayerInventoryUI::Init()
 {
 	KeyInfo::Instance().SetKeyValid(VK_TAB);
@@ -74,7 +76,7 @@ void PlayerInventoryUI::Update()
 	if (GetAsyncKeyState('1') & 0x8000)
 	{
 		std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
-		if (spPlayer) 
+		if (spPlayer)
 		{
 			std::shared_ptr<PlayerInventory> spPlayerInventory = spPlayer->GetPlayerInventory();
 			if (!spPlayerInventory) { return; }
@@ -88,8 +90,7 @@ void PlayerInventoryUI::Update()
 }
 
 void PlayerInventoryUI::PreDraw()
-{
-}
+{}
 
 void PlayerInventoryUI::DrawSprite()
 {
@@ -106,6 +107,11 @@ void PlayerInventoryUI::DrawSprite()
 	if (m_back2Tex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_back2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y);
+
+		Math::Vector2 pos = m_back2Tex2DPos;
+		pos.y += 150;
+		pos.x += 80;
+		NumDraw::GetInstance().Drow(m_num, RAligned, pos, kWhiteColor, 4);
 	}
 
 
@@ -113,6 +119,8 @@ void PlayerInventoryUI::DrawSprite()
 	if (m_UseTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_UseTex, m_UseTex2DPos.x, m_UseTex2DPos.y);
+
+
 	}
 
 
@@ -206,7 +214,7 @@ void PlayerInventoryUI::AddPotionTexInfo()
 
 void PlayerInventoryUI::IconHit()
 {
-	if (m_itemIconInfo.size() <= 0 || m_selectPotionID == -999)
+	if (m_itemIconInfo.size() <= 0)
 	{
 		m_back2Tex = m_notSelsect;
 		return;
@@ -245,6 +253,11 @@ void PlayerInventoryUI::IconHit()
 void PlayerInventoryUI::PotionIUse()
 {
 	if (m_itemIconInfo.size() <= 0 || m_selectPotionID == -999) { return; }
+	std::shared_ptr<PotionUseController >spPotionUseController = m_wpPotionUseController.lock();
+	if (!spPotionUseController) { return; }
+
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
+	if (!spPlayer) { return; }
 
 	POINT mousePos = MouseInfo::Instance().m_windowPos;
 
@@ -259,18 +272,15 @@ void PlayerInventoryUI::PotionIUse()
 	{
 		if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 		{
-			std::shared_ptr<PotionUseController >spPotionUseController = m_wpPotionUseController.lock();
-			if (spPotionUseController)
-			{
-				std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
-				if (spPlayer) {
 
-					spPotionUseController->SetPlayer(spPlayer);
-					spPotionUseController->PotionUse(m_selectPotionID);
-					spPlayer->GetPlayerInventory()->UsePotionsInventory(m_selectPotionID);
-				}
-			}
+			spPotionUseController->SetPlayer(spPlayer);
+			spPotionUseController->PotionUse(m_selectPotionID);
+			spPlayer->GetPlayerInventory()->UsePotionsInventory(m_selectPotionID);
+
+
 		}
 	}
 
+
+	m_num = spPlayer->GetPlayerInventory()->GetPotionsInventoryNum(m_selectPotionID);
 }

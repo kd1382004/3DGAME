@@ -259,6 +259,9 @@
     <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay">
       <UniqueIdentifier>{39f90d11-68e5-4c2b-b9f9-11649c3dd57e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Info\NumDraw">
+      <UniqueIdentifier>{a6a0720b-dbb8-4152-9b34-f117ea65b1e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -612,6 +615,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.h">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Info\NumDraw\NumDraw.h">
+      <Filter>Src\Application\Info\NumDraw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -928,6 +934,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.cpp">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Info\NumDraw\NumDraw.cpp">
+      <Filter>Src\Application\Info\NumDraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

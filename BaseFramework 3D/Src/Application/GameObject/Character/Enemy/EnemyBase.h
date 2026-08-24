@@ -3,6 +3,7 @@
 
 class PlayerBase;
 class MapManager;
+class GameScene;
 
 struct Node;
 
@@ -29,6 +30,8 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPalyer) { m_wpPlayer = _spPalyer; };
 	void SetMapManager(std::shared_ptr<MapManager>_spMapManager) { m_wpMapManager = _spMapManager; };
+	
+	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; };
 
 
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager);
@@ -133,6 +136,8 @@ protected:
 
 	void SetDead();
 
+
+	std::weak_ptr<GameScene>m_wpGameScene;
 private:
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;

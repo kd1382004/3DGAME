@@ -118,6 +118,8 @@ public:
 	//flg...増加分体力を回復するか
 	void AddMaxHP(int _Bosst,bool flg=false);
 
+	void SetDead();
+
 	/////////////////////////////////////
 	//攻撃力
 
@@ -244,6 +246,7 @@ protected:
 		std::string SwordAttackAnime = "Dagger_Attack";
 		std::string PunchAttackAnime = "Punch";
 		std::string EvasionAnime = "Roll";
+		std::string DeathAnime = "Death";
 	};
 
 	enum PlayerAnimeMode
@@ -255,6 +258,7 @@ protected:
 		SwordAttackAnime,
 		PunchAttackAnime,
 		RollAnime,
+		DeathAnime
 	};
 
 	PlayerAnimeName m_playerAnimeName;

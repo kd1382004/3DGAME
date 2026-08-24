@@ -331,6 +331,7 @@
     <ClInclude Include="Src\Application\Info\DeltaTime\DeltaTime.h" />
     <ClInclude Include="Src\Application\Info\KeyInfo\KeyInfo.h" />
     <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h" />
+    <ClInclude Include="Src\Application\Info\NumDraw\NumDraw.h" />
     <ClInclude Include="Src\Application\main.h" />
     <ClInclude Include="Src\Application\Scene\BaseScene\BaseScene.h" />
     <ClInclude Include="Src\Application\Scene\GameScene\GameScene.h" />
@@ -441,6 +442,7 @@
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp" />
     <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp" />
     <ClCompile Include="Src\Application\Info\MouseInfo\MouseInfo.cpp" />
+    <ClCompile Include="Src\Application\Info\NumDraw\NumDraw.cpp" />
     <ClCompile Include="Src\Application\main.cpp" />
     <ClCompile Include="Src\Application\Scene\BaseScene\BaseScene.cpp" />
     <ClCompile Include="Src\Application\Scene\GameScene\GameScene.cpp" />

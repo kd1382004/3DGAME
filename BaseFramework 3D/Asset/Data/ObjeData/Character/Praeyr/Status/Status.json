@@ -3,10 +3,10 @@
         "baseHP": 100.0
     },
     "attck": {
-        "baseAttckPowe": 1000.0
+        "baseAttckPowe": 10.0
     },
     "defense": {
-        "baseDefensePowe": 0.0
+        "baseDefensePowe": 10.0
     },
     "moveSpeed": {
         "baseSpeed": 10.0,

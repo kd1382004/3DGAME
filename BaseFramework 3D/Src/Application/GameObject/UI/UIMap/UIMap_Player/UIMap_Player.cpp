@@ -37,5 +37,4 @@ void UIMap_Player::Change2DPos()
 	float py = tileY * m_mapTexSiz.y + m_mapTexSiz.y * 0.5f;
 
 	m_player2DPos = { px, py };
-
 }

@@ -80,4 +80,6 @@ private:
 
 	//使用
 	void PotionIUse();
+
+	int m_num = 0;
 };

@@ -9,7 +9,7 @@
 #include"../../../../../Scene/GameScene/GameScene.h"
 void Giant::Init()
 {
-	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Goblin/Status/Status.json";
+	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Boss/Giant/Status/Status.json";
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
@@ -25,7 +25,7 @@ void Giant::Init()
 		if (!m_pCollider)
 		{
 			m_pCollider = std::make_unique<KdCollider>();
-			m_pCollider->RegisterCollisionShape("Goblin", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion);
+			m_pCollider->RegisterCollisionShape("Giant", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion);
 		}
 
 		EnemyBase::Init();

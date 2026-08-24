@@ -1,6 +1,8 @@
 ﻿#include "EnemyBase.h"
 #include"../../Camera/CameraBase.h"
 
+#include"../../../Scene/GameScene/GameScene.h"
+
 //プレイヤー
 #include"../Player/PlayerBase.h"
 
@@ -418,4 +420,12 @@ void EnemyBase::SetDead()
 {
 	m_AnimeChangeFlg = true;
 	m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Die;
+
+
+	std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
+	if (spGameScene)
+	{
+		spGameScene->AddEnemyKill();
+	}
+
 }

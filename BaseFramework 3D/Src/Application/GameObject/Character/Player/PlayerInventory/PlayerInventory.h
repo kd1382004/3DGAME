@@ -25,6 +25,8 @@ public:
 
 	//ポーションが使われたとき
 	void UsePotionsInventory(int _PotionsType);
+
+	int GetPotionsInventoryNum(int _PotionsType);
 private:
 
 	//各番号のポーションがどれだけあるか

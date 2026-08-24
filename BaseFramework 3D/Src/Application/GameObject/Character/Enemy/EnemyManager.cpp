@@ -146,7 +146,7 @@ void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 	spEnemyAmbush->Init();
 	spEnemyAmbush->SetSpawnPos(_spawnPos);
 	spEnemyAmbush->SetCamera(m_wpCamera.lock());
-
+	spEnemyAmbush->SetGameScene(m_wpGameScene.lock());
 	spEnemyAmbush->AddUIList(m_wpUIManager.lock());
 
 	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();

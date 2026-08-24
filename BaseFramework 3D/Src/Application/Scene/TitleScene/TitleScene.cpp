@@ -31,12 +31,12 @@ void TitleScene::Init()
 	SetObjeList();
 
 	MouseInfo::Instance().SetMouseFreeFlg(true);
+
+	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 }
 
 void TitleScene::SetObjeList()
 {
-
-
 	//nlohmann::json root;
 
 	//for (const auto& obj : m_objList) {

@@ -29,10 +29,18 @@ void PlayerInventory::Init()
 
 void PlayerInventory::AddPotionsInventory(int _PotionsType)
 {
+	if (_PotionsType<0 || _PotionsType>m_potionsInventory.size() - 1) { return; }
 	m_potionsInventory[_PotionsType].m_num++;
 }
 
 void PlayerInventory::UsePotionsInventory(int _PotionsType)
 {
+	if (_PotionsType<0 || _PotionsType>m_potionsInventory.size() - 1) { return; }
 	m_potionsInventory[_PotionsType].m_num--;
+}
+
+int PlayerInventory::GetPotionsInventoryNum(int _PotionsType)
+{
+	if (_PotionsType<0 || _PotionsType>m_potionsInventory.size() - 1) { return 0; }
+	return m_potionsInventory[_PotionsType].m_num;
 }

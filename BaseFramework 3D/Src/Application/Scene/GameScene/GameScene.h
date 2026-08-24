@@ -11,7 +11,7 @@ class TreasureChestManager;
 class PotionUseController;
 class WarpGateManager;
 
-class GameScene : public BaseScene,public std::enable_shared_from_this<GameScene>
+class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
 {
 public:
 
@@ -34,6 +34,8 @@ public:
 
 	//リザルトシーンに移行
 	void ChangeResultScene();
+
+	void AddEnemyKill() { m_killEnemy++; }
 private:
 
 	void Event() override;
@@ -62,6 +64,6 @@ private:
 	float m_mapLinearGrowthPerFloorY;
 
 	//ゲーム結果
-	int m_killEnemy;
-	int m_killBoss;
+	int m_killEnemy = 0;
+	int m_killBoss = 0;
 };
