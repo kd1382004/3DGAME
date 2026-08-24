@@ -108,47 +108,6 @@ public:
 
 	const ActionKeyConfig GetActionKeyConfig() { return m_keyConfig; }
 
-
-
-	/////////////////////////////////////
-	//HP
-
-	void HPHeal(int _Heal);
-	
-	//MaxのHPを返す
-	int GetMaxHP() { return m_status.HP.maxHP; }
-
-	//HPMax増加
-	//flg...増加分体力を回復するか
-	void AddMaxHP(int _Bosst,bool flg=false);
-
-	void SetDead();
-
-	/////////////////////////////////////
-	//攻撃力
-
-	//基礎攻撃力アップ
-	void BoostAttackBase(int _Bosst) { m_status.attck.baseAttckPowe += _Bosst; }
-
-	//基礎攻撃力を返す
-	int GetAttackBase() { return m_status.attck.baseAttckPowe; }
-
-	//増加攻撃力アップ
-	void BoostAddAttack(int _Bosst) { m_status.attck.addAttack += _Bosst; }
-
-	/////////////////////////////////////
-	//防御力
-
-	//基礎防御力アップ
-	void BoostDefenseBase(int _Bosst) { m_status.defense.baseDefensePowe += _Bosst; }
-
-	//基礎防御力を返す
-	int GetDefenseBase() { return m_status.defense.baseDefensePowe; }
-
-	//増加防御力アップ
-	void BoostAddDefense(int _Bosst) { m_status.defense.addDefense += _Bosst; }
-
-	////////////////////////////////////////
 	//インベントリ
 	std::shared_ptr<PlayerInventory> GetPlayerInventory() { return m_spPlayerInventory; }
 
@@ -160,6 +119,14 @@ public:
 	//エフェクトマネージャー
 	void SetEffectManager(std::shared_ptr<EffectManager>_spEffectManager);
 
+
+	//HPMax増加
+	//flg...増加分体力を回復するか
+	void AddMaxHP(int _Bosst, bool flg = false);
+
+	void HPHeal(int _Heal);
+
+	void SetDead()override;
 protected:
 
 	//エフェクトマネージャー

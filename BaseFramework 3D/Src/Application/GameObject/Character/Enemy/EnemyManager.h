@@ -5,6 +5,7 @@ class MapManager;
 class CameraBase;
 class UIManager;
 class GameScene;
+class HitDamage;
 
 
 enum EnemyType
@@ -14,7 +15,7 @@ enum EnemyType
 
 };
 
-class EnemyManager:public KdGameObject
+class EnemyManager:public KdGameObject, public std::enable_shared_from_this<EnemyManager>
 {
 public:
 	EnemyManager() {};
@@ -45,7 +46,13 @@ public:
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager) { m_wpUIManager = _spUIManager; }
 
 	void SpawnBoss(Math::Vector3 _spawnPos);
+
+	void SetHitDamage(std::shared_ptr<HitDamage>_spHitDamage) { m_wpHitDamage = _spHitDamage; }
+
+	void SetEnemyManager(std::shared_ptr<EnemyManager>_spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
 protected:
+
+	std::weak_ptr<HitDamage>m_wpHitDamage;
 
 	std::weak_ptr<UIManager>m_wpUIManager;
 
@@ -67,4 +74,6 @@ protected:
 	//敵リスト
 	std::list<std::shared_ptr<EnemyBase>> m_enemyList;
 
+
+	std::weak_ptr<EnemyManager>m_wpEnemyManager;
 };

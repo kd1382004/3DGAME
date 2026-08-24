@@ -5,6 +5,10 @@ void UIBase::Init()
 
 }
 
+void UIBase::PreUpdate()
+{
+}
+
 void UIBase::Update()
 {
 

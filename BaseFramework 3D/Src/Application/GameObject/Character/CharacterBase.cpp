@@ -1,8 +1,11 @@
 ﻿#include "CharacterBase.h"
 #include"../../Info/DeltaTime/DeltaTime.h"
 
+#include"../Camera/CameraBase.h"
+
 #include"../UI/HPBar/HPBar.h"
 #include"../UI/UIManager.h"
+#include"../UI/HitDamage/HitDamage.h"
 void CharacterBase::Init()
 {
 
@@ -95,7 +98,15 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 	if (m_isDead) { return; }
 
 	// ダメージ処理
-	m_status.HP.nowHP -= DamagecClculationFormula(_damage, _ignoreRate);
+	float Damage= DamagecClculationFormula(_damage, _ignoreRate);
+	m_status.HP.nowHP -= Damage;
+
+
+	std::shared_ptr<HitDamage>spHitDamage = m_wpHitDamage.lock();
+	if (spHitDamage)
+	{
+		spHitDamage->SetDamage(Damage, m_pos);
+	}
 
 	if (m_status.HP.nowHP <= 0)
 	{
@@ -271,6 +282,7 @@ void CharacterBase::CollisionUpdate()
 
 		if (bumpHit)
 		{
+			maxPush.y = 0;
 			SetPos(GetPos() + maxPush);
 			m_wallHit = true;
 		}

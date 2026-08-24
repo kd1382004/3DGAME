@@ -285,6 +285,7 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController\EnemyCrowdController.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyManager.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\AttackBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming\Attack_Slamming.h" />
@@ -312,6 +313,7 @@
     <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChest.h" />
     <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.h" />
     <ClInclude Include="Src\Application\GameObject\UI\BuffUI\BuffUI.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\HitDamage\HitDamage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.h" />
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
@@ -402,6 +404,7 @@
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Giant.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush\EnemyAmbush.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController\EnemyCrowdController.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\AttackBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Goblin\Attack\Attack_Slamming\Attack_Slamming.cpp" />
@@ -428,6 +431,7 @@
     <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChest.cpp" />
     <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\BuffUI\BuffUI.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\HitDamage\HitDamage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />

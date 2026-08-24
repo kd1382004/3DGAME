@@ -8,6 +8,7 @@ public:
 
 	virtual void Init()override;
 
+	virtual void PreUpdate()override;
 	virtual void Update()override;
 
 	virtual void PreDraw()override;

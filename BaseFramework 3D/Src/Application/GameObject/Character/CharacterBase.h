@@ -3,6 +3,7 @@
 class CameraBase;
 class UIManager;
 class HPBar;
+class HitDamage;
 
 class CharacterBase : public KdGameObject
 {
@@ -46,6 +47,48 @@ public:
 
 
 	virtual void AddUIList(std::shared_ptr<UIManager>_spUIManager);
+
+	void SetHitDamage(std::shared_ptr<HitDamage>_spHitDamage) { m_wpHitDamage = _spHitDamage; }
+
+
+	/////////////////////////////////////
+	//HP
+
+	//MaxのHPを返す
+	int GetMaxHP() { return m_status.HP.maxHP; }
+
+
+
+	virtual void SetDead();
+
+	/////////////////////////////////////
+	//攻撃力
+
+	//基礎攻撃力アップ
+	void BoostAttackBase(int _Bosst) { m_status.attck.baseAttckPowe += _Bosst; }
+
+	//基礎攻撃力を返す
+	int GetAttackBase() { return m_status.attck.baseAttckPowe; }
+
+	//増加攻撃力アップ
+	void BoostAddAttack(int _Bosst) { m_status.attck.addAttack += _Bosst; }
+
+	/////////////////////////////////////
+	//防御力
+
+	//基礎防御力アップ
+	void BoostDefenseBase(int _Bosst) { m_status.defense.baseDefensePowe += _Bosst; }
+
+	//基礎防御力を返す
+	int GetDefenseBase() { return m_status.defense.baseDefensePowe; }
+
+	//増加防御力アップ
+	void BoostAddDefense(int _Bosst) { m_status.defense.addDefense += _Bosst; }
+
+	////////////////////////////////////////
+	//速度
+
+	float GetNowSpeed() { return m_status.moveSpeed.nowSpeed; }
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
@@ -66,6 +109,8 @@ protected:
 	std::shared_ptr<KdModelWork> m_spCharaModel = nullptr;
 	std::shared_ptr<KdAnimator>	m_spAnimetor = nullptr;
 
+
+	std::weak_ptr<HitDamage>m_wpHitDamage;
 
 
 	float m_Gravity = 0;
@@ -234,6 +279,4 @@ protected:
 	std::weak_ptr<HPBar>m_wpHPBar;
 
 	bool m_isDead = false;
-
-	virtual void SetDead();
 };

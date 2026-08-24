@@ -4,10 +4,13 @@
 class PlayerBase;
 class MapManager;
 class GameScene;
+class EnemyCrowdController;
+class EnemyManager;
+
 
 struct Node;
 
-class EnemyBase :public CharacterBase
+class EnemyBase :public CharacterBase, public std::enable_shared_from_this<EnemyBase>
 {
 public:
 	EnemyBase() {};
@@ -30,7 +33,7 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPalyer) { m_wpPlayer = _spPalyer; };
 	void SetMapManager(std::shared_ptr<MapManager>_spMapManager) { m_wpMapManager = _spMapManager; };
-	
+
 	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; };
 
 
@@ -48,7 +51,21 @@ public:
 	//__ignoreRate ... 防御無視
 	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)override;
 
+	Math::Vector3 GetPlayerPos() { return m_playerPos; }
+
+
+	void SetEnemyManager(std::shared_ptr<EnemyManager>_spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
+	std::shared_ptr<EnemyManager> GetEnemyManager() { return m_wpEnemyManager.lock(); }
+
+
+	void SetMoveVec(Math::Vector3 _vec)
+	{
+		m_moveVec = _vec;
+		m_moveVec.Normalize();
+	}
 protected:
+
+	std::weak_ptr<EnemyManager>m_wpEnemyManager;
 
 	void Release()override;
 
@@ -141,6 +158,10 @@ protected:
 
 
 	std::weak_ptr<GameScene>m_wpGameScene;
+
+
+	//
+	std::shared_ptr<EnemyCrowdController> m_crowdController;
 private:
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;

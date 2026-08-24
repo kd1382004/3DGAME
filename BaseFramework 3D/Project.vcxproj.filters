@@ -271,6 +271,12 @@
     <Filter Include="Src\Application\GameObject\Effect\DamageOverlay">
       <UniqueIdentifier>{1f85939a-e3cf-49a1-bfe4-c3d6e08e84e2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\HitDamage">
+      <UniqueIdentifier>{032a2859-3dda-45e2-9d37-83a45aed3054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController">
+      <UniqueIdentifier>{226cadb0-515e-48fa-b6da-11cffabcdcc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -639,6 +645,12 @@
     <ClInclude Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.h">
       <Filter>Src\Application\GameObject\Effect\DamageOverlay</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\HitDamage\HitDamage.h">
+      <Filter>Src\Application\GameObject\UI\HitDamage</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController\EnemyCrowdController.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\EnemyCrowdController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -970,6 +982,12 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.cpp">
       <Filter>Src\Application\GameObject\Effect\DamageOverlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\HitDamage\HitDamage.cpp">
+      <Filter>Src\Application\GameObject\UI\HitDamage</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController\EnemyCrowdController.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\EnemyCrowdController</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -12,8 +12,18 @@
 //UI
 #include"../../UI/UIManager.h"
 #include"../../UI/HPBar/HPBar.h"
+
+
+
+#include"EnemyCrowdController/EnemyCrowdController.h"
 void EnemyBase::Init()
 {
+	if (!m_crowdController)
+	{
+		m_crowdController = std::make_shared<EnemyCrowdController>();
+	}
+
+
 
 	LoadCharaStatus(m_charaStatusFilePath);
 
@@ -166,11 +176,6 @@ void EnemyBase::SearchPlayer()
 
 void EnemyBase::PlayerChase()
 {
-	m_moveVec = m_playerPos - m_pos;
-	m_moveVec.y = 0;
-	m_moveVec.Normalize();
-
-
 	float dist = (m_playerPos - m_pos).Length();
 
 	if (dist > m_loseSightDistance)
@@ -211,16 +216,6 @@ void EnemyBase::PlayerChase()
 
 
 		m_stayTime = m_lostSightWaitTime;
-
-		//Chase範囲内なら座標更新
-
-		if (dist > m_PlayerChaseDir)
-		{
-			m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
-		}
-
-
-
 	}
 
 
@@ -234,6 +229,19 @@ void EnemyBase::PlayerChase()
 	if (spPlayer)
 	{
 		spPlayer->SetIsDetectedByEnemy(m_playerChaseFlg);
+	}
+
+
+	if (m_playerChaseFlg)
+	{
+		if (!m_crowdController) { return; }
+
+		Math::Vector3 dir = m_playerPos - m_pos;
+
+		if (m_PlayerChaseDir> dir.Length()) { return; }
+
+		m_crowdController->Update(this, DeltaTime::Instance().GetGameDeltaTime());
+		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();	
 	}
 
 }

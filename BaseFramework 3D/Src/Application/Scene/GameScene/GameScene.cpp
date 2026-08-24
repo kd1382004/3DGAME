@@ -16,6 +16,7 @@
 //UI
 #include"../../GameObject/UI/UIManager.h"
 #include"../../GameObject/UI/BuffUI/BuffUI.h"
+#include"../../GameObject/UI/HitDamage/HitDamage.h"
 
 //武器
 #include"../../GameObject/Weapon/Dagger/Dagger.h"
@@ -242,6 +243,11 @@ void GameScene::Init()
 	spBuffUI->SetPlayer(m_spPlayer);
 	spUIManager->AddUIObj(spBuffUI);
 
+	std::shared_ptr<HitDamage>spHitDamage = std::make_shared<HitDamage>();
+	spHitDamage->Init();
+	spHitDamage->SetCamera(camera);
+	spUIManager->AddUIObj(spHitDamage);
+
 	/////////////////////////////////////////
 	//プレイヤーにセット
 	/////////////////////////////////////////
@@ -250,6 +256,7 @@ void GameScene::Init()
 	m_spPlayer->SetWepon(m_spWeapon);
 	m_spPlayer->AddUIList(spUIManager);
 	m_spPlayer->SetEffectManager(effect);
+	m_spPlayer->SetHitDamage(spHitDamage);
 	m_spPlayer->GetPlayerBuffManager()->SetPlayer(m_spPlayer);
 
 	/////////////////////////////////////////
@@ -260,6 +267,8 @@ void GameScene::Init()
 	m_spEnemyManager->SetCamera(camera);
 	m_spEnemyManager->AddUIList(spUIManager);
 	m_spEnemyManager->SetGameScene(self);
+	m_spEnemyManager->SetHitDamage(spHitDamage);
+	m_spEnemyManager->SetEnemyManager(m_spEnemyManager);
 
 	/////////////////////////////////////////
 	//カメラにセット
