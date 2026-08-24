@@ -25,6 +25,10 @@ class SkillGage;
 //武器
 class WeaponBase;
 
+//エフェクト
+class EffectManager;
+class DamageOverlay;
+
 
 struct ActionKeyConfig
 {
@@ -152,7 +156,18 @@ public:
 	//バフ
 	std::shared_ptr<PlayerBuffManager> GetPlayerBuffManager() { return m_spPlayerBuffManager; }
 
+	//////////////////////////
+	//エフェクトマネージャー
+	void SetEffectManager(std::shared_ptr<EffectManager>_spEffectManager);
+
 protected:
+
+	//エフェクトマネージャー
+	std::weak_ptr<EffectManager> m_wpEffectManager;
+
+	std::shared_ptr<DamageOverlay>m_spDamageOverlay;
+
+	//インベントリ
 	std::shared_ptr<PlayerInventory> m_spPlayerInventory;
 
 

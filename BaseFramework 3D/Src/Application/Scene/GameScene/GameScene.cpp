@@ -33,6 +33,9 @@
 //ワープゲート
 #include"../../GameObject/WarpGate/WarpGateManager.h"
 
+//エフェクト
+#include"../../GameObject/Effect/EffectManager.h"
+
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
@@ -202,6 +205,14 @@ void GameScene::Init()
 
 
 	/////////////////////////////////////////
+	//エフェクトマネージャー
+	/////////////////////////////////////////	
+	std::shared_ptr<EffectManager>effect = std::make_shared<EffectManager>();
+	effect->Init();
+	m_objList.push_back(effect);
+
+
+	/////////////////////////////////////////
 	//ポーション使用コントローラー
 	/////////////////////////////////////////	
 	m_spPotionUseController = std::make_shared<PotionUseController>();
@@ -238,6 +249,7 @@ void GameScene::Init()
 	m_spPlayer->SetGameScene(self);
 	m_spPlayer->SetWepon(m_spWeapon);
 	m_spPlayer->AddUIList(spUIManager);
+	m_spPlayer->SetEffectManager(effect);
 	m_spPlayer->GetPlayerBuffManager()->SetPlayer(m_spPlayer);
 
 	/////////////////////////////////////////
@@ -301,7 +313,7 @@ void GameScene::GenerateMap()
 	if (!m_spPlayer) { return; }
 	if (!m_spEnemyManager) { return; }
 
-	int baseSize = 30;              // 1階のマップサイズ
+	int baseSize = 25;              // 1階のマップサイズ
 	float growth = 1.01f;
 
 

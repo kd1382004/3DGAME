@@ -151,6 +151,9 @@ void KdSpriteShader::DrawTex(const KdTexture* tex, int x, int y, int w, int h, c
 	if (color) {
 		m_cb0.Work().Color = *color;
 	}
+	else {
+		m_cb0.Work().Color = kWhiteColor;
+	}
 	m_cb0.Write();
 
 	// UV計算（既存）

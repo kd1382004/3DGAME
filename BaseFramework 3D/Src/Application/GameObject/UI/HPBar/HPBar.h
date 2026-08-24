@@ -30,6 +30,9 @@ public:
 	void SetSiz(float _siz) { m_siz = _siz; }
 
 	void Delete();
+
+
+	void SetLV(int _LV) { m_LV = _LV; }
 private:
 
 	bool m_drawFlg = false;
@@ -97,5 +100,8 @@ private:
 
 	//画像の切り取り範囲
 	Math::Rectangle m_HPBarIconFrameTexRect;
+
+	//LV
+	int m_LV = 1;
 
 };

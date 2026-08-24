@@ -265,6 +265,12 @@
     <Filter Include="Src\Application\GameObject\UI\ItemGetUIController">
       <UniqueIdentifier>{512d2f65-1032-4e78-86c8-3c011e70d6b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Effect">
+      <UniqueIdentifier>{5212fb79-3ca0-4270-9d2c-f0fe2d999feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Effect\DamageOverlay">
+      <UniqueIdentifier>{1f85939a-e3cf-49a1-bfe4-c3d6e08e84e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -624,6 +630,15 @@
     <ClInclude Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.h">
       <Filter>Src\Application\GameObject\UI\ItemGetUIController</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Effect\EffectManager.h">
+      <Filter>Src\Application\GameObject\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Effect\EffectBase.h">
+      <Filter>Src\Application\GameObject\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.h">
+      <Filter>Src\Application\GameObject\Effect\DamageOverlay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -946,6 +961,15 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.cpp">
       <Filter>Src\Application\GameObject\UI\ItemGetUIController</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Effect\EffectManager.cpp">
+      <Filter>Src\Application\GameObject\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Effect\EffectBase.cpp">
+      <Filter>Src\Application\GameObject\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.cpp">
+      <Filter>Src\Application\GameObject\Effect\DamageOverlay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -214,7 +214,7 @@ void EnemyBase::PlayerChase()
 
 		//Chase範囲内なら座標更新
 
-		if (dist > 1)
+		if (dist > m_PlayerChaseDir)
 		{
 			m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 		}

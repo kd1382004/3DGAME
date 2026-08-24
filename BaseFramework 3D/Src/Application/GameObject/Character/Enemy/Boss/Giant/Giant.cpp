@@ -31,6 +31,7 @@ void Giant::Init()
 		EnemyBase::Init();
 		m_playerChaseFlg = true;
 		m_attackFlg = false;
+		m_PlayerChaseDir = 4;
 	}
 }
 

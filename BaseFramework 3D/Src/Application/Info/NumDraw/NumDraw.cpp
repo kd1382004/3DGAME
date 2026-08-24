@@ -71,7 +71,7 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 		Math::Vector2 pos;
 		for (int i = 0; i < w_Num.size(); i++)
 		{
-			Math::Rectangle rec1 = { 1 + recX * w_Num[i],0,recX ,recY };
+			Math::Rectangle rec1 = {recX * w_Num[i],0,recX ,recY };
 			switch (_aligned)
 			{
 			case LAligned:
@@ -83,7 +83,7 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 				{
 					if ((w_Num.size() - i) % 3 == 1 && w_Num.size() - i >= 4)
 					{
-						rec1 = Math::Rectangle{ 1 + recX * 10,0,recX ,recY };
+						rec1 = Math::Rectangle{  recX * 10,0,recX ,recY };
 						pos.x += recX * _siz / 2;
 						KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, pos.x, pos.y, recX * _siz, recY * _siz, &rec1, &_color);
 					}
@@ -100,14 +100,14 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 					{
 						float x = pos.x + recX * _siz / 2;
 						pos = { x, pos.y };
-						rec1 = Math::Rectangle{ 1 + recX * 10,0,recX ,recY };
+						rec1 = Math::Rectangle{recX * 10,0,recX ,recY };
 						KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, pos.x, pos.y, recX * _siz, recY * _siz, &rec1, &_color);
 						pos.x -= (recX * _siz) / 2;
 					}
 				}
 
 				pos = { _pos.x - i * (recX * _siz) + ((recX * _siz) / 2 * i) - (i * 5 * _siz), _pos.y };
-				rec1 = { 1 + recX * w_Num[i],0,recX ,recY };
+				rec1 = {recX * w_Num[i],0,recX ,recY };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, pos.x, pos.y, recX * _siz, recY * _siz, &rec1, &_color);
 				break;
 			default:

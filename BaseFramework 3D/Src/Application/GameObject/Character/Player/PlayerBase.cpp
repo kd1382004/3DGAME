@@ -23,6 +23,10 @@
 //バフ
 #include"PlayerBuffManager/PlayerBuffManager.h"
 
+//エフェクト
+#include"../../Effect/EffectManager.h"
+#include"../../Effect/DamageOverlay/DamageOverlay.h"
+
 
 void PlayerBase::Init()
 {
@@ -291,6 +295,11 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 	}
 
 	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate);
+	
+	if (m_spDamageOverlay)
+	{
+		m_spDamageOverlay->OnDamaged(_damage, m_status.HP.maxHP);
+	}
 
 }
 
@@ -334,6 +343,23 @@ void PlayerBase::SetDead()
 	m_nowPlayerAnimeMode = PlayerAnimeMode::DeathAnime;
 	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.DeathAnime), false);
 	m_isDead = true;
+}
+
+void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManager)
+{
+
+	if (!_spEffectManager) { return; }
+
+	m_wpEffectManager = _spEffectManager;
+	if (!m_spDamageOverlay)
+	{
+		m_spDamageOverlay = std::make_shared<DamageOverlay>();
+		m_spDamageOverlay->Init();
+
+		_spEffectManager->AddEffectList(m_spDamageOverlay);
+	}
+
+	
 }
 
 void PlayerBase::WeaponUpdate()

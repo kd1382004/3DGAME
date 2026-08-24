@@ -68,6 +68,9 @@ protected:
 	//プレイヤー座標
 	Math::Vector3 m_playerPos;
 
+	//
+	float m_PlayerChaseDir = 1;
+
 
 	///////////////////////////////////////////
 	//出現位置

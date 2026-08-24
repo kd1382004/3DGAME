@@ -293,6 +293,9 @@
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.h" />
+    <ClInclude Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.h" />
+    <ClInclude Include="Src\Application\GameObject\Effect\EffectBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Effect\EffectManager.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\AttackBaseUPPotion\AttackBaseUPPotion.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\AttackBoostPotion\AttackBoostPotion.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\InstantHealPotion\InstantHealPotion.h" />
@@ -407,6 +410,9 @@
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Effect\EffectBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Effect\EffectManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\AttackBaseUPPotion\AttackBaseUPPotion.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\AttackBoostPotion\AttackBoostPotion.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\InstantHealPotion\InstantHealPotion.cpp" />
