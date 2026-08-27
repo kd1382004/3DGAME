@@ -3,6 +3,23 @@
 class MapBase;
 class MapObjManager;
 
+enum class TileType
+{
+	None = 0,   // 何もない
+	Floor,  // 床（通路）
+	Room,    // 部屋
+	Slopee	//階段(床にあるやつ)
+};
+
+
+struct FloorInfo
+{
+	TileType m_tileType = TileType::None;
+
+	//階層
+	int m_heightLevel = 0;
+};
+
 
 struct roomEnd
 {
@@ -34,9 +51,10 @@ struct RoomInfo
 
 	//階段部屋か
 	bool m_stairsRoom = false;
+
+	//部屋の階層
+	int m_heightLevel;
 };
-
-
 
 
 struct RoomI
@@ -89,14 +107,6 @@ public:
 
 	// 部屋ごとの情報リストを取得
 	const std::vector<std::vector<RoomI>>& GetRoomInfoList() const { return m_roomInfoList; }
-
-
-	enum class TileType
-	{
-		None = 0,   // 何もない
-		Floor,  // 床（通路）
-		Room    // 部屋
-	};
 
 	Math::Vector3 GetBossSpawnPos() { return m_bossSpawnPos; }
 
@@ -165,7 +175,7 @@ private:
 	std::vector<std::pair<RoomInfo, RoomInfo>> GetRoomConnectionPairs(const std::vector<RoomInfo>& _roomInfo);
 
 	//通路の座標リストを返す
-	std::vector<Math::Vector2>  GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B);
+	std::vector<Math::Vector3>  GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B);
 
 
 
@@ -174,10 +184,10 @@ private:
 	void UnionSet(std::vector<int>& _parent, int _a, int _b);
 
 	// 指定された隣接マスが「範囲外」または「空き地（None）」で壁が必要かを判定する
-	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>& map);
+	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, const std::vector<std::vector<int>>& map);
+	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;
@@ -195,5 +205,17 @@ private:
 
 	void SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_obj);
 
-	bool IsCornerWall(int x, int y, const std::vector<std::vector<int>>& map);
+	bool IsCornerWall(int x, int y, const std::vector<std::vector<FloorInfo>>& map);
+
+
+
+	///////////////////
+
+
+	int m_heightLevelMax = 2;
+
+
+
+	void SlopeCheck(std::vector<std::vector<FloorInfo>>* map);
+
 };
