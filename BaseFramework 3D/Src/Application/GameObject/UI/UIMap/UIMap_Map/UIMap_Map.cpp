@@ -29,7 +29,7 @@ void UIMap_Map::DrawSprit()
 	if (!m_mapTex) { return; }
 
 
-	DiscoverTile();
+
 
 	for (const auto& info : m_posList)
 	{
@@ -53,7 +53,12 @@ void UIMap_Map::DrawSprit()
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mapStairsTex, drawX, drawY, m_mapTexSiz.x, m_mapTexSiz.y);
 }
 
-void UIMap_Map::AddPosList(Math::Vector3 _3DPos, float _worldTileSize)
+void UIMap_Map::PreDraw()
+{
+	DiscoverTile();
+}
+
+void UIMap_Map::AddPosList(Math::Vector3 _3DPos, float _worldTileSize, int LoomNum)
 {
 	float tileX = _3DPos.x / _worldTileSize;
 	float tileY = _3DPos.z / _worldTileSize;
@@ -65,11 +70,12 @@ void UIMap_Map::AddPosList(Math::Vector3 _3DPos, float _worldTileSize)
 	info.m_pos = { px, py };
 	info.m_tileIndex = { tileX, tileY };
 	info.m_drawFlg = false;
+	info.m_LoomNum = LoomNum;
 
 	m_posList.push_back(info);
 }
 
-void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize)
+void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize, int LoomNum)
 {
 	float tileX = _3DPos.x / _worldTileSize;
 	float tileY = _3DPos.z / _worldTileSize;
@@ -81,6 +87,7 @@ void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize)
 	info.m_pos = { px, py };
 	info.m_tileIndex = { tileX, tileY };
 	info.m_drawFlg = false;
+	info.m_LoomNum = LoomNum;
 
 	m_StairsMineMapInfo = info;
 }
@@ -109,15 +116,23 @@ void UIMap_Map::DiscoverTile()
 		{
 			info.m_drawFlg = true;
 		}
-	}
 
-	if (m_StairsMineMapInfo.m_drawFlg) { return; }
+		if (!info.m_drawFlg) { continue; }
 
-	Math::Vector2 pos = { m_basePos.x + m_StairsMineMapInfo.m_pos.x * m_siz, m_basePos.y + m_StairsMineMapInfo.m_pos.y * m_siz };
-	float dist = (pos - m_minMapPlayerPos).Length();
+		//ほかの部屋も描画する
+		if (info.m_LoomNum == m_NOTLoom) { continue; }
+		for (auto& info2 : m_posList)
+		{
+			if (info2.m_LoomNum == info.m_LoomNum)
+			{
+				info2.m_drawFlg = true;
+			}
+		}
 
-	if (dist < discoverRadius)
-	{
-		m_StairsMineMapInfo.m_drawFlg = true;
+		if (info.m_LoomNum == m_StairsMineMapInfo.m_LoomNum)
+		{
+			m_StairsMineMapInfo.m_drawFlg = true;
+			m_isStairsMine = true;
+		}
 	}
 }

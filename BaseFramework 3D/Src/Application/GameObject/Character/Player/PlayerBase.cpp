@@ -27,6 +27,8 @@
 #include"../../Effect/EffectManager.h"
 #include"../../Effect/DamageOverlay/DamageOverlay.h"
 
+//LV
+#include"PlayreLV/PlayreLV.h"
 
 void PlayerBase::Init()
 {
@@ -92,6 +94,10 @@ void PlayerBase::Init()
 		m_spPlayerBuffManager = std::make_shared<PlayerBuffManager>();
 	}
 
+	if (!m_spPlayreLV)
+	{
+		m_spPlayreLV = std::make_shared<PlayreLV>();
+	}
 
 	/*if (!m_pDebugWire)
 	{
@@ -113,6 +119,14 @@ void PlayerBase::PreUpdate()
 	}
 
 	m_IsDetectedByEnemyNum = 0;
+
+
+	//デバック
+	if (GetAsyncKeyState('2') & 0x8000)
+	{
+		AddExp(100);
+	}
+
 }
 
 void PlayerBase::Update()
@@ -343,6 +357,23 @@ void PlayerBase::SetDead()
 	m_nowPlayerAnimeMode = PlayerAnimeMode::DeathAnime;
 	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.DeathAnime), false);
 	m_isDead = true;
+}
+
+void PlayerBase::SetLV(int _LV)
+{
+	m_LV = _LV;
+
+	m_status.attck.baseAttckPowe += 5;
+	m_status.defense.baseDefensePowe += 5;
+	m_status.defense.nowDefense = m_status.defense.baseDefensePowe;
+	AddMaxHP(10, true);
+}
+
+void PlayerBase::AddExp(int _gainedExp)
+{
+	if (!m_spPlayreLV) { return; }
+
+	m_spPlayreLV->AddExp(_gainedExp, this);
 }
 
 void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManager)

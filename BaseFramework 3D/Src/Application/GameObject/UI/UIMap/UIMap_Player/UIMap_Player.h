@@ -7,6 +7,9 @@ public:
 	~UIMap_Player() {};
 
 	void Init();
+
+	void PreDraw();
+
 	void DrawSprit();
 
 

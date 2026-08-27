@@ -116,6 +116,16 @@ void TreasureChest::Update()
 	}
 }
 
+void TreasureChest::PostUpdate()
+{
+	if (!m_isInView) { return; }
+	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
+		{ 5,5,5 },								//色
+		10,										//半径	
+		GetPos() + Math::Vector3(0, 1, 0)		//座標
+	);
+}
+
 void TreasureChest::GenerateDepthMapFromLight()
 {
 	if (!m_isInView) { return; }

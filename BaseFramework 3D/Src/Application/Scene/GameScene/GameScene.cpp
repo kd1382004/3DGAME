@@ -10,6 +10,8 @@
 
 //マップ
 #include"../../GameObject/Terrains/Map/MapManager.h"
+#include"../../GameObject/Terrains/MapObj/MapObjManager.h"
+
 
 #include"../../../Application/Info/DebugInfo/DebugInfo.h"
 
@@ -69,11 +71,23 @@ void GameScene::ChangeResultScene()
 
 void GameScene::Event()
 {
-	if (GetAsyncKeyState(VK_RETURN))
-	{
-		GenerateMap();
-	}
+	////////////////////////////////////////////
+	//デバック
+	static bool REFLG = false;
 
+	if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+	{
+		if (!REFLG)
+		{
+			GenerateMap();
+			REFLG = true;
+		}
+	}
+	else
+	{
+		REFLG = false;
+	}
+	////////////////////////////////////////////
 
 	///////////////////////////////////////////////////
 	//あたり判定セット
@@ -177,9 +191,9 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	//カメラ
 	/////////////////////////////////////////
-	std::shared_ptr<TPSCamera>camera = std::make_shared<TPSCamera>();
-	camera->Init();
-	m_objList.push_back(camera);
+	m_spCamera = std::make_shared<TPSCamera>();
+	m_spCamera->Init();
+	m_objList.push_back(m_spCamera);
 
 
 	/////////////////////////////////////////
@@ -188,6 +202,14 @@ void GameScene::Init()
 	m_spMapManager = std::make_shared<MapManager>();
 	m_spMapManager->Init();
 	m_objList.push_back(m_spMapManager);
+
+	/////////////////////////////////////////
+	//マップオブジェクト
+	/////////////////////////////////////////
+	m_spMapObjManager = std::make_shared<MapObjManager>();
+	m_spMapObjManager->Init();
+	m_objList.push_back(m_spMapObjManager);
+
 
 	/////////////////////////////////////////
 	//宝箱
@@ -245,13 +267,13 @@ void GameScene::Init()
 
 	std::shared_ptr<HitDamage>spHitDamage = std::make_shared<HitDamage>();
 	spHitDamage->Init();
-	spHitDamage->SetCamera(camera);
+	spHitDamage->SetCamera(m_spCamera);
 	spUIManager->AddUIObj(spHitDamage);
 
 	/////////////////////////////////////////
 	//プレイヤーにセット
 	/////////////////////////////////////////
-	m_spPlayer->SetCamera(camera);
+	m_spPlayer->SetCamera(m_spCamera);
 	m_spPlayer->SetGameScene(self);
 	m_spPlayer->SetWepon(m_spWeapon);
 	m_spPlayer->AddUIList(spUIManager);
@@ -264,7 +286,7 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spEnemyManager->SetPlayer(m_spPlayer);
 	m_spEnemyManager->SetMapManager(m_spMapManager);
-	m_spEnemyManager->SetCamera(camera);
+	m_spEnemyManager->SetCamera(m_spCamera);
 	m_spEnemyManager->AddUIList(spUIManager);
 	m_spEnemyManager->SetGameScene(self);
 	m_spEnemyManager->SetHitDamage(spHitDamage);
@@ -273,23 +295,24 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	//カメラにセット
 	/////////////////////////////////////////
-	camera->SetTarget(m_spPlayer);
+	m_spCamera->SetTarget(m_spPlayer);
 
 	/////////////////////////////////////////
 	//マップにセット
 	/////////////////////////////////////////
-	m_spMapManager->SetCamera(camera);
+	m_spMapManager->SetCamera(m_spCamera);
 	m_spMapManager->SetPlayer(m_spPlayer);
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
 	m_spMapManager->SetUIManager(spUIManager);
 	m_spMapManager->SetTreasureChestManager(m_spTreasureChestManager);
+	m_spMapManager->SetMapObjManager(m_spMapObjManager);
 
 
 	/////////////////////////////////////////
 	//宝箱にセット
 	/////////////////////////////////////////
 	m_spTreasureChestManager->SetPlayer(m_spPlayer);
-	m_spTreasureChestManager->SetCamera(camera);
+	m_spTreasureChestManager->SetCamera(m_spCamera);
 	m_spTreasureChestManager->SetUIManager(spUIManager);
 
 
@@ -321,6 +344,8 @@ void GameScene::GenerateMap()
 	if (!m_spMapManager) { return; }
 	if (!m_spPlayer) { return; }
 	if (!m_spEnemyManager) { return; }
+	if (!m_spMapObjManager) { return; }
+	if (!m_spCamera) { return; }
 
 	int baseSize = 25;              // 1階のマップサイズ
 	float growth = 1.01f;
@@ -334,8 +359,10 @@ void GameScene::GenerateMap()
 
 	m_displayFloor++;
 
+
 	m_spEnemyManager->EnemyListReset();
 	m_spTreasureChestManager->TreasureChestReset();
+	m_spMapObjManager->ResetMapObj();
 
 	if (m_displayFloor % m_bossInterval != 0)
 	{
@@ -355,5 +382,5 @@ void GameScene::GenerateMap()
 	m_spPlayer->SetPos(playerSpawn);
 
 
-
+	m_spMapObjManager->ObjSetCamera(m_spCamera);
 }

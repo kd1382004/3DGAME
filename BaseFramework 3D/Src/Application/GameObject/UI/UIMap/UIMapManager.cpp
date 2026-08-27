@@ -57,14 +57,22 @@ void UIMapManager::PreUpdate()
 
 void UIMapManager::PreDraw()
 {
-	
+	if (m_UIMap_Player)
+	{
+		m_UIMap_Player->PreDraw();
+	}
+
+	if (m_UIMap_Map)
+	{
+		m_UIMap_Map->SetMinMapPlayerPos(m_UIMap_Player->GetPos());
+		m_UIMap_Map->PreDraw();
+	}
 }
 
 void UIMapManager::DrawSprite()
 {
 	if (m_UIMap_Map)
 	{
-		m_UIMap_Map->SetMinMapPlayerPos(m_UIMap_Player->GetPos());
 		m_UIMap_Map->DrawSprit();
 	}
 

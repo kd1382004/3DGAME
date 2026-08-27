@@ -6,6 +6,8 @@ struct MineMapInfo
 	Math::Vector2 m_pos;
 	Math::Vector2 m_tileIndex;
 	bool m_drawFlg = false;
+
+	int m_LoomNum = -1;
 };
 
 class UIMap_Map
@@ -16,10 +18,11 @@ public:
 
 	void Init();
 	void DrawSprit();
+	void PreDraw();
 
-	void AddPosList(Math::Vector3 _3DPos,float _worldTileSize);
+	void AddPosList(Math::Vector3 _3DPos, float _worldTileSize,int LoomNum= m_NOTLoom);
 
-	void AddStairsPos(Math::Vector3 _3DPos,float _worldTileSize);
+	void AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize, int LoomNum);
 
 	void SetBasePos(Math::Vector2 _basePos) { m_basePos = _basePos; }
 
@@ -54,13 +57,17 @@ private:
 	Math::Vector2 m_minMapPlayerPos;
 
 
-	int m_discoverTileNum = 3;
+	int m_discoverTileNum = 1;
 	void DiscoverTile();
 
 
 	std::list<MineMapInfo>m_posList;
 
+	//部屋の床リスト
+	std::vector< std::list<MineMapInfo>>m_posLoomFloorList;
+
+	static const int m_NOTLoom = -999;
 
 	MineMapInfo m_StairsMineMapInfo;
-	bool m_isStairsMine=false;
+	bool m_isStairsMine = false;
 };

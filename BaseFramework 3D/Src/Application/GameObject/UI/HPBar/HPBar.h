@@ -32,7 +32,7 @@ public:
 	void Delete();
 
 
-	void SetLV(int _LV) { m_LV = _LV; }
+	void SetLV(int _LV);
 private:
 
 	bool m_drawFlg = false;

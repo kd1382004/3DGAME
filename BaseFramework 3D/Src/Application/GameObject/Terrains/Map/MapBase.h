@@ -63,6 +63,11 @@ public:
 	void SetRoomType(RoomType _roomType) { m_roomType = _roomType; }
 
 	RoomType GetRoomType() { return m_roomType; }
+
+	int GetRoomID() { return m_roomID; }
+
+	void SerRoomID(int _ID) { m_roomID = _ID; }
+
 protected:
 
 
@@ -84,5 +89,10 @@ protected:
 	//部屋の種類を監理
 	RoomType m_roomType = RoomType_NORoom;
 
+
+
+
+	//部屋なら部屋番号を保存
+	int m_roomID = -999;
 };
 

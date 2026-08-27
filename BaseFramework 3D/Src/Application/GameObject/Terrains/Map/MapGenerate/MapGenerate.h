@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class MapBase;
+class MapObjManager;
 
 
 struct roomEnd
@@ -81,9 +82,9 @@ public:
 	//_basePos	...	プレイヤーのスポーン位置
 	//戻り値...ノード用のマップデータ(歩けるか歩けないか)
 	std::vector<std::vector<bool>> Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
-	
-	
-	std::vector<std::vector<bool>> GenerateBoss(Math::Vector2 _mapSiz,float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
+
+
+	std::vector<std::vector<bool>> GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
 
 
 	// 部屋ごとの情報リストを取得
@@ -98,6 +99,9 @@ public:
 	};
 
 	Math::Vector3 GetBossSpawnPos() { return m_bossSpawnPos; }
+
+
+	void SetMapObjManager(std::shared_ptr<MapObjManager>_obj) { m_wpMapObjManager = _obj; }
 
 private:
 
@@ -173,7 +177,7 @@ private:
 	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>& map);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret);
+	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, const std::vector<std::vector<int>>& map);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;
@@ -183,4 +187,13 @@ private:
 
 	//ボスの出現位置
 	Math::Vector3 m_bossSpawnPos;
+
+
+	//////////////////////////////////
+	//マップオブジェクト
+	std::weak_ptr<MapObjManager>m_wpMapObjManager;
+
+	void SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_obj);
+
+	bool IsCornerWall(int x, int y, const std::vector<std::vector<int>>& map);
 };

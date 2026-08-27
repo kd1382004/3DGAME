@@ -10,6 +10,8 @@ class WeaponBase;
 class TreasureChestManager;
 class PotionUseController;
 class WarpGateManager;
+class MapObjManager;
+class TPSCamera;
 
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
 {
@@ -49,7 +51,8 @@ private:
 	std::shared_ptr<TreasureChestManager>m_spTreasureChestManager;
 	std::shared_ptr<PotionUseController>m_spPotionUseController;
 	std::shared_ptr<WarpGateManager>m_spWarpGateManager;
-
+	std::shared_ptr<MapObjManager>m_spMapObjManager;
+	std::shared_ptr<TPSCamera> m_spCamera;
 
 
 	//階層

@@ -81,6 +81,15 @@ void EnemyBase::PostUpdate()
 {
 	CharacterBase::PostUpdate();
 	EnemyAnimeModeUpdate();
+
+
+
+	if (!m_isInView) { return; }
+	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
+		{ 5,5,5 },								//色
+		10,										//半径	
+		m_pos + Math::Vector3(0, 1, 0)		//座標
+	);
 }
 
 void EnemyBase::PreDraw()
@@ -434,6 +443,13 @@ void EnemyBase::SetDead()
 	if (spGameScene)
 	{
 		spGameScene->AddEnemyKill();
+	}
+
+
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
+	if (spPlayer)
+	{
+		spPlayer->AddExp(10);
 	}
 
 }

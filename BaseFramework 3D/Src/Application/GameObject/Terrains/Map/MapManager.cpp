@@ -100,9 +100,10 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 	std::shared_ptr<MapGenerate> map = std::make_shared<MapGenerate>();
 
+	map->SetMapObjManager(m_wpMapObjManager.lock());
+
 	//敵が歩ける一覧
 	std::vector<std::vector<bool>> mapData;
-
 	Math::Vector3 basePos;
 	mapData = map->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
 	auto mapRoomList = map->GetRoomInfoList();
@@ -141,12 +142,22 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			{
 				if (mapObj->GetMapObjType() == MapObjType::Ground)
 				{
-					spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
+
+					if (mapObj->GetRoomType() == RoomType::RoomType_NORoom)
+					{
+						spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz);
+					}
+					else
+					{
+						spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz, mapObj->GetRoomID());
+					}
+
+				
 				}
 
 				if (mapObj->GetMapObjType() == MapObjType::Stairs)
 				{
-					spUIMapManager->GetUIMap_Map()->AddStairsPos(mapObj->GetPos(), m_mapTileSiz);
+					spUIMapManager->GetUIMap_Map()->AddStairsPos(mapObj->GetPos(), m_mapTileSiz, mapObj->GetRoomID());
 					spUIMapManager->GetUIMap_Map()->SetIsStairsMine(true);
 				}
 			}

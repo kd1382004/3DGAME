@@ -4,6 +4,9 @@
 #include"../WallBase/WallBase.h"
 #include"../Stairs/StairsBase.h"
 
+//
+#include"../../MapObj/MapObjManager.h"
+#include"../../MapObj/Torch/Torch.h"
 MapGenerate::MapGenerate()
 {
 	m_roomSizPath = "Asset/Data/ObjeData/Terrains/Map/MapSiz.json";
@@ -161,7 +164,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 	/////////////////////////////////////////////////////
 	//それぞれの数とかのちに調整
-	for (int i = 0;i < roomID;i++)
+	for (int i = 0; i < roomID; i++)
 	{
 		//何用の部屋か決める
 		roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_TrapRoom);
@@ -396,7 +399,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 						}
 
 						Math::Vector3 wallPos = { xPos + dir.offset.x, 0.0f, zPos + dir.offset.z };
-						CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret);
+						CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, 0, x, y, map);
 					}
 				}
 			}
@@ -501,7 +504,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	//マップのサイズを作る
 	//TileType::Roomで初期化(ボス戦部屋は巨大な一部屋)
 	std::vector<std::vector<int>> map(static_cast<size_t>(_mapSiz.y), std::vector<int>(static_cast<size_t>(_mapSiz.x), static_cast<int>(TileType::Room)));
-	std::vector<std::vector<bool>> mapDate(static_cast<size_t>(_mapSiz.y), std::vector<bool>(static_cast<size_t>(_mapSiz.x),true));
+	std::vector<std::vector<bool>> mapDate(static_cast<size_t>(_mapSiz.y), std::vector<bool>(static_cast<size_t>(_mapSiz.x), true));
 
 	int centerX = _mapSiz.x / 2;
 	int centerY = _mapSiz.y / 2;
@@ -581,7 +584,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				if (IsNeedWall(nx, ny, map))
 				{
 					Math::Vector3 wallPos = { xPos + dir.offset.x, 0.0f, zPos + dir.offset.z };
-					CreateWallOrStairs(wallPos, dir.rotY, false, ret);
+					CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map);
 				}
 			}
 		}
@@ -852,34 +855,151 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<int>>
 	return false;
 }
 
-void MapGenerate::CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret)
+void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID,int _x,int _y, const std::vector<std::vector<int>>& map)
 {
-	if (isStairs)
+	if (_isStairs)
 	{
 		auto stairs = std::make_shared<StairsBase>();
 		stairs->Init();
-		stairs->SetPos(pos);
-		if (rotYDegree != 0.0f)
+		stairs->SetPos(_pos);
+		if (_rotYDegree != 0.0f)
 		{
-			stairs->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(rotYDegree)));
+			stairs->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
 		}
 
 		stairs->SetMapObjType(MapObjType::Stairs);
-		ret->push_back(stairs);
+		stairs->SerRoomID(_roomID);
+		_ret->push_back(stairs);
 	}
 	else
 	{
 		auto wall = std::make_shared<WallBase>();
 		wall->Init();
-		wall->SetPos(pos);
-		if (rotYDegree != 0.0f)
+		wall->SetPos(_pos);
+		if (_rotYDegree != 0.0f)
 		{
-			wall->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(rotYDegree)));
+			wall->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
 		}
 
 		wall->SetMapObjType(MapObjType::Wall);
-		ret->push_back(wall);
+		_ret->push_back(wall);
+
+
+		//松明を置くかどうか
+		bool placeTorch = false;
+	
+		if (map[_y][_x] == static_cast<int>(TileType::Room))
+		{	
+			// 部屋の壁ならランダムに置く
+			if (KdRandom::GetInt(0, 100) < 15) { // 15% くらい
+				placeTorch = true;
+			}
+		}
+		else
+		{
+			// コーナーなら置く
+			if (IsCornerWall(_x, _y, map))
+			{
+				placeTorch = true;
+			}
+			else
+			{
+				// ランダム
+				if (KdRandom::GetInt(0, 100) < 15) { // 15% くらい
+					placeTorch = true;
+				}
+			}
+
+
+		}
+
+		if (placeTorch)
+		{
+			SetTorch(_rotYDegree, _pos, wall);
+		}
+
+		
 	}
+}
+
+void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _obj)
+{
+	std::shared_ptr<MapObjManager>spMapObjManager = m_wpMapObjManager.lock();
+	if (!spMapObjManager) { return; }
+
+	//壁に松明を
+	Math::Vector3 pos = _pos;
+	pos.y += 5;
+	float rad = DirectX::XMConvertToRadians(_rotYDegree);
+
+	float moveX = sin(rad);
+	float moveZ = cos(rad);
+
+	pos.x -= moveX * 2;
+	pos.z -= moveZ * 2;
+
+	KdCollider::RayInfo rayInfo;
+	rayInfo.m_pos = pos;
+	Math::Vector3 dir;
+	dir.x = moveX;
+	dir.y = 0.0f;
+	dir.z = moveZ;
+	dir.Normalize();
+	rayInfo.m_dir = dir;
+
+	rayInfo.m_range = 5;
+	rayInfo.m_type = KdCollider::TypeBump;
+
+	float maxOverLap = 0;
+	Math::Vector3 hitPos = {};
+	bool hit = false;
+
+	std::list<KdCollider::CollisionResult> retRayList;
+	if (_obj->Intersects(rayInfo, &retRayList))
+	{
+		for (auto& ret : retRayList)
+		{
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				pos = ret.m_hitPos;
+				hit = true;
+			}
+		}
+	}
+
+	
+
+	//当たってたら松明設置
+	if (hit)
+	{
+		std::shared_ptr<Torch>spTorch = std::make_shared<Torch>();
+		spTorch->Init();
+		spTorch->SetPos(pos);
+		spTorch->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
+
+		spMapObjManager->AddMapObj(spTorch);
+	}
+
+
+}
+
+
+bool MapGenerate::IsCornerWall(int x, int y, const std::vector<std::vector<int>>& map)
+{
+	int height = static_cast<int>(map.size());
+	int width = static_cast<int>(map[0].size());
+
+	auto isValid = [&](int nx, int ny) {
+		return ny >= 0 && ny < height && nx >= 0 && nx < width;
+		};
+
+	bool up = isValid(x, y - 1) && map[y - 1][x] != static_cast<int>(TileType::None);
+	bool down = isValid(x, y + 1) && map[y + 1][x] != static_cast<int>(TileType::None);
+	bool left = isValid(x - 1, y) && map[y][x - 1] != static_cast<int>(TileType::None);
+	bool right = isValid(x + 1, y) && map[y][x + 1] != static_cast<int>(TileType::None);
+
+	return (up || down) && (left || right);
 }
 
 

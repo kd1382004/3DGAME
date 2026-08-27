@@ -294,6 +294,7 @@
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Player\PlayreLV\PlayreLV.h" />
     <ClInclude Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.h" />
     <ClInclude Include="Src\Application\GameObject\Effect\EffectBase.h" />
     <ClInclude Include="Src\Application\GameObject\Effect\EffectManager.h" />
@@ -303,6 +304,9 @@
     <ClInclude Include="Src\Application\GameObject\Potions\PotionsType.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\PotionUseController.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h" />
@@ -413,6 +417,7 @@
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Player\PlayreLV\PlayreLV.cpp" />
     <ClCompile Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.cpp" />
     <ClCompile Include="Src\Application\GameObject\Effect\EffectBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Effect\EffectManager.cpp" />
@@ -421,6 +426,9 @@
     <ClCompile Include="Src\Application\GameObject\Potions\InstantHealPotion\InstantHealPotion.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\PotionUseController.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp" />

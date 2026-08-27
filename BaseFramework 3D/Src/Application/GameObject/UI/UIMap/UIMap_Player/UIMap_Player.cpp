@@ -11,12 +11,14 @@ void UIMap_Player::Init()
 	}
 }
 
+void UIMap_Player::PreDraw()
+{
+	Change2DPos();
+}
+
 void UIMap_Player::DrawSprit()
 {
 	if (!m_playerTex) { return; }
-
-	Change2DPos();
-
 
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerTex, m_basePos.x + m_player2DPos.x * m_siz, m_basePos.y + m_player2DPos.y * m_siz,nullptr,nullptr,{0.5,0.5}, m_angle);
 }

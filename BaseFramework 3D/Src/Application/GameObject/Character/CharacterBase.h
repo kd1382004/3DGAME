@@ -89,6 +89,10 @@ public:
 	//速度
 
 	float GetNowSpeed() { return m_status.moveSpeed.nowSpeed; }
+
+
+	//HPバー
+	std::shared_ptr<HPBar> GetHPBar() { return m_wpHPBar.lock(); }
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();

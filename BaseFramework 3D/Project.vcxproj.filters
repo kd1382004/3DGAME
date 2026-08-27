@@ -277,6 +277,15 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController">
       <UniqueIdentifier>{226cadb0-515e-48fa-b6da-11cffabcdcc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Player\PlayreLV">
+      <UniqueIdentifier>{cff7ce12-672f-4711-b50c-3fc7867e533e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\MapObj">
+      <UniqueIdentifier>{dd61e4c0-23cf-49ed-a875-4cf8aec2d5d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\MapObj\Torch">
+      <UniqueIdentifier>{c26ad00e-a42b-47de-a8e7-67ede7073999}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -651,6 +660,18 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController\EnemyCrowdController.h">
       <Filter>Src\Application\GameObject\Character\Enemy\EnemyCrowdController</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Player\PlayreLV\PlayreLV.h">
+      <Filter>Src\Application\GameObject\Character\Player\PlayreLV</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.h">
+      <Filter>Src\Application\GameObject\Terrains\MapObj</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.h">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\Torch</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.h">
+      <Filter>Src\Application\GameObject\Terrains\MapObj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -988,6 +1009,18 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyCrowdController\EnemyCrowdController.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\EnemyCrowdController</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Player\PlayreLV\PlayreLV.cpp">
+      <Filter>Src\Application\GameObject\Character\Player\PlayreLV</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.cpp">
+      <Filter>Src\Application\GameObject\Terrains\MapObj</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.cpp">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\Torch</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.cpp">
+      <Filter>Src\Application\GameObject\Terrains\MapObj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

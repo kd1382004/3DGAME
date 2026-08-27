@@ -14,6 +14,9 @@ class EnemyManager;
 //UI
 class UIManager;
 
+//マップオブジェクト
+class MapObjManager;
+
 //宝箱
 class TreasureChestManager;
 
@@ -100,6 +103,9 @@ public:
 	/// </ノード>
 	////////////////////////////////////////////
 
+
+	void SetMapObjManager(std::shared_ptr<MapObjManager>_obj) { m_wpMapObjManager = _obj; }
+
 private:
 
 	////////////////////////////////////////////
@@ -145,5 +151,9 @@ private:
 	////////////////////////////////////////
 	// UI用マップ
 	std::weak_ptr<UIManager> m_wpUIManager;
+
+	///////////////////////////////////////
+	//マップオブジェクト
+	std::weak_ptr<MapObjManager>m_wpMapObjManager;
 };
 

@@ -36,6 +36,14 @@ void TreasureChestManager::Update()
 	}
 }
 
+void TreasureChestManager::PostUpdate()
+{
+	for (auto TreasureChest : m_treasureChestList)
+	{
+		TreasureChest->PostUpdate();
+	}
+}
+
 void TreasureChestManager::GenerateDepthMapFromLight()
 {
 	for (auto TreasureChest : m_treasureChestList)

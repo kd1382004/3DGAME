@@ -130,6 +130,11 @@ void HPBar::Delete()
 	m_isExpired = true;
 }
 
+void HPBar::SetLV(int _LV)
+{
+	m_LV = _LV;
+}
+
 void HPBar::HPBarDelayPreDraw()
 {
 	if (m_HPBarTexProgres <= 0) { return; }

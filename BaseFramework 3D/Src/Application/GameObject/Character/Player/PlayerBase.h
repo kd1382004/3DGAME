@@ -29,6 +29,8 @@ class WeaponBase;
 class EffectManager;
 class DamageOverlay;
 
+//LV
+class PlayreLV;
 
 struct ActionKeyConfig
 {
@@ -127,7 +129,20 @@ public:
 	void HPHeal(int _Heal);
 
 	void SetDead()override;
+
+	int GetLV() { return m_LV; }
+	void SetLV(int _LV);
+
+	//_gainedExp...経験値量
+	void AddExp(int _gainedExp);
+
 protected:
+
+	//LV
+	int m_LV = 1;
+
+	std::shared_ptr<PlayreLV>m_spPlayreLV;
+
 
 	//エフェクトマネージャー
 	std::weak_ptr<EffectManager> m_wpEffectManager;
