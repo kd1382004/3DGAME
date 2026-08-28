@@ -187,7 +187,7 @@ private:
 	void UnionSet(std::vector<int>& _parent, int _a, int _b);
 
 	// 指定された隣接マスが「範囲外」または「空き地（None）」で壁が必要かを判定する
-	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel);
+	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel,int x,int y);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
 	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map, bool* _flg = nullptr);

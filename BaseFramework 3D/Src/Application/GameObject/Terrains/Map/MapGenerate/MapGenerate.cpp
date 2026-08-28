@@ -469,7 +469,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					int nx = x + dir.dx;
 					int ny = y + dir.dy;
 					// 隣接マスに壁が必要か判定
-					if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel))
+					if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel,x,y))
 					{
 						int startH = map[y][x].m_heightLevel;
 						float startYPos = tileSiz * startH + tileSiz * 0.5f;
@@ -696,7 +696,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				int nx = x + dir.dx;
 				int ny = y + dir.dy;
 				// 隣接マスに壁が必要か判定
-				if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel))
+				if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel, x, y))
 				{
 					Math::Vector3 wallPos = { xPos + dir.offset.x, 0, zPos + dir.offset.z };
 					CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map);
@@ -821,7 +821,7 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(c
 
 	/////////////////////////
 	// 上位30%だけ残すが、最低3個は残す
-	size_t minKeep = 3;  // 部屋数が少なくてもショートカット候補が生まれる
+	size_t minKeep = 3; 
 	size_t siz = static_cast<size_t>(loopEdges.size() * 0.3f);
 
 	if (siz < minKeep) {
@@ -903,6 +903,8 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 			}
 		}
 	}
+
+
 	// L字通路（横 → 縦）
 	int xStart = (int)bestA.x;
 	int xEnd = (int)bestB.x;
@@ -995,7 +997,7 @@ void MapGenerate::UnionSet(std::vector<int>& _parent, int _a, int _b)
 	_parent[rootB] = rootA;
 }
 
-bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel)
+bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel, int x, int y)
 {
 	// マップ範囲外なら壁を作る
 	if (ny < 0 || ny >= static_cast<int>(map.size())) { return true; }
@@ -1003,6 +1005,17 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 
 	// 隣のマスが None（空き地）なら壁を作る
 	if (map[ny][nx].m_tileType == TileType::None) { return true; }
+
+
+
+	//隣がSlopeじゃないかつ自分がSlopeじゃない
+	if (map[ny][nx].m_tileType != TileType::Slopee&& map[y][x].m_tileType != TileType::Slopee)
+	{
+		if (_heightLevel != map[ny][nx].m_heightLevel)
+		{
+			return true;
+		}
+	}
 
 	return false;
 }
@@ -1190,10 +1203,10 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 
 
 
-			bool up = isValid(x, y + 1) &&( (*map)[y + 1][x].m_tileType == TileType::Floor );
-			bool down = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType == TileType::Floor  );
-			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType == TileType::Floor);
-			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType == TileType::Floor);
+			bool up = isValid(x, y + 1) &&( (*map)[y + 1][x].m_tileType == TileType::Floor|| (*map)[y + 1][x].m_tileType == TileType::Room);
+			bool down = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType == TileType::Floor|| (*map)[y - 1][x].m_tileType == TileType::Room);
+			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType == TileType::Floor|| (*map)[y][x - 1].m_tileType == TileType::Room);
+			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType == TileType::Floor|| (*map)[y][x + 1].m_tileType == TileType::Room);
 
 			// 上にまっすぐ
 			if (up && down && (!left && !right))
