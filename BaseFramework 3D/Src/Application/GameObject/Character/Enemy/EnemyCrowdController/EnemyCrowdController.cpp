@@ -15,7 +15,6 @@ void EnemyCrowdController::Update(EnemyBase* enemy, float dt)
 	if (desired.LengthSquared() > 0.0001f)
 		desired.Normalize();
 
-	// ★ moveVec をセットするだけ
 	enemy->SetMoveVec(desired);
 }
 

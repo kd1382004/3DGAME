@@ -3,7 +3,7 @@
 #include"../FloorBase/FloorBase.h"
 #include"../WallBase/WallBase.h"
 #include"../Stairs/StairsBase.h"
-
+#include"../Slope/Slope.h"
 //
 #include"../../MapObj/MapObjManager.h"
 #include"../../MapObj/Torch/Torch.h"
@@ -94,8 +94,8 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			bool canPlace = true;
 
 			//部屋同士何タイル開けるか
-			int aX = KdRandom::GetInt(3, 8);
-			int aY = KdRandom::GetInt(3, 5);
+			int aX = KdRandom::GetInt(5, 8);
+			int aY = KdRandom::GetInt(5, 8);
 
 			for (int y = roomY - aY; y < roomY + roomH + aY; y++)
 			{
@@ -406,9 +406,26 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 				}
 				
-				if (map[y][x].m_tileType != TileType::Slopee)
+				if (map[y][x].m_tileType == TileType::Slopee)
 				{
+					std::shared_ptr<Slope>spSlope = std::make_shared<Slope>();
+					spSlope->Init();
+					spSlope->SetPos(pos);
+					spSlope->SetMapObjType(MapObjType::TypeSlope);
 
+					float rotYDegree = map[y][x].m_angle;
+
+					if (rotYDegree != 0.0f)
+					{
+						spSlope->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(rotYDegree)));
+					}
+
+
+					ret->push_back(spSlope);
+					
+				}
+				else
+				{
 					ret->push_back(mapA);
 				}
 
@@ -458,6 +475,16 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 						float startYPos = tileSiz * startH + tileSiz * 0.5f;
 						Math::Vector3 wallPos = { xPos + dir.offset.x, startYPos, zPos + dir.offset.z };
 
+						if (map[y][x].m_tileType == TileType::Slopee)
+						{
+							wallPos.y -= tileSiz;
+							CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map);
+							wallPos.y += tileSiz;
+						}
+
+						//置かれたか
+						bool torchFlg = false;
+
 						for (int i = startH; i <= m_heightLevelMax; i++)
 						{
 							bool createStairs = dir.allowStairs && isStairsRoom && !stairsPlaced;
@@ -466,9 +493,17 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 								stairsPlaced = true;
 							}
 
-							CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, 0, x, y, map);
+							if (i != startH)
+							{
+								torchFlg = true;
+							}
+
+							CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, 0, x, y, map, &torchFlg);
 							wallPos.y += tileSiz;
 						}
+
+
+
 					}
 				}
 			}
@@ -827,16 +862,13 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(c
 
 std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B)
 {
-
 	int hA = _A.m_heightLevel;
 	int hB = _B.m_heightLevel;
-
-	//階同士の高さ
 	int hDiff = hB - hA;
-
-	//return用
+	int absHDiff = std::abs(hDiff);
+	int stepDir = (hDiff > 0) ? 1 : -1;
+	// return用
 	std::vector<Math::Vector3> ans;
-
 	// A の端候補 
 	float roomHA = (_A.m_roomEnd.topEnd + _A.m_roomEnd.downEnd) / 2.0f;
 	float roomWA = (_A.m_roomEnd.FarLeft + _A.m_roomEnd.FarRight) / 2.0f;
@@ -846,7 +878,6 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 		Math::Vector2{ roomWA, (float)_A.m_roomEnd.topEnd },
 		Math::Vector2{ roomWA, (float)_A.m_roomEnd.downEnd }
 	};
-
 	// B の端候補
 	float roomHB = (_B.m_roomEnd.topEnd + _B.m_roomEnd.downEnd) / 2.0f;
 	float roomWB = (_B.m_roomEnd.FarLeft + _B.m_roomEnd.FarRight) / 2.0f;
@@ -856,11 +887,9 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 		Math::Vector2{ roomWB, (float)_B.m_roomEnd.topEnd },
 		Math::Vector2{ roomWB, (float)_B.m_roomEnd.downEnd }
 	};
-
 	// 最短端ペアを探す
 	float bestDist = FLT_MAX;
 	Math::Vector2 bestA{}, bestB{};
-
 	for (const auto& a : Aends)
 	{
 		for (const auto& b : Bends)
@@ -874,46 +903,65 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 			}
 		}
 	}
-
-
-
 	// L字通路（横 → 縦）
 	int xStart = (int)bestA.x;
 	int xEnd = (int)bestB.x;
 	int yMid = (int)bestA.y;
-
 	int yStart = (int)bestA.y;
 	int yEnd = (int)bestB.y;
 	int xMid = (int)bestB.x;
-
 	int dx = std::abs(xEnd - xStart);
 	int dy = std::abs(yEnd - yStart);
 	int total = dx + dy;
-
 	int progress = 0;
-
+	int currentZ = hA; // 最初は始点部屋の高さ hA
 	// --- 横方向 ---
 	int xStep = (xStart <= xEnd) ? 1 : -1;
 	for (int x = xStart; x != xEnd + xStep; x += xStep)
 	{
-		float t = (total == 0) ? 0.0f : (float)progress / (float)total;
-		float z = hA + hDiff * t;
-
-		ans.push_back({ (float)x, (float)yMid, z });
+		// 全体の進捗に応じた目標高さ
+		int targetZ = (total == 0) ? hA : hA + stepDir * ((progress * absHDiff) / total);
+		// 【重要】高低差が常に0か1になるように制限 (1マスにつき最大±1しか変化させない)
+		if (targetZ > currentZ + 1)
+		{
+			currentZ += 1;
+		}
+		else if (targetZ < currentZ - 1)
+		{
+			currentZ -= 1;
+		}
+		else
+		{
+			currentZ = targetZ;
+		}
+		ans.push_back({ (float)x, (float)yMid, (float)currentZ });
 		progress++;
 	}
-
 	// --- 縦方向 ---
+	// (角のマス xMid, yStart は横方向のループの最後で追加済みなので、yStart + yStep から開始して重複を防ぐ)
 	int yStep = (yStart <= yEnd) ? 1 : -1;
-	for (int y = yStart; y != yEnd + yStep; y += yStep)
+	if (yStart != yEnd)
 	{
-		float t = (total == 0) ? 1.0f : (float)progress / (float)total;
-		float z = hA + hDiff * t;
-
-		ans.push_back({ (float)xMid, (float)y, z });
-		progress++;
+		for (int y = yStart + yStep; y != yEnd + yStep; y += yStep)
+		{
+			int targetZ = (total == 0) ? hA : hA + stepDir * ((progress * absHDiff) / total);
+			// 【重要】高低差が常に0か1になるように制限 (1マスにつき最大±1しか変化させない)
+			if (targetZ > currentZ + 1)
+			{
+				currentZ += 1;
+			}
+			else if (targetZ < currentZ - 1)
+			{
+				currentZ -= 1;
+			}
+			else
+			{
+				currentZ = targetZ;
+			}
+			ans.push_back({ (float)xMid, (float)y, (float)currentZ });
+			progress++;
+		}
 	}
-
 	return ans;
 }
 
@@ -959,7 +1007,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 	return false;
 }
 
-void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map)
+void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map, bool* _flg)
 {
 	if (_isStairs)
 	{
@@ -989,8 +1037,22 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegre
 		_ret->push_back(wall);
 
 
+
+		if (_flg == nullptr)
+		{
+			return;
+		}
+
+
+		if (*_flg)
+		{
+			return;
+		}
+
+
 		//松明を置くかどうか
-		bool placeTorch = false;
+		bool placeTorch = *_flg;
+
 
 		if (map[_y][_x].m_tileType == TileType::Room)
 		{
@@ -1022,7 +1084,7 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegre
 			SetTorch(_rotYDegree, _pos, wall);
 		}
 
-
+		*_flg = placeTorch;
 	}
 }
 
@@ -1128,10 +1190,10 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 
 
 
-			bool up = isValid(x, y + 1) && (*map)[y + 1][x].m_tileType == TileType::Floor;
-			bool down = isValid(x, y - 1) && (*map)[y - 1][x].m_tileType == TileType::Floor;
-			bool left = isValid(x - 1, y) && (*map)[y][x - 1].m_tileType == TileType::Floor;
-			bool right = isValid(x + 1, y) && (*map)[y][x + 1].m_tileType == TileType::Floor;
+			bool up = isValid(x, y + 1) &&( (*map)[y + 1][x].m_tileType == TileType::Floor );
+			bool down = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType == TileType::Floor  );
+			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType == TileType::Floor);
+			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType == TileType::Floor);
 
 			// 上にまっすぐ
 			if (up && down && (!left && !right))
@@ -1167,8 +1229,12 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < UpheightLevel)
 					{
 						(*map)[y][x].m_heightLevel = UpheightLevel;
+						(*map)[y][x].m_angle = 0;
 					}
-
+					else
+					{
+						(*map)[y][x].m_angle = 180;
+					}				
 				}
 				else if (heightLevel != DownheightLevel)
 				{
@@ -1177,7 +1243,14 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < DownheightLevel)
 					{
 						(*map)[y][x].m_heightLevel = DownheightLevel;
+						(*map)[y][x].m_angle = 180;
 					}
+					else
+					{
+						(*map)[y][x].m_angle = 0;
+					}
+
+					
 				}
 			}
 			else  if (left && right && (!up && !down))// 左右にまっすぐ
@@ -1213,7 +1286,14 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < LeftHeightLevel)
 					{
 						(*map)[y][x].m_heightLevel = LeftHeightLevel;
+						(*map)[y][x].m_angle = 90;
 					}
+					else
+					{
+						(*map)[y][x].m_angle = 270;
+					}
+
+					
 
 				}
 				else if (heightLevel != RightHeightLevel)
@@ -1223,6 +1303,11 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < RightHeightLevel)
 					{
 						(*map)[y][x].m_heightLevel = RightHeightLevel;
+						(*map)[y][x].m_angle = 270;
+					}
+					else
+					{
+						(*map)[y][x].m_angle = 90;
 					}
 				}
 			}

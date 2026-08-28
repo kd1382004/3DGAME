@@ -171,14 +171,21 @@ void CharacterBase::CollisionUpdate()
 	// レイの発射位置を設定
 	rayInfo.m_pos = GetPos();
 	// 少し高いところから飛ばす(段差の許容範囲)
-	static float enableStepHigh = 0.2f;
+	static float enableStepHigh = 0.5f;
 	rayInfo.m_pos.y += enableStepHigh;
 
 	// レイの発射方向を設定
 	rayInfo.m_dir = Math::Vector3::Down;
 
-	// レイの長さを設定
-	rayInfo.m_range = m_Gravity + enableStepHigh + 0.5f;
+	// 階段・坂を下る際の吸着用に、下方向への到達距離
+	rayInfo.m_range = enableStepHigh ;
+
+	// 落下中（m_Gravity > 0）であれば、その移動分もレイを伸ばす
+	if (m_Gravity > 0.0f)
+	{
+		rayInfo.m_range += m_Gravity;
+	}
+
 	// 当たり判定をしたいタイプを設定
 	rayInfo.m_type = KdCollider::TypeGround;
 
@@ -241,13 +248,6 @@ void CharacterBase::CollisionUpdate()
 	
 		KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
 
-		if (m_pDebugWire && pass == 0)
-		{
-			m_pDebugWire->AddDebugSphere(sphere.Center, sphere.Radius);
-			m_pDebugWire->AddDebugSphere(sphere.Center, m_detectRange, kRedColor);
-			m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
-		}
-
 		Math::Vector3 maxPush = Math::Vector3::Zero;
 		float maxOverlap = 0.0f;
 		bool bumpHit = false;
@@ -291,6 +291,13 @@ void CharacterBase::CollisionUpdate()
 			m_wallHit = false;
 			break; // 衝突が無くなればループ終了
 		}
+	}
+
+
+
+	if (m_pDebugWire)
+	{
+		m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
 	}
 }
 

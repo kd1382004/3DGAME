@@ -99,10 +99,10 @@ void PlayerBase::Init()
 		m_spPlayreLV = std::make_shared<PlayreLV>();
 	}
 
-	/*if (!m_pDebugWire)
+	if (!m_pDebugWire)
 	{
 		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
-	}*/
+	}
 }
 
 void PlayerBase::PreUpdate()

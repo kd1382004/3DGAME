@@ -101,7 +101,7 @@ private:
 	void Release();
 
 	//当たり判定をする半径(この円ないならあたり判定)
-	const float m_detectRange = 10;
+	const float m_detectRange = 20;
 
 
 protected:

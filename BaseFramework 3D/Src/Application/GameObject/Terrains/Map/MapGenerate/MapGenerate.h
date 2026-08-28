@@ -18,6 +18,9 @@ struct FloorInfo
 
 	//階層
 	int m_heightLevel = 0;
+
+	//回転
+	int m_angle = 0;
 };
 
 
@@ -187,7 +190,7 @@ private:
 	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map);
+	void CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map, bool* _flg = nullptr);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;

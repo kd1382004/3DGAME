@@ -311,6 +311,7 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapManager.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h" />
     <ClInclude Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.h" />
@@ -433,6 +434,7 @@
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.cpp" />

@@ -34,6 +34,9 @@ void Goblin::Init()
 
 void Goblin::Update()
 {
+	m_pos.y -= m_Gravity;
+	m_Gravity += m_gravityPower;
+
 	EnemyAmbush::Update();
 
 	Attack();
