@@ -41,6 +41,9 @@ MapGenerate::MapGenerate()
 
 std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
+	m_chunks.clear();
+
+
 	if (roomMine <= 0 && roomMax <= 0)
 	{
 		roomMax = 1;
@@ -61,6 +64,22 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	std::vector<std::vector<bool>> returnMapDate(static_cast<size_t>(_mapSiz.y), std::vector<bool>(static_cast<size_t>(_mapSiz.x), false));
 
 
+	//チャンク対応
+	int CHUNK_SIZE = 4;
+	int chunkW = std::max(1.0f, (_mapSiz.x / CHUNK_SIZE));
+	int chunkH = std::max(1.0f, _mapSiz.y / CHUNK_SIZE);
+
+	m_chunks.resize(chunkH);
+	for (auto& row : m_chunks)
+	{
+		row.resize(chunkW);
+	}
+
+	m_chunks.resize(chunkH);
+	for (auto& row : m_chunks)
+	{
+		row.resize(chunkW);
+	}
 
 
 	/////////////////////////////////////////////////////
@@ -430,7 +449,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 
 				}
-				
+
 				if (map[y][x].m_tileType == TileType::Slopee)
 				{
 					std::shared_ptr<Slope>spSlope = std::make_shared<Slope>();
@@ -448,11 +467,36 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 
 					ret->push_back(spSlope);
-					
+
+
+					int cx = x / CHUNK_SIZE;
+					int cy = y / CHUNK_SIZE;
+
+					// 範囲チェックを追加
+					if (cy >= 0 && cy < m_chunks.size() &&
+						cx >= 0 && cx < m_chunks[cy].size())
+					{
+						m_chunks[cy][cx].push_back(spSlope);
+					}
+
 				}
 				else
 				{
 					ret->push_back(mapA);
+
+					int cx = x / CHUNK_SIZE;
+					int cy = y / CHUNK_SIZE;
+
+					// 範囲チェックを追加
+					if (cy >= 0 && cy < m_chunks.size() &&
+						cx >= 0 && cx < m_chunks[cy].size())
+					{
+						m_chunks[cy][cx].push_back(mapA);
+					}
+					else
+					{
+						int a = 0;
+					}
 				}
 
 
@@ -495,7 +539,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					int nx = x + dir.dx;
 					int ny = y + dir.dy;
 					// 隣接マスに壁が必要か判定
-					if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel,x,y))
+					if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel, x, y))
 					{
 						int startH = map[y][x].m_heightLevel;
 						float startYPos = tileSiz * startH + tileSiz * 0.5f;
@@ -618,6 +662,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
+	m_chunks.clear();
 	m_roomInfo.clear();
 	m_roomInfoList.clear();
 	m_roomInfoList.resize(1);
@@ -645,6 +690,24 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 
 	int centerX = _mapSiz.x / 2;
 	int centerY = _mapSiz.y / 2;
+
+	//チャンク対応
+	int CHUNK_SIZE = 3;
+	int chunkW = std::max(1.0f, (_mapSiz.x / CHUNK_SIZE));
+	int chunkH = std::max(1.0f, (_mapSiz.y / CHUNK_SIZE));
+
+	m_chunks.resize(chunkH);
+	for (auto& row : m_chunks)
+	{
+		row.resize(chunkW);
+	}
+
+	m_chunks.resize(chunkH);
+	for (auto& row : m_chunks)
+	{
+		row.resize(chunkW);
+	}
+
 
 	for (int y = 0; y < map.size(); y++)
 	{
@@ -690,6 +753,17 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 			mapA->SetGroundType(GroundType::Room);
 			mapA->SerRoomID(0);
 			ret->push_back(mapA);
+
+
+			int cx = x / CHUNK_SIZE;
+			int cy = y / CHUNK_SIZE;
+
+			// 範囲チェックを追加
+			if (cy >= 0 && cy < m_chunks.size() &&
+				cx >= 0 && cx < m_chunks[cy].size())
+			{
+				m_chunks[cy][cx].push_back(mapA);
+			}
 
 			//壁を生成
 			// 4方向の定義データ構造
@@ -847,7 +921,7 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(c
 
 	/////////////////////////
 	//最低3個は残す
-	size_t minKeep = 3; 
+	size_t minKeep = 3;
 	size_t siz = static_cast<size_t>(loopEdges.size() * 0.1f);
 
 	if (siz < minKeep) {
@@ -1035,7 +1109,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 
 
 	//隣がSlopeじゃないかつ自分がSlopeじゃないなら壁を作る
-	if (map[ny][nx].m_tileType != TileType::Slopee&& map[y][x].m_tileType != TileType::Slopee)
+	if (map[ny][nx].m_tileType != TileType::Slopee && map[y][x].m_tileType != TileType::Slopee)
 	{
 		if (_heightLevel != map[ny][nx].m_heightLevel)
 		{
@@ -1231,10 +1305,10 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 
 
 
-			bool up = isValid(x, y + 1) &&( (*map)[y + 1][x].m_tileType == TileType::Floor|| (*map)[y + 1][x].m_tileType == TileType::Room);
-			bool down = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType == TileType::Floor|| (*map)[y - 1][x].m_tileType == TileType::Room);
-			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType == TileType::Floor|| (*map)[y][x - 1].m_tileType == TileType::Room);
-			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType == TileType::Floor|| (*map)[y][x + 1].m_tileType == TileType::Room);
+			bool up = isValid(x, y + 1) && ((*map)[y + 1][x].m_tileType == TileType::Floor || (*map)[y + 1][x].m_tileType == TileType::Room);
+			bool down = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType == TileType::Floor || (*map)[y - 1][x].m_tileType == TileType::Room);
+			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType == TileType::Floor || (*map)[y][x - 1].m_tileType == TileType::Room);
+			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType == TileType::Floor || (*map)[y][x + 1].m_tileType == TileType::Room);
 
 			// 上にまっすぐ
 			if (up && down && (!left && !right))
@@ -1275,7 +1349,7 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					else
 					{
 						(*map)[y][x].m_angle = 180;
-					}				
+					}
 				}
 				else if (heightLevel != DownheightLevel)
 				{
@@ -1291,7 +1365,7 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 						(*map)[y][x].m_angle = 0;
 					}
 
-					
+
 				}
 			}
 			else  if (left && right && (!up && !down))// 左右にまっすぐ
@@ -1334,7 +1408,7 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 						(*map)[y][x].m_angle = 270;
 					}
 
-					
+
 
 				}
 				else if (heightLevel != RightHeightLevel)

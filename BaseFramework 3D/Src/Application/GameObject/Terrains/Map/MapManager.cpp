@@ -59,21 +59,53 @@ void MapManager::GenerateDepthMapFromLight()
 
 void MapManager::MapHit(const std::shared_ptr<KdGameObject>& obj)
 {
-	if (!obj) { return; }
+	if (!obj) return;
 
-	// 当たり判定リストをクリア
 	obj->ClearHitObjectList();
-	const Math::Vector3 objPos = obj->GetPos();
+
+	Math::Vector3 pos = obj->GetPos();
+
+	// ワールド座標 → タイル座標へ変換
+	int tileX = static_cast<int>(pos.x / m_mapTileSiz);
+	int tileY = static_cast<int>(-pos.z / m_mapTileSiz);
+
+	// タイル座標 → チャンク番号へ変換
+	int cx = tileX / 5;
+	int cy = tileY / 5;
+
 	constexpr float hitCheckDistSq = 15.0f * 15.0f;
 
-	// 近くにあるオブジェクトだけを新たに登録
-	for (const auto& mapObj : m_mapObj)
-	{
-		if (!mapObj) continue;
-		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
-		if (distSq <= hitCheckDistSq)
+	// チャンク範囲チェック
+	auto inRange = [&](int x, int y)
 		{
-			obj->RegistHitObject(mapObj);
+			return y >= 0 && y < m_chunks.size() &&
+				x >= 0 && x < m_chunks[y].size();
+		};
+
+	// 9チャンク（中心＋周囲8チャンク）だけ判定
+	for (int dy = -1; dy <= 1; dy++)
+	{
+		for (int dx = -1; dx <= 1; dx++)
+		{
+			int ncx = cx + dx;
+			int ncy = cy + dy;
+
+			if (!inRange(ncx, ncy)) continue;
+
+			// このチャンクに属する MapBase をすべてチェック
+			for (auto& wpMapObj : m_chunks[ncy][ncx])
+			{
+				std::shared_ptr<MapBase>spMapObj = wpMapObj.lock();
+
+				if (!spMapObj) continue;
+
+				float distSq = Math::Vector3::DistanceSquared(spMapObj->GetPos(), pos);
+
+				if (distSq <= hitCheckDistSq)
+				{
+					obj->RegistHitObject(spMapObj);
+				}
+			}
 		}
 	}
 }
@@ -96,6 +128,7 @@ void MapManager::SetCamera(const std::shared_ptr<CameraBase>& spCamera)
 
 void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapType)
 {
+	m_chunks.clear();
 	m_mapObj.clear();
 
 	std::shared_ptr<MapGenerate> map = std::make_shared<MapGenerate>();
@@ -107,6 +140,10 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 	Math::Vector3 basePos;
 	mapData = map->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
 	auto mapRoomList = map->GetRoomInfoList();
+
+
+	m_chunks = map->GetChunks();
+
 
 	//A*の初期化
 	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);

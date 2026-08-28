@@ -146,6 +146,9 @@ private:
 
 	std::list<std::shared_ptr<MapBase>> m_mapObj;
 
+	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
+
+
 	float m_mapTileSiz = 10.0f;
 
 	////////////////////////////////////////

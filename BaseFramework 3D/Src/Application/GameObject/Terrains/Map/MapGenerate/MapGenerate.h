@@ -116,6 +116,9 @@ public:
 
 	void SetMapObjManager(std::shared_ptr<MapObjManager>_obj) { m_wpMapObjManager = _obj; }
 
+
+
+	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> GetChunks() { return m_chunks; }
 private:
 
 
@@ -215,7 +218,7 @@ private:
 	///////////////////
 
 
-	int m_heightLevelMax = 2;
+	int m_heightLevelMax = 1;
 
 
 
@@ -236,5 +239,8 @@ private:
 
 	//階段モデル
 	std::shared_ptr<KdModelWork>m_spStairsModel = nullptr;
+
+
+	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
 
 };

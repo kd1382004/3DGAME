@@ -265,12 +265,6 @@
     <Filter Include="Src\Application\GameObject\UI\ItemGetUIController">
       <UniqueIdentifier>{512d2f65-1032-4e78-86c8-3c011e70d6b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\Application\GameObject\Effect">
-      <UniqueIdentifier>{5212fb79-3ca0-4270-9d2c-f0fe2d999feb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\Effect\DamageOverlay">
-      <UniqueIdentifier>{1f85939a-e3cf-49a1-bfe4-c3d6e08e84e2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\Application\GameObject\UI\HitDamage">
       <UniqueIdentifier>{032a2859-3dda-45e2-9d37-83a45aed3054}</UniqueIdentifier>
     </Filter>
@@ -288,6 +282,15 @@
     </Filter>
     <Filter Include="Src\Application\GameObject\Terrains\Map\Slope">
       <UniqueIdentifier>{d077f331-c17f-46e0-9d82-902f6b1c695d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Particle">
+      <UniqueIdentifier>{f7a260ff-6b0c-4a0a-8fb4-897c20cc0a2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Effect">
+      <UniqueIdentifier>{5212fb79-3ca0-4270-9d2c-f0fe2d999feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Effect\DamageOverlay">
+      <UniqueIdentifier>{1f85939a-e3cf-49a1-bfe4-c3d6e08e84e2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -678,6 +681,9 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.h">
       <Filter>Src\Application\GameObject\Terrains\Map\Slope</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Particle\Particle.h">
+      <Filter>Src\Application\GameObject\Particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1030,6 +1036,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.cpp">
       <Filter>Src\Application\GameObject\Terrains\Map\Slope</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Particle\Particle.cpp">
+      <Filter>Src\Application\GameObject\Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
