@@ -155,5 +155,11 @@ private:
 	///////////////////////////////////////
 	//マップオブジェクト
 	std::weak_ptr<MapObjManager>m_wpMapObjManager;
+
+
+
+
+
+
 };
 

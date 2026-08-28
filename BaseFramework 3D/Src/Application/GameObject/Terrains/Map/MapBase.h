@@ -69,6 +69,8 @@ public:
 
 	void SerRoomID(int _ID) { m_roomID = _ID; }
 
+
+	void SetModel(std::shared_ptr<KdModelWork>_spModel) { m_spModel = _spModel; }
 protected:
 
 

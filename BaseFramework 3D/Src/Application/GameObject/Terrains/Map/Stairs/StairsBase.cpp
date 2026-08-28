@@ -19,16 +19,16 @@ void StairsBase::Init()
 	{
 		m_spModel = std::make_shared<KdModelWork>();
 		m_spModel->SetModelData("Asset/Models/Terrains/Map/Stairs/Stairs.gltf");
-
-
-		if (!m_pCollider)
-		{
-			m_pCollider = std::make_unique<KdCollider>();
-			m_pCollider->RegisterCollisionShape("Stairs", m_spModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion | KdCollider::TypeGround);
-		}
-
-		MapBase::Init();
 	}
+
+
+	if (!m_pCollider)
+	{
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape("Stairs", m_spModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion | KdCollider::TypeGround);
+	}
+
+	MapBase::Init();
 }
 
 void StairsBase::Update()

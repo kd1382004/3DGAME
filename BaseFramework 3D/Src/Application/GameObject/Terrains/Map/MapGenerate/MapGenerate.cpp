@@ -12,6 +12,31 @@ MapGenerate::MapGenerate()
 	m_roomSizPath = "Asset/Data/ObjeData/Terrains/Map/MapSiz.json";
 
 	LoadRoomSiz(m_roomSizPath);
+
+
+	if (!m_spFloorModel)
+	{
+		m_spFloorModel = std::make_shared<KdModelWork>();
+		m_spFloorModel->SetModelData("Asset/Models/Terrains/Map/Floor/Base.gltf");
+	}
+
+	if (!m_spSlopeModel)
+	{
+		m_spSlopeModel = std::make_shared<KdModelWork>();
+		m_spSlopeModel->SetModelData("Asset/Models/Terrains/Map/Castle/Slope/Slope.gltf");
+	}
+
+	if (!m_spWallModel)
+	{
+		m_spWallModel = std::make_shared<KdModelWork>();
+		m_spWallModel->SetModelData("Asset/Models/Terrains/Map/Wall/Base.gltf");
+	}
+
+	if (!m_spStairsModel)
+	{
+		m_spStairsModel = std::make_shared<KdModelWork>();
+		m_spStairsModel->SetModelData("Asset/Models/Terrains/Map/Stairs/Stairs.gltf");
+	}
 }
 
 std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int roomNum, float tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
@@ -308,7 +333,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 	// 部屋ごとにタイル情報を管理するためリサイズ
 	m_roomInfoList.resize(roomID);
-
+	int rID = 0;
 	for (int y = 0; y < map.size(); y++)
 	{
 		for (int x = 0; x < map[y].size(); x++)
@@ -334,7 +359,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 
 				Math::Vector3 pos = { xPos,yPos,zPos };
-
+				mapA->SetModel(m_spFloorModel);
 				mapA->Init();
 				mapA->SetPos(pos);
 				mapA->SetMapObjType(MapObjType::Ground);
@@ -346,7 +371,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				else if (map[y][x].m_tileType == TileType::Room)
 				{
 					mapA->SetGroundType(GroundType::Room);
-					int rID = roomIDVector[y][x];
+					rID = roomIDVector[y][x];
 					mapA->SerRoomID(rID);
 
 					//プレイヤースポーン位置を保存
@@ -409,6 +434,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				if (map[y][x].m_tileType == TileType::Slopee)
 				{
 					std::shared_ptr<Slope>spSlope = std::make_shared<Slope>();
+					spSlope->SetModel(m_spSlopeModel);
 					spSlope->Init();
 					spSlope->SetPos(pos);
 					spSlope->SetMapObjType(MapObjType::TypeSlope);
@@ -478,7 +504,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 						if (map[y][x].m_tileType == TileType::Slopee)
 						{
 							wallPos.y -= tileSiz;
-							CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map);
+							CreateWallOrStairs(wallPos, dir.rotY, false, ret, rID, x, y, map);
 							wallPos.y += tileSiz;
 						}
 
@@ -498,7 +524,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 								torchFlg = true;
 							}
 
-							CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, 0, x, y, map, &torchFlg);
+							CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, &torchFlg);
 							wallPos.y += tileSiz;
 						}
 
@@ -820,9 +846,9 @@ std::vector<std::pair<RoomInfo, RoomInfo>> MapGenerate::GetRoomConnectionPairs(c
 	std::sort(loopEdges.begin(), loopEdges.end(), [](const Edge& a, const Edge& b) {return a.dist < b.dist; });
 
 	/////////////////////////
-	// 上位30%だけ残すが、最低3個は残す
+	//最低3個は残す
 	size_t minKeep = 3; 
-	size_t siz = static_cast<size_t>(loopEdges.size() * 0.3f);
+	size_t siz = static_cast<size_t>(loopEdges.size() * 0.1f);
 
 	if (siz < minKeep) {
 		siz = std::min(loopEdges.size(), minKeep);
@@ -1008,7 +1034,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 
 
 
-	//隣がSlopeじゃないかつ自分がSlopeじゃない
+	//隣がSlopeじゃないかつ自分がSlopeじゃないなら壁を作る
 	if (map[ny][nx].m_tileType != TileType::Slopee&& map[y][x].m_tileType != TileType::Slopee)
 	{
 		if (_heightLevel != map[ny][nx].m_heightLevel)
@@ -1025,6 +1051,7 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegre
 	if (_isStairs)
 	{
 		auto stairs = std::make_shared<StairsBase>();
+		stairs->SetModel(m_spStairsModel);
 		stairs->Init();
 		stairs->SetPos(_pos);
 		if (_rotYDegree != 0.0f)
@@ -1039,6 +1066,7 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegre
 	else
 	{
 		auto wall = std::make_shared<WallBase>();
+		wall->SetModel(m_spWallModel);
 		wall->Init();
 		wall->SetPos(_pos);
 		if (_rotYDegree != 0.0f)

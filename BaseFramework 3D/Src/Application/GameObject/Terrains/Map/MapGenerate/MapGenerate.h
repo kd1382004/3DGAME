@@ -221,4 +221,20 @@ private:
 
 	void SlopeCheck(std::vector<std::vector<FloorInfo>>* map);
 
+
+
+	///////////////////////////////////////
+	//オブジェ
+	//床モデル
+	std::shared_ptr<KdModelWork>m_spFloorModel = nullptr;
+
+	//Slopeモデル
+	std::shared_ptr<KdModelWork>m_spSlopeModel = nullptr;
+
+	//壁モデル
+	std::shared_ptr<KdModelWork>m_spWallModel = nullptr;
+
+	//階段モデル
+	std::shared_ptr<KdModelWork>m_spStairsModel = nullptr;
+
 };

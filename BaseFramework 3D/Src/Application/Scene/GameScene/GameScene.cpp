@@ -347,7 +347,7 @@ void GameScene::GenerateMap()
 	if (!m_spMapObjManager) { return; }
 	if (!m_spCamera) { return; }
 
-	int baseSize = 25;              // 1階のマップサイズ
+	int baseSize = 30;              // 1階のマップサイズ
 	float growth = 1.01f;
 
 

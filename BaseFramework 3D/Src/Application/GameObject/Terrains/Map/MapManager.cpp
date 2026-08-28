@@ -17,7 +17,7 @@
 
 void MapManager::Init()
 {
-
+	
 }
 
 void MapManager::Update()
@@ -140,7 +140,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 			for (const auto& mapObj : m_mapObj)
 			{
-				if (mapObj->GetMapObjType() == MapObjType::Ground)
+				if (mapObj->GetMapObjType() == MapObjType::Ground|| mapObj->GetMapObjType() == MapObjType::TypeSlope)
 				{
 
 					if (mapObj->GetRoomType() == RoomType::RoomType_NORoom)
