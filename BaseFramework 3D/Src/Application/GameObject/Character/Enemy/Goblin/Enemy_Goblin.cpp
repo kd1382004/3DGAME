@@ -149,7 +149,7 @@ void Goblin::Attack()
 						m_hitTriggered = false;
 					}
 
-					m_attackWait = KdRandom::GetInt(m_attackWaitMine, m_attackWaitMax);
+					m_attackWait = m_attackWaitMax;
 
 					m_AnimeChangeFlg = true;
 					m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
@@ -204,5 +204,8 @@ void Goblin::AttacksSlammingDown()
 			}
 		}
 	}
+
+
+	SetAttackGagePercent(m_attackWait/m_attackWaitMax);
 }
 

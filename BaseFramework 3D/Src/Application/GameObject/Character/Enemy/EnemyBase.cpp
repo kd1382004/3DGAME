@@ -12,10 +12,12 @@
 //UI
 #include"../../UI/UIManager.h"
 #include"../../UI/HPBar/HPBar.h"
-
+#include"../../UI/AttackGage/AttackGage.h"
 
 
 #include"EnemyCrowdController/EnemyCrowdController.h"
+
+
 void EnemyBase::Init()
 {
 	if (!m_crowdController)
@@ -102,25 +104,30 @@ void EnemyBase::PreDraw()
 
 
 		std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
-		if (spHPBar)
-		{
-			if (m_isInView)
-			{
-				Math::Vector3 dist = m_playerPos - m_pos;
+		if (!spHPBar) { return; }
 
-				if (dist.Length() < 20)
-				{
-					spHPBar->SetDrawFlg(true);
-				}
-				else 
-				{
-					spHPBar->SetDrawFlg(false);
-				}
+		std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
+		if (!spAttackGage) { return; }
+
+		if (m_isInView)
+		{
+			Math::Vector3 dist = m_playerPos - m_pos;
+
+			if (dist.Length() < 20)
+			{
+				spHPBar->SetDrawFlg(true);
+				spAttackGage->SetDrawFlg(true);
 			}
 			else
 			{
 				spHPBar->SetDrawFlg(false);
+				spAttackGage->SetDrawFlg(false);
 			}
+		}
+		else
+		{
+			spHPBar->SetDrawFlg(false);
+			spAttackGage->SetDrawFlg(false);
 		}
 	}
 }
@@ -130,9 +137,9 @@ void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 
 	m_spawnPos = _pos;
 	m_pos = _pos;
-	
 
-	
+
+
 	std::shared_ptr<MapManager>m_spMapManager = m_wpMapManager.lock();
 
 	if (m_spMapManager)
@@ -247,8 +254,8 @@ void EnemyBase::PlayerChase()
 
 		Math::Vector3 dir = m_playerPos - m_pos;
 
-		if (m_PlayerChaseDir> dir.Length()) 
-		{ 
+		if (m_PlayerChaseDir > dir.Length())
+		{
 
 			if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run)
 			{
@@ -256,7 +263,7 @@ void EnemyBase::PlayerChase()
 				m_AnimeChangeFlg = true;
 				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
 			}
-			return; 
+			return;
 		}
 		else
 		{
@@ -269,7 +276,7 @@ void EnemyBase::PlayerChase()
 		}
 
 		m_crowdController->Update(this, DeltaTime::Instance().GetGameDeltaTime());
-		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();	
+		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 	}
 
 }
@@ -283,6 +290,13 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
+
+
+		std::shared_ptr<AttackGage>spAttackGage = std::make_shared<AttackGage>();
+		spAttackGage->Init();
+		m_wpAttackGage = spAttackGage;
+		_spUIManager->AddUIObj(spAttackGage);
+		SetAttackGagePercent(0);
 	}
 }
 
@@ -300,6 +314,12 @@ void EnemyBase::Release()
 	{
 		spHPBar->Delete();
 	}
+
+	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
+	if (spAttackGage)
+	{
+		spAttackGage->Delete();
+	}
 }
 
 void EnemyBase::EnemyAnimeModeUpdate()
@@ -313,20 +333,32 @@ void EnemyBase::EnemyAnimeModeUpdate()
 
 void EnemyBase::HPPosPostUpdate()
 {
+
+	Math::Vector3 set2DPos;
+
+	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+	if (!spCamera) { return; }
+
+	Math::Vector3 set3DPos = m_pos;
+	set3DPos.y += 5;
+	spCamera->GetCamera()->ConvertWorldToScreenDetail(set3DPos, set2DPos);
+
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
-		Math::Vector3 set2DPos;
 
+		set2DPos.y += 40;
 		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
-		if (spCamera)
-		{
-			Math::Vector3 set3DPos = m_pos;
-			set3DPos.y += 5;
-			spCamera->GetCamera()->ConvertWorldToScreenDetail(set3DPos, set2DPos);
-		}
 		spHPBar->Set2DPos({ set2DPos.x,set2DPos.y });
+	}
 
+
+	//攻撃ゲージ
+	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
+	if (spAttackGage)
+	{
+		set2DPos.y -= 20;
+		spAttackGage->Set2DPos({ set2DPos.x,set2DPos.y });
 	}
 }
 
@@ -471,4 +503,11 @@ void EnemyBase::SetDead()
 		spPlayer->AddExp(10);
 	}
 
+}
+
+void EnemyBase::SetAttackGagePercent(float _percent)
+{
+	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
+	if (!spAttackGage) { return; }
+	spAttackGage->SetAttackGageTexPercent(_percent);
 }

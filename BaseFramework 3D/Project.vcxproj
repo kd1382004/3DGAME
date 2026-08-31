@@ -318,6 +318,7 @@
     <ClInclude Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.h" />
     <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChest.h" />
     <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\AttackGage\AttackGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\BuffUI\BuffUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HitDamage\HitDamage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h" />
@@ -442,6 +443,7 @@
     <ClCompile Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChest.cpp" />
     <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\AttackGage\AttackGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\BuffUI\BuffUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HitDamage\HitDamage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp" />

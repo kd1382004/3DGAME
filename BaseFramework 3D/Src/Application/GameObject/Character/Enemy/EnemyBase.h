@@ -6,6 +6,7 @@ class MapManager;
 class GameScene;
 class EnemyCrowdController;
 class EnemyManager;
+class AttackGage;
 
 
 struct Node;
@@ -162,6 +163,16 @@ protected:
 
 	//
 	std::shared_ptr<EnemyCrowdController> m_crowdController;
+
+
+
+	//適用アッタックゲージ
+	std::weak_ptr<AttackGage>m_wpAttackGage;
+
+	float m_attackgagePercent;
+
+
+	void SetAttackGagePercent(float _percent);
 private:
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;
