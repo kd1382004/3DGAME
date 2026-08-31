@@ -247,7 +247,26 @@ void EnemyBase::PlayerChase()
 
 		Math::Vector3 dir = m_playerPos - m_pos;
 
-		if (m_PlayerChaseDir> dir.Length()) { return; }
+		if (m_PlayerChaseDir> dir.Length()) 
+		{ 
+
+			if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run)
+			{
+
+				m_AnimeChangeFlg = true;
+				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
+			}
+			return; 
+		}
+		else
+		{
+			if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Idel)
+			{
+
+				m_AnimeChangeFlg = true;
+				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
+			}
+		}
 
 		m_crowdController->Update(this, DeltaTime::Instance().GetGameDeltaTime());
 		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();	

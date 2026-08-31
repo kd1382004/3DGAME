@@ -17,7 +17,9 @@
 
 void MapManager::Init()
 {
-	
+	m_spMapGenerate = std::make_shared<MapGenerate>();
+
+	CHUNK_SIZE = m_spMapGenerate->GetCHUNK_SIZE();
 }
 
 void MapManager::Update()
@@ -70,8 +72,8 @@ void MapManager::MapHit(const std::shared_ptr<KdGameObject>& obj)
 	int tileY = static_cast<int>(-pos.z / m_mapTileSiz);
 
 	// タイル座標 → チャンク番号へ変換
-	int cx = tileX / 5;
-	int cy = tileY / 5;
+	int cx = tileX / CHUNK_SIZE;
+	int cy = tileY / CHUNK_SIZE;
 
 	constexpr float hitCheckDistSq = 15.0f * 15.0f;
 
@@ -131,18 +133,19 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 	m_chunks.clear();
 	m_mapObj.clear();
 
-	std::shared_ptr<MapGenerate> map = std::make_shared<MapGenerate>();
+	if (!m_spMapGenerate) { return; }
 
-	map->SetMapObjManager(m_wpMapObjManager.lock());
+
+	m_spMapGenerate->SetMapObjManager(m_wpMapObjManager.lock());
 
 	//敵が歩ける一覧
 	std::vector<std::vector<bool>> mapData;
 	Math::Vector3 basePos;
-	mapData = map->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
-	auto mapRoomList = map->GetRoomInfoList();
+	mapData = m_spMapGenerate->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
+	auto mapRoomList = m_spMapGenerate->GetRoomInfoList();
 
 
-	m_chunks = map->GetChunks();
+	m_chunks = m_spMapGenerate->GetChunks();
 
 
 	//A*の初期化
@@ -331,14 +334,17 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 {
 
 	m_mapObj.clear();
+	m_chunks.clear();
 
-	std::shared_ptr<MapGenerate> map = std::make_shared<MapGenerate>();
+	if (!m_spMapGenerate) { return; }
 
 	//敵が歩ける一覧
 	std::vector<std::vector<bool>> mapData;
 
 	Math::Vector3 basePos;
-	mapData = map->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &basePos);
+	mapData = m_spMapGenerate->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &basePos);
+
+	m_chunks = m_spMapGenerate->GetChunks();
 
 	//A*の初期化
 	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
@@ -359,7 +365,7 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	std::shared_ptr<EnemyManager> spEnemyManager = m_wpEnemyManager.lock();
 	if (spEnemyManager)
 	{
-		spEnemyManager->SpawnBoss(map->GetBossSpawnPos());
+		spEnemyManager->SpawnBoss(m_spMapGenerate->GetBossSpawnPos());
 	}
 
 

@@ -3,8 +3,8 @@
 class Particle
 {
 public:
-	Particle();
-	~Particle();
+	Particle() {};
+	~Particle() {};
 
 private:
 

@@ -72,21 +72,21 @@ void GameScene::ChangeResultScene()
 void GameScene::Event()
 {
 	////////////////////////////////////////////
-	//デバック
-	static bool REFLG = false;
+	////デバック
+	//static bool REFLG = false;
 
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
-	{
-		if (!REFLG)
-		{
-			GenerateMap();
-			REFLG = true;
-		}
-	}
-	else
-	{
-		REFLG = false;
-	}
+	//if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
+	//{
+	//	if (!REFLG)
+	//	{
+	//		GenerateMap();
+	//		REFLG = true;
+	//	}
+	//}
+	//else
+	//{
+	//	REFLG = false;
+	//}
 	////////////////////////////////////////////
 
 	///////////////////////////////////////////////////

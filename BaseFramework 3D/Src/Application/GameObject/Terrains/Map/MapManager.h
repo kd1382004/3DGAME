@@ -16,6 +16,8 @@ class UIManager;
 
 //マップオブジェクト
 class MapObjManager;
+class 	MapGenerate;
+
 
 //宝箱
 class TreasureChestManager;
@@ -161,8 +163,9 @@ private:
 
 
 
+	std::shared_ptr<MapGenerate> m_spMapGenerate;
 
-
+	int CHUNK_SIZE;
 
 };
 

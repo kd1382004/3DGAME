@@ -65,8 +65,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 
 	//チャンク対応
-	int CHUNK_SIZE = 4;
-	int chunkW = std::max(1.0f, (_mapSiz.x / CHUNK_SIZE));
+	int chunkW = std::max(1.0f, _mapSiz.x / CHUNK_SIZE);
 	int chunkH = std::max(1.0f, _mapSiz.y / CHUNK_SIZE);
 
 	m_chunks.resize(chunkH);
@@ -469,34 +468,21 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					ret->push_back(spSlope);
 
 
-					int cx = x / CHUNK_SIZE;
-					int cy = y / CHUNK_SIZE;
+					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+					m_chunks[cy][cx].push_back(spSlope);
 
-					// 範囲チェックを追加
-					if (cy >= 0 && cy < m_chunks.size() &&
-						cx >= 0 && cx < m_chunks[cy].size())
-					{
-						m_chunks[cy][cx].push_back(spSlope);
-					}
 
 				}
 				else
 				{
 					ret->push_back(mapA);
 
-					int cx = x / CHUNK_SIZE;
-					int cy = y / CHUNK_SIZE;
+					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
 
-					// 範囲チェックを追加
-					if (cy >= 0 && cy < m_chunks.size() &&
-						cx >= 0 && cx < m_chunks[cy].size())
-					{
-						m_chunks[cy][cx].push_back(mapA);
-					}
-					else
-					{
-						int a = 0;
-					}
+					m_chunks[cy][cx].push_back(mapA);
+
 				}
 
 
@@ -548,8 +534,12 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 						if (map[y][x].m_tileType == TileType::Slopee)
 						{
 							wallPos.y -= tileSiz;
-							CreateWallOrStairs(wallPos, dir.rotY, false, ret, rID, x, y, map);
+							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, rID, x, y, map);
 							wallPos.y += tileSiz;
+
+							int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+							int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+							m_chunks[cy][cx].push_back(wall);
 						}
 
 						//置かれたか
@@ -568,8 +558,12 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 								torchFlg = true;
 							}
 
-							CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, &torchFlg);
+							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, &torchFlg);
 							wallPos.y += tileSiz;
+
+							int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+							int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+							m_chunks[cy][cx].push_back(wall);
 						}
 
 
@@ -676,6 +670,24 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 		_mapSiz.y++;
 	}
 
+
+	//チャンク対応
+	
+	int chunkW = std::max(1.0f, _mapSiz.x / CHUNK_SIZE);
+	int chunkH = std::max(1.0f, _mapSiz.y / CHUNK_SIZE);
+
+	m_chunks.resize(chunkH);
+	for (auto& row : m_chunks)
+	{
+		row.resize(chunkW);
+	}
+
+	m_chunks.resize(chunkH);
+	for (auto& row : m_chunks)
+	{
+		row.resize(chunkW);
+	}
+
 	//マップのサイズを作る
 	//TileType::Roomで初期化(ボス戦部屋は巨大な一部屋)
 	FloorInfo defaultTile;
@@ -691,22 +703,6 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	int centerX = _mapSiz.x / 2;
 	int centerY = _mapSiz.y / 2;
 
-	//チャンク対応
-	int CHUNK_SIZE = 3;
-	int chunkW = std::max(1.0f, (_mapSiz.x / CHUNK_SIZE));
-	int chunkH = std::max(1.0f, (_mapSiz.y / CHUNK_SIZE));
-
-	m_chunks.resize(chunkH);
-	for (auto& row : m_chunks)
-	{
-		row.resize(chunkW);
-	}
-
-	m_chunks.resize(chunkH);
-	for (auto& row : m_chunks)
-	{
-		row.resize(chunkW);
-	}
 
 
 	for (int y = 0; y < map.size(); y++)
@@ -754,16 +750,12 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 			mapA->SerRoomID(0);
 			ret->push_back(mapA);
 
+			int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+			int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+			m_chunks[cy][cx].push_back(mapA);
 
-			int cx = x / CHUNK_SIZE;
-			int cy = y / CHUNK_SIZE;
 
-			// 範囲チェックを追加
-			if (cy >= 0 && cy < m_chunks.size() &&
-				cx >= 0 && cx < m_chunks[cy].size())
-			{
-				m_chunks[cy][cx].push_back(mapA);
-			}
+	
 
 			//壁を生成
 			// 4方向の定義データ構造
@@ -799,7 +791,12 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel, x, y))
 				{
 					Math::Vector3 wallPos = { xPos + dir.offset.x, 0, zPos + dir.offset.z };
-					CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map);
+					std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map);
+
+					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+
+					m_chunks[cy][cx].push_back(wall);
 				}
 			}
 		}
@@ -1120,7 +1117,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 	return false;
 }
 
-void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map, bool* _flg)
+std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map, bool* _flg)
 {
 	if (_isStairs)
 	{
@@ -1136,6 +1133,8 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegre
 		stairs->SetMapObjType(MapObjType::Stairs);
 		stairs->SerRoomID(_roomID);
 		_ret->push_back(stairs);
+
+		return stairs;
 	}
 	else
 	{
@@ -1155,13 +1154,13 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegre
 
 		if (_flg == nullptr)
 		{
-			return;
+			return wall;
 		}
 
 
 		if (*_flg)
 		{
-			return;
+			return wall;
 		}
 
 
@@ -1200,6 +1199,8 @@ void MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegre
 		}
 
 		*_flg = placeTorch;
+
+		return wall;
 	}
 }
 

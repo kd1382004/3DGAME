@@ -174,6 +174,7 @@ void BaseScene::DrawDebug()
 	{
 		for (auto& obj : m_objList)
 		{
+			continue;
 			obj->DrawDebug();
 		}
 	}
