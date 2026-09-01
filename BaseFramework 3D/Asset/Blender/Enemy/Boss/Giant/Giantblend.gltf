@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v5.1.20",
+		"generator":"Khronos glTF Blender I/O v5.1.19",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -5288,9 +5288,12 @@
 	"materials":[
 		{
 			"name":"Material_0",
+			"normalTexture":{
+				"index":0
+			},
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":0
+					"index":1
 				},
 				"metallicFactor":0
 			}
@@ -5318,9 +5321,18 @@
 		{
 			"sampler":0,
 			"source":0
+		},
+		{
+			"sampler":1,
+			"source":1
 		}
 	],
 	"images":[
+		{
+			"mimeType":"image/png",
+			"name":"Image_0_normal",
+			"uri":"Image_0_normal.png"
+		},
 		{
 			"mimeType":"image/png",
 			"name":"Image_0",
@@ -10015,6 +10027,10 @@
 		}
 	],
 	"samplers":[
+		{
+			"magFilter":9729,
+			"minFilter":9987
+		},
 		{
 			"magFilter":9729,
 			"minFilter":9987,

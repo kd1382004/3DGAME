@@ -262,9 +262,9 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	{
 		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
 		spHPBar->Init();
+		spHPBar->SetSiz(2);
 		spHPBar->Set2DPos({ 0,-260 });
 		spHPBar->SetDrawFlg(true);
-		spHPBar->SetSiz(2);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
@@ -273,8 +273,8 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 
 		std::shared_ptr<StaminaGage>spStaminaGage = std::make_shared<StaminaGage>();
 		spStaminaGage->Init();
-		spStaminaGage->Set2DPos({ 0,-290 });
 		spStaminaGage->SetSiz(2);
+		spStaminaGage->Set2DPos({ 0,-290 });
 		m_wpStaminaGage = spStaminaGage;
 		_spUIManager->AddUIObj(spStaminaGage);
 

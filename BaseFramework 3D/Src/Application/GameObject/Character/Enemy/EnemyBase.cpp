@@ -296,7 +296,7 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		spAttackGage->Init();
 		m_wpAttackGage = spAttackGage;
 		_spUIManager->AddUIObj(spAttackGage);
-		SetAttackGagePercent(0);
+		SetAttackGagePercent(1);
 	}
 }
 

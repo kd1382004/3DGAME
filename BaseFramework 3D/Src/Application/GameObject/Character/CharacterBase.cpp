@@ -171,7 +171,7 @@ void CharacterBase::CollisionUpdate()
 	// レイの発射位置を設定
 	rayInfo.m_pos = GetPos();
 	// 少し高いところから飛ばす(段差の許容範囲)
-	static float enableStepHigh = 0.5f;
+	static float enableStepHigh = 0.6f;
 	rayInfo.m_pos.y += enableStepHigh;
 
 	// レイの発射方向を設定

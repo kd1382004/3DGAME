@@ -95,7 +95,6 @@ void HPBar::DrawSprite()
 		{
 			pos.x += m_HPBarIconFrameTexLength.x / 2;
 		}
-
 		NumDraw::GetInstance().Drow(m_LV, RAligned, pos, kWhiteColor, m_siz);
 	}
 }
