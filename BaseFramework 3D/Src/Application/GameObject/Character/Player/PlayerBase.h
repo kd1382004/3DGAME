@@ -16,6 +16,9 @@ class PlayerInventory;
 //バフ
 class PlayerBuffManager;
 
+//アクセサリー
+class PlayerAccessory;
+
 //UI
 class UIManager;
 class UIMap_Player;
@@ -136,6 +139,15 @@ public:
 	//_gainedExp...経験値量
 	void AddExp(int _gainedExp);
 
+
+	//ボーンの位置(ワールド)を返す
+	Math::Vector3 GetBonePosition(std::string _boneName);
+
+	//回転を返す
+	float GetAngle() { return m_angle; }
+
+
+	void SetAccessoryManager(std::shared_ptr<AccessoryManager>_spAccessoryManager)override;
 protected:
 
 	//LV
@@ -311,4 +323,8 @@ protected:
 	/////////////////////////////////////
 	//バフ
 	std::shared_ptr<PlayerBuffManager>m_spPlayerBuffManager;
+
+	////////////////////////////////////
+	//アクセサリー
+	std::shared_ptr<PlayerAccessory>m_spPlayerAccessory;
 };

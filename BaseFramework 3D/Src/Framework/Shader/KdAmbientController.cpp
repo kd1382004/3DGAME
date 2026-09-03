@@ -48,6 +48,7 @@ void KdAmbientController::Init()
 void KdAmbientController::Update()
 {
 	m_pointLights.clear();
+	m_spotLights.clear();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -147,6 +148,20 @@ void KdAmbientController::SetheightFog(const Math::Vector3& col, float topValue,
 	m_dirtyFogHeight = true;
 }
 
+void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg)
+{
+	SpotLight sl;
+	sl.Color = color;
+	sl.Radius = radius;
+	sl.Pos = pos;
+	sl.Dir = dir;
+	sl.Dir.Normalize();
+	// 角度（度数法）をラジアンに変換してcosを計算
+	sl.CosAngle = cosf(DirectX::XMConvertToRadians(angleDeg));
+
+	m_spotLights.push_back(sl);
+}
+
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // 光関連パラメータの書き込み
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -173,6 +188,11 @@ void KdAmbientController::WriteLightParams()
 	if (m_pointLights.size())
 	{
 		KdShaderManager::Instance().WriteCBPointLight(m_pointLights);
+	}
+
+	if(m_spotLights.size())
+	{
+		KdShaderManager::Instance().WriteCBSpotLight(m_spotLights);
 	}
 
 	// 影描画エリアの更新

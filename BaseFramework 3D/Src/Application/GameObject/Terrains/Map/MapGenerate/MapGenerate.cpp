@@ -1345,11 +1345,11 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < UpheightLevel)
 					{
 						(*map)[y][x].m_heightLevel = UpheightLevel;
-						(*map)[y][x].m_angle = 0;
+						(*map)[y][x].m_angle = 180;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 180;
+						(*map)[y][x].m_angle = 0;
 					}
 				}
 				else if (heightLevel != DownheightLevel)
@@ -1359,11 +1359,11 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < DownheightLevel)
 					{
 						(*map)[y][x].m_heightLevel = DownheightLevel;
-						(*map)[y][x].m_angle = 180;
+						(*map)[y][x].m_angle = 0;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 0;
+						(*map)[y][x].m_angle = 180;
 					}
 
 
@@ -1402,11 +1402,11 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < LeftHeightLevel)
 					{
 						(*map)[y][x].m_heightLevel = LeftHeightLevel;
-						(*map)[y][x].m_angle = 90;
+						(*map)[y][x].m_angle = 270;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 270;
+						(*map)[y][x].m_angle = 90;
 					}
 
 
@@ -1419,11 +1419,11 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					if (heightLevel < RightHeightLevel)
 					{
 						(*map)[y][x].m_heightLevel = RightHeightLevel;
-						(*map)[y][x].m_angle = 270;
+						(*map)[y][x].m_angle = 90;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 90;
+						(*map)[y][x].m_angle = 270;
 					}
 				}
 			}

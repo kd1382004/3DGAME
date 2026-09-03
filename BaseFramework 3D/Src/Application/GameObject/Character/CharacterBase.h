@@ -4,6 +4,7 @@ class CameraBase;
 class UIManager;
 class HPBar;
 class HitDamage;
+class AccessoryManager;
 
 class CharacterBase : public KdGameObject
 {
@@ -93,6 +94,12 @@ public:
 
 	//HPバー
 	std::shared_ptr<HPBar> GetHPBar() { return m_wpHPBar.lock(); }
+
+
+
+	///////////////////////////////////////////
+
+	virtual void SetAccessoryManager(std::shared_ptr<AccessoryManager>_spAccessoryManager) { m_wpAccessoryManager = _spAccessoryManager; }
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
@@ -283,4 +290,8 @@ protected:
 	std::weak_ptr<HPBar>m_wpHPBar;
 
 	bool m_isDead = false;
+
+
+	////////////////////////////////
+	std::weak_ptr<AccessoryManager>m_wpAccessoryManager;
 };

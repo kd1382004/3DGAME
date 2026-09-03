@@ -17,6 +17,19 @@ struct PointLight
 	int		IsBright = 0;	// 明度用ライトかどうか
 };
 
+
+//////////////////////////////////////////////
+// スポットライト構造体
+struct SpotLight
+{
+	Math::Vector3 Color;
+	float         Radius = 0.0f;
+	Math::Vector3 Pos;
+	float         CosAngle = 0.0f; // cos(RADIAN)
+	Math::Vector3 Dir;
+	int           IsBright = 1;
+};
+
 //==========================
 //
 // 各パイプラインステートの呼び出しID
@@ -119,6 +132,11 @@ public:
 		float			_blank3[3] = { 0.0f, 0.0f ,0.0f };
 
 		std::array<PointLight, MaxPointLightNum> PointLights;
+
+
+		int SpotLight_Num = 0;
+		float _blank4[3] = { 0.0f, 0.0f, 0.0f };
+		std::array<SpotLight, 50> SpotLights;
 	};
 
 	static KdShaderManager& Instance()
@@ -212,6 +230,11 @@ public:
 	// 解放
 	void Release();
 
+
+
+	// 定数バッファ書き込み用関数
+	void WriteCBSpotLight(const std::list<SpotLight>& spotLights);
+
 private:
 
 	KdShaderManager() {}
@@ -253,3 +276,4 @@ private:
 	ID3D11SamplerState* m_samplerStates[(int)KdSamplerState::Max] = {};
 	std::stack<ID3D11SamplerState*> m_ss_Undo;
 };
+

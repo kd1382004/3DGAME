@@ -20,6 +20,7 @@
 //インベントリ
 #include"PlayerInventory/PlayerInventory.h"
 
+
 //バフ
 #include"PlayerBuffManager/PlayerBuffManager.h"
 
@@ -29,6 +30,11 @@
 
 //LV
 #include"PlayreLV/PlayreLV.h"
+
+#include"../../Accessory/AccessoryManager.h"
+#include"../../Accessory/Flashlight/Flashlight.h"
+
+#include"PlayerAccessory/PlayerAccessory.h"
 
 void PlayerBase::Init()
 {
@@ -102,6 +108,12 @@ void PlayerBase::Init()
 	if (!m_pDebugWire)
 	{
 		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
+	}
+
+	if (!m_spPlayerAccessory)
+	{
+		m_spPlayerAccessory = std::make_unique<PlayerAccessory>();
+		m_spPlayerAccessory->Init();
 	}
 }
 
@@ -193,6 +205,12 @@ void PlayerBase::Update()
 
 
 	PlayerAnimeModeUpdate();
+
+
+	if (m_spPlayerAccessory)
+	{
+		m_spPlayerAccessory->Update(this);
+	}
 }
 
 void PlayerBase::PostUpdate()
@@ -374,6 +392,31 @@ void PlayerBase::AddExp(int _gainedExp)
 	if (!m_spPlayreLV) { return; }
 
 	m_spPlayreLV->AddExp(_gainedExp, this);
+}
+
+Math::Vector3 PlayerBase::GetBonePosition(std::string _boneName)
+{
+	if (!m_spCharaModel) return Math::Vector3::Zero;
+
+
+	//
+	auto* Node = m_spCharaModel->FindNode(_boneName);
+	Math::Vector3 Pos = Node->m_worldTransform.Translation();
+
+	return Pos;
+}
+
+void PlayerBase::SetAccessoryManager(std::shared_ptr<AccessoryManager> _spAccessoryManager)
+{
+	m_wpAccessoryManager = _spAccessoryManager;
+
+	std::shared_ptr<Flashlight>spFlashlight = std::make_shared<Flashlight>();
+	spFlashlight->Init();
+
+	_spAccessoryManager->AddAccessoryList(spFlashlight);
+
+	if (!m_spPlayerAccessory) { return; }
+	m_spPlayerAccessory->SetFlashlight(spFlashlight);
 }
 
 void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManager)

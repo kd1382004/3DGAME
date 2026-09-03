@@ -295,6 +295,15 @@
     <Filter Include="Src\Application\GameObject\UI\AttackGage">
       <UniqueIdentifier>{3963bbe5-dc7a-48ab-b012-661dbe684d38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Accessory">
+      <UniqueIdentifier>{0bed280b-8162-4e17-a712-c2ee81d558d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Accessory\Flashlight">
+      <UniqueIdentifier>{c63ee6e6-ceda-47e4-a3f9-d6480f860b7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Player\PlayerAccessory">
+      <UniqueIdentifier>{ba75c0d1-888e-4a42-8dcc-19b9edd8bf40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -690,6 +699,18 @@
     <ClInclude Include="Src\Application\GameObject\UI\AttackGage\AttackGage.h">
       <Filter>Src\Application\GameObject\UI\AttackGage</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Accessory\AccessoryBase.h">
+      <Filter>Src\Application\GameObject\Accessory</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Accessory\AccessoryManager.h">
+      <Filter>Src\Application\GameObject\Accessory</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Accessory\Flashlight\Flashlight.h">
+      <Filter>Src\Application\GameObject\Accessory\Flashlight</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerAccessory\PlayerAccessory.h">
+      <Filter>Src\Application\GameObject\Character\Player\PlayerAccessory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1048,6 +1069,18 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\AttackGage\AttackGage.cpp">
       <Filter>Src\Application\GameObject\UI\AttackGage</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Accessory\AccessoryBase.cpp">
+      <Filter>Src\Application\GameObject\Accessory</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Accessory\AccessoryManager.cpp">
+      <Filter>Src\Application\GameObject\Accessory</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Accessory\Flashlight\Flashlight.cpp">
+      <Filter>Src\Application\GameObject\Accessory\Flashlight</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerAccessory\PlayerAccessory.cpp">
+      <Filter>Src\Application\GameObject\Character\Player\PlayerAccessory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

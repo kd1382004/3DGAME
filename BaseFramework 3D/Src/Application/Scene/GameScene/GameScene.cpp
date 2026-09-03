@@ -39,6 +39,9 @@
 //エフェクト
 #include"../../GameObject/Effect/EffectManager.h"
 
+//アクセサリー
+#include"../../GameObject/Accessory/AccessoryManager.h"
+
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
@@ -251,6 +254,14 @@ void GameScene::Init()
 	spUIManager->AddUIMapManager();
 	m_objList.push_back(spUIManager);
 
+
+	/////////////////////////////////////////
+	//アクセサリー
+	/////////////////////////////////////////	
+	std::shared_ptr<AccessoryManager> spAccessoryManager = std::make_shared<AccessoryManager>();
+	spAccessoryManager->Init();
+	m_objList.push_back(spAccessoryManager);
+
 	/////////////////////////////////////////
 	//UIにセット
 	/////////////////////////////////////////
@@ -279,6 +290,7 @@ void GameScene::Init()
 	m_spPlayer->AddUIList(spUIManager);
 	m_spPlayer->SetEffectManager(effect);
 	m_spPlayer->SetHitDamage(spHitDamage);
+	m_spPlayer->SetAccessoryManager(spAccessoryManager);
 	m_spPlayer->GetPlayerBuffManager()->SetPlayer(m_spPlayer);
 
 	/////////////////////////////////////////

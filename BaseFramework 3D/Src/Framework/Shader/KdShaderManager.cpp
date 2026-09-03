@@ -539,3 +539,20 @@ void KdShaderManager::Release()
 	m_ss_Undo.swap(ss);
 }
 #pragma warning(default:4239)
+
+void KdShaderManager::WriteCBSpotLight(const std::list<SpotLight>& spotLights)
+{
+	cbLight& light = m_cb9_Light.Work();
+	// 使用数をセット
+	light.SpotLight_Num = (signed)spotLights.size();
+	UINT spotIndex = 0;
+	// 配列に1つずつ格納
+	for (const SpotLight& spotlight : spotLights)
+	{
+		if (spotIndex >= 50) { break; } // 最大数オーバー防止
+		light.SpotLights[spotIndex] = spotlight;
+		++spotIndex;
+	}
+	// 定数バッファをGPUに書き込み（転送）
+	m_cb9_Light.Write();
+}

@@ -60,4 +60,19 @@ cbuffer cbLight : register(b9)
 	    float3	    Pos;			// 座標
 	    int			IsBright;		// 明度用ライトかどうか
 	} g_PointLights[100];
+
+
+	//--------------
+    // スポットライト
+    //--------------
+	int4 g_SpotLightNum; // x: 使用数
+	struct SpotLight
+	{
+		float3 Color; // 色・輝度
+		float Radius; // 照射距離 (有効半径)
+		float3 Pos; // 座標
+		float CosAngle; // 照射角のコサイン値 cos(Angle)
+		float3 Dir; // 照射方向ベクトル (正規化済み)
+		int IsBright; // 明度計算フラグ
+	} g_SpotLights[50];
 };
