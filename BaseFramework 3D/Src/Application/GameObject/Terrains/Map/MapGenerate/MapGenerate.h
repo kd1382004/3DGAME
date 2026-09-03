@@ -2,6 +2,7 @@
 
 class MapBase;
 class MapObjManager;
+class CameraBase;
 
 enum class TileType
 {
@@ -121,6 +122,9 @@ public:
 	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> GetChunks() { return m_chunks; }
 
 	int GetCHUNK_SIZE() { return CHUNK_SIZE; }
+
+
+	void SetCamera(std::shared_ptr<CameraBase> _spCamera) { m_wpCamera = _spCamera; }
 private:
 
 
@@ -247,6 +251,10 @@ private:
 
 
 	const	int  CHUNK_SIZE = 3;
+
+
+
+	std::weak_ptr<CameraBase> m_wpCamera;
 };
 
 

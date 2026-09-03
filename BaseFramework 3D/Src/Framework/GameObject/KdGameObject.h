@@ -163,6 +163,15 @@ protected:
 	std::vector<std::weak_ptr<KdGameObject>> m_wpHitObjectList{};
 
 
+	// 画面内描画フラグ (カリング用)
+	bool m_isInView = true;
+
+
 	//ポーズでアップデート関係を止めるか(trueが止める)
 	bool m_pauseStop = true;
+public:
+	virtual bool IsInView() const { return m_isInView; }
+	virtual void SetInView(bool isInView) { m_isInView = isInView; }
+
+
 };

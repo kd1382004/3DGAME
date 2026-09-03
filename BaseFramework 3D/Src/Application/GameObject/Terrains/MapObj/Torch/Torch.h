@@ -32,4 +32,6 @@ private:
 	KdCollider::BoxInfo m_frustumBox;
 
 	bool m_isInView = false;
+
+	std::weak_ptr<KdEffekseerObject> m_wpAuraEffect;
 };

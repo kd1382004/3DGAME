@@ -63,7 +63,7 @@ void AttackGage::SetAttackGageTexPercent(float _percent)
 	long w = static_cast<long>(totalSrcWidth * m_attackGageTexPercent);
 	long top = 0;
 	long height = static_cast<long>(m_attackGageackBackTexLength.y);
-	m_attackGageTexRect = { left, top, w, height };
+	m_attackGageTexRect = { left, top, w, height }; 
 }
 
 void AttackGage::Delete()

@@ -126,6 +126,8 @@ void MapManager::SetCamera(const std::shared_ptr<CameraBase>& spCamera)
 		mapObj->SetCamera(spCamera);
 		spCamera->ResolveCameraOcclusionObject(mapObj);
 	}
+
+	m_spMapGenerate->SetCamera(spCamera);
 }
 
 void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapType)

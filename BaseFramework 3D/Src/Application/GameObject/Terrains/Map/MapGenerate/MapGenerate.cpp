@@ -1259,7 +1259,7 @@ void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_pt
 		spTorch->Init();
 		spTorch->SetPos(pos);
 		spTorch->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
-
+		spTorch->SetCamera(m_wpCamera.lock());
 		spMapObjManager->AddMapObj(spTorch);
 	}
 

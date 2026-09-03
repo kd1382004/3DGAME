@@ -1,4 +1,4 @@
-﻿#include "MapObjManager.h"
+#include "MapObjManager.h"
 
 #include"MapObjBase.h"
 
@@ -44,6 +44,9 @@ void MapObjManager::GenerateDepthMapFromLight()
 {
 	for (auto& obj : m_mapObjList)
 	{
+		if (!obj) continue;
+		if (!obj->IsInView()) continue; // 画面外スキップ
+
 		obj->GenerateDepthMapFromLight();
 	}
 }
@@ -52,6 +55,7 @@ void MapObjManager::PreDraw()
 {
 	for (auto& obj : m_mapObjList)
 	{
+		if (!obj) continue;
 		obj->PreDraw();
 	}
 }
@@ -60,6 +64,9 @@ void MapObjManager::DrawLit()
 {
 	for (auto& obj : m_mapObjList)
 	{
+		if (!obj) continue;
+		if (!obj->IsInView()) continue; // 画面外スキップ
+
 		obj->DrawLit();
 	}
 }

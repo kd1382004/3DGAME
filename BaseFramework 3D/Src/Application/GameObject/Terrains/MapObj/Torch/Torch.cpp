@@ -39,6 +39,15 @@ void Torch::Init()
 
 		m_frustumBox = KdCollider::BoxInfo(0, localOBB);
 	}
+
+
+	//m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
+	//	"Light.efkefc",
+	//	m_pos,
+	//	1.0f,
+	//	1.0f,
+	//	true // ループ再生
+	//);
 }
 
 void Torch::PreDraw()
@@ -49,11 +58,30 @@ void Torch::PreDraw()
 	{
 		m_isInView = CheckInScreen(spCamera->GetBoundingFrustum(), m_frustumBox);
 	}
+
+
+	//// エフェクトオブジェクトを取得
+	//if (auto spEffect = m_wpAuraEffect.lock())
+	//{
+	//	int handle = spEffect->GetHandle();
+	//	if (m_isInView)
+	//	{
+	//		// 画面内に映っている時：一時停止解除（再生）
+	//		KdEffekseerManager::GetInstance().SetPause(handle, false);
+	//	}
+	//	else
+	//	{
+	//		// 画面外に出ている時：一時停止（負荷を0にする）
+	//		KdEffekseerManager::GetInstance().SetPause(handle, true);
+	//	}
+	//}
 }
 
 void Torch::DrawLit()
 {
 	if (!m_spTorchModel) { return; }
+	if (!m_isInView) { return; }
+
 
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTorchModel, m_mWorld);
 }

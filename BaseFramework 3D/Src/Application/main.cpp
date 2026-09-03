@@ -68,6 +68,9 @@ void Application::PreUpdate()
 void Application::Update()
 {
 	SceneManager::Instance().Update();
+
+	// 毎フレームの更新
+	KdEffekseerManager::GetInstance().Update();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -117,6 +120,10 @@ void Application::PreDraw()
 void Application::Draw()
 {
 	SceneManager::Instance().Draw();
+
+
+	// 描画処理（3Dオブジェクト描画パスなどの適切なタイミングで呼び出す）
+	KdEffekseerManager::GetInstance().Draw();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -209,6 +216,11 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	KdFontManager::Instance().Init(GetWindowHandle());
 	
+	//===================================================================
+	// Effekseer初期化
+	//===================================================================
+	KdEffekseerManager::GetInstance().Create(w, h);
+
 	//===================================================================
 	// ゲーム固有の初期化
 	//===================================================================
