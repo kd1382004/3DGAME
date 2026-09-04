@@ -161,6 +161,9 @@ void GameScene::Init()
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
 
+	KdShaderManager::Instance().WorkAmbientController().SetDirLight({ 0,-1,0 }, { 1,1,1 });
+
+
 	/////////////////////////////////////////
 	//ゲームシーン
 	/////////////////////////////////////////

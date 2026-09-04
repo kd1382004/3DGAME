@@ -101,7 +101,7 @@ void BaseScene::Draw()
 	{
 		for (auto& obj : m_objList)
 		{
-			continue;
+			//continue;
 			obj->GenerateDepthMapFromLight();
 		}
 	}
@@ -137,6 +137,10 @@ void BaseScene::Draw()
 		{
 			obj->DrawEffect();
 		}
+
+
+		// 描画処理
+		KdEffekseerManager::GetInstance().Draw();
 	}
 	KdShaderManager::Instance().m_StandardShader.EndUnLit();
 

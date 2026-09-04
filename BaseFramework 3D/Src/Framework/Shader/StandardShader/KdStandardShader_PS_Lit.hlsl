@@ -219,25 +219,25 @@ float4 main(VSOutput In) : SV_Target0
 	//-------------------------
 	// スポットライト
 	//-------------------------
-	for (int j = 0; j < g_SpotLightNum.x; j++)
+	for (int i = 0; i < g_SpotLightNum.x; i++)
 	{
 		// 光源からピクセルへの方向と距離を算出
-		float3 lightVec = In.wPos - g_SpotLights[j].Pos;
+		float3 lightVec = In.wPos - g_SpotLights[i].Pos;
 		float dist = length(lightVec);
 		// 照射有効半径（Radius）内か判定
-		if (dist < g_SpotLights[j].Radius)
+		if (dist < g_SpotLights[i].Radius)
 		{
 			float3 lightDir = normalize(lightVec); // 光源からピクセルへの方向
-			// ライトの照射方向（g_SpotLights[j].Dir）となす角（内積）を計算
-			float cosAngle = dot(lightDir, g_SpotLights[j].Dir);
+			// ライトの照射方向（g_SpotLights[i].Dir）となす角（内積）を計算
+			float cosAngle = dot(lightDir, g_SpotLights[i].Dir);
 			// 設定された照射角度（CosAngle）の内側か判定
-			if (cosAngle > g_SpotLights[j].CosAngle)
+			if (cosAngle > g_SpotLights[i].CosAngle)
 			{
 				// 1. 距離による減衰
-				float distAtte = 1.0 - saturate(dist / g_SpotLights[j].Radius);
+				float distAtte = 1.0 - saturate(dist / g_SpotLights[i].Radius);
 				distAtte *= distAtte; // 逆2乗減衰
 				// 2. 角度による減衰（コーンの外側に向かって滑らかに減衰する処理）
-				float angleAtte = saturate((cosAngle - g_SpotLights[j].CosAngle) / (1.0 - g_SpotLights[j].CosAngle));
+				float angleAtte = saturate((cosAngle - g_SpotLights[i].CosAngle) / (1.0 - g_SpotLights[i].CosAngle));
 				// 最終減衰率
 				float totalAtte = distAtte * angleAtte;
 				// --- Diffuse (拡散光) ---
@@ -245,13 +245,13 @@ float4 main(VSOutput In) : SV_Target0
 				float lightDiffuse = saturate(dot(L, wN));
 				lightDiffuse *= totalAtte;
 				lightDiffuse /= 3.1415926535; // 正規化Lambert
-				outColor += (g_SpotLights[j].Color * lightDiffuse) * baseDiffuse * baseColor.a;
+				outColor += (g_SpotLights[i].Color * lightDiffuse) * baseDiffuse * baseColor.a;
 				// --- Specular (反射光) ---
 				float spec = BlinnPhong(-lightDir, vCam, wN, specPower);
 				spec *= totalAtte;
-				outColor += (g_SpotLights[j].Color * spec) * baseSpecular * baseColor.a * 0.5;
+				outColor += (g_SpotLights[i].Color * spec) * baseSpecular * baseColor.a * 0.5;
 				// 明度（輝度）の加算
-				totalBrightness += totalAtte * g_SpotLights[j].IsBright;
+				totalBrightness += totalAtte * g_SpotLights[i].IsBright;
 			}
 		}
 	}

@@ -8,31 +8,28 @@ void Flashlight::Init()
 		m_spFlashlightModel->SetModelData("Asset/Models/Accessory/Flashlight/torch.gltf");
 	}
 
+
+	m_localMat = Math::Matrix::CreateTranslation({0.5, 0, 0});
 }
 
 void Flashlight::Update()
 {
 
-	Math::Vector3 pos;
+	Math::Vector3 pos= m_accessoryParentMat.Translation();
+	pos.x += 0.5;
 
-
+	Math::Matrix PtMat = Math::Matrix::CreateTranslation(pos);
+	Math::Matrix pRmat = Math::Matrix::CreateFromYawPitchRoll(m_accessoryParentRot);
 	m_mWorld= m_localMat * m_accessoryParentMat;
-
-	pos = m_mWorld.Translation();
 }
 
 void Flashlight::PostUpdate()
 {
-
-
-
-
-
 	Math::Vector3 pos = m_mWorld.Translation();
 	Math::Vector3 dir = m_mWorld.Backward(); // 前方ベクトル
 	dir.Normalize();
 
-	// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度[30度])
+	// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
 	KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
 		m_flashlightconfig.color,			// 光の色・強度
 		m_flashlightconfig.radius,			// 照射距離
@@ -58,9 +55,6 @@ void Flashlight::DrawBright()
 {
 	if (!m_spFlashlightModel) { return; }
 	//KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spFlashlightModel, m_mWorld);
-
-
-	//DrawImGui();
 }
 
 void Flashlight::DrawImGui()

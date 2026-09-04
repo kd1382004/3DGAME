@@ -42,7 +42,7 @@ void Torch::Init()
 
 
 	//m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
-	//	"Light.efkefc",
+	//	"ToonWater.efkefc",
 	//	m_pos,
 	//	1.0f,
 	//	1.0f,
@@ -60,21 +60,22 @@ void Torch::PreDraw()
 	}
 
 
-	//// エフェクトオブジェクトを取得
-	//if (auto spEffect = m_wpAuraEffect.lock())
-	//{
-	//	int handle = spEffect->GetHandle();
-	//	if (m_isInView)
-	//	{
-	//		// 画面内に映っている時：一時停止解除（再生）
-	//		KdEffekseerManager::GetInstance().SetPause(handle, false);
-	//	}
-	//	else
-	//	{
-	//		// 画面外に出ている時：一時停止（負荷を0にする）
-	//		KdEffekseerManager::GetInstance().SetPause(handle, true);
-	//	}
-	//}
+	// エフェクトオブジェクトを取得
+	if (auto spEffect = m_wpAuraEffect.lock())
+	{
+		int handle = spEffect->GetHandle();
+		if (m_isInView)
+		{
+			// 画面内に映っている時：一時停止解除（再生）
+			KdEffekseerManager::GetInstance().SetPos(handle, m_pos);
+			KdEffekseerManager::GetInstance().SetPause(handle, false);
+		}
+		else
+		{
+			// 画面外に出ている時：一時停止（負荷を0にする）
+			KdEffekseerManager::GetInstance().SetPause(handle, true);
+		}
+	}
 }
 
 void Torch::DrawLit()

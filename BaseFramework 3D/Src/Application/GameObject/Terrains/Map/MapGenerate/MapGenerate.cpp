@@ -1011,54 +1011,52 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 	int xMid = (int)bestB.x;
 	int dx = std::abs(xEnd - xStart);
 	int dy = std::abs(yEnd - yStart);
-	int total = dx + dy;
-	int progress = 0;
-	int currentZ = hA; // 最初は始点部屋の高さ hA
-	// --- 横方向 ---
+	// --- 高さを切り替える安全なポイント（マス）を決定 ---
+	// 0: 高低差なし, 1: 横直線の中央で切り替え, 2: 縦直線の中央で切り替え
+	int changeMode = 0;
+	int changeX = -1;
+	int changeY = -1;
+	if (hA != hB)
+	{
+		// 横方向に十分な長さ（2マス以上）があれば、横の直線の中央で高さを変える
+		if (dx >= 2)
+		{
+			changeMode = 1;
+			// 角や始点を除いた中央マスを計算
+			changeX = xStart + ((xEnd - xStart) / 2);
+		}
+		// 横が短く縦方向に十分な長さ（2マス以上）があれば、縦の直線の中央で高さを変える
+		else if (dy >= 2)
+		{
+			changeMode = 2;
+			// 角や終点を除いた中央マスを計算
+			changeY = yStart + ((yEnd - yStart) / 2);
+		}
+	}
+	int currentZ = hA; // 最初は始点部屋の高さ
+	// --- 横方向の生成 ---
 	int xStep = (xStart <= xEnd) ? 1 : -1;
 	for (int x = xStart; x != xEnd + xStep; x += xStep)
 	{
-		// 全体の進捗に応じた目標高さ
-		int targetZ = (total == 0) ? hA : hA + stepDir * ((progress * absHDiff) / total);
-		// 【重要】高低差が常に0か1になるように制限 (1マスにつき最大±1しか変化させない)
-		if (targetZ > currentZ + 1)
+		// 横直線での切り替え指定位置に到達したら目的地高さ hB に変更
+		if (changeMode == 1 && x == changeX)
 		{
-			currentZ += 1;
-		}
-		else if (targetZ < currentZ - 1)
-		{
-			currentZ -= 1;
-		}
-		else
-		{
-			currentZ = targetZ;
+			currentZ = hB;
 		}
 		ans.push_back({ (float)x, (float)yMid, (float)currentZ });
-		progress++;
 	}
-	// --- 縦方向 ---
-	// (角のマス xMid, yStart は横方向のループの最後で追加済みなので、yStart + yStep から開始して重複を防ぐ)
+	// --- 縦方向の生成 ---
 	int yStep = (yStart <= yEnd) ? 1 : -1;
 	if (yStart != yEnd)
 	{
 		for (int y = yStart + yStep; y != yEnd + yStep; y += yStep)
 		{
-			int targetZ = (total == 0) ? hA : hA + stepDir * ((progress * absHDiff) / total);
-			// 【重要】高低差が常に0か1になるように制限 (1マスにつき最大±1しか変化させない)
-			if (targetZ > currentZ + 1)
+			// 縦直線での切り替え指定位置に到達したら目的地高さ hB に変更
+			if (changeMode == 2 && y == changeY)
 			{
-				currentZ += 1;
-			}
-			else if (targetZ < currentZ - 1)
-			{
-				currentZ -= 1;
-			}
-			else
-			{
-				currentZ = targetZ;
+				currentZ = hB;
 			}
 			ans.push_back({ (float)xMid, (float)y, (float)currentZ });
-			progress++;
 		}
 	}
 	return ans;

@@ -136,7 +136,7 @@ void PlayerBase::PreUpdate()
 	//デバック
 	if (GetAsyncKeyState('2') & 0x8000)
 	{
-		AddExp(100);
+		SetDead();
 	}
 
 }

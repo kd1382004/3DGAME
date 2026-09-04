@@ -120,10 +120,6 @@ void Application::PreDraw()
 void Application::Draw()
 {
 	SceneManager::Instance().Draw();
-
-
-	// 描画処理（3Dオブジェクト描画パスなどの適切なタイミングで呼び出す）
-	KdEffekseerManager::GetInstance().Draw();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
