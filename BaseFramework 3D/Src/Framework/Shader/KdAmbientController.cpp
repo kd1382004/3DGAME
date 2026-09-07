@@ -148,7 +148,7 @@ void KdAmbientController::SetheightFog(const Math::Vector3& col, float topValue,
 	m_dirtyFogHeight = true;
 }
 
-void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg)
+void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg, bool IsBright)
 {
 	SpotLight sl;
 	sl.Color = color;
@@ -158,6 +158,8 @@ void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius,
 	sl.Dir.Normalize();
 	// 角度（度数法）をラジアンに変換してcosを計算
 	sl.CosAngle = cosf(DirectX::XMConvertToRadians(angleDeg));
+
+	sl.IsBright = IsBright;
 
 	m_spotLights.push_back(sl);
 }

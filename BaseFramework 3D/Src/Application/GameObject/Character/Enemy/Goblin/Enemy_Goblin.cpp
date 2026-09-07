@@ -28,6 +28,8 @@ void Goblin::Init()
 		//}
 
 		EnemyBase::Init();
+
+		m_viewAngle = 90;
 	}
 
 }
@@ -59,12 +61,38 @@ void Goblin::Update()
 	{
 		ChangeAnime();
 	}
+
+
+
+	
 }
 
 void Goblin::PreUpdate()
 {
 	EnemyBase::PreUpdate();
 	HPPosPostUpdate();
+
+
+
+
+	if (!m_playerChaseFlg)
+	{
+		//視界範囲描画
+		Math::Vector3 pos = GetPos();
+		Math::Vector3 dir = m_mWorld.Backward();
+		dir.Normalize();
+
+		// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
+		KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
+			{ 0.1,0,0 },			// 光の色・強度
+			m_viewDistance,			// 照射距離
+			m_pos,                  // 位置
+			dir,                    // 前方方向
+			m_viewAngle * 0.5,      // 照射角 
+			false
+		);
+	}
+	
 }
 
 void Goblin::ChangeAnime()
@@ -206,6 +234,6 @@ void Goblin::AttacksSlammingDown()
 	}
 
 
-	SetAttackGagePercent(m_attackWait/m_attackWaitMax);
+	SetAttackGagePercent(m_attackWait / m_attackWaitMax);
 }
 

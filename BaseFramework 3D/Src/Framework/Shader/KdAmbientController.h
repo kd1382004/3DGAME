@@ -66,8 +66,8 @@ public:
 	// 高さフォグの設定
 	void SetheightFog(const Math::Vector3& col, float topValue, float bottomValue, float distance);
 
-	// スポットライト追加関数 (色, 距離, 座標, 方向, 照射角度[度])
-	void AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg);
+	// スポットライト追加関数 (色, 距離, 座標, 方向, 照射角度[度], 光にするか)
+	void AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg,bool IsBright);
 
 private:
 

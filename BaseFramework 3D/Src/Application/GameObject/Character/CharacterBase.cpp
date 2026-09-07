@@ -377,54 +377,28 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 void CharacterBase::AngeleUpdate()
 {
 	if (m_moveVec.Length() == 0) { return; }
-
-
-	//今キャラが向いている方向
 	Math::Vector3 nowDir = m_mWorld.Backward();
-
-	//向きたい方向
 	Math::Vector3 toDir = m_moveVec;
-
-	//内積を求める ベクトルA ・ ベクトルB
+	toDir.Normalize();
 	float dot = nowDir.Dot(toDir);
 	dot = std::clamp(dot, -1.0f, 1.0f);
-
-	//角度に変換
-	float angle = DirectX::XMConvertToDegrees(acos(dot));
-
-	//少しでも回転する必要があったら
-	if (angle >= 0.1f)
+	float angle = DirectX::XMConvertToDegrees(acosf(dot));
+	// 角度差が微小(0.5度未満)の場合は回転を終了しチャタリングを防止する
+	if (angle >= 0.5f)
 	{
-		//回転角度の上限
-		if (angle > 10)
-		{
-			angle = 10;
-		}
-
-		//回転軸
-		//外積
+		// 1フレームあたりの最大回転角度（目標との差が小さければその分だけ回す）
+		float turnSpeed = 10.0f;
+		float stepAngle = std::min(angle, turnSpeed);
 		Math::Vector3 cross = nowDir.Cross(toDir);
-
-
 		if (cross.y >= 0)
 		{
-			//右回転
-			m_angle += angle;
-
-			if (m_angle > 360)
-			{
-				m_angle -= 360;
-			}
+			m_angle += stepAngle;
+			if (m_angle >= 360.0f) { m_angle -= 360.0f; }
 		}
 		else
 		{
-			//左回転
-			m_angle -= angle;
-
-			if (m_angle < 0)
-			{
-				m_angle += 360;
-			}
+			m_angle -= stepAngle;
+			if (m_angle < 0.0f) { m_angle += 360.0f; }
 		}
 	}
 }

@@ -9,22 +9,17 @@ void Flashlight::Init()
 	}
 
 
-	m_localMat = Math::Matrix::CreateTranslation({0.5, 0, 0});
+	m_localMat = Math::Matrix::CreateTranslation({0.3, 0.1, 0});
 }
 
 void Flashlight::Update()
 {
-
-	Math::Vector3 pos= m_accessoryParentMat.Translation();
-	pos.x += 0.5;
-
-	Math::Matrix PtMat = Math::Matrix::CreateTranslation(pos);
-	Math::Matrix pRmat = Math::Matrix::CreateFromYawPitchRoll(m_accessoryParentRot);
-	m_mWorld= m_localMat * m_accessoryParentMat;
 }
 
 void Flashlight::PostUpdate()
 {
+	m_mWorld = m_localMat * m_accessoryParentMat;
+
 	Math::Vector3 pos = m_mWorld.Translation();
 	Math::Vector3 dir = m_mWorld.Backward(); // 前方ベクトル
 	dir.Normalize();
@@ -35,7 +30,8 @@ void Flashlight::PostUpdate()
 		m_flashlightconfig.radius,			// 照射距離
 		pos,                                // 懐中電灯の位置
 		dir,                                // 前方方向
-		m_flashlightconfig.angle            // 照射角 
+		m_flashlightconfig.angle,           // 照射角 
+		true
 	);
 }
 

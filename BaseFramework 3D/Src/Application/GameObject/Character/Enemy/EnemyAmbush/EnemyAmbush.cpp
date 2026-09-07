@@ -26,12 +26,6 @@ void EnemyAmbush::Update()
 			//徘徊
 			Wander();
 		}
-
-
-
-
-		//プレイヤーが視界にいるかどうか
-		SearchPlayer();
 	}
 	else
 	{
@@ -58,7 +52,11 @@ void EnemyAmbush::Update()
 		m_pDebugWire->AddDebugSphere(m_spawnPos, wanderRadius, { 1,1,1,1 });
 	}
 
-
+	if (!m_playerChaseFlg)
+	{
+		//プレイヤーが視界にいるかどうか
+		SearchPlayer();
+	}
 
 }
 
@@ -69,6 +67,7 @@ void EnemyAmbush::Wander()
 		if (m_stayTime > 0)
 		{
 			m_stayTime -= DeltaTime::Instance().GetGameDeltaTime();
+			m_moveVec = Math::Vector3::Zero;
 			return;
 		}
 

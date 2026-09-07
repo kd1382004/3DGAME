@@ -157,13 +157,15 @@ void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 
 void EnemyBase::SearchPlayer()
 {
-	Math::Vector3 dir = m_moveVec;
+	Math::Vector3 dir = m_mWorld.Backward();
+	dir.Normalize();
+
 	Math::Vector3 toPlayer = (m_playerPos - m_pos);
 	toPlayer.Normalize();
 
 	float dot = dir.Dot(toPlayer);
 
-	float cosView = cosf(m_viewAngle * 0.5f);
+	float cosView = cosf(DirectX::XMConvertToRadians(m_viewAngle * 0.5f));
 
 	if (dot > cosView)
 	{
@@ -185,9 +187,6 @@ void EnemyBase::SearchPlayer()
 	{
 		m_pDebugWire->AddDebugLine(m_pos, dir, m_viewDistance);
 	}
-
-
-
 }
 
 void EnemyBase::PlayerChase()

@@ -5,7 +5,7 @@
 
 struct FlashlightConfig
 {
-	Math::Vector3 color = {10,9,7 };  // 光の色・強度
+	Math::Vector3 color = {10,10,10 };  // 光の色・強度
 	float radius = 200.0f;                         // 照射距離
 	float angle = 30.0f;                           // 照射角度
 };

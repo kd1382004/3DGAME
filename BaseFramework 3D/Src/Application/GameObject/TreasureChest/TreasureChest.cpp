@@ -93,7 +93,7 @@ void TreasureChest::Update()
 
 		float dist = (PlayerPos - Pos).Length();
 
-		if (dist < 10)
+		if (dist < 5)
 		{
 			int key = spPlayer->GetActionKeyConfig().interact;
 
