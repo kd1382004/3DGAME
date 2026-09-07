@@ -145,7 +145,7 @@ void KdSpriteShader::DrawTex(const KdTexture* tex, int x, int y, int w, int h, c
 
 	bool bBgn = m_isBegin;
 	if (!bBgn) Begin();
-
+	
 	KdDirect3D::Instance().WorkDevContext()->PSSetShaderResources(0, 1, tex->WorkSRViewAddress());
 
 	if (color) {

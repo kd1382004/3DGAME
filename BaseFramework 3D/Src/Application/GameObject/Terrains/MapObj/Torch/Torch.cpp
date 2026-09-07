@@ -41,13 +41,30 @@ void Torch::Init()
 	}
 
 
-	//m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
-	//	"ToonWater.efkefc",
-	//	m_pos,
-	//	1.0f,
-	//	1.0f,
-	//	true // ループ再生
-	//);
+	m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
+		"Fire/Fire.efkefc",
+		m_pos,
+		1.0f,
+		1.0f,
+		true // ループ再生
+	);
+
+	m_effectLocalPos = { 0.0f, 1.0f,-0.7f };
+}
+
+void Torch::PostUpdate()
+{
+	if (m_isInView)
+	{
+		// 画面内に映っている時：一時停止解除（再生）
+		DirectX::SimpleMath::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
+		worldEffectPos.y += 1;
+		KdShaderManager::Instance().WorkAmbientController().AddPointLight(
+			{ 10,4,0 },								//色
+			30,										//半径	
+			worldEffectPos		//座標
+		);
+	}
 }
 
 void Torch::PreDraw()
@@ -67,7 +84,8 @@ void Torch::PreDraw()
 		if (m_isInView)
 		{
 			// 画面内に映っている時：一時停止解除（再生）
-			KdEffekseerManager::GetInstance().SetPos(handle, m_pos);
+			DirectX::SimpleMath::Vector3 worldEffectPos =DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos,m_mWorld);
+			KdEffekseerManager::GetInstance().SetPos(handle, worldEffectPos);
 			KdEffekseerManager::GetInstance().SetPause(handle, false);
 		}
 		else
@@ -104,4 +122,15 @@ void Torch::SetRotation(Math::Matrix _rMat)
 	Math::Matrix sMat = Math::Matrix::CreateScale(siz);
 
 	m_mWorld = sMat * _rMat * tMat;
+}
+
+void Torch::Release()
+{
+	// エフェクトオブジェクトを取得
+	if (auto spEffect = m_wpAuraEffect.lock())
+	{
+		int handle = spEffect->GetHandle();
+
+		KdEffekseerManager::GetInstance().StopEffect(handle);
+	}
 }

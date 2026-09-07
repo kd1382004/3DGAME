@@ -48,29 +48,46 @@ void CameraBase::ResolveCameraOcclusion()
 
 	if (!spTarget) { return; }
 
+	Math::Vector3 targetPos = spTarget->GetPos() + Math::Vector3(0, 1.0f, 0);
+	Math::Vector3 camPos = GetPos();
+	// 視線エリアの最小・最大座標
+	Math::Vector3 minPos = Math::Vector3::Min(targetPos, camPos);
+	Math::Vector3 maxPos = Math::Vector3::Max(targetPos, camPos);
+	constexpr float margin = 3.0f;
+
 	KdCollider::RayInfo rayInfo;
 
-	rayInfo.m_pos = spTarget->GetPos() +Math::Vector3(0,1,0);
-	rayInfo.m_dir = GetPos() - rayInfo.m_pos;
+	rayInfo.m_pos = spTarget->GetPos() + Math::Vector3(0, 1, 0);
+	rayInfo.m_dir = camPos - rayInfo.m_pos;
 	rayInfo.m_range = rayInfo.m_dir.Length();
 	rayInfo.m_dir.Normalize();
 	rayInfo.m_type = KdCollider::TypeCameraOcclusion;
-
 
 	float maxOverLap = 0;
 	Math::Vector3 hitPos = {};
 	bool hit = false;
 
-	m_detectRange = (GetPos() - spTarget->GetPos()).Length() + 1.0f;
+	m_detectRange = (camPos - spTarget->GetPos()).Length() + 1.0f;
 	if (rayInfo.m_dir.LengthSquared() == 0.0f) { return; }
 	for (auto& wpObj : m_cameraOcclusionObjects)
 	{
+
+
+
 		if (auto spObj = wpObj.lock())
 		{
+			Math::Vector3 objPos = spObj->GetPos();
+
+			// 視線エリアの外にあるオブジェクトは Raycast 前にスキップ
+			if (objPos.x < minPos.x - margin || objPos.x > maxPos.x + margin ||
+				objPos.z < minPos.z - margin || objPos.z > maxPos.z + margin)
+			{
+				continue; // 高速スキップ
+			}
+
 			std::list<KdCollider::CollisionResult> retRayList;
 
 			spObj->Intersects(rayInfo, &retRayList);
-
 
 			for (auto& ret : retRayList)
 			{

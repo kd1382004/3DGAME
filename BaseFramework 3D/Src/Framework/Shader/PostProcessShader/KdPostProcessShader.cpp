@@ -138,7 +138,7 @@ void KdPostProcessShader::Release()
 void KdPostProcessShader::Draw()
 {
 	// ポストエフェクトテクスチャの描画クリア
-	m_postEffectRTPack.ClearTexture(kBlueColor);
+	m_postEffectRTPack.ClearTexture(kBlackColor);
 
 	// 光源描画テクスチャの描画クリア
 	m_brightEffectRTPack.ClearTexture(kBlackColor);

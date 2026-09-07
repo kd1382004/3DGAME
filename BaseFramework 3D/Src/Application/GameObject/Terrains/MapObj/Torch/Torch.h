@@ -6,10 +6,12 @@ class Torch:public MapObjBase
 {
 public:
 	Torch() {};
-	~Torch() {};
+	~Torch() { Release(); };
 
 	void Init()override;
 
+
+	void PostUpdate()override;
 	void PreDraw();
 	void DrawLit();
 
@@ -21,10 +23,15 @@ public:
 	void SetCamera(std::shared_ptr<CameraBase>_camera) { m_wpCamera = _camera; }
 private:
 
+
+	void Release();
+
 	std::weak_ptr<CameraBase>m_wpCamera;
 
 
 	Math::Vector3 m_pos;
+
+	Math::Vector3 m_effectLocalPos;
 
 	std::shared_ptr<KdModelWork>m_spTorchModel;
 

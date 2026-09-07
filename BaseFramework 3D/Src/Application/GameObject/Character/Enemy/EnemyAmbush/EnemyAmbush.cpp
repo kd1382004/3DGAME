@@ -89,6 +89,8 @@ void EnemyAmbush::Wander()
 		//アニメーション
 		m_AnimeChangeFlg = true;
 		m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Walk;
+
+	
 	}
 	else
 	{

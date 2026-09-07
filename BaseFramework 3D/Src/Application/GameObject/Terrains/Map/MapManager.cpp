@@ -32,7 +32,10 @@ void MapManager::Update()
 
 void MapManager::PostUpdate()
 {
-
+	for (const auto& mapObj : m_mapObj)
+	{
+		mapObj->PostUpdate();
+	}
 }
 
 void MapManager::DrawLit()

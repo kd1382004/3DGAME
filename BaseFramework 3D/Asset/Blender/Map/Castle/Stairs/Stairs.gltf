@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v5.1.19",
+		"generator":"Khronos glTF Blender I/O v5.1.20",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -33,7 +33,12 @@
 		},
 		{
 			"mesh":3,
-			"name":"pedestal"
+			"name":"pedestal",
+			"translation":[
+				0,
+				0.10858450829982758,
+				0
+			]
 		},
 		{
 			"mesh":4,

@@ -42,6 +42,10 @@ void MapBase::Update()
 
 }
 
+void MapBase::PostUpdate()
+{
+}
+
 void MapBase::DrawLit()
 {
 	if (!m_spModel) { return; }
