@@ -31,7 +31,7 @@ private:
 
 	Math::Vector3 m_pos;
 
-	Math::Vector3 m_effectLocalPos;
+
 
 	std::shared_ptr<KdModelWork>m_spTorchModel;
 
@@ -40,5 +40,11 @@ private:
 
 	bool m_isInView = false;
 
+
+	//エフェクト
 	std::weak_ptr<KdEffekseerObject> m_wpAuraEffect;
+	Math::Vector3 m_effectLocalPos;
+	Math::Vector3 m_effectLocalColoer;
+	float m_radius;
+
 };

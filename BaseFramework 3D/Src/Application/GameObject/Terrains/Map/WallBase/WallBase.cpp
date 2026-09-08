@@ -5,7 +5,7 @@ void WallBase::Init()
 	if (!m_spModel)
 	{
 		m_spModel = std::make_shared<KdModelWork>();
-		m_spModel->SetModelData("Asset/Models/Terrains/Map/Wall/Base.gltf");
+		m_spModel->SetModelData("Asset/Models/Terrains/Map/Castle/Wall/Base.gltf");
 	}
 
 

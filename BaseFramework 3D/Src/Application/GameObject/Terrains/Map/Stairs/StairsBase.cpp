@@ -11,6 +11,15 @@ StairsBase::~StairsBase()
 	{
 		spPalyerBase->SetNextFloorActionFlg(false);
 	}
+
+
+	// エフェクトオブジェクトを取得
+	if (auto spEffect = m_wpAuraEffect.lock())
+	{
+		int handle = spEffect->GetHandle();
+
+		KdEffekseerManager::GetInstance().StopEffect(handle);
+	}
 }
 
 void StairsBase::Init()
@@ -18,9 +27,8 @@ void StairsBase::Init()
 	if (!m_spModel)
 	{
 		m_spModel = std::make_shared<KdModelWork>();
-		m_spModel->SetModelData("Asset/Models/Terrains/Map/Stairs/Stairs.gltf");
+		m_spModel->SetModelData("Asset/Models/Terrains/Map/Castle/Stairs/Stairs.gltf");
 	}
-
 
 	if (!m_pCollider)
 	{
@@ -44,16 +52,6 @@ void StairsBase::Init()
 
 void StairsBase::Update()
 {
-	Math::Vector3 noePos = GetPos();
-
-	float lest = noePos.x - 2.5;
-	float right = noePos.x + 2.5;
-	float top = noePos.z + 2.5;
-	float bot = noePos.z - 2.5;
-
-	
-
-
 	std::shared_ptr<PlayerBase>spPalyerBase = m_wpPlayerBase.lock();
 
 	if (spPalyerBase)
@@ -62,8 +60,9 @@ void StairsBase::Update()
 
 		KdCollider::RayInfo rayInfo;
 		rayInfo.m_pos = playerPos;
+		rayInfo.m_pos.y += 0.3;
 		rayInfo.m_dir = Math::Vector3::Down;
-		rayInfo.m_range = 1;
+		rayInfo.m_range = 5;
 		rayInfo.m_type = KdCollider::TypeGround;
 
 		if (Intersects(rayInfo, nullptr))

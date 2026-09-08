@@ -41,6 +41,9 @@ void Torch::Init()
 	}
 
 
+
+
+
 	m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
 		"Fire/Fire.efkefc",
 		m_pos,
@@ -50,18 +53,27 @@ void Torch::Init()
 	);
 
 	m_effectLocalPos = { 0.0f, 1.0f,-0.7f };
+
+
+	m_effectLocalColoer = { 10,4,0 };
+
+	m_radius = 30;
 }
 
 void Torch::PostUpdate()
 {
-	if (m_isInView)
+
+	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+	if (!spCamera) { return; }
+	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
+	worldEffectPos.y += 1;
+	if (CheckInScreen(spCamera->GetBoundingFrustum(), worldEffectPos, m_radius))
 	{
 		// 画面内に映っている時：一時停止解除（再生）
-		DirectX::SimpleMath::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
-		worldEffectPos.y += 1;
+	
 		KdShaderManager::Instance().WorkAmbientController().AddPointLight(
-			{ 10,4,0 },								//色
-			30,										//半径	
+			m_effectLocalColoer,								//色
+			m_radius,										//半径	
 			worldEffectPos		//座標
 		);
 	}

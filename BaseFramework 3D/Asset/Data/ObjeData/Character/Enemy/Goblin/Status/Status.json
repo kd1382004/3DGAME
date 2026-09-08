@@ -10,7 +10,7 @@
     },
     "moveSpeed": {
         "baseSpeed": 5,
-        "runMovePowe": 3,
-        "walkMovePowe": 1
+        "runMovePowe": 4,
+        "walkMovePowe": 3
     }
 }

@@ -74,11 +74,11 @@ void EnemyAmbush::Wander()
 		//目的地に向かっていない場合、ランダムな方向にランダムな距離だけ進む目的地を決める
 
 		//ランダム方向
-		Math::Vector3 nextDir = Math::Vector3(KdRandom::GetFloat(-1, 1), 0, KdRandom::GetFloat(-1, 1));
+		Math::Vector3 nextDir = Math::Vector3(KdRandom::GetFloat(0,0), 0, KdRandom::GetFloat(-1, 1));
 		nextDir.Normalize();
 
 		//スポーン位置から見てどれだけ進むか
-		Math::Vector3 distance = Math::Vector3(KdRandom::GetFloat(0, wanderRadius), 0, KdRandom::GetFloat(0, wanderRadius));
+		float distance = KdRandom::GetFloat(3, wanderRadius);
 
 		//結果のターゲット位置
 		m_targetPos = m_spawnPos + (nextDir * distance);
@@ -89,6 +89,7 @@ void EnemyAmbush::Wander()
 		//アニメーション
 		m_AnimeChangeFlg = true;
 		m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Walk;
+
 
 	
 	}
@@ -101,7 +102,7 @@ void EnemyAmbush::Wander()
 
 
 		//目的地に到達したかどうかor壁に当たってるかどうか
-		if ((m_targetPos - m_pos).LengthSquared() < 0.1f)
+		if ((m_targetPos - m_pos).LengthSquared() < 0.3f)
 		{
 			m_isMovingToTarget = false;
 			m_stayTime = m_arrivalWaitTime;

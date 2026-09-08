@@ -80,3 +80,12 @@ bool KdGameObject::CheckInScreen(const DirectX::BoundingFrustum& frustum, const 
 		return frustum.Intersects(boxWS);
 	}
 }
+
+bool  KdGameObject::CheckInScreen(const DirectX::BoundingFrustum& frustum,const Math::Vector3& Pos,float radius)
+{
+	DirectX::BoundingSphere sphere;
+	sphere.Center = Pos;
+	sphere.Radius = radius;
+
+	return frustum.Intersects(sphere);
+}

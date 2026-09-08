@@ -17,7 +17,7 @@ MapGenerate::MapGenerate()
 	if (!m_spFloorModel)
 	{
 		m_spFloorModel = std::make_shared<KdModelWork>();
-		m_spFloorModel->SetModelData("Asset/Models/Terrains/Map/Floor/Base.gltf");
+		m_spFloorModel->SetModelData("Asset/Models/Terrains/Map/Castle/Floor/Base.gltf");
 	}
 
 	if (!m_spSlopeModel)
@@ -29,13 +29,13 @@ MapGenerate::MapGenerate()
 	if (!m_spWallModel)
 	{
 		m_spWallModel = std::make_shared<KdModelWork>();
-		m_spWallModel->SetModelData("Asset/Models/Terrains/Map/Wall/Base.gltf");
+		m_spWallModel->SetModelData("Asset/Models/Terrains/Map/Castle/Wall/Base.gltf");
 	}
 
 	if (!m_spStairsModel)
 	{
 		m_spStairsModel = std::make_shared<KdModelWork>();
-		m_spStairsModel->SetModelData("Asset/Models/Terrains/Map/Stairs/Stairs.gltf");
+		m_spStairsModel->SetModelData("Asset/Models/Terrains/Map/Castle/Stairs/Stairs.gltf");
 	}
 }
 
@@ -520,6 +520,9 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					std::swap(wallDirs[i], wallDirs[rndIndex]);
 				}
 
+				//松明の設置許可
+				bool torchFlg = true;
+
 				for (const auto& dir : wallDirs)
 				{
 					int nx = x + dir.dx;
@@ -542,9 +545,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							m_chunks[cy][cx].push_back(wall);
 						}
 
-						//置かれたか
-						bool torchFlg = false;
-
+			
 						for (int i = startH; i <= m_heightLevelMax; i++)
 						{
 							bool createStairs = dir.allowStairs && isStairsRoom && !stairsPlaced;
@@ -555,7 +556,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 							if (i != startH)
 							{
-								torchFlg = true;
+								torchFlg = false;
 							}
 
 							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, &torchFlg);
@@ -1156,20 +1157,21 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 		}
 
 
-		if (*_flg)
+		if (!*_flg)
 		{
 			return wall;
 		}
 
 
 		//松明を置くかどうか
-		bool placeTorch = *_flg;
+		bool placeTorch = false;
 
 
 		if (map[_y][_x].m_tileType == TileType::Room)
 		{
 			// 部屋の壁ならランダムに置く
-			if (KdRandom::GetInt(0, 100) < 15) { // 15% くらい
+			if (KdRandom::GetInt(0, 100) < 15)
+			{ 
 				placeTorch = true;
 			}
 		}
@@ -1183,7 +1185,8 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 			else
 			{
 				// ランダム
-				if (KdRandom::GetInt(0, 100) < 15) { // 15% くらい
+				if (KdRandom::GetInt(0, 100) < 100)
+				{ 
 					placeTorch = true;
 				}
 			}
@@ -1196,7 +1199,7 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 			SetTorch(_rotYDegree, _pos, wall);
 		}
 
-		*_flg = placeTorch;
+		*_flg = !placeTorch;
 
 		return wall;
 	}

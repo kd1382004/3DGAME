@@ -71,6 +71,8 @@ public:
 	// 視錐台範囲内に入っているかどうか
 	virtual bool CheckInScreen(const DirectX::BoundingFrustum&, const KdCollider::BoxInfo& targetBox);
 
+	virtual bool CheckInScreen(const DirectX::BoundingFrustum& frustum, const Math::Vector3& Pos, float radius);
+
 	//GameObjectを直接継承したクラスを入れる
 	enum GameObjectClass
 	{

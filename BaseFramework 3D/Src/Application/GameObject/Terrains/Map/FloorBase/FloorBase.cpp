@@ -6,7 +6,7 @@ void FloorBase::Init()
 	if (!m_spModel)
 	{
 		m_spModel = std::make_shared<KdModelWork>();
-		m_spModel->SetModelData("Asset/Models/Terrains/Map/Floor/Base.gltf");
+		m_spModel->SetModelData("Asset/Models/Terrains/Map/Castle/Floor/Base.gltf");
 
 	}
 

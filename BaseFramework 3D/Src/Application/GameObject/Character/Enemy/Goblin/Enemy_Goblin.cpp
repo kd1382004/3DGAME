@@ -75,7 +75,7 @@ void Goblin::PreUpdate()
 
 
 
-	if (!m_playerChaseFlg)
+	//if (!m_playerChaseFlg)
 	{
 		//視界範囲描画
 		Math::Vector3 pos = GetPos();
@@ -84,7 +84,7 @@ void Goblin::PreUpdate()
 
 		// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
 		KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
-			{ 0.1,0,0 },			// 光の色・強度
+			{ 1,0,0 },			// 光の色・強度
 			m_viewDistance,			// 照射距離
 			m_pos,                  // 位置
 			dir,                    // 前方方向
