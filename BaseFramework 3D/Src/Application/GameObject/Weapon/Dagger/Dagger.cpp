@@ -24,100 +24,96 @@ void Dagger::Update()
 {
 	WeaponBase::Update();
 
-	if (!m_attackFlg) { return; }
+	if (!m_attackFlg)
+	{ 
+		m_isFirstFrame = true;
+		return; 
+	}
 
-	float r = tipLocalPos.y / 3.0;
+	// 現フレームの先端・基部ワールド座標
+	Math::Vector3 currTipPos = Math::Vector3::Transform(tipLocalPos, m_weponParentMat);
+	Math::Vector3 currBasePos = Math::Vector3::Transform(baseLocalPos, m_weponParentMat);
 
-	Math::Matrix finalMat = m_weponParentMat;
+	if (m_isFirstFrame)
+	{
+		m_prevTipPos = currTipPos;
+		m_prevBasePos = currBasePos;
+		m_isFirstFrame = false;
+		return;
+	}
 
-	Math::Vector3 worldPos;
+	// --- 速度に応じた動的サブステッピング分割数の計算 ---
+	float moveDist = (currTipPos - m_prevTipPos).Length();
 
-	//武器の先端を取る
-	finalMat = m_weponParentMat;
-	worldPos = Math::Vector3::Transform(tipLocalPos, finalMat);
+	// 半径の1倍の距離ごとに1分割（隙間が絶対できないように設定）
+	int steps = static_cast<int>(std::ceil(moveDist / m_hitSphereRadius));
+	if (steps < 1) { steps = 1; }
+	if (steps > 20) { steps = 20; } // 安全のための上限値
 
-	DirectX::BoundingSphere sphere1;
-	sphere1.Radius = r;
-	sphere1.Center = GetPos();
-	KdCollider::SphereInfo spher1Info(KdCollider::TypeBump, sphere1);
+	std::vector<KdCollider::SphereInfo> sphereList;
 
-	DirectX::BoundingSphere sphere2;
-	sphere2.Radius = r;
-	sphere2.Center = Math::Vector3::Transform(tipLocalPos / 2, finalMat);
-	KdCollider::SphereInfo spher2Info(KdCollider::TypeBump, sphere2);
 
-	DirectX::BoundingSphere sphere3;
-	sphere3.Radius = r;
-	sphere3.Center = Math::Vector3::Transform(tipLocalPos, finalMat);
-	KdCollider::SphereInfo spher3Info(KdCollider::TypeBump, sphere3);
+	// フレームを線形補間しながら判定球を生成
+	for (int i = 0; i <= steps; ++i)
+	{
+		float t = static_cast<float>(i) / static_cast<float>(steps);
+		Math::Vector3 tipPos = Math::Vector3::Lerp(m_prevTipPos, currTipPos, t);
+		Math::Vector3 basePos = Math::Vector3::Lerp(m_prevBasePos, currBasePos, t);
+		Math::Vector3 midPos = (tipPos + basePos) * 0.5f;
 
+		// 先端・基部・中点に判定球を配置
+		sphereList.push_back(KdCollider::SphereInfo(KdCollider::TypeDamage, tipPos, m_hitSphereRadius));
+		sphereList.push_back(KdCollider::SphereInfo(KdCollider::TypeDamage, basePos, m_hitSphereRadius));
+		sphereList.push_back(KdCollider::SphereInfo(KdCollider::TypeDamage, midPos, m_hitSphereRadius));
+	}
+
+
+	// --- 当たり判定処理 ---
 	for (auto& wpGameObj : m_attackHitCharacterList)
 	{
 		auto spGameObj = wpGameObj.lock();
 		if (!spGameObj) continue;
-
-		// 実際に当たったキャラ
-		std::shared_ptr<CharacterBase> hitCharacter = spGameObj;
-
-		if (Hit(hitCharacter)) { continue; }
-
-		if (hitCharacter->Intersects(spher1Info, nullptr))
+		if (IsAlreadyHit(spGameObj)) continue;
+		bool isHit = false;
+		std::list<KdCollider::CollisionResult> results;
+		for (const auto& sphere : sphereList)
 		{
-			//Hit後処理
-			// 初回ヒット
-			m_hitCharactersList.push_back(hitCharacter);
+			if (spGameObj->Intersects(sphere, &results))
+			{
+				isHit = true;
+				break; // 1つでも当たっていれば確定
+			}
+		}
 
-			// Hit後処理
+
+		if (isHit)
+		{
+			m_hitCharactersList.push_back(spGameObj);
 			float damage = m_characterAttackPower * m_baseWeaponStatus.attackPower;
+			Math::Vector3 dir = currTipPos - m_prevTipPos;
+			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 			spGameObj->OnAttackHit(
 				damage,
-				0,
-				Math::Vector3::Zero,
+				m_baseWeaponStatus.knockback,
+				dir,
 				m_baseWeaponStatus.startup,
 				false,
 				m_baseWeaponStatus.poiseBreak
 			);
 		}
+	}
+
+	// 座標更新
+	m_prevTipPos = currTipPos;
+	m_prevBasePos = currBasePos;
 
 
-		if (hitCharacter->Intersects(spher2Info, nullptr))
+	// デバッグ描画
+	if (m_pDebugWire)
+	{
+		for (const auto& sphere : sphereList)
 		{
-			if (Hit(hitCharacter)) { continue; }
-
-			//Hit後処理
-			// 初回ヒット
-			m_hitCharactersList.push_back(hitCharacter);
-
-			// Hit後処理
-			float damage = m_characterAttackPower * m_baseWeaponStatus.attackPower;
-			spGameObj->OnAttackHit(
-				damage,
-				0,
-				Math::Vector3::Zero,
-				m_baseWeaponStatus.startup,
-				false,
-				m_baseWeaponStatus.poiseBreak
-			);
-		}
-
-		if (hitCharacter->Intersects(spher3Info, nullptr))
-		{
-			if (Hit(hitCharacter)) { continue; }
-
-			//Hit後処理
-			// 初回ヒット
-			m_hitCharactersList.push_back(hitCharacter);
-
-			// Hit後処理
-			float damage = m_characterAttackPower * m_baseWeaponStatus.attackPower;
-			spGameObj->OnAttackHit(
-				damage,
-				0,
-				Math::Vector3::Zero,
-				m_baseWeaponStatus.startup,
-				false,
-				m_baseWeaponStatus.poiseBreak
-			);
+			m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius, kRedColor);
 		}
 	}
 }
@@ -128,24 +124,14 @@ void Dagger::DrawLit()
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWeaponModel, m_mWorld);
 
 }
-
-bool Dagger::Hit(std::shared_ptr<CharacterBase> _chara)
+bool Dagger::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)
 {
-	// 既にヒットしているかチェック
-	bool alreadyHit = false;
-
 	for (auto& wp : m_hitCharactersList)
 	{
 		if (auto sp = wp.lock())
 		{
-			if (sp == _chara)
-			{
-				alreadyHit = true;
-				break;
-			}
+			if (sp == _chara) return true;
 		}
 	}
-
-
-	return alreadyHit;
+	return false;
 }

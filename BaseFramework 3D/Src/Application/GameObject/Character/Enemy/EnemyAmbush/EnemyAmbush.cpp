@@ -74,7 +74,7 @@ void EnemyAmbush::Wander()
 		//目的地に向かっていない場合、ランダムな方向にランダムな距離だけ進む目的地を決める
 
 		//ランダム方向
-		Math::Vector3 nextDir = Math::Vector3(KdRandom::GetFloat(0,0), 0, KdRandom::GetFloat(-1, 1));
+		Math::Vector3 nextDir = Math::Vector3(KdRandom::GetFloat(-1, 1), 0, KdRandom::GetFloat(-1, 1));
 		nextDir.Normalize();
 
 		//スポーン位置から見てどれだけ進むか
@@ -89,9 +89,6 @@ void EnemyAmbush::Wander()
 		//アニメーション
 		m_AnimeChangeFlg = true;
 		m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Walk;
-
-
-	
 	}
 	else
 	{
