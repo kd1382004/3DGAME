@@ -545,7 +545,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							m_chunks[cy][cx].push_back(wall);
 						}
 
-			
+
 						for (int i = startH; i <= m_heightLevelMax; i++)
 						{
 							bool createStairs = dir.allowStairs && isStairsRoom && !stairsPlaced;
@@ -673,7 +673,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 
 
 	//チャンク対応
-	
+
 	int chunkW = std::max(1.0f, _mapSiz.x / CHUNK_SIZE);
 	int chunkH = std::max(1.0f, _mapSiz.y / CHUNK_SIZE);
 
@@ -756,7 +756,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 			m_chunks[cy][cx].push_back(mapA);
 
 
-	
+
 
 			//壁を生成
 			// 4方向の定義データ構造
@@ -1116,7 +1116,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 	return false;
 }
 
-std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map, bool* _flg)
+std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, bool* _flg)
 {
 	if (_isStairs)
 	{
@@ -1167,29 +1167,35 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 		bool placeTorch = false;
 
 
+
 		if (map[_y][_x].m_tileType == TileType::Room)
-		{
-			// 部屋の壁ならランダムに置く
-			if (KdRandom::GetInt(0, 100) < 15)
-			{ 
-				placeTorch = true;
-			}
-		}
-		else
 		{
 			// コーナーなら置く
 			if (IsCornerWall(_x, _y, map))
 			{
 				placeTorch = true;
 			}
-			else
+		}
+		else
+		{
+
+			// コーナーなら置く
+			if (IsCornerWall(_x, _y, map))
 			{
-				// ランダム
-				if (KdRandom::GetInt(0, 100) < 100)
-				{ 
-					placeTorch = true;
-				}
+				placeTorch = true;
+			}	//T字路なら置く
+			else if (IsTintersection(_x, _y, map))
+			{
+				placeTorch = true;
 			}
+
+			//周りになかったら置く
+			if (IsSetTorch(_x, _y, map,4 ))
+			{				
+				placeTorch = true;
+			}
+
+
 
 
 		}
@@ -1197,6 +1203,8 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 		if (placeTorch)
 		{
 			SetTorch(_rotYDegree, _pos, wall);
+
+			map[_y][_x].m_setTorchFlg = true;
 		}
 
 		*_flg = !placeTorch;
@@ -1282,7 +1290,87 @@ bool MapGenerate::IsCornerWall(int x, int y, const std::vector<std::vector<Floor
 	bool left = isValid(x - 1, y) && map[y][x - 1].m_tileType != TileType::None;
 	bool right = isValid(x + 1, y) && map[y][x + 1].m_tileType != TileType::None;
 
-	return (up || down) && (left || right);
+	return (up != down) && (left != right);
+}
+
+bool MapGenerate::IsTintersection(int x, int y, const std::vector<std::vector<FloorInfo>>& map)
+{
+	int height = static_cast<int>(map.size());
+	int width = static_cast<int>(map[0].size());
+
+	auto isValid = [&](int nx, int ny) {
+		return ny >= 0 && ny < height && nx >= 0 && nx < width;
+		};
+
+	int intersectionCunt = 0;
+
+	//上
+	if (isValid(x, y - 1) && map[y - 1][x].m_tileType != TileType::None)
+	{
+		intersectionCunt++;
+	}
+
+	//下
+	if (isValid(x, y + 1) && map[y + 1][x].m_tileType != TileType::None)
+	{
+		intersectionCunt++;
+	}
+
+	//左
+	if (isValid(x - 1, y) && map[y][x - 1].m_tileType != TileType::None)
+	{
+		intersectionCunt++;
+	}
+
+	//右
+	if (isValid(x + 1, y) && map[y][x + 1].m_tileType != TileType::None)
+	{
+		intersectionCunt++;
+	}
+
+	if (intersectionCunt == 3)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool MapGenerate::IsSetTorch(int x, int y, const std::vector<std::vector<FloorInfo>>& map, int num)
+{
+	int height = static_cast<int>(map.size());
+	int width = static_cast<int>(map[0].size());
+
+	auto isValid = [&](int nx, int ny) {
+		return ny >= 0 && ny < height && nx >= 0 && nx < width;
+		};
+
+
+	//周囲にあったら設置できない
+
+	//上下
+	for (int i = -num;i <= num;i++)
+	{
+		if (isValid(x, y + i) && map[y + i][x].m_setTorchFlg)
+		{
+			return false;
+		}
+
+	}
+
+	//左右
+	for (int i = -num;i <= num;i++)
+	{
+		if (isValid(x + i, y) && map[y ][x + i].m_setTorchFlg)
+		{
+			return false;
+		}
+
+	}
+
+
+
+	return true;
 }
 
 void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)

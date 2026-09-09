@@ -66,7 +66,7 @@ void Torch::PostUpdate()
 	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 	if (!spCamera) { return; }
 	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
-	worldEffectPos.y += 1;
+
 	if (CheckInScreen(spCamera->GetBoundingFrustum(), worldEffectPos, m_radius))
 	{
 		// 画面内に映っている時：一時停止解除（再生）

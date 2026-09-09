@@ -22,6 +22,9 @@ struct FloorInfo
 
 	//回転
 	int m_angle = 0;
+
+	//松明を置いたかどうか
+	bool m_setTorchFlg = false;
 };
 
 
@@ -199,7 +202,7 @@ private:
 	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel, int x, int y);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, const std::vector<std::vector<FloorInfo>>& map, bool* _flg = nullptr);
+	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y,std::vector<std::vector<FloorInfo>>& map, bool* _flg = nullptr);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;
@@ -217,10 +220,15 @@ private:
 
 	void SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_obj);
 
+	//角なら設置
 	bool IsCornerWall(int x, int y, const std::vector<std::vector<FloorInfo>>& map);
 
+	//T字路なら設置
+	bool IsTintersection(int x, int y, const std::vector<std::vector<FloorInfo>>& map);
 
-
+	//トーチを設置していいか
+	//num...直線方向にnumずつ見る
+	bool IsSetTorch(int x, int y, const std::vector<std::vector<FloorInfo>>& map,int num);
 	///////////////////
 
 

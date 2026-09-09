@@ -2,6 +2,8 @@
 #include"Attack/Attack_Slamming/Attack_Slamming.h"
 
 #include"../../../../Scene/SceneManager.h"
+
+#include"../../../Camera/CameraBase.h"
 void Goblin::Init()
 {
 	EnemyAmbush::Init();
@@ -75,22 +77,30 @@ void Goblin::PreUpdate()
 
 
 
-	//if (!m_playerChaseFlg)
+	if (!m_playerChaseFlg)
 	{
-		//視界範囲描画
-		Math::Vector3 pos = GetPos();
-		Math::Vector3 dir = m_mWorld.Backward();
-		dir.Normalize();
+		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+		if (!spCamera) { return; }
 
-		// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
-		KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
-			{ 1,0,0 },			// 光の色・強度
-			m_viewDistance,			// 照射距離
-			m_pos,                  // 位置
-			dir,                    // 前方方向
-			m_viewAngle * 0.5,      // 照射角 
-			false
-		);
+
+		if (CheckInScreen(spCamera->GetBoundingFrustum(), m_pos, m_viewDistance))
+		{
+
+			//視界範囲描画
+			Math::Vector3 pos = GetPos();
+			Math::Vector3 dir = m_mWorld.Backward();
+			dir.Normalize();
+
+			// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
+			KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
+				{ 1,0,0 },			// 光の色・強度
+				m_viewDistance,			// 照射距離
+				m_pos,                  // 位置
+				dir,                    // 前方方向
+				m_viewAngle * 0.5,      // 照射角 
+				false
+			);
+		}
 	}
 	
 }
