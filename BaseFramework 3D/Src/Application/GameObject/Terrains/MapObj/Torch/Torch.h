@@ -21,9 +21,13 @@ public:
 
 
 	void SetCamera(std::shared_ptr<CameraBase>_camera) { m_wpCamera = _camera; }
+
+	
+
+	void SetInHaunk(bool _flg)override { SetEffectUpdate(_flg); };
 private:
 
-
+	void SetEffectUpdate(bool _flg);
 	void Release();
 
 	std::weak_ptr<CameraBase>m_wpCamera;

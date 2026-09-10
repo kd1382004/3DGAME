@@ -62,7 +62,6 @@ void Torch::Init()
 
 void Torch::PostUpdate()
 {
-
 	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 	if (!spCamera) { return; }
 	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
@@ -70,7 +69,7 @@ void Torch::PostUpdate()
 	if (CheckInScreen(spCamera->GetBoundingFrustum(), worldEffectPos, m_radius))
 	{
 		// 画面内に映っている時：一時停止解除（再生）
-	
+
 		KdShaderManager::Instance().WorkAmbientController().AddPointLight(
 			m_effectLocalColoer,								//色
 			m_radius,										//半径	
@@ -96,7 +95,7 @@ void Torch::PreDraw()
 		if (m_isInView)
 		{
 			// 画面内に映っている時：一時停止解除（再生）
-			DirectX::SimpleMath::Vector3 worldEffectPos =DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos,m_mWorld);
+			DirectX::SimpleMath::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
 			KdEffekseerManager::GetInstance().SetPos(handle, worldEffectPos);
 			KdEffekseerManager::GetInstance().SetPause(handle, false);
 		}
@@ -136,13 +135,34 @@ void Torch::SetRotation(Math::Matrix _rMat)
 	m_mWorld = sMat * _rMat * tMat;
 }
 
+void Torch::SetEffectUpdate(bool _flg)
+{
+	if (!_flg)
+	{
+		if (auto spEffect = m_wpAuraEffect.lock())
+		{
+			// SetLoop(false) してから StopEffect を呼ぶことで自動再再生を防ぎ、消去＆停止させる
+			spEffect->StopEffect();
+		}
+	}
+	else
+	{
+		auto spEffect = m_wpAuraEffect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
+		{
+			// 処理範囲内に戻ったら再再生
+			m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
+				"Fire/Fire.efkefc", m_pos, 1.0f, 1.0f, true
+			);
+		}
+	}
+} 
+
 void Torch::Release()
 {
 	// エフェクトオブジェクトを取得
 	if (auto spEffect = m_wpAuraEffect.lock())
 	{
-		int handle = spEffect->GetHandle();
-
-		KdEffekseerManager::GetInstance().StopEffect(handle);
+		spEffect->StopEffect();
 	}
 }

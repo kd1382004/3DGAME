@@ -111,6 +111,11 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 		if (_spMapManager->GetChunksUpdate(chunkNum))
 		{
 			m_mapObjUpdateList.push_back(obj);
+			obj->SetInHaunk(true);
+		}
+		else
+		{
+			obj->SetInHaunk(false);
 		}
 	}
 }

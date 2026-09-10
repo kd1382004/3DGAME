@@ -169,7 +169,7 @@ public:
 	const KdEffekseerManager::PlayEfkInfo& GetPlayEfkInfo() const	{ return m_info; }
 
 private:
-
+	
 	Effekseer::ManagerRef				m_parentManager = nullptr;
 	Effekseer::EffectRef				m_effect = nullptr;
 	Effekseer::Handle					m_handle = -1;

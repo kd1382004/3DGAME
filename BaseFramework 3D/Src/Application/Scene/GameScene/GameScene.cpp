@@ -437,4 +437,14 @@ void GameScene::GenerateMap()
 
 
 	m_spMapObjManager->ObjSetCamera(m_spCamera);
+
+
+	//更新チャンク決め
+	m_spMapManager->SetPlayerChanke(m_spPlayer->GetPos());
+
+	if (m_spMapObjManager)
+	{
+		m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
+	}
+
 }
