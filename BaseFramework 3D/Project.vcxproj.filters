@@ -193,9 +193,6 @@
     <Filter Include="Src\Application\GameObject\UI\SkillGage">
       <UniqueIdentifier>{f19f20b9-b6b7-4bec-be24-daa1f74846ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\Application\GameObject\TreasureChest">
-      <UniqueIdentifier>{806fb0d8-a18b-4d9f-8633-b2ebbe1f2bdc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest">
       <UniqueIdentifier>{737d2806-8719-492d-9e3b-c95ffe66fd2c}</UniqueIdentifier>
     </Filter>
@@ -210,9 +207,6 @@
     </Filter>
     <Filter Include="Src\Application\GameObject\Character\Player\PlayerInventory">
       <UniqueIdentifier>{ea7d426c-ade2-4d4c-9252-ea16b2ab180d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Application\GameObject\TreasureChest\LootTableManager">
-      <UniqueIdentifier>{2171e6a2-b5e2-41a6-afed-4aaf66fb7586}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Application\GameObject\Potions\PotionTexInfo">
       <UniqueIdentifier>{f7cb4c0d-a512-48cc-bc5f-3b298cb3283d}</UniqueIdentifier>
@@ -303,6 +297,12 @@
     </Filter>
     <Filter Include="Src\Application\GameObject\Character\Player\PlayerAccessory">
       <UniqueIdentifier>{ba75c0d1-888e-4a42-8dcc-19b9edd8bf40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest">
+      <UniqueIdentifier>{aa3c21a2-7642-4f15-a30b-1699015033c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager">
+      <UniqueIdentifier>{4a4b4b78-0359-4d88-9e42-2f5f2fff1354}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -591,12 +591,6 @@
     <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h">
       <Filter>Src\Application\GameObject\UI\SkillGage</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChest.h">
-      <Filter>Src\Application\GameObject\TreasureChest</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.h">
-      <Filter>Src\Application\GameObject\TreasureChest</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.h">
       <Filter>Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest</Filter>
     </ClInclude>
@@ -614,9 +608,6 @@
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.h">
       <Filter>Src\Application\GameObject\Character\Player\PlayerInventory</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.h">
-      <Filter>Src\Application\GameObject\TreasureChest\LootTableManager</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.h">
       <Filter>Src\Application\GameObject\Potions\PotionTexInfo</Filter>
@@ -710,6 +701,15 @@
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerAccessory\PlayerAccessory.h">
       <Filter>Src\Application\GameObject\Character\Player\PlayerAccessory</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.h">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestManager.h">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.h">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -965,12 +965,6 @@
     <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp">
       <Filter>Src\Application\GameObject\UI\SkillGage</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChest.cpp">
-      <Filter>Src\Application\GameObject\TreasureChest</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.cpp">
-      <Filter>Src\Application\GameObject\TreasureChest</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.cpp">
       <Filter>Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest</Filter>
     </ClCompile>
@@ -985,9 +979,6 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.cpp">
       <Filter>Src\Application\GameObject\Character\Player\PlayerInventory</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.cpp">
-      <Filter>Src\Application\GameObject\TreasureChest\LootTableManager</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.cpp">
       <Filter>Src\Application\GameObject\Potions\PotionTexInfo</Filter>
@@ -1081,6 +1072,15 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerAccessory\PlayerAccessory.cpp">
       <Filter>Src\Application\GameObject\Character\Player\PlayerAccessory</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.cpp">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestManager.cpp">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.cpp">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

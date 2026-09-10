@@ -28,7 +28,7 @@
 #include"../../GameObject/Character/Enemy/EnemyBase.h"
 
 //宝箱
-#include"../../GameObject/TreasureChest/TreasureChestManager.h"
+#include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestManager.h"
 
 //ポーション
 #include"../../GameObject/Potions/PotionUseController.h"

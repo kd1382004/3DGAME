@@ -1,12 +1,14 @@
 ﻿#pragma once
 
+#include"../MapObjBase.h"
+
 class PlayerBase;
 class CameraBase;
 class UIManager;
 class UIMap_TreasureChest;
 class LootTableManager;
 
-class TreasureChest:public KdGameObject
+class TreasureChest:public MapObjBase
 {
 public:
 	TreasureChest(){};

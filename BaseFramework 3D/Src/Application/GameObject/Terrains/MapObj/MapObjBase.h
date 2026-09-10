@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+
 class CameraBase;
 
 class MapObjBase:public KdGameObject

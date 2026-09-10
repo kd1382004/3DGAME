@@ -312,6 +312,9 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestManager.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h" />
@@ -319,9 +322,6 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h" />
-    <ClInclude Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.h" />
-    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChest.h" />
-    <ClInclude Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.h" />
     <ClInclude Include="Src\Application\GameObject\UI\AttackGage\AttackGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\BuffUI\BuffUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HitDamage\HitDamage.h" />
@@ -441,6 +441,9 @@
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp" />
@@ -448,9 +451,6 @@
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp" />
-    <ClCompile Include="Src\Application\GameObject\TreasureChest\LootTableManager\LootTableManager.cpp" />
-    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChest.cpp" />
-    <ClCompile Include="Src\Application\GameObject\TreasureChest\TreasureChestManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\AttackGage\AttackGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\BuffUI\BuffUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HitDamage\HitDamage.cpp" />

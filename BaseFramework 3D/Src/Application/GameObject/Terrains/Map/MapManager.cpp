@@ -8,7 +8,7 @@
 #include "../../UI/UIManager.h"
 #include "../../UI/UIMap/UIMapManager.h"
 #include "../../UI/UIMap/UIMap_Map/UIMap_Map.h"
-#include"../../TreasureChest/TreasureChestManager.h"
+#include"../MapObj/TreasureChest/TreasureChestManager.h"
 
 void MapManager::Init()
 {

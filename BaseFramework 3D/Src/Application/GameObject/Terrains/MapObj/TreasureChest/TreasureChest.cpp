@@ -1,16 +1,16 @@
 ﻿#include "TreasureChest.h"
-#include"../Character/Player/PlayerBase.h"
-#include"../Character/Player/PlayerInventory/PlayerInventory.h"
+#include"../../../Character/Player/PlayerBase.h"
+#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
 
 
 
-#include"../../Info/KeyInfo/KeyInfo.h"
+#include"../../../../Info/KeyInfo/KeyInfo.h"
 
-#include"../Camera/CameraBase.h"
+#include"../../../Camera/CameraBase.h"
 
-#include"../UI/UIMap/UIMap_TreasureChest/UIMap_TreasureChest.h"
-#include"../UI/UIManager.h"
-#include"../UI\UIMap/UIMapManager.h"
+#include"../../../UI/UIMap/UIMap_TreasureChest/UIMap_TreasureChest.h"
+#include"../../../UI/UIManager.h"
+#include"../../../UI\UIMap/UIMapManager.h"
 
 
 #include"LootTableManager/LootTableManager.h"
