@@ -53,7 +53,7 @@ void CameraBase::ResolveCameraOcclusion()
 	// 視線エリアの最小・最大座標
 	Math::Vector3 minPos = Math::Vector3::Min(targetPos, camPos);
 	Math::Vector3 maxPos = Math::Vector3::Max(targetPos, camPos);
-	constexpr float margin = 3.0f;
+	constexpr float margin = 10.0f;
 
 	KdCollider::RayInfo rayInfo;
 
@@ -71,9 +71,6 @@ void CameraBase::ResolveCameraOcclusion()
 	if (rayInfo.m_dir.LengthSquared() == 0.0f) { return; }
 	for (auto& wpObj : m_cameraOcclusionObjects)
 	{
-
-
-
 		if (auto spObj = wpObj.lock())
 		{
 			Math::Vector3 objPos = spObj->GetPos();

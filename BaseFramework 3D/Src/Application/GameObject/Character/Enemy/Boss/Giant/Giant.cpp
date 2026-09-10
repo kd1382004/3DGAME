@@ -25,7 +25,7 @@ void Giant::Init()
 		if (!m_pCollider)
 		{
 			m_pCollider = std::make_unique<KdCollider>();
-			m_pCollider->RegisterCollisionShape("Giant", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion);
+			m_pCollider->RegisterCollisionShape("Giant", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion | KdCollider::TypeDamage);
 		}
 
 		EnemyBase::Init();

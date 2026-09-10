@@ -384,7 +384,7 @@ void CharacterBase::AngeleUpdate()
 	dot = std::clamp(dot, -1.0f, 1.0f);
 	float angle = DirectX::XMConvertToDegrees(acosf(dot));
 	// 角度差が微小の場合は回転を終了しチャタリングを防止する
-	if (angle >= 1.0f)
+	if (angle >= 0.5)
 	{
 		// 1フレームあたりの最大回転角度（目標との差が小さければその分だけ回す）
 		float turnSpeed = 10.0f;

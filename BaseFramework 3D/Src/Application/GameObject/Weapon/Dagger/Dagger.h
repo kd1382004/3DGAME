@@ -26,4 +26,8 @@ private:
 	Math::Vector3 m_prevBasePos = Math::Vector3::Zero;
 	bool m_isFirstFrame = true;
 	bool IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara);
+
+
+	//トレイルポリゴン (軌跡) ポリゴン
+	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
 };

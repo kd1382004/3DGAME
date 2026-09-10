@@ -18,37 +18,61 @@ void Dagger::Init()
 	}
 
 	m_localPos = Math::Vector3(0.0f, 1.2f, 0.0f);
+
+
+	if (!m_tPoly)
+	{
+		m_tPoly = std::make_shared<KdTrailPolygon>();
+		m_tPoly->SetMaterial("Asset/Textures/jet.png");
+
+		//トレイルポリゴンをビルボード(面をカメラに向ける)化
+		m_tPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
+	}
 }
 
 void Dagger::Update()
 {
 	WeaponBase::Update();
 
-	if (!m_attackFlg)
-	{ 
-		m_isFirstFrame = true;
-		return; 
-	}
-
 	// 現フレームの先端・基部ワールド座標
 	Math::Vector3 currTipPos = Math::Vector3::Transform(tipLocalPos, m_weponParentMat);
 	Math::Vector3 currBasePos = Math::Vector3::Transform(baseLocalPos, m_weponParentMat);
+
+	if (!m_attackFlg)
+	{ 
+		m_isFirstFrame = true;
+
+		if (m_tPoly)
+		{
+			//トレイルポイント
+			if (m_tPoly)
+			{
+				Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
+
+				m_tPoly->AddPoint(mat);
+			}
+		}
+
+		return; 
+	}
+
+
 
 	if (m_isFirstFrame)
 	{
 		m_prevTipPos = currTipPos;
 		m_prevBasePos = currBasePos;
 		m_isFirstFrame = false;
-		return;
 	}
 
 	// --- 速度に応じた動的サブステッピング分割数の計算 ---
 	float moveDist = (currTipPos - m_prevTipPos).Length();
 
-	// 半径の1倍の距離ごとに1分割（隙間が絶対できないように設定）
+	// 半径の距離ごとに1分割（隙間が絶対できないように設定）
 	int steps = static_cast<int>(std::ceil(moveDist / m_hitSphereRadius));
 	if (steps < 1) { steps = 1; }
-	if (steps > 20) { steps = 20; } // 安全のための上限値
+	const int stepsMax = 20;
+	if (steps > stepsMax) { steps = stepsMax; } // 安全のための上限値
 
 	std::vector<KdCollider::SphereInfo> sphereList;
 
@@ -100,6 +124,12 @@ void Dagger::Update()
 				false,
 				m_baseWeaponStatus.poiseBreak
 			);
+
+
+
+
+			float m_hitStoptim = 0.03f;
+			DeltaTime::Instance().HitStop(m_hitStoptim);
 		}
 	}
 
@@ -116,12 +146,29 @@ void Dagger::Update()
 			m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius, kRedColor);
 		}
 	}
+
+
+	//トレイルポイント
+	if (m_tPoly)
+	{
+		Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
+
+		m_tPoly->AddPoint(mat);
+	}
+
 }
 
 void Dagger::DrawLit()
 {
 	if (!m_spWeaponModel) { return; }
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWeaponModel, m_mWorld);
+	if (m_attackFlg)
+	{
+		if (m_tPoly)
+		{
+			KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_tPoly);
+		}
+	}
 
 }
 bool Dagger::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)

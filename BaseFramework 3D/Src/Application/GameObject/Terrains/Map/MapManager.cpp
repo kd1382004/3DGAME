@@ -462,7 +462,7 @@ Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 	// Z は下へマイナス → -Z がタイル番号
 	int y = static_cast<int>(floor((-worldPos.z) / m_mapTileSiz));
 
-	if (m_nodes.empty() || m_nodes[0].empty()) return nullptr;
+	if (m_nodes.empty() || m_nodes[0].empty()) { return nullptr; }
 
 	int width = static_cast<int>(m_nodes[0].size());
 	int height = static_cast<int>(m_nodes.size());

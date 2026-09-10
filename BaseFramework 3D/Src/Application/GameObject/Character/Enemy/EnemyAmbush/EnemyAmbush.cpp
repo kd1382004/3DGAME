@@ -78,7 +78,7 @@ void EnemyAmbush::Wander()
 		nextDir.Normalize();
 
 		//スポーン位置から見てどれだけ進むか
-		float distance = KdRandom::GetFloat(3, wanderRadius);
+		float distance = KdRandom::GetFloat(0, wanderRadius);
 
 		//結果のターゲット位置
 		m_targetPos = m_spawnPos + (nextDir * distance);
@@ -99,7 +99,7 @@ void EnemyAmbush::Wander()
 
 
 		//目的地に到達したかどうかor壁に当たってるかどうか
-		if ((m_targetPos - m_pos).LengthSquared() < 0.3f)
+		if ((m_targetPos - m_pos).LengthSquared() < m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime())
 		{
 			m_isMovingToTarget = false;
 			m_stayTime = m_arrivalWaitTime;

@@ -76,7 +76,7 @@ protected:
 		float stunPower = 0.0f;          // スタン値
 
 		// --- モーション補正 ---
-		float startup = 0.0f;            // 攻撃開始フレーム補正
+		float startup = 0.05f;            // 攻撃開始フレーム補正
 		float recovery = 0.0f;           // 攻撃後硬直補正
 		float cancelWindow = 0.0f;       // キャンセル可能フレーム補正
 	};

@@ -21,7 +21,7 @@ void Goblin::Init()
 		if (!m_pCollider)
 		{
 			m_pCollider = std::make_unique<KdCollider>();
-			m_pCollider->RegisterCollisionShape("Goblin", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion);
+			m_pCollider->RegisterCollisionShape("Goblin", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion| KdCollider::TypeDamage);
 		}
 
 		//if (!m_pDebugWire)
@@ -93,7 +93,7 @@ void Goblin::PreUpdate()
 
 			// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
 			KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
-				{ 1,0,0 },			// 光の色・強度
+				{ 0.1,0,0 },			// 光の色・強度
 				m_viewDistance,			// 照射距離
 				m_pos,                  // 位置
 				dir,                    // 前方方向

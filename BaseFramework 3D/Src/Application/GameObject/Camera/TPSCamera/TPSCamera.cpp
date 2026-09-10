@@ -6,7 +6,7 @@ void TPSCamera::Init()
 	CameraBase::Init();
 
 	// 注視点
-	m_cameraPos = { 0, 1.5f, -10.0f };
+	m_cameraPos = { 0, 3.5f, -10.0f };
 	m_mLocalPos = Math::Matrix::CreateTranslation(m_cameraPos);
 
 	m_ImGUIName = "TPSCamera";
