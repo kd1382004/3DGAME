@@ -128,6 +128,8 @@ public:
 
 
 	void SetCamera(std::shared_ptr<CameraBase> _spCamera) { m_wpCamera = _spCamera; }
+
+
 private:
 
 
@@ -202,7 +204,7 @@ private:
 	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel, int x, int y);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y,std::vector<std::vector<FloorInfo>>& map, bool* _flg = nullptr);
+	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y,std::vector<std::vector<FloorInfo>>& map,Math::Vector2 chunkNum, bool* _flg = nullptr);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;
@@ -218,7 +220,7 @@ private:
 	//マップオブジェクト
 	std::weak_ptr<MapObjManager>m_wpMapObjManager;
 
-	void SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_obj);
+	void SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_obj, Math::Vector2 _chunk);
 
 	//角なら設置
 	bool IsCornerWall(int x, int y, const std::vector<std::vector<FloorInfo>>& map);
@@ -258,7 +260,7 @@ private:
 	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
 
 
-	const	int  CHUNK_SIZE = 3;
+	const	int  CHUNK_SIZE = 5;
 
 
 

@@ -48,6 +48,18 @@ void GameScene::ImGUi()
 	{
 		Camera->ImGUI();
 	}
+
+	//FOGImGUI
+	if (ImGui::TreeNode(U8("FOG")))
+	{
+		ImGui::InputFloat(U8("R"), &m_FOGCol.x, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("G"), &m_FOGCol.y, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("B"), &m_FOGCol.z, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("m_FOGdensity"), &m_FOGdensity, 0.01f, 1.0f, "%.2f");
+		ImGui::TreePop();
+	}
+
+	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
 }
 
 void GameScene::WarpGateInit(Math::Vector3 _setPos)
@@ -93,11 +105,22 @@ void GameScene::Event()
 	//////////////////////////////////////////
 
 	///////////////////////////////////////////////////
+	//更新チャンク更新
+	///////////////////////////////////////////////////
+	if (!m_spMapManager) { return; }
+	//更新チャンク決め
+	m_spMapManager->SetPlayerChanke(m_spPlayer->GetPos());
+
+	if (m_spMapObjManager)
+	{
+		m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
+	}
+
+
 	//あたり判定セット
 
 	//プレイヤーのあたり判定リストを毎フレーム更新
-	if (!m_spMapManager) { return; }
-
+	m_spMapManager->SetPlayerChanke(m_spPlayer->GetPos());
 	m_spMapManager->MapHit(m_spPlayer);
 
 	//プレイヤーと宝箱のあたり判定
@@ -162,6 +185,18 @@ void GameScene::Init()
 
 
 	KdShaderManager::Instance().WorkAmbientController().SetDirLight({ 0,-1,0 }, { 1,1,1 });
+
+
+
+	//Fog(霧)
+	//distance...距離
+	//height ...高さ
+	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(true,false);
+
+	//距離フォグの設定
+	//col...色
+	//density...密度
+	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
 
 
 	/////////////////////////////////////////

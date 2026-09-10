@@ -2,6 +2,7 @@
 
 class MapObjBase;
 class CameraBase;
+class MapManager;
 
 class MapObjManager :public KdGameObject
 {
@@ -30,8 +31,14 @@ public:
 
 
 	void ObjSetCamera(std::shared_ptr<CameraBase> _spCameraBase);
+
+
+	void SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManager);
+
 private:
 
 	std::list<std::shared_ptr<MapObjBase>>m_mapObjList;
 
+	//更新処理するチャンクにあるオブジェだけ入れる
+	std::list<std::shared_ptr<MapObjBase>>m_mapObjUpdateList;
 };

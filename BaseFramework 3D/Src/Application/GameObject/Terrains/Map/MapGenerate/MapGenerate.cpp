@@ -536,12 +536,14 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 						if (map[y][x].m_tileType == TileType::Slopee)
 						{
-							wallPos.y -= tileSiz;
-							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, rID, x, y, map);
-							wallPos.y += tileSiz;
-
 							int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
 							int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+
+							wallPos.y -= tileSiz;
+							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, rID, x, y, map, { static_cast<float>( cx) ,static_cast<float>(cy) });
+							wallPos.y += tileSiz;
+
+					
 							m_chunks[cy][cx].push_back(wall);
 						}
 
@@ -558,12 +560,12 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							{
 								torchFlg = false;
 							}
-
-							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, &torchFlg);
-							wallPos.y += tileSiz;
-
 							int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
 							int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) }, &torchFlg);
+							wallPos.y += tileSiz;
+
+					
 							m_chunks[cy][cx].push_back(wall);
 						}
 
@@ -792,10 +794,11 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel, x, y))
 				{
 					Math::Vector3 wallPos = { xPos + dir.offset.x, 0, zPos + dir.offset.z };
-					std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map);
 
 					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
 					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+
+					std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) });
 
 					m_chunks[cy][cx].push_back(wall);
 				}
@@ -1116,7 +1119,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 	return false;
 }
 
-std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, bool* _flg)
+std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, Math::Vector2 chunkNum, bool* _flg)
 {
 	if (_isStairs)
 	{
@@ -1202,7 +1205,7 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 
 		if (placeTorch)
 		{
-			SetTorch(_rotYDegree, _pos, wall);
+			SetTorch(_rotYDegree, _pos, wall, chunkNum);
 
 			map[_y][_x].m_setTorchFlg = true;
 		}
@@ -1213,7 +1216,7 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 	}
 }
 
-void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _obj)
+void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _obj,Math::Vector2 _chunk)
 {
 	std::shared_ptr<MapObjManager>spMapObjManager = m_wpMapObjManager.lock();
 	if (!spMapObjManager) { return; }
@@ -1267,6 +1270,7 @@ void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_pt
 		std::shared_ptr<Torch>spTorch = std::make_shared<Torch>();
 		spTorch->Init();
 		spTorch->SetPos(pos);
+		spTorch->SetChunkNum(_chunk);
 		spTorch->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
 		spTorch->SetCamera(m_wpCamera.lock());
 		spMapObjManager->AddMapObj(spTorch);

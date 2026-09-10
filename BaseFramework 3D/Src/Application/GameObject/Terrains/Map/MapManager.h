@@ -108,6 +108,18 @@ public:
 
 	void SetMapObjManager(std::shared_ptr<MapObjManager>_obj) { m_wpMapObjManager = _obj; }
 
+
+
+	//プレイヤーの座標をセットして、Update以降処理するチャンクを決める
+	void SetPlayerChanke(Math::Vector3 _pos);
+
+	//座標を渡して更新するかどうかを返す
+	bool GetChunksUpdate(Math::Vector3 _pos);
+
+	//チャンク番号を渡して更新するかどうかを返す
+	bool GetChunksUpdate(Math::Vector2 _chunkNum);
+
+	bool GetIsChunkChanged(){return m_isChunkChanged;}
 private:
 
 	////////////////////////////////////////////
@@ -150,6 +162,14 @@ private:
 
 	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
 
+
+	//更新処理するチャンク
+	std::vector<std::shared_ptr<MapBase>>m_updateChankes;
+
+	//チャンクのXYを保存
+	Math::Vector2 m_chankeNum;
+
+	bool m_isChunkChanged = false;
 
 	float m_mapTileSiz = 10.0f;
 

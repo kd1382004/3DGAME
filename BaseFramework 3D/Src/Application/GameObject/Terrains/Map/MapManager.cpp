@@ -10,11 +10,6 @@
 #include "../../UI/UIMap/UIMap_Map/UIMap_Map.h"
 #include"../../TreasureChest/TreasureChestManager.h"
 
-#include <algorithm>
-#include <cmath>
-#include <cfloat>
-#include <random>
-
 void MapManager::Init()
 {
 	m_spMapGenerate = std::make_shared<MapGenerate>();
@@ -24,7 +19,7 @@ void MapManager::Init()
 
 void MapManager::Update()
 {
-	for (const auto& mapObj : m_mapObj)
+	for (const auto& mapObj : m_updateChankes)
 	{
 		mapObj->Update();
 	}
@@ -32,7 +27,7 @@ void MapManager::Update()
 
 void MapManager::PostUpdate()
 {
-	for (const auto& mapObj : m_mapObj)
+	for (const auto& mapObj : m_updateChankes)
 	{
 		mapObj->PostUpdate();
 	}
@@ -40,7 +35,7 @@ void MapManager::PostUpdate()
 
 void MapManager::DrawLit()
 {
-	for (const auto& mapObj : m_mapObj)
+	for (const auto& mapObj : m_updateChankes)
 	{
 		mapObj->DrawLit();
 	}
@@ -48,7 +43,7 @@ void MapManager::DrawLit()
 
 void MapManager::PreDraw()
 {
-	for (const auto& mapObj : m_mapObj)
+	for (const auto& mapObj : m_updateChankes)
 	{
 		mapObj->PreDraw();
 	}
@@ -56,7 +51,7 @@ void MapManager::PreDraw()
 
 void MapManager::GenerateDepthMapFromLight()
 {
-	for (const auto& mapObj : m_mapObj)
+	for (const auto& mapObj : m_updateChankes)
 	{
 		mapObj->GenerateDepthMapFromLight();
 	}
@@ -403,6 +398,98 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	{
 		SetCamera(m_wpCamera.lock());
 	}
+}
+
+void MapManager::SetPlayerChanke(Math::Vector3 _pos)
+{
+	// ワールド座標 → タイル座標へ変換
+	int tileX = static_cast<int>(_pos.x / m_mapTileSiz);
+	int tileY = static_cast<int>(-_pos.z / m_mapTileSiz);
+
+	// タイル座標 → チャンク番号へ変換
+	int cx = tileX / CHUNK_SIZE;
+	int cy = tileY / CHUNK_SIZE;
+
+	//今までと同じなら変えなくてOK
+	if (m_chankeNum.x == cx && m_chankeNum.y == cy) 
+	{ 
+		m_isChunkChanged = false;
+		return; 
+	}
+
+	m_isChunkChanged = true;
+	m_updateChankes.clear();
+	m_chankeNum = { static_cast<float>(cx),static_cast<float>(cy) };
+
+	// チャンク範囲チェック
+	auto inRange = [&](int x, int y)
+		{
+			return y >= 0 && y < m_chunks.size() &&
+				x >= 0 && x < m_chunks[y].size();
+		};
+
+	// 9チャンク（中心＋周囲8チャンク）だけ判定
+	for (int dy = -1; dy <= 1; dy++)
+	{
+		for (int dx = -1; dx <= 1; dx++)
+		{
+			int ncx = cx + dx;
+			int ncy = cy + dy;
+
+			if (!inRange(ncx, ncy)) continue;
+
+			// このチャンクに属する MapBase を更新処理に入れる
+			for (auto& wpMapObj : m_chunks[ncy][ncx])
+			{
+				std::shared_ptr<MapBase>spMapObj = wpMapObj.lock();
+
+				if (!spMapObj) continue;
+
+				m_updateChankes.push_back(spMapObj);
+			}
+		}
+	}
+}
+
+bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
+{
+	// ワールド座標 → タイル座標へ変換
+	int tileX = static_cast<int>(_pos.x / m_mapTileSiz);
+	int tileY = static_cast<int>(-_pos.z / m_mapTileSiz);
+
+	// タイル座標 → チャンク番号へ変換
+	int cx = tileX / CHUNK_SIZE;
+	int cy = tileY / CHUNK_SIZE;
+
+	return GetChunksUpdate({ static_cast<float>(cx),static_cast<float>(cy) });
+}
+
+bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
+{
+	// チャンク範囲チェック
+	auto inRange = [&](int x, int y)
+		{
+			return y >= 0 && y < m_chunks.size() &&
+				x >= 0 && x < m_chunks[y].size();
+		};
+
+	for (int dy = -1; dy <= 1; dy++)
+	{
+		for (int dx = -1; dx <= 1; dx++)
+		{
+			int ncx = m_chankeNum.x + dx;
+			int ncy = m_chankeNum.y + dy;
+
+			if (!inRange(ncx, ncy)) continue;
+
+			if (_chunkNum.x == ncx && _chunkNum.y == ncy)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)

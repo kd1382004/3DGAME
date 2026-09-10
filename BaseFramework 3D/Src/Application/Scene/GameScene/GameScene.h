@@ -69,4 +69,9 @@ private:
 	//ゲーム結果
 	int m_killEnemy = 0;
 	int m_killBoss = 0;
+
+
+	//フォグ
+	Math::Vector3 m_FOGCol = { 0.35,0.35,0.38 };
+	float m_FOGdensity = 0.02;
 };

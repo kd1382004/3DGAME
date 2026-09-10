@@ -44,7 +44,6 @@ void KdDebugGUI::GuiProcess()
 {
 	// 初期化されてないなら動作させない
 	if (!m_uqLog) return;
-	return;
 
 	//===========================================================
 	// ImGui開始
