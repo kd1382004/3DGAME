@@ -70,6 +70,9 @@ void TreasureChestManager::PreDraw()
 
 void TreasureChestManager::GenerateTreasureChest(std::list<Math::Vector3> _treasureChestPosList)
 {
+
+	return;
+
 	m_treasureChestList.clear();
 
 	std::shared_ptr<TreasureChest>spTreasureChest;

@@ -141,6 +141,9 @@ void EnemyManager::SetEnemyListPlayer()
 
 void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
+
+	return;
+
 	std::shared_ptr<Goblin>spEnemyAmbush = std::make_shared<Goblin>();
 	spEnemyAmbush->SetPlayer(m_wpPlayer.lock());
 	spEnemyAmbush->SetMapManager(m_wpMapManager.lock());

@@ -184,7 +184,7 @@ void GameScene::Init()
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
 
-	KdShaderManager::Instance().WorkAmbientController().SetDirLight({ 0,-1,0 }, { 1,1,1 });
+	//KdShaderManager::Instance().WorkAmbientController().SetDirLight({ 1,-1,1 }, { 0,0,0 });
 
 
 
@@ -198,6 +198,7 @@ void GameScene::Init()
 	//density...密度
 	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
 
+	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight({ 1.1,1.1,1.1,1 });
 
 	/////////////////////////////////////////
 	//ゲームシーン

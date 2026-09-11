@@ -248,7 +248,7 @@ float4 main(VSOutput In) : SV_Target0
 					float3 L = -lightDir;
 					float lightDiffuse = saturate(dot(L, wN));
 					lightDiffuse *= totalAtte;
-					lightDiffuse /= 3.1415926535; // 正規化Lambert
+					//lightDiffuse /= 3.1415926535; // 正規化Lambert
 					outColor += (g_SpotLights[i].Color * lightDiffuse) * baseDiffuse * baseColor.a;
 					// --- Specular (反射光) ---
 					float spec = BlinnPhong(-lightDir, vCam, wN, specPower);
