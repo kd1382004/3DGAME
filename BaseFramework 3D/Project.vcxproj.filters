@@ -705,9 +705,6 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.h">
       <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestManager.h">
-      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.h">
       <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager</Filter>
     </ClInclude>
@@ -1074,9 +1071,6 @@
       <Filter>Src\Application\GameObject\Character\Player\PlayerAccessory</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.cpp">
-      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestManager.cpp">
       <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.cpp">

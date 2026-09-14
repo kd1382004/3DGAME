@@ -1,6 +1,9 @@
 ﻿#include "WeaponBase.h"
 
 #include"../Character/CharacterBase.h"
+
+
+#include"../../Scene/SceneManager.h"
 void WeaponBase::Init()
 {
 	LoadWeaponStatus(m_WeaponStatusFilePath);

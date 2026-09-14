@@ -27,9 +27,6 @@
 #include"../../GameObject/Character/Enemy/EnemyManager.h"
 #include"../../GameObject/Character/Enemy/EnemyBase.h"
 
-//宝箱
-#include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestManager.h"
-
 //ポーション
 #include"../../GameObject/Potions/PotionUseController.h"
 
@@ -60,22 +57,18 @@ void GameScene::ImGUi()
 	}
 
 	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
-	
+
 	//ImGUI
 	if (ImGui::TreeNode(U8("階数")))
 	{
 		ImGui::InputInt(U8("マップ広さMAX"), &m_mapGenerateDisplayFloorMax, 1, 1);
 
-		if(ImGui::Button(U8("次の階")))
+		if (ImGui::Button(U8("次の階")))
 		{
 			GenerateMap();
 		}
 		ImGui::TreePop();
 	}
-
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
-
-
 
 }
 
@@ -133,23 +126,32 @@ void GameScene::Event()
 		m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
 	}
 
+	if (m_spEnemyManager)
+	{
+		m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
+	}
+
 
 	//あたり判定セット
 
 	//プレイヤーのあたり判定リストを毎フレーム更新
-	m_spMapManager->SetPlayerChanke(m_spPlayer->GetPos());
 	m_spMapManager->MapHit(m_spPlayer);
 
-	//プレイヤーと宝箱のあたり判定
-	if (!m_spTreasureChestManager) { return; }
-	m_spTreasureChestManager->TreasureChestHit(m_spPlayer);
+	//プレイヤーとマップオブジェクトのあたり判定
+	if (m_spMapObjManager)
+	{
+		m_spMapObjManager->MapObjHit(m_spPlayer);
+	}
 
 	//敵のあたり判定リストを毎フレーム更新
 	if (!m_spEnemyManager) { return; }
-	for (auto enemy : m_spEnemyManager->GetEnemyList())
+	for (auto enemy : m_spEnemyManager->GetEnemyUpdateList())
 	{
 		m_spMapManager->MapHitEnemy(enemy);
-		m_spTreasureChestManager->TreasureChestHit(enemy);
+		if (m_spMapObjManager)
+		{
+			m_spMapObjManager->MapObjHit(enemy);
+		}
 	}
 
 	///////////////////////////////////////////////////
@@ -157,7 +159,7 @@ void GameScene::Event()
 	m_spWeapon->ClearAttackHitCharacterList();
 
 	//敵同士のあたり判定
-	auto& enemies = m_spEnemyManager->GetEnemyList();
+	auto& enemies = m_spEnemyManager->GetEnemyUpdateList();
 
 	for (auto itA = enemies.begin(); itA != enemies.end(); itA++)
 	{
@@ -208,7 +210,7 @@ void GameScene::Init()
 	//Fog(霧)
 	//distance...距離
 	//height ...高さ
-	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(true,false);
+	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(true, false);
 
 	//距離フォグの設定
 	//col...色
@@ -268,14 +270,6 @@ void GameScene::Init()
 	m_spMapObjManager = std::make_shared<MapObjManager>();
 	m_spMapObjManager->Init();
 	m_objList.push_back(m_spMapObjManager);
-
-
-	/////////////////////////////////////////
-	//宝箱
-	/////////////////////////////////////////
-	m_spTreasureChestManager = std::make_shared<TreasureChestManager>();
-	m_spTreasureChestManager->Init();
-	m_objList.push_back(m_spTreasureChestManager);
 
 
 	/////////////////////////////////////////
@@ -376,17 +370,7 @@ void GameScene::Init()
 	m_spMapManager->SetPlayer(m_spPlayer);
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
 	m_spMapManager->SetUIManager(spUIManager);
-	m_spMapManager->SetTreasureChestManager(m_spTreasureChestManager);
 	m_spMapManager->SetMapObjManager(m_spMapObjManager);
-
-
-	/////////////////////////////////////////
-	//宝箱にセット
-	/////////////////////////////////////////
-	m_spTreasureChestManager->SetPlayer(m_spPlayer);
-	m_spTreasureChestManager->SetCamera(m_spCamera);
-	m_spTreasureChestManager->SetUIManager(spUIManager);
-
 
 	/////////////////////////////////////////
 	//ポーション使用コントローラーにセット
@@ -421,7 +405,7 @@ void GameScene::GenerateMap()
 
 	int baseSize = 30;              // 1階のマップサイズ
 	float growth = 1.01f;
-	
+
 	m_mapGenerateDisplayFloor = m_displayFloor;
 
 	if (m_displayFloor > m_mapGenerateDisplayFloorMax)
@@ -441,7 +425,6 @@ void GameScene::GenerateMap()
 
 
 	m_spEnemyManager->EnemyListReset();
-	m_spTreasureChestManager->TreasureChestReset();
 	m_spMapObjManager->ResetMapObj();
 
 	if (m_displayFloor % m_bossInterval != 0)

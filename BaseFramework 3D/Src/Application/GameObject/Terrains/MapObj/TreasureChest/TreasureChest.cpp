@@ -1,4 +1,4 @@
-﻿#include "TreasureChest.h"
+#include "TreasureChest.h"
 #include"../../../Character/Player/PlayerBase.h"
 #include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
 
@@ -16,6 +16,12 @@
 #include"LootTableManager/LootTableManager.h"
 void TreasureChest::Init()
 {
+	if (m_wpLootTableManager.expired())
+	{
+		static auto spLootTableManager = std::make_shared<LootTableManager>();
+		m_wpLootTableManager = spLootTableManager;
+	}
+
 	if (!m_treasureChestModel)
 	{
 		m_treasureChestModel = std::make_shared<KdModelWork>();
@@ -80,7 +86,11 @@ void TreasureChest::Update()
 		if (m_treasureChestAnimetor->IsAnimationEnd())
 		{
 			m_isExpired = true;
-			m_wpUIMap_TreasureChest.lock()->SetExpired(true);
+			auto spUIMap_TreasureChest = m_wpUIMap_TreasureChest.lock();
+			if (spUIMap_TreasureChest)
+			{
+				spUIMap_TreasureChest->SetExpired(true);
+			}
 		}
 		return;
 	}
@@ -167,6 +177,10 @@ void TreasureChest::SetUIManager(std::shared_ptr<UIManager> _spUIManager)
 	std::shared_ptr<UIMap_TreasureChest> spUIMap_TreasureChest = std::make_shared<UIMap_TreasureChest>();
 	m_wpUIMap_TreasureChest = spUIMap_TreasureChest;
 
-	_spUIManager->GetUIMapManager()->AddUIMap_TreasureChest(spUIMap_TreasureChest,GetPos());
+	auto spUIMapManager = _spUIManager->GetUIMapManager();
+	if (spUIMapManager)
+	{
+		spUIMapManager->AddUIMap_TreasureChest(spUIMap_TreasureChest, GetPos());
+	}
 
 }

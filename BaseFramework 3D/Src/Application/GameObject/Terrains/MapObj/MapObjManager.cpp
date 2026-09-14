@@ -24,6 +24,22 @@ void MapObjManager::PreUpdate()
 			++it;	// 次の要素へイテレータを進める
 		}
 	}
+
+	// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
+	auto it1 = m_mapObjUpdateList.begin();
+
+	while (it1 != m_mapObjUpdateList.end())
+	{
+		if ((*it1)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+		{
+			// 無効なオブジェクトをリストから削除
+			it1 = m_mapObjUpdateList.erase(it1);
+		}
+		else
+		{
+			++it1;	// 次の要素へイテレータを進める
+		}
+	}
 }
 
 void MapObjManager::Update()
@@ -116,6 +132,24 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 		else
 		{
 			obj->SetInHaunk(false);
+		}
+	}
+}
+
+void MapObjManager::MapObjHit(const std::shared_ptr<KdGameObject>& obj)
+{
+	if (!obj) { return; }
+
+	const Math::Vector3 objPos = obj->GetPos();
+	constexpr float hitCheckDistSq = 15.0f * 15.0f;
+
+	for (const auto& mapObj : m_mapObjUpdateList)
+	{
+		if (!mapObj) continue;
+		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
+		if (distSq <= hitCheckDistSq)
+		{
+			obj->RegistHitObject(mapObj);
 		}
 	}
 }

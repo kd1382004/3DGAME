@@ -18,10 +18,6 @@ class UIManager;
 class MapObjManager;
 class 	MapGenerate;
 
-
-//宝箱
-class TreasureChestManager;
-
 // ノード構造体 (A* 経路探索用)
 struct Node
 {
@@ -88,7 +84,6 @@ public:
 	void SetPlayer(const std::shared_ptr<PlayerBase>& spPlayerBase) { m_wpPlayerBase = spPlayerBase; }
 	void SetEnemyManager(const std::shared_ptr<EnemyManager>& spEnemyManager) { m_wpEnemyManager = spEnemyManager; }
 	void SetUIManager(const std::shared_ptr<UIManager>& spUIManager) { m_wpUIManager = spUIManager; }
-	void SetTreasureChestManager(const std::shared_ptr<TreasureChestManager>& spTreasureChestManager) { m_wpTreasureChestManager = spTreasureChestManager; }
 
 	////////////////////////////////////////////
 	/// <ノード>
@@ -120,9 +115,6 @@ public:
 	bool GetChunksUpdate(Math::Vector2 _chunkNum);
 
 	bool GetIsChunkChanged(){return m_isChunkChanged;}
-
-
-	void SetUpdateChunkRadius(Math::Vector2 vec2) { m_updateChunkRadius = vec2; }
 private:
 
 	////////////////////////////////////////////
@@ -155,7 +147,6 @@ private:
 	Math::Vector3 m_playerSpawnPos = Math::Vector3::Zero;
 
 	std::weak_ptr<EnemyManager> m_wpEnemyManager;
-	std::weak_ptr<TreasureChestManager> m_wpTreasureChestManager;
 
 
 
@@ -170,7 +161,7 @@ private:
 	std::vector<std::shared_ptr<MapBase>>m_updateChankes;
 
 	//チャンクのXYを保存
-	Math::Vector2 m_chankeNum;
+	Math::Vector2 m_chankeNum = {-999,-999};
 
 	bool m_isChunkChanged = false;
 
@@ -192,6 +183,6 @@ private:
 
 	//更新チャンク
 	//縦横に+-xyずつ
-	Math::Vector2 m_updateChunkRadius = { 5,5 };
+	Math::Vector2 m_updateChunkRadius = { 1,1 };
 };
 

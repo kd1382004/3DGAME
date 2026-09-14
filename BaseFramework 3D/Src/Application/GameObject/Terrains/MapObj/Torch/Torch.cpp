@@ -40,18 +40,6 @@ void Torch::Init()
 		m_frustumBox = KdCollider::BoxInfo(0, localOBB);
 	}
 
-
-
-
-
-	m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
-		"Fire/Fire.efkefc",
-		m_pos,
-		1.0f,
-		1.0f,
-		true // ループ再生
-	);
-
 	m_effectLocalPos = { 0.0f, 1.0f,-0.7f };
 
 

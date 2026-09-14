@@ -17,24 +17,42 @@ void EnemyManager::Init()
 
 void EnemyManager::PreUpdate()
 {
-	auto it = m_enemyList.begin();
-
-	while (it != m_enemyList.end())
 	{
-		if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+		auto it = m_enemyList.begin();
+
+		while (it != m_enemyList.end())
 		{
-			// 無効なオブジェクトをリストから削除
-			it = m_enemyList.erase(it);
+			if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+			{
+				// 無効なオブジェクトをリストから削除
+				it = m_enemyList.erase(it);
+			}
+			else
+			{
+				++it;	// 次の要素へイテレータを進める
+			}
 		}
-		else
+	}
+	{
+		auto it = m_enemyUpdateList.begin();
+
+		while (it != m_enemyUpdateList.end())
 		{
-			++it;	// 次の要素へイテレータを進める
+			if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+			{
+				// 無効なオブジェクトをリストから削除
+				it = m_enemyUpdateList.erase(it);
+			}
+			else
+			{
+				++it;	// 次の要素へイテレータを進める
+			}
 		}
 	}
 
 
 
-	for (const auto& enemy : m_enemyList)
+	for (const auto& enemy : m_enemyUpdateList)
 	{
 		enemy->PreUpdate();
 	}
@@ -42,7 +60,7 @@ void EnemyManager::PreUpdate()
 
 void EnemyManager::Update()
 {
-	for (const auto& enemy : m_enemyList)
+	for (const auto& enemy : m_enemyUpdateList)
 	{
 		enemy->Update();
 	}
@@ -50,7 +68,7 @@ void EnemyManager::Update()
 
 void EnemyManager::PostUpdate()
 {
-	for (const auto& enemy : m_enemyList)
+	for (const auto& enemy : m_enemyUpdateList)
 	{
 		enemy->PostUpdate();
 	}
@@ -77,7 +95,7 @@ void EnemyManager::PreDraw()
 
 void EnemyManager::DrawLit()
 {
-	for (const auto& enemy : m_enemyList)
+	for (const auto& enemy : m_enemyUpdateList)
 	{
 		enemy->DrawLit();
 	}
@@ -85,7 +103,7 @@ void EnemyManager::DrawLit()
 
 void EnemyManager::GenerateDepthMapFromLight()
 {
-	for (const auto& enemy : m_enemyList)
+	for (const auto& enemy : m_enemyUpdateList)
 	{
 		enemy->GenerateDepthMapFromLight();
 	}
@@ -93,7 +111,7 @@ void EnemyManager::GenerateDepthMapFromLight()
 
 void EnemyManager::DrawDebug()
 {
-	for (const auto& enemy : m_enemyList)
+	for (const auto& enemy : m_enemyUpdateList)
 	{
 		enemy->DrawDebug();
 	}
@@ -125,8 +143,37 @@ void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 		spMapManager->MapHitEnemy(spBoss);
 	}
 
+	m_enemyBoss = spBoss;
 
-	m_enemyList.push_back(spBoss);
+	if (m_enemyBoss)
+	{
+		m_enemyUpdateList.push_back(m_enemyBoss);
+	}
+
+}
+
+void EnemyManager::SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager)
+{
+	if (!_spMapManager) { return; }
+
+	if (!_spMapManager->GetIsChunkChanged()) { return; }
+
+
+	m_enemyUpdateList.clear();
+	for (auto& obj : m_enemyList)
+	{
+		Math::Vector3 pso = obj->GetPos();
+		if (_spMapManager->GetChunksUpdate(pso))
+		{
+			m_enemyUpdateList.push_back(obj);
+		}
+	}
+
+
+	if (m_enemyBoss)
+	{
+		m_enemyUpdateList.push_back(m_enemyBoss);
+	}
 }
 
 void EnemyManager::SetEnemyListPlayer()
@@ -141,6 +188,7 @@ void EnemyManager::SetEnemyListPlayer()
 
 void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
+
 	std::shared_ptr<Goblin>spEnemyAmbush = std::make_shared<Goblin>();
 	spEnemyAmbush->SetPlayer(m_wpPlayer.lock());
 	spEnemyAmbush->SetMapManager(m_wpMapManager.lock());

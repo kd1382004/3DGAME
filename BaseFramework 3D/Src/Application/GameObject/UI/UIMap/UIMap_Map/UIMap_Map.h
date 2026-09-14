@@ -44,8 +44,8 @@ public:
 
 
 	// ミニマップの表示モードを設定する
-	// true  : 全タイルを常時表示
-	// false : プレイヤーが踏破したタイルだけ表示
+// true  : 全タイルを常時表示
+// false : プレイヤーが踏破したタイルだけ表示
 	void SetMinimapRevealAll(bool enable);
 private:
 

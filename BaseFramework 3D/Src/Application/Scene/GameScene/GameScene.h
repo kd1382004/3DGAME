@@ -7,7 +7,6 @@ class MapManager;
 class PlayerBase;
 class EnemyManager;
 class WeaponBase;
-class TreasureChestManager;
 class PotionUseController;
 class WarpGateManager;
 class MapObjManager;
@@ -48,7 +47,6 @@ private:
 	std::shared_ptr<PlayerBase>m_spPlayer;
 	std::shared_ptr<EnemyManager>m_spEnemyManager;
 	std::shared_ptr<WeaponBase>m_spWeapon;
-	std::shared_ptr<TreasureChestManager>m_spTreasureChestManager;
 	std::shared_ptr<PotionUseController>m_spPotionUseController;
 	std::shared_ptr<WarpGateManager>m_spWarpGateManager;
 	std::shared_ptr<MapObjManager>m_spMapObjManager;
@@ -58,7 +56,7 @@ private:
 	//階層
 	int m_displayFloor;
 	int m_mapGenerateDisplayFloor;
-	int m_mapGenerateDisplayFloorMax = 100;
+	int m_mapGenerateDisplayFloorMax = 7;
 
 
 	//ボス戦になる倍数(割り切れたらボス戦)

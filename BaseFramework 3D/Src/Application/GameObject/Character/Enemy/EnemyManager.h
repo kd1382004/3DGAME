@@ -37,6 +37,7 @@ public:
 	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
 
 	std::list<std::shared_ptr<EnemyBase>>& GetEnemyList(){ return m_enemyList; }
+	std::list<std::shared_ptr<EnemyBase>>& GetEnemyUpdateList(){ return m_enemyUpdateList; }
 
 
 	void SpawnEnemy(EnemyType _enemyType,Math::Vector3 _spawnPos);
@@ -50,6 +51,8 @@ public:
 	void SetHitDamage(std::shared_ptr<HitDamage>_spHitDamage) { m_wpHitDamage = _spHitDamage; }
 
 	void SetEnemyManager(std::shared_ptr<EnemyManager>_spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
+
+	void SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager);
 protected:
 
 	std::weak_ptr<HitDamage>m_wpHitDamage;
@@ -71,8 +74,13 @@ protected:
 	//ゲームシーン
 	std::weak_ptr<GameScene>m_wpGameScene;
 
-	//敵リスト
+	//雑魚敵リスト
 	std::list<std::shared_ptr<EnemyBase>> m_enemyList;
+	
+	//ボス敵
+	std::shared_ptr<EnemyBase> m_enemyBoss;
+
+	std::list<std::shared_ptr<EnemyBase>> m_enemyUpdateList;
 
 
 	std::weak_ptr<EnemyManager>m_wpEnemyManager;

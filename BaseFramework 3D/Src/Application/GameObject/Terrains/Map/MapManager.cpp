@@ -8,7 +8,8 @@
 #include "../../UI/UIManager.h"
 #include "../../UI/UIMap/UIMapManager.h"
 #include "../../UI/UIMap/UIMap_Map/UIMap_Map.h"
-#include"../MapObj/TreasureChest/TreasureChestManager.h"
+#include"../MapObj/TreasureChest/TreasureChest.h"
+#include"../MapObj/MapObjManager.h"
 
 void MapManager::Init()
 {
@@ -130,9 +131,9 @@ void MapManager::SetCamera(const std::shared_ptr<CameraBase>& spCamera)
 
 void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapType)
 {
-	m_chankeNum = { -999,-999 };
 	m_chunks.clear();
 	m_mapObj.clear();
+	m_chankeNum = { -999,-999 };
 
 	if (!m_spMapGenerate) { return; }
 
@@ -261,8 +262,8 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 	////////////////////////////////////////////////////
 	//宝箱生成
-	std::shared_ptr<TreasureChestManager>spTreasureChestManager = m_wpTreasureChestManager.lock();
-	if (spTreasureChestManager)
+	std::shared_ptr<MapObjManager> spMapObjManager = m_wpMapObjManager.lock();
+	if (spMapObjManager)
 	{
 		std::list<Math::Vector3> TreasureChestPosList;
 
@@ -313,7 +314,25 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			}
 		}
 
-		spTreasureChestManager->GenerateTreasureChest(TreasureChestPosList);
+		for (const auto& pos : TreasureChestPosList)
+		{
+			std::shared_ptr<TreasureChest> spTreasureChest = std::make_shared<TreasureChest>();
+			spTreasureChest->Init();
+			spTreasureChest->SetPos(pos);
+
+			// チャンク番号の計算とセット
+			int tileX = static_cast<int>(pos.x / m_mapTileSiz);
+			int tileY = static_cast<int>(-pos.z / m_mapTileSiz);
+			int cx = tileX / CHUNK_SIZE;
+			int cy = tileY / CHUNK_SIZE;
+			spTreasureChest->SetChunkNum(Math::Vector2(static_cast<float>(cx), static_cast<float>(cy)));
+
+			spTreasureChest->SetUIManager(m_wpUIManager.lock());
+			spTreasureChest->SetPlayer(m_wpPlayerBase.lock());
+			spTreasureChest->SetCamera(m_wpCamera.lock());
+
+			spMapObjManager->AddMapObj(spTreasureChest);
+		}
 	}
 
 
@@ -429,9 +448,6 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 				x >= 0 && x < m_chunks[y].size();
 		};
 
-	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
-
-
 	if (m_updateChunkRadius.x <= 0)
 	{
 		m_updateChunkRadius.x = 1;
@@ -441,6 +457,8 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	{
 		m_updateChunkRadius.y = 1;
 	}
+
+	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
 
 	for (int dy = -m_updateChunkRadius.x; dy <= m_updateChunkRadius.x; dy++)
 	{
@@ -487,9 +505,9 @@ bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 				x >= 0 && x < m_chunks[y].size();
 		};
 
-	for (int dy = -1; dy <= 1; dy++)
+	for (int dy = -m_updateChunkRadius.x; dy <= m_updateChunkRadius.x; dy++)
 	{
-		for (int dx = -1; dx <= 1; dx++)
+		for (int dx = -m_updateChunkRadius.y; dx <= m_updateChunkRadius.y; dx++)
 		{
 			int ncx = m_chankeNum.x + dx;
 			int ncy = m_chankeNum.y + dy;

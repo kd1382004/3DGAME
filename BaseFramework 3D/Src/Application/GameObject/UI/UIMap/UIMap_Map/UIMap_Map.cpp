@@ -57,7 +57,12 @@ void UIMap_Map::PreDraw()
 {
 	DiscoverTile();
 
-	SetMinimapRevealAll(true);
+
+	//デバッグ
+	if (GetAsyncKeyState('4') & 0x8000)
+	{
+		SetMinimapRevealAll(true);
+	}
 }
 
 void UIMap_Map::AddPosList(Math::Vector3 _3DPos, float _worldTileSize, int LoomNum)

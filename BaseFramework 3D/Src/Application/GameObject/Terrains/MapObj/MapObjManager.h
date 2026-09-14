@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class MapObjBase;
 class CameraBase;
@@ -34,6 +34,9 @@ public:
 
 
 	void SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManager);
+
+	// マップオブジェクトと当たり判定させたい対象を登録
+	void MapObjHit(const std::shared_ptr<KdGameObject>& obj);
 
 private:
 

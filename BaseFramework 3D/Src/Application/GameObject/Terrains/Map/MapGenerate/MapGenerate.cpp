@@ -370,7 +370,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 				if (y == 0 && x == 0)
 				{
-					*_basePos = { xPos,0,zPos };
+					*_basePos = { xPos,yPos,zPos };
 				}
 
 				std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();

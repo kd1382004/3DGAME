@@ -33,7 +33,7 @@ void UIMap_EnemyManage::PosListRiseto()
 
 void UIMap_EnemyManage::SetEnemyPosAngleList(Math::Vector3 _pos, float _angle)
 {
-	m_posList.push_back({ _pos,_angle });
+ 	m_posList.push_back({ _pos,_angle });
 }
 
 
