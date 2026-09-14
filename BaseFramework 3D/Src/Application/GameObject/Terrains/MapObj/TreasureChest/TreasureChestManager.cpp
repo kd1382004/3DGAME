@@ -87,6 +87,8 @@ void TreasureChestManager::GenerateTreasureChest(std::list<Math::Vector3> _treas
 		spTreasureChest->SetLootTableManager(m_spLootTableManager);
 		m_treasureChestList.push_back(spTreasureChest);
 	}
+
+	int a = 0;
 }
 
 void TreasureChestManager::TreasureChestHit(const std::shared_ptr<KdGameObject>& obj)
