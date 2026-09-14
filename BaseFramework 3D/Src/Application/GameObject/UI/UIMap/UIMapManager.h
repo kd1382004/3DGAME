@@ -32,6 +32,7 @@ public:
 
 
 	void ResetTreasureChest() { m_UIMap_TreasureChest.clear(); }
+
 private:
 
 	std::shared_ptr<UIMap_Map>m_UIMap_Map;

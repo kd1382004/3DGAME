@@ -56,6 +56,8 @@ void UIMap_Map::DrawSprit()
 void UIMap_Map::PreDraw()
 {
 	DiscoverTile();
+
+	SetMinimapRevealAll(true);
 }
 
 void UIMap_Map::AddPosList(Math::Vector3 _3DPos, float _worldTileSize, int LoomNum)
@@ -99,6 +101,19 @@ void UIMap_Map::PosListReset()
 	m_isStairsMine = false;
 }
 
+
+void UIMap_Map::SetMinimapRevealAll(bool enable)
+{
+	if (enable)
+	{
+		for (auto& info : m_posList)
+		{
+			info.m_drawFlg = true;
+			m_StairsMineMapInfo.m_drawFlg = true;
+			m_isStairsMine = true;
+		}
+	}
+}
 
 void UIMap_Map::DiscoverTile()
 {

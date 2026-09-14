@@ -60,6 +60,23 @@ void GameScene::ImGUi()
 	}
 
 	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+	
+	//ImGUI
+	if (ImGui::TreeNode(U8("階数")))
+	{
+		ImGui::InputInt(U8("マップ広さMAX"), &m_mapGenerateDisplayFloorMax, 1, 1);
+
+		if(ImGui::Button(U8("次の階")))
+		{
+			GenerateMap();
+		}
+		ImGui::TreePop();
+	}
+
+	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+
+
+
 }
 
 void GameScene::WarpGateInit(Math::Vector3 _setPos)
@@ -404,15 +421,23 @@ void GameScene::GenerateMap()
 
 	int baseSize = 30;              // 1階のマップサイズ
 	float growth = 1.01f;
+	
+	m_mapGenerateDisplayFloor = m_displayFloor;
 
-
-	int mapSizeX = static_cast<int>((baseSize + m_displayFloor * m_mapLinearGrowthPerFloorX) * std::pow(growth, m_displayFloor));
-	int mapSizeY = static_cast<int>((baseSize + m_displayFloor * m_mapLinearGrowthPerFloorY) * std::pow(growth, m_displayFloor));
-
-	int baseRoomCount = 3;
-	int roomCount = baseRoomCount + m_displayFloor * 2;
+	if (m_displayFloor > m_mapGenerateDisplayFloorMax)
+	{
+		m_mapGenerateDisplayFloor = m_mapGenerateDisplayFloorMax;
+	}
 
 	m_displayFloor++;
+
+	int mapSizeX = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorX) * std::pow(growth, m_mapGenerateDisplayFloor));
+	int mapSizeY = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorY) * std::pow(growth, m_mapGenerateDisplayFloor));
+
+	int baseRoomCount = 3;
+	int roomCount = baseRoomCount + m_mapGenerateDisplayFloor * 2;
+
+
 
 
 	m_spEnemyManager->EnemyListReset();

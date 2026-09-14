@@ -130,6 +130,7 @@ void MapManager::SetCamera(const std::shared_ptr<CameraBase>& spCamera)
 
 void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapType)
 {
+	m_chankeNum = { -999,-999 };
 	m_chunks.clear();
 	m_mapObj.clear();
 
@@ -332,7 +333,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 {
-
+	m_chankeNum = { -999,-999 };
 	m_mapObj.clear();
 	m_chunks.clear();
 
@@ -428,27 +429,40 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 				x >= 0 && x < m_chunks[y].size();
 		};
 
-	// 9チャンク（中心＋周囲8チャンク）だけ判定
-	for (int dy = -1; dy <= 1; dy++)
+	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
+
+
+	if (m_updateChunkRadius.x <= 0)
 	{
-		for (int dx = -1; dx <= 1; dx++)
+		m_updateChunkRadius.x = 1;
+	}
+
+	if (m_updateChunkRadius.y <= 0)
+	{
+		m_updateChunkRadius.y = 1;
+	}
+
+	for (int dy = -m_updateChunkRadius.x; dy <= m_updateChunkRadius.x; dy++)
+	{
+		for (int dx = -m_updateChunkRadius.y; dx <= m_updateChunkRadius.y; dx++)
 		{
 			int ncx = cx + dx;
 			int ncy = cy + dy;
 
 			if (!inRange(ncx, ncy)) continue;
 
-			// このチャンクに属する MapBase を更新処理に入れる
 			for (auto& wpMapObj : m_chunks[ncy][ncx])
 			{
-				std::shared_ptr<MapBase>spMapObj = wpMapObj.lock();
-
-				if (!spMapObj) continue;
-
-				m_updateChankes.push_back(spMapObj);
+				if (auto spMapObj = wpMapObj.lock())
+				{
+					uniqueUpdateSet.insert(spMapObj);
+				}
 			}
 		}
 	}
+
+	// 最後に push_back
+	m_updateChankes.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
 }
 
 bool MapManager::GetChunksUpdate(Math::Vector3 _pos)

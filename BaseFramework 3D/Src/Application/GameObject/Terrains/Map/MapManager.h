@@ -120,6 +120,9 @@ public:
 	bool GetChunksUpdate(Math::Vector2 _chunkNum);
 
 	bool GetIsChunkChanged(){return m_isChunkChanged;}
+
+
+	void SetUpdateChunkRadius(Math::Vector2 vec2) { m_updateChunkRadius = vec2; }
 private:
 
 	////////////////////////////////////////////
@@ -187,5 +190,8 @@ private:
 
 	int CHUNK_SIZE;
 
+	//更新チャンク
+	//縦横に+-xyずつ
+	Math::Vector2 m_updateChunkRadius = { 5,5 };
 };
 

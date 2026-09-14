@@ -41,6 +41,12 @@ public:
 	Math::Vector2 GetMapTexSiz() { return m_mapTexSiz; }
 
 	void SetIsStairsMine(bool _flg) { m_isStairsMine = _flg; }
+
+
+	// ミニマップの表示モードを設定する
+	// true  : 全タイルを常時表示
+	// false : プレイヤーが踏破したタイルだけ表示
+	void SetMinimapRevealAll(bool enable);
 private:
 
 	float m_siz = 1.0f;
