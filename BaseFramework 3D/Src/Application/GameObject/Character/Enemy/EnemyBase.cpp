@@ -109,6 +109,14 @@ void EnemyBase::PreDraw()
 		std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
 		if (!spAttackGage) { return; }
 
+		if (m_isDead)
+		{
+			spHPBar->SetDrawFlg(false);
+			spAttackGage->SetDrawFlg(false);
+			return;
+		}
+
+
 		if (m_isInView)
 		{
 			Math::Vector3 dist = m_playerPos - m_pos;

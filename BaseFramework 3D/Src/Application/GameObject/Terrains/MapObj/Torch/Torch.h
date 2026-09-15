@@ -6,7 +6,7 @@ class Torch:public MapObjBase
 {
 public:
 	Torch() {};
-	~Torch() { Release(); };
+	~Torch()override { Release(); };
 
 	void Init()override;
 

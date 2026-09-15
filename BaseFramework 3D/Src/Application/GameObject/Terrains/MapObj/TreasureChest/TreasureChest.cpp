@@ -1,4 +1,4 @@
-#include "TreasureChest.h"
+﻿#include "TreasureChest.h"
 #include"../../../Character/Player/PlayerBase.h"
 #include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
 
@@ -14,6 +14,16 @@
 
 
 #include"LootTableManager/LootTableManager.h"
+TreasureChest::~TreasureChest()
+{
+	auto spUIMap_TreasureChest = m_wpUIMap_TreasureChest.lock();
+	if (spUIMap_TreasureChest)
+	{
+		spUIMap_TreasureChest->SetExpired(true);
+	}
+}
+
+
 void TreasureChest::Init()
 {
 	if (m_wpLootTableManager.expired())

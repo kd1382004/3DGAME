@@ -65,8 +65,8 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 
 	//チャンク対応
-	int chunkW = std::max(1.0f, _mapSiz.x / CHUNK_SIZE);
-	int chunkH = std::max(1.0f, _mapSiz.y / CHUNK_SIZE);
+	int chunkW = std::max(1, static_cast<int>(std::ceil(_mapSiz.x / static_cast<float>(CHUNK_SIZE))));
+	int chunkH = std::max(1, static_cast<int>(std::ceil(_mapSiz.y / static_cast<float>(CHUNK_SIZE))));
 
 	m_chunks.resize(chunkH);
 	for (auto& row : m_chunks)
@@ -675,9 +675,8 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 
 
 	//チャンク対応
-
-	int chunkW = std::max(1.0f, _mapSiz.x / CHUNK_SIZE);
-	int chunkH = std::max(1.0f, _mapSiz.y / CHUNK_SIZE);
+	int chunkW = std::max(1, static_cast<int>(std::ceil(_mapSiz.x / static_cast<float>(CHUNK_SIZE))));
+	int chunkH = std::max(1, static_cast<int>(std::ceil(_mapSiz.y / static_cast<float>(CHUNK_SIZE))));
 
 	m_chunks.resize(chunkH);
 	for (auto& row : m_chunks)

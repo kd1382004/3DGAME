@@ -182,7 +182,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 			for (const auto& mapObj : m_mapObj)
 			{
-				if (mapObj->GetMapObjType() == MapObjType::Ground|| mapObj->GetMapObjType() == MapObjType::TypeSlope)
+				if (mapObj->GetMapObjType() == MapObjType::Ground || mapObj->GetMapObjType() == MapObjType::TypeSlope)
 				{
 
 					if (mapObj->GetRoomType() == RoomType::RoomType_NORoom)
@@ -194,7 +194,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 						spUIMapManager->GetUIMap_Map()->AddPosList(mapObj->GetPos(), m_mapTileSiz, mapObj->GetRoomID());
 					}
 
-				
+
 				}
 
 				if (mapObj->GetMapObjType() == MapObjType::Stairs)
@@ -431,10 +431,10 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	int cy = tileY / CHUNK_SIZE;
 
 	//今までと同じなら変えなくてOK
-	if (m_chankeNum.x == cx && m_chankeNum.y == cy) 
-	{ 
+	if (m_chankeNum.x == cx && m_chankeNum.y == cy)
+	{
 		m_isChunkChanged = false;
-		return; 
+		return;
 	}
 
 	m_isChunkChanged = true;
@@ -485,15 +485,26 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 
 bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
 {
-	// ワールド座標 → タイル座標へ変換
-	int tileX = static_cast<int>(_pos.x / m_mapTileSiz);
-	int tileY = static_cast<int>(-_pos.z / m_mapTileSiz);
-
+	// ワールド座標 → タイル座標へ変換（切り下げ）
+	int tileX = static_cast<int>(std::floor(_pos.x / m_mapTileSiz));
+	int tileY = static_cast<int>(std::floor(-_pos.z / m_mapTileSiz));
+	
 	// タイル座標 → チャンク番号へ変換
-	int cx = tileX / CHUNK_SIZE;
-	int cy = tileY / CHUNK_SIZE;
+	int cx = static_cast<int>(std::floor(static_cast<float>(tileX) / CHUNK_SIZE));
+	int cy = static_cast<int>(std::floor(static_cast<float>(tileY) / CHUNK_SIZE));
 
-	return GetChunksUpdate({ static_cast<float>(cx),static_cast<float>(cy) });
+	// チャンク配列が存在する場合、配列の範囲内に安全に収める（クランプ）
+	if (!m_chunks.empty())
+	{
+		int maxCy = static_cast<int>(m_chunks.size()) - 1;
+		cy = std::clamp(cy, 0, std::max(0, maxCy));
+		if (maxCy >= 0 && !m_chunks[cy].empty())
+		{
+			int maxCx = static_cast<int>(m_chunks[cy].size()) - 1;
+			cx = std::clamp(cx, 0, std::max(0, maxCx));
+		}
+	}
+	return GetChunksUpdate({ static_cast<float>(cx), static_cast<float>(cy) });
 }
 
 bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
@@ -501,28 +512,33 @@ bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 	// チャンク範囲チェック
 	auto inRange = [&](int x, int y)
 		{
-			return y >= 0 && y < m_chunks.size() &&
-				x >= 0 && x < m_chunks[y].size();
+			return y >= 0 && y < static_cast<int>(m_chunks.size()) &&
+				x >= 0 && x < static_cast<int>(m_chunks[y].size());
 		};
+	// float から int へ正確に変換（誤差防止）
+	int targetCx = static_cast<int>(std::round(_chunkNum.x));
+	int targetCy = static_cast<int>(std::round(_chunkNum.y));
+	int playerCx = static_cast<int>(std::round(m_chankeNum.x));
+	int playerCy = static_cast<int>(std::round(m_chankeNum.y));
 
-	for (int dy = -m_updateChunkRadius.x; dy <= m_updateChunkRadius.x; dy++)
+	// 修正：dy に .y、dx に .x を使用
+	for (int dy = -static_cast<int>(m_updateChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y); dy++)
 	{
-		for (int dx = -m_updateChunkRadius.y; dx <= m_updateChunkRadius.y; dx++)
+		for (int dx = -static_cast<int>(m_updateChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x); dx++)
 		{
-			int ncx = m_chankeNum.x + dx;
-			int ncy = m_chankeNum.y + dy;
-
-			if (!inRange(ncx, ncy)) continue;
-
-			if (_chunkNum.x == ncx && _chunkNum.y == ncy)
+			int ncx = playerCx + dx;
+			int ncy = playerCy + dy;
+			if (!inRange(ncx, ncy)) { continue; }
+			// int 型同士で安全・確実な比較
+			if (targetCx == ncx && targetCy == ncy)
 			{
 				return true;
 			}
 		}
 	}
-
 	return false;
 }
+
 
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 {

@@ -403,6 +403,9 @@ void GameScene::GenerateMap()
 	if (!m_spMapObjManager) { return; }
 	if (!m_spCamera) { return; }
 
+	//全effect停止
+	KdEffekseerManager::GetInstance().StopAllEffect();
+
 	int baseSize = 30;              // 1階のマップサイズ
 	float growth = 1.01f;
 
@@ -456,4 +459,9 @@ void GameScene::GenerateMap()
 		m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
 	}
 
+
+	if (m_spEnemyManager)
+	{
+		m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
+	}
 }

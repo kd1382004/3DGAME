@@ -201,10 +201,6 @@ void CharacterBase::CollisionUpdate()
 		{
 			float dist = (GetPos() - spGameObj->GetPos()).Length();
 
-			//処理軽減用
-			if (dist >= m_detectRange) { continue; }
-
-
 			std::list<KdCollider::CollisionResult> retRayList;
 			spGameObj->Intersects(rayInfo, &retRayList);
 

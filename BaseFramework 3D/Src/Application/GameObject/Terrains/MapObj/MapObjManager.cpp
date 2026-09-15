@@ -117,9 +117,6 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 {
 	if (!_spMapManager) { return; }
 
-	if (!_spMapManager->GetIsChunkChanged()) { return; }
-
-
 	m_mapObjUpdateList.clear();
 	for (auto& obj : m_mapObjList)
 	{

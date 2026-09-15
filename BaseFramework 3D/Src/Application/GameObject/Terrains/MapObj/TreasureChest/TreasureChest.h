@@ -12,7 +12,7 @@ class TreasureChest:public MapObjBase
 {
 public:
 	TreasureChest(){};
-	~TreasureChest() override{};
+	~TreasureChest() override;
 
 	void Init()override;
 	void Update()override;

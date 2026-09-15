@@ -7,7 +7,7 @@ class MapObjBase:public KdGameObject
 {
 public:
 	MapObjBase() {};
-	~MapObjBase() override{};
+	virtual ~MapObjBase() override{};
 
 
 

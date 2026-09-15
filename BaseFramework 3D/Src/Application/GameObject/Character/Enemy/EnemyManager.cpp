@@ -156,7 +156,7 @@ void EnemyManager::SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager)
 {
 	if (!_spMapManager) { return; }
 
-	if (!_spMapManager->GetIsChunkChanged()) { return; }
+	//if (!_spMapManager->GetIsChunkChanged() && !m_enemyUpdateList.empty()) { return; }
 
 
 	m_enemyUpdateList.clear();

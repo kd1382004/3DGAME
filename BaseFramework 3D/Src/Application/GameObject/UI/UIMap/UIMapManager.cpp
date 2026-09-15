@@ -88,7 +88,6 @@ void UIMapManager::DrawSprite()
 
 	for (auto Map_TreasureChest : m_UIMap_TreasureChest)
 	{
-		Map_TreasureChest->SetMinMapPlayerPos(m_UIMap_Player->GetPos());
 		Map_TreasureChest->DrawSprite();
 	}
 }

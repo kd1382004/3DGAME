@@ -33,65 +33,55 @@ void Dagger::Init()
 void Dagger::Update()
 {
 	WeaponBase::Update();
-
-	// 現フレームの先端・基部ワールド座標
 	Math::Vector3 currTipPos = Math::Vector3::Transform(tipLocalPos, m_weponParentMat);
 	Math::Vector3 currBasePos = Math::Vector3::Transform(baseLocalPos, m_weponParentMat);
-
 	if (!m_attackFlg)
-	{ 
+	{
 		m_isFirstFrame = true;
-
 		if (m_tPoly)
 		{
-			//トレイルポイント
-			if (m_tPoly)
-			{
-				Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-
-				m_tPoly->AddPoint(mat);
-			}
+			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
+			m_tPoly->AddPoint(mat);
 		}
-
-		return; 
+		return;
 	}
-
-
-
 	if (m_isFirstFrame)
 	{
 		m_prevTipPos = currTipPos;
 		m_prevBasePos = currBasePos;
+		m_prevWeponParentMat = m_weponParentMat; // 初回フレームの行列保持
 		m_isFirstFrame = false;
 	}
-
 	// --- 速度に応じた動的サブステッピング分割数の計算 ---
 	float moveDist = (currTipPos - m_prevTipPos).Length();
-
-	// 半径の距離ごとに1分割（隙間が絶対できないように設定）
-	int steps = static_cast<int>(std::ceil(moveDist / m_hitSphereRadius));
+	// BOXのY方向の高さ（全高 = Extents.y * 2）ごとに1分割
+	float stepUnit = m_hitBoxExtents.y * 2.0f;
+	if (stepUnit < 0.01f) { stepUnit = 0.5f; }
+	int steps = static_cast<int>(std::ceil(moveDist / stepUnit));
 	if (steps < 1) { steps = 1; }
 	const int stepsMax = 20;
 	if (steps > stepsMax) { steps = stepsMax; } // 安全のための上限値
-
-	std::vector<KdCollider::SphereInfo> sphereList;
-
-
-	// フレームを線形補間しながら判定球を生成
+	std::vector<KdCollider::BoxInfo> boxList;
+	// 前フレームと現フレームの行列を分解（回転Quaternionと位置Vectorを取得）
+	Math::Vector3 prevScale, currScale;
+	Math::Quaternion prevRot, currRot;
+	Math::Vector3 prevTrans, currTrans;
+	m_prevWeponParentMat.Decompose(prevScale, prevRot, prevTrans);
+	m_weponParentMat.Decompose(currScale, currRot, currTrans);
+	// フレーム間を線形補間しながら判定BOX（OBB）を生成
 	for (int i = 0; i <= steps; ++i)
 	{
 		float t = static_cast<float>(i) / static_cast<float>(steps);
-		Math::Vector3 tipPos = Math::Vector3::Lerp(m_prevTipPos, currTipPos, t);
-		Math::Vector3 basePos = Math::Vector3::Lerp(m_prevBasePos, currBasePos, t);
-		Math::Vector3 midPos = (tipPos + basePos) * 0.5f;
-
-		// 先端・基部・中点に判定球を配置
-		sphereList.push_back(KdCollider::SphereInfo(KdCollider::TypeDamage, tipPos, m_hitSphereRadius));
-		sphereList.push_back(KdCollider::SphereInfo(KdCollider::TypeDamage, basePos, m_hitSphereRadius));
-		sphereList.push_back(KdCollider::SphereInfo(KdCollider::TypeDamage, midPos, m_hitSphereRadius));
+		// 回転(Slerp)と位置(Lerp)の補間
+		Math::Quaternion stepRot = Math::Quaternion::Slerp(prevRot, currRot, t);
+		Math::Vector3 stepTrans = Math::Vector3::Lerp(prevTrans, currTrans, t);
+		// サブステップの基本行列を作成
+		Math::Matrix stepMat = Math::Matrix::CreateFromQuaternion(stepRot) * Math::Matrix::CreateTranslation(stepTrans);
+		// ローカルオフセットを現在の回転に合わせてワールド方向へ変換
+		Math::Vector3 worldOffset = Math::Vector3::TransformNormal(m_hitBoxLocalOffset, stepMat);
+		// OBB（isOriented = true）の判定ボックスを追加
+		boxList.push_back(KdCollider::BoxInfo(KdCollider::TypeDamage, stepMat, worldOffset, m_hitBoxExtents, true));
 	}
-
-
 	// --- 当たり判定処理 ---
 	for (auto& wpGameObj : m_attackHitCharacterList)
 	{
@@ -100,16 +90,14 @@ void Dagger::Update()
 		if (IsAlreadyHit(spGameObj)) continue;
 		bool isHit = false;
 		std::list<KdCollider::CollisionResult> results;
-		for (const auto& sphere : sphereList)
+		for (const auto& box : boxList)
 		{
-			if (spGameObj->Intersects(sphere, &results))
+			if (spGameObj->Intersects(box, &results))
 			{
 				isHit = true;
 				break; // 1つでも当たっていれば確定
 			}
 		}
-
-
 		if (isHit)
 		{
 			m_hitCharactersList.push_back(spGameObj);
@@ -124,38 +112,33 @@ void Dagger::Update()
 				false,
 				m_baseWeaponStatus.poiseBreak
 			);
-
-
-
-
 			float m_hitStoptim = 0.03f;
 			DeltaTime::Instance().HitStop(m_hitStoptim);
 		}
 	}
-
-	// 座標更新
+	// 座標および行列の更新
 	m_prevTipPos = currTipPos;
 	m_prevBasePos = currBasePos;
-
-
-	// デバッグ描画
+	m_prevWeponParentMat = m_weponParentMat;
+	// デバッグワイヤー描画
 	if (m_pDebugWire)
 	{
-		for (const auto& sphere : sphereList)
+		for (int i = 0; i <= steps; ++i)
 		{
-			m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius, kRedColor);
+			float t = static_cast<float>(i) / static_cast<float>(steps);
+			Math::Quaternion stepRot = Math::Quaternion::Slerp(prevRot, currRot, t);
+			Math::Vector3 stepTrans = Math::Vector3::Lerp(prevTrans, currTrans, t);
+			Math::Matrix stepMat = Math::Matrix::CreateFromQuaternion(stepRot) * Math::Matrix::CreateTranslation(stepTrans);
+			Math::Vector3 worldOffset = Math::Vector3::TransformNormal(m_hitBoxLocalOffset, stepMat);
+			m_pDebugWire->AddDebugBox(stepMat, m_hitBoxExtents, worldOffset, true, kRedColor);
 		}
 	}
-
-
-	//トレイルポイント
+	// トレイルポイント追加
 	if (m_tPoly)
 	{
 		Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-
 		m_tPoly->AddPoint(mat);
 	}
-
 }
 
 void Dagger::DrawLit()
