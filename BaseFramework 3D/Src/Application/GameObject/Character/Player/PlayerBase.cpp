@@ -304,7 +304,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 
 
 
-		std::shared_ptr<ItemGetUIController>spItemGetUIController= std::make_shared<ItemGetUIController>();
+		std::shared_ptr<ItemGetUIController>spItemGetUIController = std::make_shared<ItemGetUIController>();
 		spItemGetUIController->Init();
 		_spUIManager->AddUIObj(spItemGetUIController);
 		m_spPlayerInventory->SetItemGetUIController(spItemGetUIController);
@@ -327,7 +327,7 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 	}
 
 	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate);
-	
+
 	if (m_spDamageOverlay)
 	{
 		m_spDamageOverlay->OnDamaged(_damage, m_status.HP.maxHP);
@@ -433,7 +433,7 @@ void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManage
 		_spEffectManager->AddEffectList(m_spDamageOverlay);
 	}
 
-	
+
 }
 
 void PlayerBase::WeaponUpdate()
@@ -446,35 +446,48 @@ void PlayerBase::WeaponUpdate()
 	//攻撃力の更新
 	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack, true) && m_normalAttack)
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack) && m_normalAttack)
 	{
-		m_normalAttack = false;
-		m_normalAttackWaitNow = 0;
-
 		m_nowPlayerAnimeMode = PlayerBase::SwordAttackAnime;
-		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
-		if (spWeapon)
-		{
-			spWeapon->SetAttackFlg(true);
-			spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
-			// キャラの向きを敵の方向に補正
-			const Math::Vector3 targetPos = spWeapon->GetCloseAttackHitCharacter();
-			if (targetPos != Math::Vector3::Zero)
-			{
-				Math::Vector3 dir = targetPos - GetPos();
-				dir.y = 0.0f; // XZ平面上の方向ベクトル
-				if (dir.LengthSquared() > 0.0001f)
-				{
-					dir.Normalize();
-					m_moveVec = dir;
+		m_normalAttackWaitNow = 0;
+		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.SwordAttackAnime), false);
 
-					// XZ平面上の絶対向き(Y軸回転角度)を計算
-					float angle = DirectX::XMConvertToDegrees(std::atan2(dir.x, dir.z));
-					if (angle < 0.0f) { angle += 360.0f; }
-					m_angle = angle;
+
+		m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime();
+		m_chargeAttacFlg = true;
+	}
+	else
+	{
+		m_chargeAttacFlg = false;
+		if (m_chargeAttackCount != 0)
+		{
+			m_normalAttack = false;
+			m_chargeAttackCount = 0;
+			std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+			if (spWeapon)
+			{
+				spWeapon->SetAttackFlg(true);
+				spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
+				// キャラの向きを敵の方向に補正
+				const Math::Vector3 targetPos = spWeapon->GetCloseAttackHitCharacter();
+				if (targetPos != Math::Vector3::Zero)
+				{
+					Math::Vector3 dir = targetPos - GetPos();
+					dir.y = 0.0f; // XZ平面上の方向ベクトル
+					if (dir.LengthSquared() > 0.0001f)
+					{
+						dir.Normalize();
+						m_moveVec = dir;
+
+						// XZ平面上の絶対向き(Y軸回転角度)を計算
+						float angle = DirectX::XMConvertToDegrees(std::atan2(dir.x, dir.z));
+						if (angle < 0.0f) { angle += 360.0f; }
+						m_angle = angle;
+					}
 				}
 			}
 		}
+
 	}
 
 	if (m_nowPlayerAnimeMode != PlayerBase::SwordAttackAnime)
@@ -684,48 +697,59 @@ void PlayerBase::Move()
 
 void PlayerBase::MoveNowSpeedDecision()
 {
-	//移動モードの切り替え
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash))
+	if (m_chargeAttacFlg)
 	{
+		m_moveMode = MoveWalk;
 
-		if (m_IsDetectedByEnemy)
-		{
-			if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
-			{
-				m_moveMode = MoveRun;
-			}
-			else
-			{
-				m_moveMode = MoveWalk;
-			}
-
-		}
-		else
-		{
-			m_moveMode = MoveRun;
-		}
-
-
+		m_status.moveSpeed.nowSpeed = (m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe) * 0.1;
 	}
 	else
 	{
-		m_moveMode = MoveWalk;
+		//移動モードの切り替え
+		if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash))
+		{
+			if (m_IsDetectedByEnemy)
+			{
+				if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
+				{
+					m_moveMode = MoveRun;
+				}
+				else
+				{
+					m_moveMode = MoveWalk;
+				}
+
+			}
+			else
+			{
+				m_moveMode = MoveRun;
+			}
+		}
+		else
+		{
+			m_moveMode = MoveWalk;
+		}
+
+
+		switch (m_moveMode)
+		{
+		case PlayerBase::MoveWalk:
+			m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
+			m_nowPlayerAnimeMode = PlayerBase::WalkAnime;
+			break;
+		case PlayerBase::MoveRun:
+			m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
+			m_nowPlayerAnimeMode = PlayerBase::RunAnime;
+			break;
+		default:
+			break;
+		}
 	}
 
 
-	switch (m_moveMode)
-	{
-	case PlayerBase::MoveWalk:
-		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
-		m_nowPlayerAnimeMode = PlayerBase::WalkAnime;
-		break;
-	case PlayerBase::MoveRun:
-		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
-		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
-		break;
-	default:
-		break;
-	}
+	
+
+	
 }
 
 void PlayerBase::JumpAndGravity()
@@ -905,6 +929,9 @@ void PlayerBase::EvasionUpdate()
 
 	//やられたら回避できない
 	if (m_isDead) { return; }
+
+	//攻撃中は無理
+	if (m_chargeAttacFlg) { return; }
 
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.evasion, true))
 	{

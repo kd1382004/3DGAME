@@ -29,7 +29,13 @@ public:
 	Math::Vector3 GetCloseAttackHitCharacter();
 
 	void SetCharacterAttackPower(float _power) { m_characterAttackPower = _power; }
+
+	void SetNowChargeTime(float _time) { m_chargeTime = m_chargeTimeMax; }
 protected:
+
+	float m_chargeTime = 0;
+	float m_chargeTimeMax = 0;
+
 
 	float m_characterAttackPower = 0;
 

@@ -28,6 +28,8 @@ void Dagger::Init()
 		//トレイルポリゴンをビルボード(面をカメラに向ける)化
 		m_tPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
 	}
+
+	m_chargeTimeMax = 3;
 }
 
 void Dagger::Update()

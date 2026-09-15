@@ -320,6 +320,9 @@ protected:
 	float m_normalAttackWaitMax = 1;
 	float m_normalAttackWaitNow = 0;
 
+	float m_chargeAttackCount = 0;
+	bool m_chargeAttacFlg = false;
+
 	/////////////////////////////////////
 	//バフ
 	std::shared_ptr<PlayerBuffManager>m_spPlayerBuffManager;
