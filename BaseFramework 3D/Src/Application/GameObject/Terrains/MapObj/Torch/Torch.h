@@ -22,8 +22,6 @@ public:
 
 	void SetCamera(std::shared_ptr<CameraBase>_camera) { m_wpCamera = _camera; }
 
-	
-
 	void SetInHaunk(bool _flg)override { SetEffectUpdate(_flg); };
 private:
 
@@ -34,8 +32,6 @@ private:
 
 
 	Math::Vector3 m_pos;
-
-
 
 	std::shared_ptr<KdModelWork>m_spTorchModel;
 

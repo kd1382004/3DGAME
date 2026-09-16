@@ -58,6 +58,19 @@ void GameScene::ImGUi()
 
 	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
 
+	//FOGImGUI
+	if (ImGui::TreeNode(U8("ambient")))
+	{
+		ImGui::InputFloat(U8("X"), &m_ambient.x, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("Y"), &m_ambient.y, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("Z"), &m_ambient.z, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("W"), &m_ambient.w, 0.01f, 1.0f, "%.2f");
+		ImGui::TreePop();
+	}
+
+	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+
+
 	//ImGUI
 	if (ImGui::TreeNode(U8("階数")))
 	{
@@ -69,6 +82,9 @@ void GameScene::ImGUi()
 		}
 		ImGui::TreePop();
 	}
+
+
+
 
 }
 
@@ -217,7 +233,9 @@ void GameScene::Init()
 	//density...密度
 	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
 
-	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight({ 1.1,1.1,1.1,1 });
+
+	//アンビエント
+	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 
 	/////////////////////////////////////////
 	//ゲームシーン

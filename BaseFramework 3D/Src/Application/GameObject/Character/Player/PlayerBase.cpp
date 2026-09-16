@@ -455,6 +455,11 @@ void PlayerBase::WeaponUpdate()
 
 		m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime();
 		m_chargeAttacFlg = true;
+		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+		if (spWeapon)
+		{
+			spWeapon->SetNowChargeTime(m_chargeAttackCount);
+		}
 	}
 	else
 	{
@@ -485,6 +490,9 @@ void PlayerBase::WeaponUpdate()
 						m_angle = angle;
 					}
 				}
+
+				spWeapon->SetAngle(m_angle);
+				spWeapon->ChargAttackPlay();
 			}
 		}
 

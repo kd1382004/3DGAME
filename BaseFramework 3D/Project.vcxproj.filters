@@ -304,6 +304,9 @@
     <Filter Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager">
       <UniqueIdentifier>{4a4b4b78-0359-4d88-9e42-2f5f2fff1354}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack">
+      <UniqueIdentifier>{8e92ab37-5a86-4125-b7a0-c4356d1e208a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -708,6 +711,9 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.h">
       <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.h">
+      <Filter>Src\Application\GameObject\Weapon\Dagger\ChargeAttack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1075,6 +1081,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.cpp">
       <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.cpp">
+      <Filter>Src\Application\GameObject\Weapon\Dagger\ChargeAttack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

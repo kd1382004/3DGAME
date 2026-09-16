@@ -341,6 +341,7 @@
     <ClInclude Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateBase.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateManager.h" />
+    <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\WeaponBase.h" />
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h" />
@@ -469,6 +470,7 @@
     <ClCompile Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateManager.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\WeaponBase.cpp" />
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp" />

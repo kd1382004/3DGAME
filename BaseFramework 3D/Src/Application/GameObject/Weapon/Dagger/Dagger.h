@@ -11,6 +11,7 @@ public:
 	void Update()override;
 	void DrawLit()override;
 
+	void ChargAttackPlay();
 private:
 
 	// 武器の長さ

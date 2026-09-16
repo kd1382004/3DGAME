@@ -83,10 +83,10 @@ void MapManager::MapHit(const std::shared_ptr<KdGameObject>& obj)
 				x >= 0 && x < m_chunks[y].size();
 		};
 
-	// 9チャンク（中心＋周囲8チャンク）だけ判定
-	for (int dy = -1; dy <= 1; dy++)
+	// 中心＋周囲チャンクだけ判定
+	for (int dy = -m_updateChunkRadius.y; dy <= m_updateChunkRadius.y; dy++)
 	{
-		for (int dx = -1; dx <= 1; dx++)
+		for (int dx = -m_updateChunkRadius.x; dx <= m_updateChunkRadius.x; dx++)
 		{
 			int ncx = cx + dx;
 			int ncy = cy + dy;

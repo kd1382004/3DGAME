@@ -75,4 +75,7 @@ private:
 	//フォグ
 	Math::Vector3 m_FOGCol = { 0.35,0.35,0.38 };
 	float m_FOGdensity = 0.02;
+
+	//アンビエント
+	Math::Vector4 m_ambient = {1,1,1,1};
 };

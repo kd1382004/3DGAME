@@ -101,7 +101,7 @@ void BaseScene::Draw()
 	{
 		for (auto& obj : m_objList)
 		{
-			//continue;
+			continue;
 			obj->GenerateDepthMapFromLight();
 		}
 	}

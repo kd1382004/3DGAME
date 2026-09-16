@@ -1,6 +1,8 @@
 ﻿#include "Dagger.h"
 #include"../../Character/CharacterBase.h"
+#include"ChargeAttack/Dagger_ChargeAttack.h"
 
+#include"../../../Scene/SceneManager.h"
 void Dagger::Init()
 {
 	m_WeaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Dagger/BaseWeaponStatus.json";
@@ -23,7 +25,7 @@ void Dagger::Init()
 	if (!m_tPoly)
 	{
 		m_tPoly = std::make_shared<KdTrailPolygon>();
-		m_tPoly->SetMaterial("Asset/Textures/jet.png");
+		m_tPoly->SetMaterial("Asset/Textures/Weapon/Daerre/jet.png");
 
 		//トレイルポリゴンをビルボード(面をカメラに向ける)化
 		m_tPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
@@ -70,8 +72,10 @@ void Dagger::Update()
 	Math::Vector3 prevTrans, currTrans;
 	m_prevWeponParentMat.Decompose(prevScale, prevRot, prevTrans);
 	m_weponParentMat.Decompose(currScale, currRot, currTrans);
+
+
 	// フレーム間を線形補間しながら判定BOX（OBB）を生成
-	for (int i = 0; i <= steps; ++i)
+	for (int i = 0; i <= steps; i++)
 	{
 		float t = static_cast<float>(i) / static_cast<float>(steps);
 		// 回転(Slerp)と位置(Lerp)の補間
@@ -84,12 +88,13 @@ void Dagger::Update()
 		// OBB（isOriented = true）の判定ボックスを追加
 		boxList.push_back(KdCollider::BoxInfo(KdCollider::TypeDamage, stepMat, worldOffset, m_hitBoxExtents, true));
 	}
+
 	// --- 当たり判定処理 ---
 	for (auto& wpGameObj : m_attackHitCharacterList)
 	{
 		auto spGameObj = wpGameObj.lock();
-		if (!spGameObj) continue;
-		if (IsAlreadyHit(spGameObj)) continue;
+		if (!spGameObj) { continue; }
+		if (IsAlreadyHit(spGameObj)) { continue; }
 		bool isHit = false;
 		std::list<KdCollider::CollisionResult> results;
 		for (const auto& box : boxList)
@@ -100,10 +105,12 @@ void Dagger::Update()
 				break; // 1つでも当たっていれば確定
 			}
 		}
+
+
 		if (isHit)
 		{
 			m_hitCharactersList.push_back(spGameObj);
-			float damage = m_characterAttackPower * m_baseWeaponStatus.attackPower;
+			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_chargeTime / m_chargeTimeMax));
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 			spGameObj->OnAttackHit(
@@ -156,6 +163,17 @@ void Dagger::DrawLit()
 	}
 
 }
+
+void Dagger::ChargAttackPlay()
+{
+	std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
+	spDagger_ChargeAttack->Init();
+	spDagger_ChargeAttack->SetShockwaveStatus(1, 10, 10, 100, m_mWorld.Translation(), m_attackAngle);
+
+	SceneManager::Instance().AddObject(spDagger_ChargeAttack);
+
+}
+
 bool Dagger::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)
 {
 	for (auto& wp : m_hitCharactersList)

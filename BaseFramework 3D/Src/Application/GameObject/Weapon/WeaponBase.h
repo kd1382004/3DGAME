@@ -2,11 +2,11 @@
 
 class CharacterBase;
 
-class WeaponBase:public KdGameObject
+class WeaponBase :public KdGameObject
 {
 public:
 	WeaponBase() {};
-	~WeaponBase() override{};
+	~WeaponBase() override {};
 
 
 	void Init()override;
@@ -24,15 +24,27 @@ public:
 	void AddAttackHitCharacterList(std::shared_ptr<CharacterBase>_character) { m_attackHitCharacterList.push_back(_character); }
 
 	void ClearAttackHitCharacterList() { m_attackHitCharacterList.clear(); }
-	
+
 	//attackHitCharacterListの中から一番近い対象の座標を返す
 	Math::Vector3 GetCloseAttackHitCharacter();
 
 	void SetCharacterAttackPower(float _power) { m_characterAttackPower = _power; }
 
-	void SetNowChargeTime(float _time) { m_chargeTime = m_chargeTimeMax; }
+	void SetNowChargeTime(float _time)
+	{
+		m_chargeTime = _time;
+		if (m_chargeTime >= m_chargeTimeMax) { m_chargeTime = m_chargeTimeMax; }
+
+	}
+
+	void SetAngle(float _angle) { m_attackAngle = _angle; }
+
+	//Charge攻撃をするときに呼び出す
+	virtual void ChargAttackPlay() {};
 protected:
 
+
+	float m_attackAngle = 0;
 	float m_chargeTime = 0;
 	float m_chargeTimeMax = 0;
 
