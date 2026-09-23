@@ -56,63 +56,45 @@ void Dagger::Update()
 		m_prevWeponParentMat = m_weponParentMat; // 初回フレームの行列保持
 		m_isFirstFrame = false;
 	}
-	// --- 速度に応じた動的サブステッピング分割数の計算 ---
-	float moveDist = (currTipPos - m_prevTipPos).Length();
-	// BOXのY方向の高さ（全高 = Extents.y * 2）ごとに1分割
-	float stepUnit = m_hitBoxExtents.y * 2.0f;
-	if (stepUnit < 0.01f) { stepUnit = 0.5f; }
-	int steps = static_cast<int>(std::ceil(moveDist / stepUnit));
-	if (steps < 1) { steps = 1; }
-	const int stepsMax = 20;
-	if (steps > stepsMax) { steps = stepsMax; } // 安全のための上限値
-	std::vector<KdCollider::BoxInfo> boxList;
-	// 前フレームと現フレームの行列を分解（回転Quaternionと位置Vectorを取得）
-	Math::Vector3 prevScale, currScale;
-	Math::Quaternion prevRot, currRot;
-	Math::Vector3 prevTrans, currTrans;
-	m_prevWeponParentMat.Decompose(prevScale, prevRot, prevTrans);
-	m_weponParentMat.Decompose(currScale, currRot, currTrans);
+	// ----------------------------------------------------
+	// m_hitBoxExtents に連動したローカル OBB の自動計算
+	// ----------------------------------------------------
+	float moveDist = (currTipPos - m_prevTipPos).Length(); // 1フレームでの移動量
+	float extentX = m_hitBoxExtents.x;   // 横幅の半分
+	float extentY = m_hitBoxExtents.y;   // 高さ(刃の長さ)の半分
+	float extentZ = m_hitBoxExtents.z;   // 厚みの半分
 
+	// 移動量(moveDist)の半分を進行方向に伸ばしてすり抜けを防止
+	float extendedExtentY = extentY + moveDist * 0.5f;
+	float extendedCenterY = m_hitBoxLocalOffset.y - moveDist * 0.5f;
+	DirectX::BoundingOrientedBox localOBB(
+		Math::Vector3(m_hitBoxLocalOffset.x, extendedCenterY, m_hitBoxLocalOffset.z),
+		Math::Vector3(extentX, extendedExtentY, extentZ),
+		DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)
+	);
+	// ★ワールド行列をかけて進行方向に傾いた OBB に変換！
+	DirectX::BoundingOrientedBox sweptOBB;
+	localOBB.Transform(sweptOBB, m_mWorld);
+	// OBB (isOriented = true) として BoxInfo を作成
+	KdCollider::BoxInfo box(KdCollider::TypeDamage, sweptOBB);
 
-	// フレーム間を線形補間しながら判定BOX（OBB）を生成
-	for (int i = 0; i <= steps; i++)
-	{
-		float t = static_cast<float>(i) / static_cast<float>(steps);
-		// 回転(Slerp)と位置(Lerp)の補間
-		Math::Quaternion stepRot = Math::Quaternion::Slerp(prevRot, currRot, t);
-		Math::Vector3 stepTrans = Math::Vector3::Lerp(prevTrans, currTrans, t);
-		// サブステップの基本行列を作成
-		Math::Matrix stepMat = Math::Matrix::CreateFromQuaternion(stepRot) * Math::Matrix::CreateTranslation(stepTrans);
-		// ローカルオフセットを現在の回転に合わせてワールド方向へ変換
-		Math::Vector3 worldOffset = Math::Vector3::TransformNormal(m_hitBoxLocalOffset, stepMat);
-		// OBB（isOriented = true）の判定ボックスを追加
-		boxList.push_back(KdCollider::BoxInfo(KdCollider::TypeDamage, stepMat, worldOffset, m_hitBoxExtents, true));
-	}
-
-	// --- 当たり判定処理 ---
+	// ----------------------------------------------------
+	// 当たり判定処理
+	// ----------------------------------------------------
 	for (auto& wpGameObj : m_attackHitCharacterList)
 	{
 		auto spGameObj = wpGameObj.lock();
 		if (!spGameObj) { continue; }
 		if (IsAlreadyHit(spGameObj)) { continue; }
-		bool isHit = false;
+
 		std::list<KdCollider::CollisionResult> results;
-		for (const auto& box : boxList)
-		{
-			if (spGameObj->Intersects(box, &results))
-			{
-				isHit = true;
-				break; // 1つでも当たっていれば確定
-			}
-		}
-
-
-		if (isHit)
+		if (spGameObj->Intersects(box, &results))
 		{
 			m_hitCharactersList.push_back(spGameObj);
 			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_chargeTime / m_chargeTimeMax));
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
+
 			spGameObj->OnAttackHit(
 				damage,
 				m_baseWeaponStatus.knockback,
@@ -121,27 +103,26 @@ void Dagger::Update()
 				false,
 				m_baseWeaponStatus.poiseBreak
 			);
-			float m_hitStoptim = 0.03f;
-			DeltaTime::Instance().HitStop(m_hitStoptim);
+
+			float hitStopTime = 0.03f;
+			DeltaTime::Instance().HitStop(hitStopTime);
 		}
 	}
+
+	// ----------------------------------------------------
+	// デバッグワイヤー描画（ポリゴンの赤枠を表示）
+	// ----------------------------------------------------
+	if (m_pDebugWire)
+	{
+		// OBB の回転(Quaternion)と位置(Center)から行列を作成して描画
+		Math::Matrix obbMat = Math::Matrix::CreateFromQuaternion(sweptOBB.Orientation) * Math::Matrix::CreateTranslation(sweptOBB.Center);
+		m_pDebugWire->AddDebugBox(obbMat, sweptOBB.Extents, Math::Vector3::Zero, true, kRedColor);
+	}
+
 	// 座標および行列の更新
 	m_prevTipPos = currTipPos;
 	m_prevBasePos = currBasePos;
 	m_prevWeponParentMat = m_weponParentMat;
-	// デバッグワイヤー描画
-	if (m_pDebugWire)
-	{
-		for (int i = 0; i <= steps; ++i)
-		{
-			float t = static_cast<float>(i) / static_cast<float>(steps);
-			Math::Quaternion stepRot = Math::Quaternion::Slerp(prevRot, currRot, t);
-			Math::Vector3 stepTrans = Math::Vector3::Lerp(prevTrans, currTrans, t);
-			Math::Matrix stepMat = Math::Matrix::CreateFromQuaternion(stepRot) * Math::Matrix::CreateTranslation(stepTrans);
-			Math::Vector3 worldOffset = Math::Vector3::TransformNormal(m_hitBoxLocalOffset, stepMat);
-			m_pDebugWire->AddDebugBox(stepMat, m_hitBoxExtents, worldOffset, true, kRedColor);
-		}
-	}
 	// トレイルポイント追加
 	if (m_tPoly)
 	{
@@ -168,8 +149,9 @@ void Dagger::ChargAttackPlay()
 {
 	std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
 	spDagger_ChargeAttack->Init();
-	spDagger_ChargeAttack->SetShockwaveStatus(1, 10, 10, 100, m_mWorld.Translation(), m_attackAngle);
-
+	spDagger_ChargeAttack->SetShockwaveStatus(1, 100, 1, 100, m_mWorld.Translation(), m_attackAngle);
+	spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
+	spDagger_ChargeAttack->SetMapObjList(m_objList);
 	SceneManager::Instance().AddObject(spDagger_ChargeAttack);
 
 }

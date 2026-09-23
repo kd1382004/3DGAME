@@ -34,14 +34,23 @@ void WeaponBase::SetAttackFlg(bool _flg)
 
 }
 
+void WeaponBase::AddAttackHitCharacterList(std::shared_ptr<CharacterBase> _character)
+{
+	//あたり判定リストにいれる
+	m_attackHitCharacterList.push_back(_character);
+}
+
+void WeaponBase::AddObjList(std::shared_ptr<MapBase> _obj)
+{
+	m_objList.push_back(_obj);
+}
+
 Math::Vector3 WeaponBase::GetCloseAttackHitCharacter()
 {
-	Math::Vector3 ClosePos;
+	Math::Vector3 ClosePos=Math::Vector3::Zero;
 
-	float nearestDist = FLT_MAX;
+	float nearestDist = m_aimAssistRadius;
 
-
-	
 	for (auto& wpGameObj : m_attackHitCharacterList)
 	{
 		auto spGameObj = wpGameObj.lock();

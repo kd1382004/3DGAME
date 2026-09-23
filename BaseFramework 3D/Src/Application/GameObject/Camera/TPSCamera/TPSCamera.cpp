@@ -6,8 +6,12 @@ void TPSCamera::Init()
 	CameraBase::Init();
 
 	// 注視点
-	m_cameraPos = { 0, 3.5f, -10.0f };
+	m_cameraDefaultPos = { 0, 3.5f, -10.0f };
+	m_cameraPos = m_cameraDefaultPos;
 	m_mLocalPos = Math::Matrix::CreateTranslation(m_cameraPos);
+
+
+	m_cameraEvasionPos = { 0,2.5,-4 };
 
 	m_ImGUIName = "TPSCamera";
 }
@@ -21,6 +25,8 @@ void TPSCamera::PostUpdate()
 	{
 		_targetMat = Math::Matrix::CreateTranslation(_spTarget->GetPos());
 	}
+
+	m_mLocalPos = Math::Matrix::CreateTranslation(m_cameraPos);
 
 	// カメラの回転
 	UpdateRotateByMouse();

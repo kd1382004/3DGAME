@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class CharacterBase;
+class MapBase;
 
 class WeaponBase :public KdGameObject
 {
@@ -21,9 +22,11 @@ public:
 
 	void SetAttackFlg(bool _flg);
 
-	void AddAttackHitCharacterList(std::shared_ptr<CharacterBase>_character) { m_attackHitCharacterList.push_back(_character); }
+	void AddAttackHitCharacterList(std::shared_ptr<CharacterBase>_character);
+	void AddObjList(std::shared_ptr<MapBase>_character);
 
 	void ClearAttackHitCharacterList() { m_attackHitCharacterList.clear(); }
+	void ClearObjList() { m_objList.clear(); }
 
 	//attackHitCharacterListの中から一番近い対象の座標を返す
 	Math::Vector3 GetCloseAttackHitCharacter();
@@ -54,11 +57,14 @@ protected:
 	//攻撃判定を出すか
 	bool m_attackFlg = false;
 
-	//あたり判定をするリスト
+	//あたり判定をするキャラリスト
 	std::list<std::weak_ptr<CharacterBase>>m_attackHitCharacterList;
 
 	//既に当たったキャラリスト
 	std::list<std::weak_ptr<CharacterBase>>m_hitCharactersList;
+
+	//あたり判定をするオブジェリスト
+	std::list<std::weak_ptr<MapBase>>m_objList;
 
 
 
@@ -102,5 +108,8 @@ protected:
 	//武器共通基本ステータス
 	WeaponStatus m_baseWeaponStatus;
 
+
+	//座標補正の距離
+	float m_aimAssistRadius = 10;
 };
 

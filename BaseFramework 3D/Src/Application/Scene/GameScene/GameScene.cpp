@@ -173,6 +173,13 @@ void GameScene::Event()
 	///////////////////////////////////////////////////
 	if (!m_spWeapon) { return; }
 	m_spWeapon->ClearAttackHitCharacterList();
+	m_spWeapon->ClearObjList();
+	std::vector<std::shared_ptr<MapBase>> mapList = m_spMapManager->GetUpdateChankes();
+	for (std::shared_ptr<MapBase> map : mapList)
+	{
+		m_spWeapon->AddObjList(map);
+	}
+
 
 	//敵同士のあたり判定
 	auto& enemies = m_spEnemyManager->GetEnemyUpdateList();
@@ -198,11 +205,7 @@ void GameScene::Event()
 		//武器とのあたり判定
 		if (m_spWeapon)
 		{
-			Math::Vector3 dic = enemyA->GetPos() - m_spWeapon->GetPos();
-			if (dic.Length() < 10)
-			{
-				m_spWeapon->AddAttackHitCharacterList(enemyA);
-			}
+			m_spWeapon->AddAttackHitCharacterList(enemyA);
 		}
 
 	}

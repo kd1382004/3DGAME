@@ -1,4 +1,4 @@
-﻿#include "KdCollider.h"
+#include "KdCollider.h"
 
 // ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
 // KdCollider
@@ -653,10 +653,32 @@ bool KdModelCollision::Intersects(const DirectX::BoundingSphere& target, const M
 // 判定回数は メッシュの個数 x 各メッシュのポリゴン数 計算回数がモデルのデータ依存のため処理効率は不安定
 // 単純に計算回数が多くなる可能性があるため重くなりがち
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
-bool KdModelCollision::Intersects(const DirectX::BoundingBox& /*target*/, const Math::Matrix& /*world*/, KdCollider::CollisionResult* /*pRes*/)
+bool KdModelCollision::Intersects(const DirectX::BoundingBox& target, const Math::Matrix& world, KdCollider::CollisionResult* pRes)
 {
-	// TODO: 当たり計算は各自必要に応じて拡張して下さい
-	return false;
+	if (!m_enable || !m_shape) { return false; }
+	std::shared_ptr<KdModelData> spModelData = m_shape->GetData();
+	if (!spModelData) { return false; }
+	const std::vector<KdModelData::Node>& dataNodes = spModelData->GetOriginalNodes();
+	const std::vector<KdModelWork::Node>& workNodes = m_shape->GetNodes();
+	bool isHit = false;
+	for (int index : spModelData->GetCollisionMeshNodeIndices())
+	{
+		const KdModelData::Node& dataNode = dataNodes[index];
+		const KdModelWork::Node& workNode = workNodes[index];
+		if (!dataNode.m_spMesh) { continue; }
+		Math::Matrix nodeWorld = workNode.m_worldTransform * world;
+		DirectX::BoundingSphere meshSphere;
+		dataNode.m_spMesh->GetBoundingSphere().Transform(meshSphere, nodeWorld);
+		if (meshSphere.Intersects(target))
+		{
+			if (!pRes) { return true; }
+			isHit = true;
+			pRes->m_hitPos = meshSphere.Center;
+			pRes->m_hitDir = Math::Vector3(meshSphere.Center) - Math::Vector3(target.Center);
+			pRes->m_hitDir.Normalize();
+		}
+	}
+	return isHit;
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////

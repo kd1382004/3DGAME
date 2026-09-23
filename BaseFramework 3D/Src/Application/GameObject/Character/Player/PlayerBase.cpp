@@ -318,10 +318,15 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 {
 	if (m_evasionFlg)
 	{
-		//DeltaTime::Instance().SetTimeScale(0.5);
-		//DeltaTime::Instance().SetSlowTimer(0.1);
+		DeltaTime::Instance().SetTimeScale(0.1);
+		DeltaTime::Instance().SetSlowTimer(1);
 
-		////回避成功演出入れる
+		//回避成功演出入れる
+		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+		if (spCamera)
+		{
+			spCamera->SetEvasionCamera(1);
+		}
 
 		return;
 	}

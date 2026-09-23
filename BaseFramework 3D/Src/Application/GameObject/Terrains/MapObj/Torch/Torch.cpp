@@ -40,6 +40,13 @@ void Torch::Init()
 		m_frustumBox = KdCollider::BoxInfo(0, localOBB);
 	}
 
+	if (!m_pCollider)
+	{
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape("TreasureChest", m_spTorchModel,KdCollider::TypeCameraOcclusion);
+	}
+
+
 	m_effectLocalPos = { 0.0f, 1.0f,-0.7f };
 
 

@@ -7,6 +7,7 @@ public:
 	virtual ~CameraBase()	override {}
 
 	void Init()				override;
+	void Update()				override;
 	void PreDraw()			override;
 
 	void SetTarget(const std::shared_ptr<KdGameObject>& target);
@@ -70,7 +71,20 @@ public:
 		return worldFrustum;
 	}
 
+	//回避成功したら呼ぶ
+	//_time ...　近づけてから戻るまでの時間
+	void SetEvasionCamera(float _time);
+
 protected:
+
+	//回避成功
+	float m_evasionCamTime = 0.0f;
+	float m_evasionCamTimer = 0.0f;
+	bool  m_isEvasionCam = false;
+	Math::Vector3 m_cameraEvasionPos = { 0,0,0 };
+
+	void EvasionCamera();
+
 	// カメラ回転用角度
 	Math::Vector3								m_DegAng = Math::Vector3::Zero;
 
@@ -85,6 +99,8 @@ protected:
 
 	//カメラの基準点・注視点
 	Math::Vector3 m_cameraPos = { 0,0,0 };
+	Math::Vector3 m_cameraDefaultPos = { 0,0,0 };
+
 
 
 	//自分追加
@@ -97,4 +113,9 @@ protected:
 
 	//ターゲットの1フレーム前の座標
 	Math::Vector3 m_targetOldPos;
+
+
+	float m_fov = 60;
+	float m_defaultFov = 60;
+	float m_evasionFov = 80;
 };

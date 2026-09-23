@@ -115,6 +115,9 @@ public:
 	bool GetChunksUpdate(Math::Vector2 _chunkNum);
 
 	bool GetIsChunkChanged(){return m_isChunkChanged;}
+
+	std::vector<std::shared_ptr<MapBase>> GetUpdateChankes() { return m_updateChankes; }
+
 private:
 
 	////////////////////////////////////////////

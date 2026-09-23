@@ -12,6 +12,14 @@ void CameraBase::Init()
 	m_gameObjectClass = KdGameObject::GameObjectClass::GameObjectClass_Camera;
 }
 
+void CameraBase::Update()
+{
+	if (m_isEvasionCam)
+	{
+		EvasionCamera();
+	}
+}
+
 void CameraBase::PreDraw()
 {
 	if (!m_spCamera) { return; }
@@ -104,6 +112,59 @@ void CameraBase::ResolveCameraOcclusion()
 	{
 		SetPos(hitPos);
 	}
+}
+
+void CameraBase::SetEvasionCamera(float _time)
+{
+	m_evasionCamTime = _time;
+	m_isEvasionCam = true;
+	m_evasionCamTimer = 0;
+}
+
+void CameraBase::EvasionCamera()
+{
+	m_evasionCamTimer += DeltaTime::Instance().GetRealDeltaTime();
+	float t = m_evasionCamTimer / m_evasionCamTime;
+
+	// 0〜1 にクランプ
+	t = std::clamp(t, 0.0f, 1.0f);
+
+	// 0.0〜0.5：近づく
+	if (t < 0.5f)
+	{
+		float k = t / 0.5f;
+		m_cameraPos = Math::Vector3::Lerp(m_cameraDefaultPos, m_cameraEvasionPos, k);
+
+		m_fov = std::lerp(m_defaultFov, m_evasionFov, k);
+		m_spCamera->SetProjectionMatrix(m_fov);
+	}
+	// 0.5〜0.7：近距離維持
+	else if (t < 0.7f)
+	{
+		m_cameraPos = m_cameraEvasionPos;
+		m_fov = m_evasionFov;
+		m_spCamera->SetProjectionMatrix(m_fov);
+	}
+	// 0.7〜1.0：ゆっくり戻る
+	else
+	{
+		float k = (t - 0.7f) / 0.3f;
+		m_cameraPos = Math::Vector3::Lerp(m_cameraEvasionPos, m_cameraDefaultPos, k);
+
+		// FOV補間
+		m_fov = std::lerp(m_evasionFov, m_defaultFov, k);
+		m_spCamera->SetProjectionMatrix(m_fov);
+	}
+
+	// 終了
+	if (t >= 1.0f)
+	{
+		m_isEvasionCam = false;
+		m_cameraPos = m_cameraDefaultPos;
+		m_fov = m_defaultFov;
+		m_spCamera->SetProjectionMatrix(m_fov);
+	}
+
 }
 
 void CameraBase::UpdateRotateByMouse()
