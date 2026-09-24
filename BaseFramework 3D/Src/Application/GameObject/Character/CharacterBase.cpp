@@ -33,7 +33,11 @@ void CharacterBase::DrawLit()
 {
 	if (m_spCharaModel)
 	{
+		UAEffectShaderManager::Instance().WriteCBColoerEnable(false);
+
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld);
+
+		UAEffectShaderManager::Instance().WriteCBColoerEnable(true);
 	}
 }
 

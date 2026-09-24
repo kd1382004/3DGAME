@@ -79,3 +79,7 @@
 
 // フォント管理クラス
 #include "Font/KdFont.h"
+
+
+//自分追加
+#include"Shader/UAEffectShaderManager.h"

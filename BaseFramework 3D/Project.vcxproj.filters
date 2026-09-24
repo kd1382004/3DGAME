@@ -714,6 +714,9 @@
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.h">
       <Filter>Src\Application\GameObject\Weapon\Dagger\ChargeAttack</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Framework\Shader\UAEffectShaderManager.h">
+      <Filter>Src\Framework\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1084,6 +1087,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.cpp">
       <Filter>Src\Application\GameObject\Weapon\Dagger\ChargeAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Framework\Shader\UAEffectShaderManager.cpp">
+      <Filter>Src\Framework\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

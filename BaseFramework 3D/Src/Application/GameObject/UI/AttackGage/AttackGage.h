@@ -17,9 +17,6 @@ public:
 	void Set2DPos(const Math::Vector2& pos) {
 		m_2DPos = pos;
 		m_attackGageBackTex2DPos = { m_2DPos.x - m_attackGageackBackTexLength.x / 2.0f * m_siz ,m_2DPos.y };
-		/*m_HPBarTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_siz ,m_2DPos.y };
-		m_HPBarDelayTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_siz ,m_2DPos.y };
-		m_HPBarIconFrameTex2DPos = { m_HPBarBackTex2DPos.x - m_HPBarIconFrameTexLength.x / 2.0f * m_siz ,m_2DPos.y };*/
 	}
 
 	//パーセント(0.0f～1.0f)

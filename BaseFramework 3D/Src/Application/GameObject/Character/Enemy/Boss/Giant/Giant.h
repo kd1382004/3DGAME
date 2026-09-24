@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"../../EnemyBase.h"
 
 class GameScene;
@@ -60,6 +60,7 @@ private:
 	void AttackUpdate();
 
 	float m_attackCoolTime = 0;
+	float m_attackCoolTimeMax = 3;
 
 	/////////////////////////////////////////////////
 	//左攻撃
@@ -111,6 +112,9 @@ private:
 	//Idle時間MAX
 	float m_attackJumpSlamIdleMax = 5;
 	float m_attackJumpSlamIdleNow = 0;
+
+	//ターゲット座標
+	Math::Vector3 m_attackJumpSlamTargetPos; 
 
 	/////////////////////////////////////////////////
 	//アニメーション

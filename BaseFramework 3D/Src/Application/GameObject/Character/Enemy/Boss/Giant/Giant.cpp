@@ -1,6 +1,7 @@
 ﻿#include "Giant.h"
 
 #include"../../../../UI/HPBar/HPBar.h"
+#include"../../../../UI/AttackGage/AttackGage.h"
 
 #include"Attack/AttackJumpSlam/AttackJumpSlam.h"
 #include"Attack/AttackLeftPunch/AttackLeftPunch.h"
@@ -124,6 +125,16 @@ void Giant::PreDraw()
 		spHPBar->SetSiz(3);
 		spHPBar->SetDrawFlg(true);
 	}
+
+
+	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
+	if (spAttackGage)
+	{
+		Math::Vector2 pos = { 0,250 };
+		spAttackGage->Set2DPos(pos);
+		spAttackGage->SetSiz(3);
+		spAttackGage->SetDrawFlg(true);
+	}
 }
 
 void Giant::GenerateDepthMapFromLight()
@@ -138,9 +149,17 @@ void Giant::DrawLit()
 {
 	if (m_spCharaModel)
 	{
+
+
+		UAEffectShaderManager::Instance().WriteCBColoerEnable(false);
+
 		//モデルが暗すぎるため無理やり明るく
 		Math::Color color = { 5,5,5,1 };
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld, color);
+
+		UAEffectShaderManager::Instance().WriteCBColoerEnable(true);
+
+
 	}
 }
 
@@ -151,21 +170,27 @@ void Giant::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vec
 
 void Giant::AttackMode()
 {
+
+
 	if (!m_attackFlg)
 	{
 		//攻撃の種類を選択
-
-
 		if (m_attackCoolTime >= 0)
 		{
 			m_attackCoolTime -= DeltaTime::Instance().GetGameDeltaTime();
 			
+			std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
+			if (spAttackGage)
+			{
+				spAttackGage->SetAttackGageTexPercent(m_attackCoolTime / m_attackCoolTimeMax);
+			}
+
 			return;
 		}
 		else
 		{
 
-			if (KdRandom::GetInt(1, 100) < 10)
+			if (KdRandom::GetInt(1, 10) < 10)
 			{
 				m_giantAttackMode = GiantAttackMode::JumpSlamAttack;
 			}
@@ -182,7 +207,7 @@ void Giant::AttackMode()
 		case Giant::LeftPunchAttack:
 			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.LeftPunchAttackAnime), false);
 			m_attackFlg = true;
-			m_attackCoolTime = 3;
+			m_attackCoolTime = m_attackCoolTimeMax;
 			break;
 		case Giant::RightAttack:
 			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.RightAttackAnime), false);
@@ -193,11 +218,15 @@ void Giant::AttackMode()
 			m_jnpStartPos = m_pos;
 			m_JumpSlamAttackMode = JumpSlamAttackMode_JumpSlamAttack;
 			m_attackFlg = true;
-			m_attackCoolTime = 3;
+			m_attackCoolTime = m_attackCoolTimeMax;
 			break;
 		default:
 			break;
 		}
+
+	}
+	else
+	{
 
 	}
 }
@@ -313,6 +342,12 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 	std::shared_ptr<AttackJumpSlam>spAttackJumpSlam = m_wpAttackJumpSlam.lock();
 	if (spAttackJumpSlam)
 	{
+		if (p < 0.3)
+		{
+			m_attackJumpSlamTargetPos = m_playerPos;
+		}
+
+
 		if (!m_IsAttackJumpSlamHITFlg)
 		{
 
@@ -323,16 +358,15 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 			}
 			else
 			{
-				// 0.0 ~ 0.5 を 0.0 ~ 1.0 に正規化
-				float t = std::clamp(p / 0.5f, 0.0f, 1.0f);
+				//0.0 ~ 1.0 に正規化
+				float t = std::clamp(p / 0.3f, 0.0f, 1.0f);
 
 				Math::Vector3 startPos = m_jnpStartPos;   // ジャンプ開始地点
-				Math::Vector3 targetPos = m_playerPos; // プレイヤー位置
 
-				Math::Vector3 pos = startPos + (targetPos - startPos) * t;  // t=0でstart, t=1でplayer
+				Math::Vector3 pos = startPos + (m_attackJumpSlamTargetPos - startPos) * t;  // t=0でstart, t=1でplayer
 				m_pos = pos;
 
-				m_moveVec = (targetPos - startPos);
+				m_moveVec = (m_attackJumpSlamTargetPos - startPos);
 				m_moveVec.Normalize();
 				AngeleUpdate();
 			}
@@ -348,14 +382,9 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 
 
 
-		Math::Matrix handWorld = GetBoneWorldMatrix(BONE_LEFT_HAND);
-		spAttackJumpSlam->SetLPos(handWorld.Translation());
-
-		handWorld = GetBoneWorldMatrix(BONE_RIGHT_HAND);
-		spAttackJumpSlam->SetRPos(handWorld.Translation());
+		spAttackJumpSlam->SetRPos(m_attackJumpSlamTargetPos);
 		spAttackJumpSlam->SetKnockbackDir(m_mWorld.Backward());
 		spAttackJumpSlam->AttackJumpSlamUpdate();
-
 	}
 	else
 	{

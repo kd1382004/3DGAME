@@ -60,4 +60,11 @@ private:
 
 	//スタン時間
 	float m_hitStunTime = 0;
+
+	//攻撃の範囲
+	float m_radius = 7;
+
+
+	//攻撃範囲表示用変数
+	float m_radiusPercent = 0;
 };

@@ -30,6 +30,11 @@ void AttackLeftPunch::AttackLeftPunchUpdate()
 	}
 }
 
+void AttackLeftPunch::DrawLit()
+{
+
+}
+
 void AttackLeftPunch::SetAttackStatus()
 {
 	//攻撃力倍率

@@ -43,6 +43,9 @@ void Application::KdBeginUpdate()
 
 	// 空間環境の更新
 	KdShaderManager::Instance().WorkAmbientController().Update();
+
+
+	UAEffectShaderManager::Instance().ClearEffect();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -216,6 +219,11 @@ bool Application::Init(int w, int h)
 	// Effekseer初期化
 	//===================================================================
 	KdEffekseerManager::GetInstance().Create(w, h);
+
+	//===================================================================
+	// UAEffectShaderManager初期化
+	//===================================================================
+	UAEffectShaderManager::Instance().Init();
 
 	//===================================================================
 	// ゲーム固有の初期化

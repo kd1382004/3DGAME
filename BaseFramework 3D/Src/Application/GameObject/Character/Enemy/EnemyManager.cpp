@@ -84,7 +84,7 @@ void EnemyManager::PreDraw()
 		{
 
 			spUIMapManager->GetUIMap_Enemy()->PosListRiseto();
-			for (const auto& enemy : m_enemyList)
+			for (const auto& enemy : m_enemyUpdateList)
 			{
 				enemy->PreDraw();
 				spUIMapManager->GetUIMap_Enemy()->SetEnemyPosAngleList(enemy->GetPos(), enemy->GetAngle());
@@ -155,9 +155,6 @@ void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 void EnemyManager::SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager)
 {
 	if (!_spMapManager) { return; }
-
-	//if (!_spMapManager->GetIsChunkChanged() && !m_enemyUpdateList.empty()) { return; }
-
 
 	m_enemyUpdateList.clear();
 	for (auto& obj : m_enemyList)

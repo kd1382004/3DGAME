@@ -35,6 +35,9 @@ public:
 	void SetExpired(bool _flg) { m_isExpired = _flg; }
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
+
+
+	void DrawLit()override;
 private:
 
 	void SetAttackStatus();

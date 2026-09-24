@@ -84,6 +84,21 @@ float4 main(VSOutput In) : SV_Target0
 	// ラフネスを逆転させ「滑らか」さにする
 	float smoothness = 1.0 - roughness;
 	float specPower = pow(2, 11 * smoothness); // 1～2048
+
+
+
+	if (g_colorEnable)
+	{
+		for (int i = 0; i < g_effectNum; i++)
+		{
+			float3 v = g_effects[i].colorPos - In.wPos;
+			if (length(v) < g_effects[i].colorRadius)
+			{
+				baseColor.rgb += g_effects[i].colorColor;
+			}
+		}
+	}
+
 	
 	//------------------------------------------
 	// ライティング

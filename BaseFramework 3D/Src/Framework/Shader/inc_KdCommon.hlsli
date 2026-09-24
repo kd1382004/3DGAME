@@ -76,3 +76,25 @@ cbuffer cbLight : register(b9)
 		int IsBright; // 明度計算フラグ
 	} g_SpotLights[50];
 };
+
+//------------------------------
+// 定数バッファ(エフェクト)
+//------------------------------
+
+// 定数バッファ(エフェクト)
+struct EffectData
+{
+	float3 colorPos;
+	float colorRadius;
+	float3 colorColor;
+	float dummy; // HLSLの16バイトパッキング用
+};
+
+
+cbuffer cbCEffect : register(b10)
+{
+	int g_colorEnable;
+	int g_effectNum; // 有効なエフェクトの個数
+	int2 g_cbEffectDummy; // 16バイト揃え用
+	EffectData g_effects[10]; // 最大10個まで保持
+};

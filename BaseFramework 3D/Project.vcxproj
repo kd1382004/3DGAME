@@ -379,6 +379,7 @@
     <ClInclude Include="Src\Framework\Shader\KdAmbientController.h" />
     <ClInclude Include="Src\Framework\Shader\KdRenderTargetChange.h" />
     <ClInclude Include="Src\Framework\Shader\StandardShader\KdStandardShader.h" />
+    <ClInclude Include="Src\Framework\Shader\UAEffectShaderManager.h" />
     <ClInclude Include="Src\Framework\Utility\KdDataStorage.h" />
     <ClInclude Include="Src\Framework\Utility\KdCSVData.h" />
     <ClInclude Include="Src\Framework\Utility\KdDebug\KdDebugGUI.h" />
@@ -509,6 +510,7 @@
     <ClCompile Include="Src\Framework\Shader\KdAmbientController.cpp" />
     <ClCompile Include="Src\Framework\Shader\KdRenderTargetChange.cpp" />
     <ClCompile Include="Src\Framework\Shader\StandardShader\KdStandardShader.cpp" />
+    <ClCompile Include="Src\Framework\Shader\UAEffectShaderManager.cpp" />
     <ClCompile Include="Src\Framework\Utility\KdCSVData.cpp" />
     <ClCompile Include="Src\Framework\Utility\KdDebug\KdDebugGUI.cpp" />
     <ClCompile Include="Src\Framework\Utility\KdDebug\KdDebugWireFrame.cpp" />
