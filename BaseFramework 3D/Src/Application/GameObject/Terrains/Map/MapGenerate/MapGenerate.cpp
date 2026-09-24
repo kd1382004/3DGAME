@@ -137,8 +137,10 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			bool canPlace = true;
 
 			//部屋同士何タイル開けるか
-			int aX = KdRandom::GetInt(5, 8);
-			int aY = KdRandom::GetInt(5, 8);
+			int minMargin = m_heightLevelMax + 3;
+			int aX = KdRandom::GetInt(minMargin, minMargin + 3);
+			int aY = KdRandom::GetInt(minMargin, minMargin + 3);
+
 
 			for (int y = roomY - aY; y < roomY + roomH + aY; y++)
 			{
@@ -252,48 +254,8 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					map[y][x].m_tileType = TileType::Floor;
 					map[y][x].m_heightLevel = a.z;
 
-
-
 					int height = static_cast<int>(map.size());
 					int width = static_cast<int>(map[y].size());
-
-					auto isValid = [&](int nx, int ny) {
-						return ny >= 0 && ny < height && nx >= 0 && nx < width;
-						};
-
-					if (isValid(x, y + 1))
-					{
-						if (map[y + 1][x].m_tileType == TileType::Room)
-						{
-							map[y][x].m_heightLevel = map[y + 1][x].m_heightLevel;
-						}
-					}
-
-					if (isValid(x, y - 1))
-					{
-						if (map[y - 1][x].m_tileType == TileType::Room)
-						{
-							map[y][x].m_heightLevel = map[y - 1][x].m_heightLevel;
-						}
-					}
-
-
-					if (isValid(x + 1, y))
-					{
-						if (map[y][x + 1].m_tileType == TileType::Room)
-						{
-							map[y][x].m_heightLevel = map[y][x + 1].m_heightLevel;
-						}
-					}
-
-					if (isValid(x - 1, y))
-					{
-						if (map[y][x - 1].m_tileType == TileType::Room)
-						{
-							map[y][x].m_heightLevel = map[y][x - 1].m_heightLevel;
-						}
-					}
-
 				}
 			}
 		}
@@ -964,12 +926,8 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 {
 	int hA = _A.m_heightLevel;
 	int hB = _B.m_heightLevel;
-	int hDiff = hB - hA;
-	int absHDiff = std::abs(hDiff);
-	int stepDir = (hDiff > 0) ? 1 : -1;
-	// return用
 	std::vector<Math::Vector3> ans;
-	// A の端候補 
+	// A, B の端候補から最短ペアを選択
 	float roomHA = (_A.m_roomEnd.topEnd + _A.m_roomEnd.downEnd) / 2.0f;
 	float roomWA = (_A.m_roomEnd.FarLeft + _A.m_roomEnd.FarRight) / 2.0f;
 	std::array<Math::Vector2, 4> Aends = {
@@ -978,7 +936,6 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 		Math::Vector2{ roomWA, (float)_A.m_roomEnd.topEnd },
 		Math::Vector2{ roomWA, (float)_A.m_roomEnd.downEnd }
 	};
-	// B の端候補
 	float roomHB = (_B.m_roomEnd.topEnd + _B.m_roomEnd.downEnd) / 2.0f;
 	float roomWB = (_B.m_roomEnd.FarLeft + _B.m_roomEnd.FarRight) / 2.0f;
 	std::array<Math::Vector2, 4> Bends = {
@@ -987,7 +944,6 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 		Math::Vector2{ roomWB, (float)_B.m_roomEnd.topEnd },
 		Math::Vector2{ roomWB, (float)_B.m_roomEnd.downEnd }
 	};
-	// 最短端ペアを探す
 	float bestDist = FLT_MAX;
 	Math::Vector2 bestA{}, bestB{};
 	for (const auto& a : Aends)
@@ -1003,67 +959,65 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 			}
 		}
 	}
-
-
-	// L字通路（横 → 縦）
 	int xStart = (int)bestA.x;
 	int xEnd = (int)bestB.x;
 	int yMid = (int)bestA.y;
 	int yStart = (int)bestA.y;
 	int yEnd = (int)bestB.y;
 	int xMid = (int)bestB.x;
-	int dx = std::abs(xEnd - xStart);
-	int dy = std::abs(yEnd - yStart);
-	// --- 高さを切り替える安全なポイント（マス）を決定 ---
-	// 0: 高低差なし, 1: 横直線の中央で切り替え, 2: 縦直線の中央で切り替え
-	int changeMode = 0;
-	int changeX = -1;
-	int changeY = -1;
-	if (hA != hB)
-	{
-		// 横方向に十分な長さ（2マス以上）があれば、横の直線の中央で高さを変える
-		if (dx >= 2)
-		{
-			changeMode = 1;
-			// 角や始点を除いた中央マスを計算
-			changeX = xStart + ((xEnd - xStart) / 2);
-		}
-		// 横が短く縦方向に十分な長さ（2マス以上）があれば、縦の直線の中央で高さを変える
-		else if (dy >= 2)
-		{
-			changeMode = 2;
-			// 角や終点を除いた中央マスを計算
-			changeY = yStart + ((yEnd - yStart) / 2);
-		}
-	}
-	int currentZ = hA; // 最初は始点部屋の高さ
-	// --- 横方向の生成 ---
+	std::vector<Math::Vector2> path2D;
+	// 横方向のパス
 	int xStep = (xStart <= xEnd) ? 1 : -1;
 	for (int x = xStart; x != xEnd + xStep; x += xStep)
 	{
-		// 横直線での切り替え指定位置に到達したら目的地高さ hB に変更
-		if (changeMode == 1 && x == changeX)
-		{
-			currentZ = hB;
-		}
-		ans.push_back({ (float)x, (float)yMid, (float)currentZ });
+		path2D.push_back({ (float)x, (float)yMid });
 	}
-	// --- 縦方向の生成 ---
+	// 縦方向のパス
 	int yStep = (yStart <= yEnd) ? 1 : -1;
 	if (yStart != yEnd)
 	{
 		for (int y = yStart + yStep; y != yEnd + yStep; y += yStep)
 		{
-			// 縦直線での切り替え指定位置に到達したら目的地高さ hB に変更
-			if (changeMode == 2 && y == changeY)
+			path2D.push_back({ (float)xMid, (float)y });
+		}
+	}
+	int totalSteps = static_cast<int>(path2D.size());
+	if (totalSteps == 0) return ans;
+	int currentH = hA;
+	int hDiff = hB - hA;
+	int stepDir = (hDiff > 0) ? 1 : -1;
+	int targetH = hB;
+	for (int i = 0; i < totalSteps; i++)
+	{
+		// 部屋Aの出入り口（最初の2マス）は部屋Aと同じ高さに固定
+		if (i <= 1)
+		{
+			currentH = hA;
+			ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(currentH) });
+
+		}
+		// 部屋Bの出入り口（最後の2マス）は部屋Bと同じ高さに固定
+		else if (i >= totalSteps - 2)
+		{
+			currentH = hB;
+			ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(currentH) });
+		}
+		else
+		{
+			// 中間の通路マスで 1マスにつき 1段（±1）ずつ変化させる
+			if (currentH != targetH)
 			{
-				currentZ = hB;
+				int remainingSteps = totalSteps - 2 - i;
+				int remainingDiff = std::abs(targetH - currentH);
+				float ratio = (float)i / (float)(totalSteps - 1);
+				float h = hA + (hB - hA) * ratio;
+				ans.push_back({ path2D[i].x, path2D[i].y, h });
 			}
-			ans.push_back({ (float)xMid, (float)y, (float)currentZ });
 		}
 	}
 	return ans;
 }
+
 
 // 親(root)を返す
 int MapGenerate::FindRoot(std::vector<int>& _parent, int x)
@@ -1379,149 +1333,101 @@ bool MapGenerate::IsSetTorch(int x, int y, const std::vector<std::vector<FloorIn
 void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 {
 	int height = static_cast<int>(map->size());
+	if (height == 0) return;
+	int width = static_cast<int>((*map)[0].size());
+
+	auto isValid = [&](int nx, int ny) {
+		return ny >= 0 && ny < height && nx >= 0 && nx < width;
+		};
 
 	for (int y = 0; y < height; y++)
 	{
-		int width = static_cast<int>((*map)[y].size());
-
-		auto isValid = [&](int nx, int ny) {
-			return ny >= 0 && ny < height && nx >= 0 && nx < width;
-			};
-
 		for (int x = 0; x < width; x++)
 		{
+			// 1. 通路（Floor）のみを対象とする
 			if ((*map)[y][x].m_tileType != TileType::Floor)
 			{
 				continue;
 			}
 
+			// 2. 直線通路の接続状態を確認する
+			bool up = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType != TileType::None );
+			bool down = isValid(x, y + 1) && ((*map)[y + 1][x].m_tileType != TileType::None );
+			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType != TileType::None);
+			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType != TileType::None);
 
+			int heightLevel = (*map)[y][x].m_heightLevel;
 
-
-			bool up = isValid(x, y + 1) && ((*map)[y + 1][x].m_tileType == TileType::Floor || (*map)[y + 1][x].m_tileType == TileType::Room);
-			bool down = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType == TileType::Floor || (*map)[y - 1][x].m_tileType == TileType::Room);
-			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType == TileType::Floor || (*map)[y][x - 1].m_tileType == TileType::Room);
-			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType == TileType::Floor || (*map)[y][x + 1].m_tileType == TileType::Room);
-
-			// 上にまっすぐ
+			// --- 縦直線通路 (y+1 と y-1) ---
 			if (up && down && (!left && !right))
 			{
-				int heightLevel = (*map)[y][x].m_heightLevel;
+				int UpheightLevel = (*map)[y + 1][x].m_heightLevel;   // y+1 マスの高さ
+				int DownheightLevel = (*map)[y - 1][x].m_heightLevel; // y-1 マスの高さ
 
-				// 安全チェックを追加
-				int UpheightLevel = 0;
-				if (isValid(x, y + 1))
-				{
-					UpheightLevel = (*map)[y + 1][x].m_heightLevel;
-				}
-				else
-				{
-					continue;
-				}
-				int DownheightLevel = 0;
-				if (isValid(x, y - 1))
-				{
-					DownheightLevel = (*map)[y - 1][x].m_heightLevel;
-				}
-				else
-				{
-					continue;
-				}
-
-
-
+				// 自分の高さが y+1 マスと異なる場合
 				if (heightLevel != UpheightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-
 					if (heightLevel < UpheightLevel)
 					{
-						(*map)[y][x].m_heightLevel = UpheightLevel;
-						(*map)[y][x].m_angle = 180;
+						(*map)[y][x].m_heightLevel = UpheightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_angle = 0;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 0;
+						(*map)[y][x].m_angle = 180;
 					}
 				}
+				// 自分の高さが y-1 マスと異なる場合
 				else if (heightLevel != DownheightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-
 					if (heightLevel < DownheightLevel)
 					{
-						(*map)[y][x].m_heightLevel = DownheightLevel;
-						(*map)[y][x].m_angle = 0;
+						(*map)[y][x].m_heightLevel = DownheightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_angle = 180;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 180;
+						(*map)[y][x].m_angle = 0;
 					}
-
-
 				}
 			}
-			else  if (left && right && (!up && !down))// 左右にまっすぐ
+			// --- 横直線通路 (x-1 と x+1) ---
+			else if (left && right && (!up && !down))
 			{
-				int heightLevel = (*map)[y][x].m_heightLevel;
+				int LeftHeightLevel = (*map)[y][x - 1].m_heightLevel;  // x-1 マスの高さ
+				int RightHeightLevel = (*map)[y][x + 1].m_heightLevel; // x+1 マスの高さ
 
-				// 安全に高さ取得
-
-				// 安全チェックを追加
-				int LeftHeightLevel = 0;
-				if (isValid(x - 1, y))
-				{
-					LeftHeightLevel = (*map)[y][x - 1].m_heightLevel;
-				}
-				else
-				{
-					continue;
-				}
-				int RightHeightLevel = 0;
-				if (isValid(x + 1, y))
-				{
-					RightHeightLevel = (*map)[y][x + 1].m_heightLevel;
-				}
-				else
-				{
-					continue;
-				}
-
+				// 自分の高さが x-1 マスと異なる場合
 				if (heightLevel != LeftHeightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-
 					if (heightLevel < LeftHeightLevel)
 					{
-						(*map)[y][x].m_heightLevel = LeftHeightLevel;
-						(*map)[y][x].m_angle = 270;
+						(*map)[y][x].m_heightLevel = LeftHeightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_angle = 90;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 90;
+						(*map)[y][x].m_angle = 270;
 					}
-
-
-
 				}
+				// 自分の高さが x+1 マスと異なる場合
 				else if (heightLevel != RightHeightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-
 					if (heightLevel < RightHeightLevel)
 					{
-						(*map)[y][x].m_heightLevel = RightHeightLevel;
-						(*map)[y][x].m_angle = 90;
+						(*map)[y][x].m_heightLevel = RightHeightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_angle = 270;
 					}
 					else
 					{
-						(*map)[y][x].m_angle = 270;
+						(*map)[y][x].m_angle = 90;
 					}
 				}
 			}
 		}
 	}
 }
-
-
-

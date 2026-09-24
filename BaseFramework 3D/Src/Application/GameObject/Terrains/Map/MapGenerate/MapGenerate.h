@@ -234,7 +234,7 @@ private:
 	///////////////////
 
 
-	int m_heightLevelMax = 1;
+	int m_heightLevelMax = 10;
 
 
 

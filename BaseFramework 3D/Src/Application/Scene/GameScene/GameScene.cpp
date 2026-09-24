@@ -418,6 +418,8 @@ void GameScene::Init()
 //マップ生成
 void GameScene::GenerateMap()
 {
+	m_displayFloor = 10;
+
 	if (!m_spMapManager) { return; }
 	if (!m_spPlayer) { return; }
 	if (!m_spEnemyManager) { return; }

@@ -170,8 +170,6 @@ void Giant::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vec
 
 void Giant::AttackMode()
 {
-
-
 	if (!m_attackFlg)
 	{
 		//攻撃の種類を選択

@@ -139,7 +139,6 @@ void PlayerInventoryUI::PlayerInventoryOpen()
 	{
 		m_playerInventoryUIFlg = !m_playerInventoryUIFlg;
 
-
 		std::shared_ptr spGameScene = m_wpGameScene.lock();
 		if (spGameScene)
 		{
