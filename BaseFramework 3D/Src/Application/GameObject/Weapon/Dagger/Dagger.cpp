@@ -147,12 +147,21 @@ void Dagger::DrawLit()
 
 void Dagger::ChargAttackPlay()
 {
-	std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
-	spDagger_ChargeAttack->Init();
-	spDagger_ChargeAttack->SetShockwaveStatus(1, 100, 1, 100, m_mWorld.Translation(), m_attackAngle);
-	spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
-	spDagger_ChargeAttack->SetMapObjList(m_objList);
-	SceneManager::Instance().AddObject(spDagger_ChargeAttack);
+	if (m_chargeTime > m_chargeTimeMax / 3)
+	{
+		m_chargeAttackMaxdamage= m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_chargeTime / m_chargeTimeMax));
+
+
+		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
+		spDagger_ChargeAttack->Init();
+		spDagger_ChargeAttack->SetShockwaveStatus(m_hitNum, m_maxDistanceM, m_chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), m_attackAngle);
+		spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
+		spDagger_ChargeAttack->SetMapObjList(m_objList);
+		SceneManager::Instance().AddObject(spDagger_ChargeAttack);
+	}
+
+
+	
 
 }
 

@@ -12,6 +12,9 @@ public:
 	void DrawLit()override;
 
 	void ChargAttackPlay();
+
+
+	
 private:
 
 	// 武器の長さ
@@ -33,4 +36,7 @@ private:
 
 	//トレイルポリゴン (軌跡) ポリゴン
 	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
+
+
+
 };

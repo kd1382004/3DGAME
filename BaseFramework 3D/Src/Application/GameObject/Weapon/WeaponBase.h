@@ -44,6 +44,34 @@ public:
 
 	//Charge攻撃をするときに呼び出す
 	virtual void ChargAttackPlay() {};
+
+
+
+
+	// Charge攻撃が当たっていい敵の数
+	void SetHitNum(int hitNum)
+	{
+		m_hitNum = hitNum;
+	}
+
+	// 進んで良い最大の距離（メートル）
+	void SetMaxDistance(float maxDistanceM)
+	{
+		m_maxDistanceM = maxDistanceM;
+	}
+
+	// 1秒あたりに進む距離（速度）
+	void SetChargeAttackSpeed(float speed)
+	{
+		m_chargeAttackSpeed = speed;
+	}
+
+	// 最大ダメージ
+	void SetChargeAttackMaxDamage(float maxDamage)
+	{
+		m_chargeAttackMaxdamage = maxDamage;
+	}
+
 protected:
 
 
@@ -111,5 +139,29 @@ protected:
 
 	//座標補正の距離
 	float m_aimAssistRadius = 10;
+
+
+
+
+	////////////////////////////////////////////////
+	//Charge攻撃パラメーター
+
+	//Charge攻撃を使うのに使うスタミナコスト
+	float m_chargeAttackCost = 0;
+
+	//Charge攻撃を使うのに使うスタミナコストのマックス値
+	float m_m_chargeAttackMaxCost = 20;
+
+	//Charge攻撃が当たっていい敵の数
+	int m_hitNum = 100;
+
+	//進んで良い最大の距離
+	float m_maxDistanceM = 100;
+
+	//1秒あたりに進む距離
+	float m_chargeAttackSpeed = 10;
+
+	//最大ダメージ
+	float m_chargeAttackMaxdamage = 100;
 };
 

@@ -104,15 +104,15 @@ void Dagger_ChargeAttack::Update()
 				1.0f
 			);
 
-			float hitStopTime = 0.03f;
-			DeltaTime::Instance().HitStop(hitStopTime);
-
 			m_shockwaveStatus.maxHitNum--;
 			if (m_shockwaveStatus.maxHitNum <= 0)
 			{
 				m_isExpired = true;
 				break;
 			}
+
+
+			m_shockwaveStatus.maxDamage *= 0.9;
 		}
 	}
 
