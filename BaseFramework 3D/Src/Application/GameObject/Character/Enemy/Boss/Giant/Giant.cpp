@@ -151,13 +151,13 @@ void Giant::DrawLit()
 	{
 
 
-		UAEffectShaderManager::Instance().WriteCBColoerEnable(false);
+		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(false);
 
 		//モデルが暗すぎるため無理やり明るく
 		Math::Color color = { 5,5,5,1 };
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld, color);
 
-		UAEffectShaderManager::Instance().WriteCBColoerEnable(true);
+		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(true);
 
 
 	}
@@ -188,7 +188,7 @@ void Giant::AttackMode()
 		else
 		{
 
-			if (KdRandom::GetInt(1, 10) < 10)
+			if (KdRandom::GetInt(1, 10) < 100)
 			{
 				m_giantAttackMode = GiantAttackMode::JumpSlamAttack;
 			}
@@ -199,7 +199,7 @@ void Giant::AttackMode()
 
 		}
 
-
+		m_giantAttackMode = GiantAttackMode::LeftPunchAttack;
 		switch (m_giantAttackMode)
 		{
 		case Giant::LeftPunchAttack:
@@ -277,15 +277,17 @@ void Giant::LeftAttackUpdate()
 				spleftAttack->SetAttckFlg(true);
 				m_IsAttackleftHITFlg = true;
 			}
-			else
-			{
-				Math::Vector3 startPos = m_jnpStartPos;   // ジャンプ開始地点
-				Math::Vector3 targetPos = m_playerPos; // プレイヤー位置
+			//else
+			//{
+			//	Math::Vector3 startPos = m_jnpStartPos;   // ジャンプ開始地点
+			//	Math::Vector3 targetPos = m_playerPos; // プレイヤー位置
 
-				m_moveVec = (targetPos - startPos);
-				m_moveVec.Normalize();
-				AngeleUpdate();
-			}
+			//	m_moveVec = (targetPos - startPos);
+			//	m_moveVec.Normalize();
+			//	AngeleUpdate();
+			//}
+			m_playerChaseFlg = false;
+			m_moveVec = {};
 		}
 		else
 		{
@@ -295,8 +297,17 @@ void Giant::LeftAttackUpdate()
 			}
 		}
 
-		Math::Matrix m = GetBoneWorldMatrix(BONE_LEFT_HAND);
-		spleftAttack->SetLPos(m.Translation());
+
+		float yawRad = DirectX::XMConvertToRadians(m_angle);
+
+		Math::Vector3 dir;
+		dir.x = sinf(yawRad);
+		dir.y = 0.0f;
+		dir.z = cosf(yawRad);
+		Math::Vector3 attackPos = m_pos+ dir*10;
+
+		spleftAttack->SetTargetCenterPos(attackPos);
+		spleftAttack->SetAngleY(m_angle);
 		spleftAttack->SetKnockbackDir(m_mWorld.Backward());
 		spleftAttack->AttackLeftPunchUpdate();
 
@@ -309,6 +320,7 @@ void Giant::LeftAttackUpdate()
 			m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Run;
 			m_AnimeChangeFlg = true;
 			m_IsAttackleftHITFlg = false;
+			m_playerChaseFlg = true;
 		}
 
 	}

@@ -82,7 +82,7 @@ cbuffer cbLight : register(b9)
 //------------------------------
 
 // 定数バッファ(エフェクト)
-struct EffectData
+struct CircleEffectData
 {
 	float3 colorPos;
 	float colorRadius;
@@ -91,10 +91,32 @@ struct EffectData
 };
 
 
+// 定数バッファ(エフェクト)
+struct BoxEffectData
+{
+	float3 colorPos;
+	float colorRadiusX;
+	
+	float colorRadiusY;
+	float3 colorColor;
+
+	float colorRadiusZ;
+	float worldAngleY;
+	float2 dummy; // HLSLの16バイトパッキング用
+};
+
 cbuffer cbCEffect : register(b10)
 {
-	int g_colorEnable;
-	int g_effectNum; // 有効なエフェクトの個数
-	int2 g_cbEffectDummy; // 16バイト揃え用
-	EffectData g_effects[10]; // 最大10個まで保持
+
+	//スフィアーカラー
+	int g_circleColorEnable;
+	int g_circleEffectNum; // 有効なエフェクトの個数
+	int2 g_circleCbEffectDummy; // 16バイト揃え用
+	CircleEffectData g_circleEffects[10]; // 最大10個まで保持
+
+	//ボックスカラー
+	int g_boxColorEnable;
+	int g_boxEffectNum; // 有効なエフェクトの個数
+	int2 g_boxCbEffectDummy; // 16バイト揃え用
+	BoxEffectData g_boxEffects[10]; // 最大10個まで保持
 };

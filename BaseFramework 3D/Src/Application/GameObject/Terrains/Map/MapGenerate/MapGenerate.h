@@ -234,7 +234,7 @@ private:
 	///////////////////
 
 
-	int m_heightLevelMax = 10;
+	static const int m_heightLevelMax = 1;
 
 
 

@@ -86,19 +86,44 @@ float4 main(VSOutput In) : SV_Target0
 	float specPower = pow(2, 11 * smoothness); // 1～2048
 
 
-
-	if (g_colorEnable)
+	//スフィアカラー
+	if (g_circleColorEnable)
 	{
-		for (int i = 0; i < g_effectNum; i++)
+		for (int i = 0; i < g_circleEffectNum; i++)
 		{
-			float3 v = g_effects[i].colorPos - In.wPos;
-			if (length(v) < g_effects[i].colorRadius)
+			float3 v = g_circleEffects[i].colorPos - In.wPos;
+			if (length(v) < g_circleEffects[i].colorRadius)
 			{
-				baseColor.rgb += g_effects[i].colorColor;
+				baseColor.rgb += g_circleEffects[i].colorColor;
 			}
 		}
 	}
 
+	// ボックスカラー（回転対応）
+	if (g_boxColorEnable)
+	{
+		for (int i = 0; i < g_boxEffectNum; i++)
+		{
+        // ワールド座標からボックス中心へのベクトル
+			float3 v = In.wPos - g_boxEffects[i].colorPos;
+        // Y軸回転行列（逆回転：-angle の回転）
+			float angle = g_boxEffects[i].worldAngleY;
+			float c = cos(angle);
+			float s = sin(angle);
+        // 逆回転（-angle）を適用してボックスのローカル空間へ変換
+			float3 localPos;
+			localPos.x = v.x * c - v.z * s; 
+			localPos.y = v.y;
+			localPos.z = v.x * s + v.z * c; 
+        // OBB 判定（XYZ 半径）
+			if (abs(localPos.x) < g_boxEffects[i].colorRadiusX &&
+            abs(localPos.y) < g_boxEffects[i].colorRadiusY &&
+            abs(localPos.z) < g_boxEffects[i].colorRadiusZ)
+			{
+				baseColor.rgb += g_boxEffects[i].colorColor;
+			}
+		}
+	}
 	
 	//------------------------------------------
 	// ライティング

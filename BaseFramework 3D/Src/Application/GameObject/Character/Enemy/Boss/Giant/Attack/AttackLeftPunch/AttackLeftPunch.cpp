@@ -3,19 +3,29 @@
 void AttackLeftPunch::AttackLeftPunchUpdate()
 {
 
+	UAEffectShaderManager::Instance().WriteCBBoxEffect(m_targetCenterPos, m_boxSiz, DirectX::XMConvertToRadians(m_angleY), { 0.5,0,0 });
+	m_boxPercent += 2 * DeltaTime::Instance().GetGameDeltaTime();
+	if (m_boxPercent > 1)
+	{
+		m_boxPercent = 0;
+	}
+
+	UAEffectShaderManager::Instance().WriteCBBoxEffect(m_targetCenterPos, m_boxSiz* m_boxPercent, DirectX::XMConvertToRadians(m_angleY), { 0.5,0,0 });
+
 	if (!m_hitFlg) { return; }
 
-	KdCollider::SphereInfo spherLInfo;
+	// OBB（回転対応ボックス）の作成
+	DirectX::BoundingOrientedBox obb;
+	obb.Center = m_targetCenterPos;
+	obb.Extents = m_boxSiz;
+	obb.Orientation = Math::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_angleY), 0.0f, 0.0f);
 
-	spherLInfo.m_sphere.Center = m_Lpos;
-	spherLInfo.m_sphere.Center.y -= 1;
-	spherLInfo.m_sphere.Radius = 3;
-	spherLInfo.m_type = KdCollider::Type::TypeDamage;
+	KdCollider::BoxInfo boxInfo(KdCollider::Type::TypeDamage, obb);
 
 	std::shared_ptr<PlayerBase>spPlayerBase = m_wpPlayerBase.lock();
 	if (spPlayerBase)
 	{
-		if (spPlayerBase->Intersects(spherLInfo, nullptr))
+		if (spPlayerBase->Intersects(boxInfo, nullptr))
 		{
 			m_hitFlg = false;
 
@@ -26,7 +36,8 @@ void AttackLeftPunch::AttackLeftPunchUpdate()
 
 	if (m_pDebugWire)
 	{
-		m_pDebugWire->AddDebugSphere(spherLInfo.m_sphere.Center, spherLInfo.m_sphere.Radius);
+		Math::Matrix boxMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_angleY)) * Math::Matrix::CreateTranslation(m_targetCenterPos);
+		m_pDebugWire->AddDebugBox(boxMat, m_boxSiz, Math::Vector3::Zero, true,kRedColor);
 	}
 }
 

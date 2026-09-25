@@ -33,11 +33,13 @@ void CharacterBase::DrawLit()
 {
 	if (m_spCharaModel)
 	{
-		UAEffectShaderManager::Instance().WriteCBColoerEnable(false);
+		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(false);
+		UAEffectShaderManager::Instance().WriteCBBoxEffectEnable(false);
 
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld);
 
-		UAEffectShaderManager::Instance().WriteCBColoerEnable(true);
+		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(true);
+		UAEffectShaderManager::Instance().WriteCBBoxEffectEnable(true);
 	}
 }
 

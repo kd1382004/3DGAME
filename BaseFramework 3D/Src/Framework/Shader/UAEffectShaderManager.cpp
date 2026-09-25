@@ -12,35 +12,76 @@ void UAEffectShaderManager::Init()
 void UAEffectShaderManager::ClearEffect()
 {
 	auto& cb = m_cb10_Effect.Work();
-	cb.effectNum = 0;
+	cb.circleEffectNum = 0;
+	cb.boxEffectNum = 0;
 	m_cb10_Effect.Write();
+
+
+
 }
 
-void UAEffectShaderManager::AddEffect(Math::Vector3 pos, float radius, Math::Vector3 color)
+void UAEffectShaderManager::AddCircleEffect(Math::Vector3 pos, float radius, Math::Vector3 color)
 {
 	auto& cb = m_cb10_Effect.Work();
-	if (cb.effectNum >= 10) return; // 上限
+	if (cb.circleEffectNum >= 10) return; // 上限
 
-	cb.effects[cb.effectNum].colorPos = pos;
-	cb.effects[cb.effectNum].colorRadius = radius;
-	cb.effects[cb.effectNum].colorColor = color;
-	cb.effectNum++;
-	cb.colorEnable = true;
+	cb.circleEffects[cb.circleEffectNum].colorPos = pos;
+	cb.circleEffects[cb.circleEffectNum].colorRadius = radius;
+	cb.circleEffects[cb.circleEffectNum].colorColor = color;
+	cb.circleEffectNum++;
+	cb.circleColorEnable = true;
 
 	m_cb10_Effect.Write();
 }
 
-void UAEffectShaderManager::WriteCBColoerEnable(bool enable)
+void UAEffectShaderManager::WriteCBCircleEffectEnable(bool enable)
 {
 	//データをセット
-	m_cb10_Effect.Work().colorEnable = enable;
+	m_cb10_Effect.Work().circleColorEnable = enable;
 	//GPUに転送
 	m_cb10_Effect.Write();
 }
 
-void UAEffectShaderManager::WriteCBColoer(Math::Vector3 pos, float radius, Math::Vector3 color)
+void UAEffectShaderManager::WriteCBCircleEffect(Math::Vector3 pos, float radius, Math::Vector3 color)
 {
-	AddEffect(pos, radius, color);
+	AddCircleEffect(pos, radius, color);
+}
+
+void UAEffectShaderManager::WriteCBBoxEffectEnable(bool enable)
+{
+	//データをセット
+	m_cb10_Effect.Work().boxColorEnable = enable;
+	//GPUに転送
+	m_cb10_Effect.Write();
+}
+
+void UAEffectShaderManager::WriteCBBoxEffect(Math::Vector3 pos, Math::Vector3 boxSiz, float worldAngleY, Math::Vector3 color)
+{
+		auto& cb = m_cb10_Effect.Work();
+
+		// 追加できるかチェック（最大10個）
+		if (cb.boxEffectNum >= 10)
+		{
+			// これ以上追加できない
+			return;
+		}
+
+		// 書き込み先のインデックス
+		int idx = cb.boxEffectNum;
+
+		cb.boxEffects[idx].colorPos = pos;
+		cb.boxEffects[idx].colorRadiusX = boxSiz.x;
+		cb.boxEffects[idx].colorRadiusY = boxSiz.y;
+		cb.boxEffects[idx].colorRadiusZ = boxSiz.z;
+		cb.boxEffects[idx].worldAngleY = worldAngleY;
+		cb.boxEffects[idx].colorColor = color;
+	
+
+		// 有効エフェクト数を増やす
+		cb.boxEffectNum++;
+
+		// GPU へ書き込み
+		m_cb10_Effect.Write();
 }
 
 void UAEffectShaderManager::Release()

@@ -1,4 +1,4 @@
-﻿#include "MapManager.h"
+#include "MapManager.h"
 #include "MapBase.h"
 #include "MapGenerate/MapGenerate.h"
 #include "../../Camera/CameraBase.h"
@@ -273,44 +273,40 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			int chestNum = mapRoomList[i][0].m_roomTreasuerChestNum;
 			int roomType = mapRoomList[i][0].m_roomType;
 
-			while (true)
+			// 宝箱を置ける床（Installation == false）が存在するかチェック
+			int freeTileCount = 0;
+			for (const auto& r : mapRoomList[i])
 			{
+				if (!r.m_Installation) { freeTileCount++; }
+			}
+			if (freeTileCount == 0) { continue; }
 
-				int LoomNum = KdRandom::GetInt(0, mapRoomList[i].size() - 1);
+			int tryCount = 0;
+			int maxTry = static_cast<int>(mapRoomList[i].size()) * 3;
+
+			while (chestNum > 0 && tryCount < maxTry)
+			{
+				tryCount++;
+				int LoomNum = KdRandom::GetInt(0, static_cast<int>(mapRoomList[i].size()) - 1);
 				if (mapRoomList[i][LoomNum].m_Installation)
 				{
 					continue;
 				}
 
-				float spawnRate = 0;
-
-				if (roomType == RoomType::RoomType_TreasureChestRoom || roomType == RoomType::RoomType_SafeRoom)
-				{
-					spawnRate = 1;
-				}
-				else
-				{
-					spawnRate = 0.4;
-				}
-
+				float spawnRate = (roomType == RoomType::RoomType_TreasureChestRoom || roomType == RoomType::RoomType_SafeRoom) ? 1.0f : 0.4f;
 
 				if (KdRandom::GetFloat(0.0f, 1.0f) <= spawnRate)
 				{
 					Math::Vector3 pos = mapRoomList[i][LoomNum].m_pos;
 					mapRoomList[i][LoomNum].m_Installation = true;
 
-					int x = mapRoomList[i][LoomNum].m_xy.x;
-					int y = mapRoomList[i][LoomNum].m_xy.y;
+					int x = static_cast<int>(mapRoomList[i][LoomNum].m_xy.x);
+					int y = static_cast<int>(mapRoomList[i][LoomNum].m_xy.y);
 					mapData[y][x] = false;
 					TreasureChestPosList.push_back(pos);
 				}
 
-
 				chestNum--;
-				if (chestNum <= 0)
-				{
-					break;
-				}
 			}
 		}
 
@@ -460,9 +456,9 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 
 	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
 
-	for (int dy = -m_updateChunkRadius.x; dy <= m_updateChunkRadius.x; dy++)
+	for (int dy = -static_cast<int>(m_updateChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y); dy++)
 	{
-		for (int dx = -m_updateChunkRadius.y; dx <= m_updateChunkRadius.y; dx++)
+		for (int dx = -static_cast<int>(m_updateChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x); dx++)
 		{
 			int ncx = cx + dx;
 			int ncy = cy + dy;

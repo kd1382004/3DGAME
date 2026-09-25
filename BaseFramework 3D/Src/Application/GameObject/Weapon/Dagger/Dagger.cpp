@@ -77,7 +77,7 @@ void Dagger::Update()
 	localOBB.Transform(sweptOBB, m_mWorld);
 	// OBB (isOriented = true) として BoxInfo を作成
 	KdCollider::BoxInfo box(KdCollider::TypeDamage, sweptOBB);
-
+	
 	// ----------------------------------------------------
 	// 当たり判定処理
 	// ----------------------------------------------------

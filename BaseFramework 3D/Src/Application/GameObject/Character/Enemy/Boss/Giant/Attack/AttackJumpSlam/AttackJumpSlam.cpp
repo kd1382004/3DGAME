@@ -4,14 +4,14 @@
 void AttackJumpSlam::AttackJumpSlamUpdate()
 {
 	//攻撃範囲表示
-	UAEffectShaderManager::Instance().WriteCBColoer(m_Rpos, m_radius, { 0.5,0,0 });
+	UAEffectShaderManager::Instance().WriteCBCircleEffect(m_Rpos, m_radius, { 0.5,0,0 });
 	m_radiusPercent += 2* DeltaTime::Instance().GetGameDeltaTime();
 	if (m_radiusPercent > 1)
 	{
 		m_radiusPercent = 0;
 	}
 
-	UAEffectShaderManager::Instance().WriteCBColoer(m_Rpos, m_radius * m_radiusPercent, { 1,0,0 });
+	UAEffectShaderManager::Instance().WriteCBCircleEffect(m_Rpos, m_radius * m_radiusPercent, { 1,0,0 });
 
 
 	if (!m_hitFlg) { return; }

@@ -19,7 +19,7 @@ public:
 	//攻撃左パンチ攻撃
 	void AttackLeftPunchUpdate();
 
-	void SetLPos(const Math::Vector3& pos) { m_Lpos = pos; }
+	void SetTargetCenterPos(const Math::Vector3& pos) { m_targetCenterPos = pos; }
 
 	void SetAttckFlg(bool _flg = true) { m_hitFlg = _flg; }
 	void SetAttckPower(float _attackPower) { m_attckPower = _attackPower; }
@@ -38,6 +38,8 @@ public:
 
 
 	void DrawLit()override;
+
+	void SetAngleY(float angY) { m_angleY = angY; }
 private:
 
 	void SetAttackStatus();
@@ -46,10 +48,11 @@ private:
 
 	std::weak_ptr<PlayerBase>m_wpPlayerBase;
 
-	Math::Vector3 m_Lpos;
+	Math::Vector3 m_targetCenterPos;
 
 	bool m_hitFlg = false;
 
+	float m_angleY = 0;
 
 	//攻撃力倍率
 	float m_attckMagnification = 1.5;
@@ -63,4 +66,8 @@ private:
 
 	//スタン時間
 	float m_hitStunTime = 0;
+
+
+	Math::Vector3 m_boxSiz = { 10,5,5 };
+	float m_boxPercent = 0;
 };

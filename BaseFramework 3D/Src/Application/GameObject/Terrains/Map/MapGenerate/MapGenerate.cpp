@@ -1,4 +1,4 @@
-﻿#include "MapGenerate.h"
+#include "MapGenerate.h"
 #include<array>
 #include"../FloorBase/FloorBase.h"
 #include"../WallBase/WallBase.h"
@@ -74,12 +74,6 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 		row.resize(chunkW);
 	}
 
-	m_chunks.resize(chunkH);
-	for (auto& row : m_chunks)
-	{
-		row.resize(chunkW);
-	}
-
 
 	/////////////////////////////////////////////////////
 
@@ -130,8 +124,11 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			int X = _mapSiz.x;
 			int Y = _mapSiz.y;
 
-			int roomX = KdRandom::GetInt(0, X - roomW - 1);
-			int roomY = KdRandom::GetInt(0, Y - roomH - 1);
+			int maxX = std::max(0, X - roomW - 1);
+			int maxY = std::max(0, Y - roomH - 1);
+
+			int roomX = KdRandom::GetInt(0, maxX);
+			int roomY = KdRandom::GetInt(0, maxY);
 
 			// 部屋が空いてるかチェック
 			bool canPlace = true;
@@ -263,6 +260,108 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 
 
+	// 全グリッドの高さ調整（スロープ化可能な3マス以上の直線部分のみ高さ変化を許可）
+	bool changed = true;
+	int maxPasses = 100;
+	int mapH = static_cast<int>(map.size());
+	int mapW = mapH > 0 ? static_cast<int>(map[0].size()) : 0;
+
+	auto isValidGrid = [&](int nx, int ny) {
+		return ny >= 0 && ny < mapH && nx >= 0 && nx < mapW;
+	};
+
+	auto isVerticalStraight = [&](int x, int y) {
+		if (!isValidGrid(x, y)) return false;
+		if (map[y][x].m_tileType != TileType::Floor) return false;
+
+		bool up = isValidGrid(x, y - 1) && (map[y - 1][x].m_tileType != TileType::None);
+		bool down = isValidGrid(x, y + 1) && (map[y + 1][x].m_tileType != TileType::None);
+		bool left = isValidGrid(x - 1, y) && (map[y][x - 1].m_tileType != TileType::None);
+		bool right = isValidGrid(x + 1, y) && (map[y][x + 1].m_tileType != TileType::None);
+
+		return up && down && (!left && !right);
+	};
+
+	auto isHorizontalStraight = [&](int x, int y) {
+		if (!isValidGrid(x, y)) return false;
+		if (map[y][x].m_tileType != TileType::Floor) return false;
+
+		bool up = isValidGrid(x, y - 1) && (map[y - 1][x].m_tileType != TileType::None);
+		bool down = isValidGrid(x, y + 1) && (map[y + 1][x].m_tileType != TileType::None);
+		bool left = isValidGrid(x - 1, y) && (map[y][x - 1].m_tileType != TileType::None);
+		bool right = isValidGrid(x + 1, y) && (map[y][x + 1].m_tileType != TileType::None);
+
+		return left && right && (!up && !down);
+	};
+
+	auto canSlopeVertical = [&](int x, int y) {
+		return isVerticalStraight(x, y - 1) && isVerticalStraight(x, y) && isVerticalStraight(x, y + 1);
+	};
+
+	auto canSlopeHorizontal = [&](int x, int y) {
+		return isHorizontalStraight(x - 1, y) && isHorizontalStraight(x, y) && isHorizontalStraight(x + 1, y);
+	};
+
+	static const int dx[] = { 0, 0, -1, 1 };
+	static const int dy[] = { -1, 1, 0, 0 };
+
+	while (changed && maxPasses-- > 0)
+	{
+		changed = false;
+		for (int y = 0; y < mapH; y++)
+		{
+			for (int x = 0; x < mapW; x++)
+			{
+				if (map[y][x].m_tileType == TileType::None) continue;
+
+				for (int d = 0; d < 4; d++)
+				{
+					int nx = x + dx[d];
+					int ny = y + dy[d];
+
+					if (!isValidGrid(nx, ny)) continue;
+					if (map[ny][nx].m_tileType == TileType::None) continue;
+
+					int diff = map[y][x].m_heightLevel - map[ny][nx].m_heightLevel;
+					if (diff == 0) continue;
+
+					bool isVertDir = (dx[d] == 0);
+					bool canSlopeInDir = isVertDir ? (canSlopeVertical(x, y) && canSlopeVertical(nx, ny))
+												   : (canSlopeHorizontal(x, y) && canSlopeHorizontal(nx, ny));
+
+					// 方向沿いにスロープが置けない場合、高さ差は0（完全フラット）に強制
+					if (!canSlopeInDir)
+					{
+						if (map[y][x].m_tileType == TileType::Floor)
+						{
+							map[y][x].m_heightLevel = map[ny][nx].m_heightLevel;
+							changed = true;
+						}
+						else if (map[ny][nx].m_tileType == TileType::Floor)
+						{
+							map[ny][nx].m_heightLevel = map[y][x].m_heightLevel;
+							changed = true;
+						}
+					}
+					// スロープ可能な方向なら高さ差を最大1に制限
+					else
+					{
+						if (diff > 1)
+						{
+							map[y][x].m_heightLevel = map[ny][nx].m_heightLevel + 1;
+							changed = true;
+						}
+						else if (diff < -1)
+						{
+							map[y][x].m_heightLevel = map[ny][nx].m_heightLevel - 1;
+							changed = true;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	//Slopeを設置
 	SlopeCheck(&map);
 
@@ -271,8 +370,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	//プレイヤーのスポーン部屋を決める
 	int playerSpwanRoomID = KdRandom::GetInt(m_ionitialRoomID, roomID - 1);
 
-
-	for (auto room : m_roomInfo)
+	for (auto& room : m_roomInfo)
 	{
 		if (room.m_roomID == playerSpwanRoomID)
 		{
@@ -285,21 +383,24 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 	/////////////////////////////////////////////////////
 	//階段設置部屋を決める
-	int SetStairsRoomID;
-	while (true)
+	int SetStairsRoomID = playerSpwanRoomID;
+	if (roomID - 1 > m_ionitialRoomID)
 	{
-		SetStairsRoomID = KdRandom::GetInt(m_ionitialRoomID, roomID - 1);
-		if (playerSpwanRoomID != SetStairsRoomID)
+		while (true)
 		{
-			for (auto room : m_roomInfo)
+			SetStairsRoomID = KdRandom::GetInt(m_ionitialRoomID, roomID - 1);
+			if (playerSpwanRoomID != SetStairsRoomID)
 			{
-				if (room.m_roomID == SetStairsRoomID)
-				{
-					room.m_stairsRoom = true;
-				}
+				break;
 			}
+		}
+	}
 
-			break;
+	for (auto& room : m_roomInfo)
+	{
+		if (room.m_roomID == SetStairsRoomID)
+		{
+			room.m_stairsRoom = true;
 		}
 	}
 
@@ -983,38 +1084,36 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 	}
 	int totalSteps = static_cast<int>(path2D.size());
 	if (totalSteps == 0) return ans;
-	int currentH = hA;
+
+	ans.reserve(totalSteps);
+
+	int margin = 2; // 出入り口のフラット固定幅（2マス）
+	int startMiddle = std::min(margin, totalSteps - 1);
+	int endMiddle = std::max(startMiddle, totalSteps - 1 - margin);
+	int middleSteps = endMiddle - startMiddle;
+
 	int hDiff = hB - hA;
-	int stepDir = (hDiff > 0) ? 1 : -1;
-	int targetH = hB;
+	int clampedDiff = (middleSteps > 0) ? std::clamp(hDiff, -middleSteps, middleSteps) : 0;
+
 	for (int i = 0; i < totalSteps; i++)
 	{
-		// 部屋Aの出入り口（最初の2マス）は部屋Aと同じ高さに固定
-		if (i <= 1)
+		if (i <= startMiddle)
 		{
-			currentH = hA;
-			ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(currentH) });
-
+			ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(hA) });
 		}
-		// 部屋Bの出入り口（最後の2マス）は部屋Bと同じ高さに固定
-		else if (i >= totalSteps - 2)
+		else if (i >= endMiddle)
 		{
-			currentH = hB;
-			ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(currentH) });
+			ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(hA + clampedDiff) });
 		}
 		else
 		{
-			// 中間の通路マスで 1マスにつき 1段（±1）ずつ変化させる
-			if (currentH != targetH)
-			{
-				int remainingSteps = totalSteps - 2 - i;
-				int remainingDiff = std::abs(targetH - currentH);
-				float ratio = (float)i / (float)(totalSteps - 1);
-				float h = hA + (hB - hA) * ratio;
-				ans.push_back({ path2D[i].x, path2D[i].y, h });
-			}
+			float ratio = static_cast<float>(i - startMiddle) / static_cast<float>(middleSteps);
+			float hFloat = static_cast<float>(hA) + static_cast<float>(clampedDiff) * ratio;
+			float h = std::round(hFloat);
+			ans.push_back({ path2D[i].x, path2D[i].y, h });
 		}
 	}
+
 	return ans;
 }
 
@@ -1058,17 +1157,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 	// 隣のマスが None（空き地）なら壁を作る
 	if (map[ny][nx].m_tileType == TileType::None) { return true; }
 
-
-
-	//隣がSlopeじゃないかつ自分がSlopeじゃないなら壁を作る
-	if (map[ny][nx].m_tileType != TileType::Slopee && map[y][x].m_tileType != TileType::Slopee)
-	{
-		if (_heightLevel != map[ny][nx].m_heightLevel)
-		{
-			return true;
-		}
-	}
-
+	// 歩行可能マス同士（Room, Floor, Slopee）の間には壁を作らない（通路を塞がせない）
 	return false;
 }
 
@@ -1338,39 +1427,60 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 
 	auto isValid = [&](int nx, int ny) {
 		return ny >= 0 && ny < height && nx >= 0 && nx < width;
-		};
+	};
+
+	auto isVerticalStraight = [&](int x, int y) {
+		if (!isValid(x, y)) return false;
+		if ((*map)[y][x].m_tileType != TileType::Floor) return false;
+
+		bool up = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType != TileType::None);
+		bool down = isValid(x, y + 1) && ((*map)[y + 1][x].m_tileType != TileType::None);
+		bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType != TileType::None);
+		bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType != TileType::None);
+
+		return up && down && (!left && !right);
+	};
+
+	auto isHorizontalStraight = [&](int x, int y) {
+		if (!isValid(x, y)) return false;
+		if ((*map)[y][x].m_tileType != TileType::Floor) return false;
+
+		bool up = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType != TileType::None);
+		bool down = isValid(x, y + 1) && ((*map)[y + 1][x].m_tileType != TileType::None);
+		bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType != TileType::None);
+		bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType != TileType::None);
+
+		return left && right && (!up && !down);
+	};
+
+	auto canSlopeVertical = [&](int x, int y) {
+		return isVerticalStraight(x, y - 1) && isVerticalStraight(x, y) && isVerticalStraight(x, y + 1);
+	};
+
+	auto canSlopeHorizontal = [&](int x, int y) {
+		return isHorizontalStraight(x - 1, y) && isHorizontalStraight(x, y) && isHorizontalStraight(x + 1, y);
+	};
 
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++)
 		{
-			// 1. 通路（Floor）のみを対象とする
-			if ((*map)[y][x].m_tileType != TileType::Floor)
-			{
-				continue;
-			}
-
-			// 2. 直線通路の接続状態を確認する
-			bool up = isValid(x, y - 1) && ((*map)[y - 1][x].m_tileType != TileType::None );
-			bool down = isValid(x, y + 1) && ((*map)[y + 1][x].m_tileType != TileType::None );
-			bool left = isValid(x - 1, y) && ((*map)[y][x - 1].m_tileType != TileType::None);
-			bool right = isValid(x + 1, y) && ((*map)[y][x + 1].m_tileType != TileType::None);
+			if ((*map)[y][x].m_tileType != TileType::Floor) continue;
 
 			int heightLevel = (*map)[y][x].m_heightLevel;
 
-			// --- 縦直線通路 (y+1 と y-1) ---
-			if (up && down && (!left && !right))
+			// --- 縦直線スロープ (y+1 と y-1) ---
+			if (canSlopeVertical(x, y))
 			{
 				int UpheightLevel = (*map)[y + 1][x].m_heightLevel;   // y+1 マスの高さ
 				int DownheightLevel = (*map)[y - 1][x].m_heightLevel; // y-1 マスの高さ
 
-				// 自分の高さが y+1 マスと異なる場合
 				if (heightLevel != UpheightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
 					if (heightLevel < UpheightLevel)
 					{
-						(*map)[y][x].m_heightLevel = UpheightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_heightLevel = UpheightLevel;
 						(*map)[y][x].m_angle = 0;
 					}
 					else
@@ -1378,13 +1488,12 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 						(*map)[y][x].m_angle = 180;
 					}
 				}
-				// 自分の高さが y-1 マスと異なる場合
 				else if (heightLevel != DownheightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
 					if (heightLevel < DownheightLevel)
 					{
-						(*map)[y][x].m_heightLevel = DownheightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_heightLevel = DownheightLevel;
 						(*map)[y][x].m_angle = 180;
 					}
 					else
@@ -1393,19 +1502,18 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					}
 				}
 			}
-			// --- 横直線通路 (x-1 と x+1) ---
-			else if (left && right && (!up && !down))
+			// --- 横直線スロープ (x-1 と x+1) ---
+			else if (canSlopeHorizontal(x, y))
 			{
 				int LeftHeightLevel = (*map)[y][x - 1].m_heightLevel;  // x-1 マスの高さ
 				int RightHeightLevel = (*map)[y][x + 1].m_heightLevel; // x+1 マスの高さ
 
-				// 自分の高さが x-1 マスと異なる場合
 				if (heightLevel != LeftHeightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
 					if (heightLevel < LeftHeightLevel)
 					{
-						(*map)[y][x].m_heightLevel = LeftHeightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_heightLevel = LeftHeightLevel;
 						(*map)[y][x].m_angle = 90;
 					}
 					else
@@ -1413,13 +1521,12 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 						(*map)[y][x].m_angle = 270;
 					}
 				}
-				// 自分の高さが x+1 マスと異なる場合
 				else if (heightLevel != RightHeightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
 					if (heightLevel < RightHeightLevel)
 					{
-						(*map)[y][x].m_heightLevel = RightHeightLevel; // 高い方のレベルをセット
+						(*map)[y][x].m_heightLevel = RightHeightLevel;
 						(*map)[y][x].m_angle = 270;
 					}
 					else

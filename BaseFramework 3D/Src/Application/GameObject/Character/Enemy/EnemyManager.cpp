@@ -137,6 +137,7 @@ void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 	spBoss->AddUIList(m_wpUIManager.lock());
 	spBoss->SetGameScene(m_wpGameScene.lock());
 	spBoss->SetEnemyManager(m_wpEnemyManager.lock());
+	spBoss->SetHitDamage(m_wpHitDamage.lock());
 	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
 	if (spMapManager)
 	{
