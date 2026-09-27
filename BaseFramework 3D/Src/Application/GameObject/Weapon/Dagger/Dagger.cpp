@@ -77,7 +77,7 @@ void Dagger::Update()
 	localOBB.Transform(sweptOBB, m_mWorld);
 	// OBB (isOriented = true) として BoxInfo を作成
 	KdCollider::BoxInfo box(KdCollider::TypeDamage, sweptOBB);
-	
+
 	// ----------------------------------------------------
 	// 当たり判定処理
 	// ----------------------------------------------------
@@ -149,7 +149,7 @@ void Dagger::ChargAttackPlay()
 {
 	if (m_chargeTime > m_chargeTimeMax / 3)
 	{
-		m_chargeAttackMaxdamage= m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_chargeTime / m_chargeTimeMax));
+		m_chargeAttackMaxdamage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_chargeTime / m_chargeTimeMax));
 
 
 		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
@@ -161,8 +161,135 @@ void Dagger::ChargAttackPlay()
 	}
 
 
-	
+	//レベル2を止める
+	auto spEffect2 = m_wpChargeLV2Effect.lock();
+	if (spEffect2 && spEffect2->IsPlaying())
+	{
+		spEffect2->StopEffect();
+	}
 
+}
+
+void Dagger::SetNowChargeTime(float _time)
+{
+	m_chargeTime = _time;
+
+
+	if (m_chargeTime < m_chargeTimeMax / 3.0f)
+	{
+		//chargeレベル0
+		auto spEffect = m_wpChargeLV0Effect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
+		{
+			// 処理範囲内に戻ったら再再生
+			m_wpChargeLV0Effect = KdEffekseerManager::GetInstance().Play(
+				"ChargeAttack/chargeLV0.efkefc", m_mWorld.Translation(), 1.0f, 1.0f, true
+			);
+		}
+
+		if (spEffect && spEffect->IsPlaying())
+		{
+			spEffect->SetPos(m_mWorld.Translation());
+		}
+
+
+	}
+	else if (m_chargeTime < m_chargeTimeMax / 3.0f * 2)
+	{
+		//レベル0を止める
+		auto spEffect0 = m_wpChargeLV0Effect.lock();
+		if (spEffect0 && spEffect0->IsPlaying())
+		{
+			spEffect0->StopEffect();
+		}
+
+
+		//chargeレベル1
+		auto spEffect = m_wpChargeLV1Effect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
+		{
+			// 処理範囲内に戻ったら再再生
+			m_wpChargeLV1Effect = KdEffekseerManager::GetInstance().Play(
+				"ChargeAttack/chargeLV1.efkefc", m_mWorld.Translation(), 1.0f, 1.0f, true
+			);
+		}
+
+		if (spEffect && spEffect->IsPlaying())
+		{
+			spEffect->SetPos(m_mWorld.Translation());
+		}
+	}
+	else if (m_chargeTime < m_chargeTimeMax)
+	{
+		//レベル1を止める
+		auto spEffect1 = m_wpChargeLV1Effect.lock();
+		if (spEffect1 && spEffect1->IsPlaying())
+		{
+			spEffect1->StopEffect();
+		}
+
+		//chargeレベル2
+		auto spEffect = m_wpChargeLV2Effect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
+		{
+			// 処理範囲内に戻ったら再再生
+			m_wpChargeLV2Effect = KdEffekseerManager::GetInstance().Play(
+				"ChargeAttack/chargeLV2.efkefc", m_mWorld.Translation(), 1.0f, 1.0f, true
+			);
+		}
+
+		if (spEffect && spEffect->IsPlaying())
+		{
+			spEffect->SetPos(m_mWorld.Translation());
+		}
+	}
+	else
+	{
+		//chargeレベル2
+		auto spEffect = m_wpChargeLV2Effect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
+		{
+			// 処理範囲内に戻ったら再再生
+			m_wpChargeLV2Effect = KdEffekseerManager::GetInstance().Play(
+				"ChargeAttack/chargeLV2.efkefc", m_mWorld.Translation(), 1.0f, 1.0f, true
+			);
+		}
+
+		if (spEffect && spEffect->IsPlaying())
+		{
+			spEffect->SetPos(m_mWorld.Translation());
+		}
+
+
+		//chargeレベルMAX
+		m_chargeTime = m_chargeTimeMax;
+	}
+}
+
+void Dagger::SetAttackFlg(bool _flg)
+{
+	WeaponBase::SetAttackFlg(_flg);
+
+	//レベル0を止める
+	auto spEffect0 = m_wpChargeLV0Effect.lock();
+	if (spEffect0 && spEffect0->IsPlaying())
+	{
+		spEffect0->StopEffect();
+	}
+
+	//レベル1を止める
+	auto spEffect1 = m_wpChargeLV1Effect.lock();
+	if (spEffect1 && spEffect1->IsPlaying())
+	{
+		spEffect1->StopEffect();
+	}
+
+	//レベル2を止める
+	auto spEffect2 = m_wpChargeLV2Effect.lock();
+	if (spEffect2 && spEffect2->IsPlaying())
+	{
+		spEffect2->StopEffect();
+	}
 }
 
 bool Dagger::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)

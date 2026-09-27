@@ -138,3 +138,11 @@ void UIMapManager::AddUIMap_TreasureChest(std::shared_ptr<UIMap_TreasureChest> _
 	_TreasureChest->SetPos(_3Dpos, m_tileSiz);
 	m_UIMap_TreasureChest.push_back(_TreasureChest);
 }
+
+void UIMapManager::SetMinimapRevealAll(bool enable)
+{
+	if (m_UIMap_Map)
+	{
+		m_UIMap_Map->SetMinimapRevealAll(enable);
+	}
+}

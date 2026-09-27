@@ -277,15 +277,6 @@ void Giant::LeftAttackUpdate()
 				spleftAttack->SetAttckFlg(true);
 				m_IsAttackleftHITFlg = true;
 			}
-			//else
-			//{
-			//	Math::Vector3 startPos = m_jnpStartPos;   // ジャンプ開始地点
-			//	Math::Vector3 targetPos = m_playerPos; // プレイヤー位置
-
-			//	m_moveVec = (targetPos - startPos);
-			//	m_moveVec.Normalize();
-			//	AngeleUpdate();
-			//}
 			m_playerChaseFlg = false;
 			m_moveVec = {};
 		}

@@ -32,6 +32,8 @@ public:
 
 
 	void ResetTreasureChest() { m_UIMap_TreasureChest.clear(); }
+
+	void SetMinimapRevealAll(bool enable);
 private:
 
 	std::shared_ptr<UIMap_Map>m_UIMap_Map;

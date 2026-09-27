@@ -20,7 +20,7 @@ public:
 	void SetParentMatrix(Math::Matrix _mat) { m_weponParentMat = _mat; }
 	void SetParentRotation(Math::Vector3 _rot) { m_weponParentRot = _rot; }
 
-	void SetAttackFlg(bool _flg);
+	virtual	void SetAttackFlg(bool _flg);
 
 	void AddAttackHitCharacterList(std::shared_ptr<CharacterBase>_character);
 	void AddObjList(std::shared_ptr<MapBase>_character);
@@ -33,7 +33,7 @@ public:
 
 	void SetCharacterAttackPower(float _power) { m_characterAttackPower = _power; }
 
-	void SetNowChargeTime(float _time)
+    virtual	void SetNowChargeTime(float _time)
 	{
 		m_chargeTime = _time;
 		if (m_chargeTime >= m_chargeTimeMax) { m_chargeTime = m_chargeTimeMax; }

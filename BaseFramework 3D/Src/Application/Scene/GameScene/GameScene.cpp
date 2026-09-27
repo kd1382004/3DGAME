@@ -82,10 +82,6 @@ void GameScene::ImGUi()
 		}
 		ImGui::TreePop();
 	}
-
-
-
-
 }
 
 void GameScene::WarpGateInit(Math::Vector3 _setPos)
@@ -318,12 +314,12 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	//UI
 	/////////////////////////////////////////	
-	std::shared_ptr<UIManager> spUIManager = std::make_shared<UIManager>();
-	spUIManager->Init();
-	spUIManager->SetpPotionTexInfo();
-	spUIManager->AddPlayerInventoryUI();
-	spUIManager->AddUIMapManager();
-	m_objList.push_back(spUIManager);
+	m_spUIManager = std::make_shared<UIManager>();
+	m_spUIManager->Init();
+	m_spUIManager->SetpPotionTexInfo();
+	m_spUIManager->AddPlayerInventoryUI();
+	m_spUIManager->AddUIMapManager();
+	m_objList.push_back(m_spUIManager);
 
 
 	/////////////////////////////////////////
@@ -336,21 +332,21 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	//UIにセット
 	/////////////////////////////////////////
-	spUIManager->SetPlayer(m_spPlayer);
-	spUIManager->SetGameScene(self);
-	spUIManager->SetPotionUseController(m_spPotionUseController);
+	m_spUIManager->SetPlayer(m_spPlayer);
+	m_spUIManager->SetGameScene(self);
+	m_spUIManager->SetPotionUseController(m_spPotionUseController);
 
 	std::shared_ptr<BuffUI>spBuffUI = std::make_shared<BuffUI>();
 	spBuffUI->Init();
 	spBuffUI->Set2DPos({ -80,-320 });
-	spBuffUI->SetPotionTexInfo(spUIManager->GetPotionTexInfo());
+	spBuffUI->SetPotionTexInfo(m_spUIManager->GetPotionTexInfo());
 	spBuffUI->SetPlayer(m_spPlayer);
-	spUIManager->AddUIObj(spBuffUI);
+	m_spUIManager->AddUIObj(spBuffUI);
 
 	std::shared_ptr<HitDamage>spHitDamage = std::make_shared<HitDamage>();
 	spHitDamage->Init();
 	spHitDamage->SetCamera(m_spCamera);
-	spUIManager->AddUIObj(spHitDamage);
+	m_spUIManager->AddUIObj(spHitDamage);
 
 	/////////////////////////////////////////
 	//プレイヤーにセット
@@ -362,7 +358,7 @@ void GameScene::Init()
 	m_spPlayer->SetCamera(m_spCamera);
 	m_spPlayer->SetGameScene(self);
 	m_spPlayer->SetWepon(m_spWeapon);
-	m_spPlayer->AddUIList(spUIManager);
+	m_spPlayer->AddUIList(m_spUIManager);
 	m_spPlayer->SetEffectManager(effect);
 	m_spPlayer->SetHitDamage(spHitDamage);
 	m_spPlayer->SetAccessoryManager(spAccessoryManager);
@@ -374,7 +370,7 @@ void GameScene::Init()
 	m_spEnemyManager->SetPlayer(m_spPlayer);
 	m_spEnemyManager->SetMapManager(m_spMapManager);
 	m_spEnemyManager->SetCamera(m_spCamera);
-	m_spEnemyManager->AddUIList(spUIManager);
+	m_spEnemyManager->AddUIList(m_spUIManager);
 	m_spEnemyManager->SetGameScene(self);
 	m_spEnemyManager->SetHitDamage(spHitDamage);
 	m_spEnemyManager->SetEnemyManager(m_spEnemyManager);
@@ -390,7 +386,7 @@ void GameScene::Init()
 	m_spMapManager->SetCamera(m_spCamera);
 	m_spMapManager->SetPlayer(m_spPlayer);
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
-	m_spMapManager->SetUIManager(spUIManager);
+	m_spMapManager->SetUIManager(m_spUIManager);
 	m_spMapManager->SetMapObjManager(m_spMapObjManager);
 
 	/////////////////////////////////////////
@@ -423,6 +419,7 @@ void GameScene::GenerateMap()
 	if (!m_spEnemyManager) { return; }
 	if (!m_spMapObjManager) { return; }
 	if (!m_spCamera) { return; }
+	if (!m_spUIManager) { return; }
 
 	//全effect停止
 	KdEffekseerManager::GetInstance().StopAllEffect();
@@ -461,7 +458,7 @@ void GameScene::GenerateMap()
 		mapSizeX = 11;
 		mapSizeY = 11;
 		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
-
+		m_spUIManager->SetMinimapRevealAll(true);
 	}
 
 

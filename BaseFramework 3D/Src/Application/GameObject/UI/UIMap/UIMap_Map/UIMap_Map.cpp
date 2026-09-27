@@ -97,6 +97,7 @@ void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize, int Loo
 	info.m_LoomNum = LoomNum;
 
 	m_StairsMineMapInfo = info;
+	m_isStairsMine = true;
 }
 
 void UIMap_Map::PosListReset()
@@ -115,7 +116,6 @@ void UIMap_Map::SetMinimapRevealAll(bool enable)
 		{
 			info.m_drawFlg = true;
 			m_StairsMineMapInfo.m_drawFlg = true;
-			m_isStairsMine = true;
 		}
 	}
 }

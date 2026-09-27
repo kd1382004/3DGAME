@@ -11,6 +11,7 @@ class PotionUseController;
 class WarpGateManager;
 class MapObjManager;
 class TPSCamera;
+class UIManager;
 
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
 {
@@ -51,6 +52,7 @@ private:
 	std::shared_ptr<WarpGateManager>m_spWarpGateManager;
 	std::shared_ptr<MapObjManager>m_spMapObjManager;
 	std::shared_ptr<TPSCamera> m_spCamera;
+	std::shared_ptr<UIManager> m_spUIManager;
 
 
 	//階層

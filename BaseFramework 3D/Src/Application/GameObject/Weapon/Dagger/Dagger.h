@@ -13,8 +13,9 @@ public:
 
 	void ChargAttackPlay();
 
-
+	void SetNowChargeTime(float _time)override;
 	
+	void SetAttackFlg(bool _flg)override;
 private:
 
 	// 武器の長さ
@@ -37,6 +38,7 @@ private:
 	//トレイルポリゴン (軌跡) ポリゴン
 	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
 
-
-
+	std::weak_ptr<KdEffekseerObject> m_wpChargeLV0Effect;
+	std::weak_ptr<KdEffekseerObject> m_wpChargeLV1Effect;
+	std::weak_ptr<KdEffekseerObject> m_wpChargeLV2Effect;
 };

@@ -41,6 +41,8 @@ public:
 
 	//ポーションの画像一覧
 	void SetpPotionTexInfo();
+
+	void SetMinimapRevealAll(bool enable);
 private:
 
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;

@@ -3,6 +3,10 @@
 
 struct MineMapInfo
 {
+	//階段があるか
+	bool m_flg = false;
+
+
 	Math::Vector2 m_pos;
 	Math::Vector2 m_tileIndex;
 	bool m_drawFlg = false;
@@ -44,8 +48,8 @@ public:
 
 
 	// ミニマップの表示モードを設定する
-// true  : 全タイルを常時表示
-// false : プレイヤーが踏破したタイルだけ表示
+	// true  : 全タイルを常時表示
+	// false : プレイヤーが踏破したタイルだけ表示
 	void SetMinimapRevealAll(bool enable);
 private:
 

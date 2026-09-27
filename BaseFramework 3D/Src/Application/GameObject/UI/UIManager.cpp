@@ -138,3 +138,12 @@ void UIManager::SetpPotionTexInfo()
 	}
 }
 
+void UIManager::SetMinimapRevealAll(bool enable)
+{
+	std::shared_ptr<UIMapManager>spUIMap = m_wpUIMapManager.lock();
+	if (spUIMap)
+	{
+		spUIMap->SetMinimapRevealAll(enable);
+	}
+}
+
