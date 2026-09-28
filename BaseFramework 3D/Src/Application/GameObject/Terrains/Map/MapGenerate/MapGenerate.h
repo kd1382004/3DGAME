@@ -192,7 +192,7 @@ private:
 	std::vector<std::pair<RoomInfo, RoomInfo>> GetRoomConnectionPairs(const std::vector<RoomInfo>& _roomInfo);
 
 	//通路の座標リストを返す
-	std::vector<Math::Vector3>  GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B);
+	std::vector<Math::Vector3>  GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B, const std::vector<std::vector<FloorInfo>>& map);
 
 
 
@@ -234,7 +234,7 @@ private:
 	///////////////////
 
 
-	static const int m_heightLevelMax = 1;
+	static const int m_heightLevelMax = 2;
 
 
 

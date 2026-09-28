@@ -91,7 +91,7 @@ void Dagger::Update()
 		if (spGameObj->Intersects(box, &results))
 		{
 			m_hitCharactersList.push_back(spGameObj);
-			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_chargeTime / m_chargeTimeMax));
+			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_ChargeLV));
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 
@@ -147,14 +147,18 @@ void Dagger::DrawLit()
 
 void Dagger::ChargAttackPlay()
 {
-	if (m_chargeTime > m_chargeTimeMax / 3)
+	if (m_ChargeLV > 0)
 	{
-		m_chargeAttackMaxdamage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_chargeTime / m_chargeTimeMax));
+		m_chargeAttackMaxdamage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_ChargeLV * 0.2));
 
 
 		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
 		spDagger_ChargeAttack->Init();
-		spDagger_ChargeAttack->SetShockwaveStatus(m_hitNum, m_maxDistanceM, m_chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), m_attackAngle);
+
+		float maxDistanceM = m_maxDistanceM * (m_ChargeLV * 0.3);
+		float chargeAttackSpeed = m_chargeAttackSpeed * (m_ChargeLV * 0.3);
+
+		spDagger_ChargeAttack->SetShockwaveStatus(m_hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), m_attackAngle);
 		spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
 		spDagger_ChargeAttack->SetMapObjList(m_objList);
 		SceneManager::Instance().AddObject(spDagger_ChargeAttack);
@@ -192,7 +196,7 @@ void Dagger::SetNowChargeTime(float _time)
 			spEffect->SetPos(m_mWorld.Translation());
 		}
 
-
+		m_ChargeLV = 0;
 	}
 	else if (m_chargeTime < m_chargeTimeMax / 3.0f * 2)
 	{
@@ -218,6 +222,8 @@ void Dagger::SetNowChargeTime(float _time)
 		{
 			spEffect->SetPos(m_mWorld.Translation());
 		}
+
+		m_ChargeLV = 1;
 	}
 	else if (m_chargeTime < m_chargeTimeMax)
 	{
@@ -242,6 +248,8 @@ void Dagger::SetNowChargeTime(float _time)
 		{
 			spEffect->SetPos(m_mWorld.Translation());
 		}
+
+		m_ChargeLV = 2;
 	}
 	else
 	{
@@ -263,6 +271,8 @@ void Dagger::SetNowChargeTime(float _time)
 
 		//chargeレベルMAX
 		m_chargeTime = m_chargeTimeMax;
+
+		m_ChargeLV = 2;
 	}
 }
 

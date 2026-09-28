@@ -84,7 +84,7 @@ void EnemyManager::PreDraw()
 		{
 
 			spUIMapManager->GetUIMap_Enemy()->PosListRiseto();
-			for (const auto& enemy : m_enemyUpdateList)
+			for (const auto& enemy : m_enemyList)
 			{
 				enemy->PreDraw();
 				spUIMapManager->GetUIMap_Enemy()->SetEnemyPosAngleList(enemy->GetPos(), enemy->GetAngle());

@@ -17,6 +17,8 @@ public:
 
 private:
 
+	void Release()override;
+
 	////////////////////////////////////////////
 	//アニメーションモード
 	struct GoblinAnimeName

@@ -178,7 +178,7 @@ void PlayerInventoryUI::AddPotionTexInfo()
 	m_itemIconInfo.clear();
 
 	int i = 0;
-	Math::Vector2 m_iconBase2DPos = { -470, 90 }; // 初期位置
+	Math::Vector2 m_iconBase2DPos = { -420, 90 }; // 初期位置
 	float m_iconSpacing = 5;
 	for (Inventory potion : spPlayerInventory->GetPotionsInventory())
 	{

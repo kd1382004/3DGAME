@@ -105,6 +105,19 @@ void Goblin::PreUpdate()
 	
 }
 
+void Goblin::Release()
+{
+	EnemyBase::Release();
+
+	//中身あったら消す
+	std::shared_ptr<AttackBase>spAttack = m_wpAttack.lock();
+	if (spAttack)
+	{
+		spAttack->FinishAttack_Slamming();
+		m_hitTriggered = false;
+	}
+}
+
 void Goblin::ChangeAnime()
 {
 	if (!m_spAnimetor) { return; }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"../CharacterBase.h"
 
 class PlayerBase;
@@ -68,7 +68,7 @@ protected:
 
 	std::weak_ptr<EnemyManager>m_wpEnemyManager;
 
-	void Release()override;
+	virtual void Release()override;
 
 	void EnemyAnimeModeUpdate();
 

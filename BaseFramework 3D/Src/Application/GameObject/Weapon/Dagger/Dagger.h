@@ -41,4 +41,6 @@ private:
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV0Effect;
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV1Effect;
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV2Effect;
+
+	int m_ChargeLV = 0;
 };
