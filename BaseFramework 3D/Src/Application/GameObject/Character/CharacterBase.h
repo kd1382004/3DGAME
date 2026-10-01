@@ -74,6 +74,8 @@ public:
 	//増加攻撃力アップ
 	void BoostAddAttack(int _Bosst) { m_status.attck.addAttack += _Bosst; }
 
+	float NowAttack() { return m_status.attck.baseAttckPowe + m_status.attck.addAttack; }
+
 	/////////////////////////////////////
 	//防御力
 
@@ -85,6 +87,8 @@ public:
 
 	//増加防御力アップ
 	void BoostAddDefense(int _Bosst) { m_status.defense.addDefense += _Bosst; }
+
+	float NowDefense() { return m_status.defense.baseDefensePowe + m_status.defense.addDefense; }
 
 	////////////////////////////////////////
 	//速度

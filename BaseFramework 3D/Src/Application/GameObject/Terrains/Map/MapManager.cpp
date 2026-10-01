@@ -1,4 +1,4 @@
-﻿#include "MapManager.h"
+#include "MapManager.h"
 #include "MapBase.h"
 #include "MapGenerate/MapGenerate.h"
 #include "../../Camera/CameraBase.h"
@@ -538,12 +538,16 @@ bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 {
-	m_nodes.resize(height);
-	for (int y = 0; y < height; y++)
-	{
-		m_nodes[y].resize(width);
+	// 1タイルあたり 3x3（中央＋周囲8マス = 全9ノード）に分割
+	int gridWidth = width * 3;
+	int gridHeight = height * 3;
 
-		for (int x = 0; x < width; x++)
+	m_nodes.resize(gridHeight);
+	for (int y = 0; y < gridHeight; y++)
+	{
+		m_nodes[y].resize(gridWidth);
+
+		for (int x = 0; x < gridWidth; x++)
 		{
 			Node& node = m_nodes[y][x];
 
@@ -569,7 +573,19 @@ void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapD
 		{
 			if (mapData[y][x])
 			{
-				m_nodes[y][x].walkable = true;
+				// 同一タイル内の3x3（中央＋周り8個）全てのサブノードを歩行可能に設定
+				for (int dy = 0; dy < 3; dy++)
+				{
+					for (int dx = 0; dx < 3; dx++)
+					{
+						int subX = static_cast<int>(x) * 3 + dx;
+						int subY = static_cast<int>(y) * 3 + dy;
+						if (subY < static_cast<int>(m_nodes.size()) && subX < static_cast<int>(m_nodes[subY].size()))
+						{
+							m_nodes[subY][subX].walkable = true;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -579,19 +595,22 @@ Math::Vector3 MapManager::NodeToWorld(const Node* node) const
 {
 	if (!node) return Math::Vector3::Zero;
 
-	float worldX = m_mapTileSiz * node->pos.x + m_mapTileSiz * 0.5f;
-	float worldZ = -(m_mapTileSiz * node->pos.y + m_mapTileSiz * 0.5f);
+	float subTileSize = m_mapTileSiz / 3.0f;
+	float worldX = subTileSize * node->pos.x + subTileSize * 0.5f;
+	float worldZ = -(subTileSize * node->pos.y + subTileSize * 0.5f);
 
 	return Math::Vector3(worldX, 0.0f, worldZ);
 }
 
 Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 {
-	// X は右へプラス
-	int x = static_cast<int>(floor(worldPos.x / m_mapTileSiz));
+	float subTileSize = m_mapTileSiz / 3.0f;
 
-	// Z は下へマイナス → -Z がタイル番号
-	int y = static_cast<int>(floor((-worldPos.z) / m_mapTileSiz));
+	// X は右へプラス
+	int x = static_cast<int>(floor(worldPos.x / subTileSize));
+
+	// Z は下へマイナス → -Z がノード番号
+	int y = static_cast<int>(floor((-worldPos.z) / subTileSize));
 
 	if (m_nodes.empty() || m_nodes[0].empty()) { return nullptr; }
 
@@ -656,7 +675,7 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 			return BuildPath(goal);
 		}
 
-		// 隣接ノードを取得
+		// 隣接ノードを取得 (周囲8方向)
 		auto neighbors = GetNeighbors(current);
 
 		for (auto* neighbor : neighbors)
@@ -668,7 +687,9 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 				continue;
 			}
 
-			float newCost = current->gCost + 1.0f; // タイル移動コスト
+			// 直交か斜めかで移動コストを設定 (直交=1.0, 斜め=1.414)
+			float stepCost = (current->pos.x != neighbor->pos.x && current->pos.y != neighbor->pos.y) ? 1.41421356f : 1.0f;
+			float newCost = current->gCost + stepCost;
 
 			// 新しいルートの方が安いなら更新
 			if (newCost < neighbor->gCost ||
@@ -713,29 +734,31 @@ std::vector<Node*> MapManager::GetNeighbors(Node* node)
 
 	int x = static_cast<int>(node->pos.x);
 	int y = static_cast<int>(node->pos.y);
+	int width = static_cast<int>(m_nodes[0].size());
+	int height = static_cast<int>(m_nodes.size());
 
-	// 上
-	if (y > 0)
-	{
-		neighbors.push_back(&m_nodes[y - 1][x]);
-	}
+	// 周囲8方向のオフセット (上下左右 ＋ 斜め4方向)
+	static const int dirX[8] = {  0,  0, -1,  1, -1,  1, -1,  1 };
+	static const int dirY[8] = { -1,  1,  0,  0, -1, -1,  1,  1 };
 
-	// 下
-	if (y < static_cast<int>(m_nodes.size()) - 1)
+	for (int i = 0; i < 8; i++)
 	{
-		neighbors.push_back(&m_nodes[y + 1][x]);
-	}
+		int nx = x + dirX[i];
+		int ny = y + dirY[i];
 
-	// 左
-	if (x > 0)
-	{
-		neighbors.push_back(&m_nodes[y][x - 1]);
-	}
+		if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+		{
+			// 斜め移動時の角抜け防止チェック（直交する壁がある場合は斜め移動を許可しない）
+			if (dirX[i] != 0 && dirY[i] != 0)
+			{
+				if (!m_nodes[y][nx].walkable || !m_nodes[ny][x].walkable)
+				{
+					continue;
+				}
+			}
 
-	// 右
-	if (x < static_cast<int>(m_nodes[0].size()) - 1)
-	{
-		neighbors.push_back(&m_nodes[y][x + 1]);
+			neighbors.push_back(&m_nodes[ny][nx]);
+		}
 	}
 
 	return neighbors;

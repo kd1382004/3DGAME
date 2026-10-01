@@ -1,126 +1,93 @@
-﻿#include "NumDraw.h"
+#include "NumDraw.h"
+#include <string>
+#include <vector>
+#include <cmath>
 
-void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _siz, bool _Separator,int _digit)
+void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _siz, bool _Separator, int _digit)
 {
-	//10以上なら桁数を求める
+	if (!m_tex) return;
+
+	// ドット絵フォントのにじみ・隣の文字の映り込み(縦線)を防ぐため、ポイントフィルタリング(Point_Clamp)で描画
+	KdShaderManager::Instance().m_spriteShader.Begin(false);
+
+	// 1. 数値を文字列化（桁数指定のパディング処理も含む）
+	long num = std::abs(_Num);
+	std::string numStr = std::to_string(num);
+
+	// _digitが指定されていれば、その桁数になるように先頭を'0'で埋める
+	if (_digit > (int)numStr.size())
 	{
-		//桁数を入れるワークspace
-		long w = 0;
+		numStr = std::string(_digit - numStr.size(), '0') + numStr;
+	}
 
-		if (_Num >= 10)
+	// 2. 描画するスプライトインデックス（0〜9: 数字, 10: カンマ）の配列を作成
+	std::vector<int> glyphs;
+	int numLen = static_cast<int>(numStr.size());
+
+	for (int i = 0; i < numLen; i++)
+	{
+		int digit = numStr[i] - '0';
+		glyphs.push_back(digit);
+
+		// 3桁区切りのカンマ判定 (右からの桁数位置)
+		int distFromRight = numLen - 1 - i;
+		if (_Separator && distFromRight > 0 && distFromRight % 3 == 0)
 		{
-			//桁数を求める
-			for (long long i = 1; i <= _Num; i *= 10)
-			{
-				w++;
-			}
+			glyphs.push_back(10); // 10番目のスプライトがカンマ ','
 		}
-		else
-		{
-			w = 1;
-		}
+	}
 
+	// 3. 各文字の描画サイズと位置を計算して描画
+	float charW = recX * _siz;
+	float charH = recY * _siz;
+	int totalGlyphs = static_cast<int>(glyphs.size());
 
-		//分解した一桁が入る
-		std::vector<int>w_Num;
+	for (int k = 0; k < totalGlyphs; k++)
+	{
+		Math::Rectangle srcRect = { recX * glyphs[k], 0, recX, recY };
+		Math::Vector2 drawPos = _pos;
 
-		if (_digit - w > 0)
-		{
-			int dig = _digit - w;
-
-			for (int i = 0; i < dig; i++)
-			{
-				w_Num.push_back(0);
-			}
-		}
-
-		if (_Num < 10)
-		{
-			w_Num.push_back(_Num);
-		}
-		else
-		{
-			for (int i = 0; i < w; i++)
-			{
-				int a = 1;
-
-				for (int j = i; j < w - 1; j++)
-				{
-					a *= 10;
-				}
-
-				w_Num.push_back(_Num / a);
-				_Num %= a;
-			}
-		}
-
-
-
-		//スタート位置がどっちかを選別
 		switch (_aligned)
 		{
 		case LAligned:
+			// 左揃え：_pos から右方向へ順番に配置
+			drawPos.x = _pos.x + k * charW;
 			break;
+
 		case RAligned:
-			std::reverse(w_Num.begin(), w_Num.end());
+			// 右揃え：_pos を右端として、左方向へ戻って配置
+			drawPos.x = _pos.x - (totalGlyphs - 1 - k) * charW;
 			break;
+
 		default:
 			break;
 		}
 
-		Math::Vector2 pos;
-		for (int i = 0; i < w_Num.size(); i++)
-		{
-			Math::Rectangle rec1 = {recX * w_Num[i],0,recX ,recY };
-			switch (_aligned)
-			{
-			case LAligned:
-
-				pos = { _pos.x + i * (recX * _siz) - ((recX * _siz) / 2 * i) + (i * 5 * _siz) , _pos.y };
-
-				KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, pos.x, pos.y, recX * _siz, recY * _siz, &rec1, &_color);
-				if (_Separator)
-				{
-					if ((w_Num.size() - i) % 3 == 1 && w_Num.size() - i >= 4)
-					{
-						rec1 = Math::Rectangle{  recX * 10,0,recX ,recY };
-						pos.x += recX * _siz / 2;
-						KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, pos.x, pos.y, recX * _siz, recY * _siz, &rec1, &_color);
-					}
-				}
-
-				break;
-			case RAligned:
-
-				pos = { _pos.x - i * (recX * _siz) + ((recX * _siz) / 2 * i) - (i * 5 * _siz), _pos.y };
-
-				if (_Separator)
-				{
-					if (i % 3 == 0 && i != 0)
-					{
-						float x = pos.x + recX * _siz / 2;
-						pos = { x, pos.y };
-						rec1 = Math::Rectangle{recX * 10,0,recX ,recY };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, pos.x, pos.y, recX * _siz, recY * _siz, &rec1, &_color);
-						pos.x -= (recX * _siz) / 2;
-					}
-				}
-
-				pos = { _pos.x - i * (recX * _siz) + ((recX * _siz) / 2 * i) - (i * 5 * _siz), _pos.y };
-				rec1 = {recX * w_Num[i],0,recX ,recY };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, pos.x, pos.y, recX * _siz, recY * _siz, &rec1, &_color);
-				break;
-			default:
-				break;
-			}
-		}
+		KdShaderManager::Instance().m_spriteShader.DrawTex(
+			m_tex,
+			(int)drawPos.x,
+			(int)drawPos.y,
+			(int)charW,
+			(int)charH,
+			&srcRect,
+			&_color
+		);
 	}
+
+	// 描画終了
+	KdShaderManager::Instance().m_spriteShader.End();
 }
 
 void NumDraw::Init()
 {
 	m_tex = std::make_shared<KdTexture>();
 	m_tex->Load("Asset/Textures/Num/pixel-letters-7-8x14_transparent.png");
+	if (m_tex)
+	{
+		// 横99px / 11スプライト (0~9 + カンマ,) = 横幅9px
+		recX = m_tex->GetInfo().Width / 11;
+		recY = m_tex->GetInfo().Height;
+	}
 }
 
 void NumDraw::Release()

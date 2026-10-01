@@ -53,6 +53,10 @@ public:
 
 	GameResult GetGameResult() { return m_gameResult; }
 	void SetGameResult(GameResult gameResult) { m_gameResult = gameResult; }
+
+	//描画先を変更
+	void ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack);
+	void UndoRenderTarget();
 private:
 
 	// マネージャーの初期化
@@ -80,6 +84,10 @@ private:
 
 	//ゲーム結果	
 	GameResult m_gameResult;
+
+
+	//描画先管理
+	KdRenderTargetChanger m_rtChanger;
 private:
 
 	SceneManager() { Init(); }

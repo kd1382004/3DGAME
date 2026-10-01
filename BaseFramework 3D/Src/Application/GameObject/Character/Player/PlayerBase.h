@@ -148,6 +148,10 @@ public:
 
 
 	void SetAccessoryManager(std::shared_ptr<AccessoryManager>_spAccessoryManager)override;
+
+	float GetMaxMP() { return m_staminaMax; }
+
+	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
 protected:
 
 	//LV

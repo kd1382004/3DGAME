@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <cmath>
 
 class MapBase;
@@ -137,10 +137,12 @@ private:
 	// 上下左右を返す
 	std::vector<Node*> GetNeighbors(Node* node);
 
-	// マンハッタン距離
+	// 8方向移動用ヒューリスティック(Octile距離)
 	float Heuristic(const Node* a, const Node* b) const
 	{
-		return std::abs(a->pos.x - b->pos.x) + std::abs(a->pos.y - b->pos.y);
+		float dx = std::abs(a->pos.x - b->pos.x);
+		float dy = std::abs(a->pos.y - b->pos.y);
+		return (dx + dy) + (1.41421356f - 2.0f) * std::min(dx, dy);
 	}
 
 	/// </ノード>

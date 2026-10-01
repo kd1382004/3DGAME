@@ -28,6 +28,9 @@ public:
 	void SetPotionTexInfo(std::shared_ptr<PotionTexInfo> _spPotionTexInfo) { m_wpPotionTexInfo = _spPotionTexInfo; }
 private:
 
+
+
+
 	std::weak_ptr<GameScene> m_wpGameScene;
 	std::weak_ptr<PotionUseController> m_wpPotionUseController;
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
@@ -46,12 +49,53 @@ private:
 	std::shared_ptr<KdTexture>m_back2Tex;
 	std::shared_ptr<KdTexture>m_notSelsect;
 	Math::Vector2 m_back2Tex2DPos;
-
+	Math::Vector2 m_back2Tex2DSiz;
 
 	std::shared_ptr<KdTexture>m_UseTex;
 	Math::Vector2 m_UseTex2DPos;
 
+	/////////////////////////////
+	//どのインベントリを開いてるか
 
+	enum InventoryType
+	{
+		PotionInventory,
+		WeponInventory,
+		PlayerStatus,
+
+
+		InventoryTypeSiz,
+	};
+
+	InventoryType m_nowInventoryType = PotionInventory;
+
+
+	//どのInventoryにするか
+	void InventoryTypeChangeUpdate();
+
+	struct InventoryTypeChange
+	{
+		InventoryType m_ID;
+		Math::Vector2 m_2DPos;
+		bool m_hit = false;
+		std::shared_ptr<KdTexture>m_IconTex;
+		Math::Vector2 m_IconTexSiz;
+	};
+
+	InventoryTypeChange m_inventoryTypeChange[InventoryTypeSiz];
+
+	//各処理用
+	void PotionUpdate();
+	void WeponUpdate();
+	void PlayerStatusUpdate();
+
+	void PotionDraw();
+	void WeponDraw();
+	void PlayerStatusDraw();
+	void PlayerStatusPreDraw();
+
+	/////////////////////////////////////////
+	//ポーション系
 	std::weak_ptr<PotionTexInfo>m_wpPotionTexInfo;
 
 	//あるものを入れてく関数
@@ -59,7 +103,7 @@ private:
 
 	//アイコンとマウスが当たってるか
 	void IconHit();
-
+	
 	struct ItemIconInfo
 	{
 		int m_ItemID;
@@ -72,6 +116,7 @@ private:
 		std::shared_ptr<KdTexture>m_ExplanationTex;
 	};
 
+	
 	std::vector<ItemIconInfo> m_itemIconInfo;
 	struct { int w; int h; } m_iconDimensions;
 
@@ -82,4 +127,54 @@ private:
 	void PotionIUse();
 
 	int m_num = 0;
+
+
+	//////////////////////////////////////////////////
+	//武器
+
+	
+	
+	
+	//////////////////////////////////////////////////
+	//プレイヤーステータス
+	std::shared_ptr<KdRenderTargetPack> m_spRtTargetPack;
+
+
+	struct PlayerStatusInfo
+	{
+		//HPや攻撃力などの数値
+		int num;
+
+		//数値の位置
+		Math::Vector2 numPos;
+
+		//数値の名前
+		std::shared_ptr<KdTexture>nameTex;
+
+		//数値の名前の位置
+		Math::Vector2 namePos;
+
+		//アイコン
+		std::shared_ptr<KdTexture>iconTex;
+
+		//アイコンの位置
+		Math::Vector2 iconPos;
+	};
+
+	enum PlayerStatusInfoID
+	{
+		PlayerStatusInfo_HP,
+		PlayerStatusInfo_MP,
+		PlayerStatusInfo_AttackPower,
+		PlayerStatusInfo_DefensePower,
+		PlayerStatusInfo_Speed,
+		PlayerStatusInfoSiz
+	};
+
+	PlayerStatusInfo m_playerStatusInfo[PlayerStatusInfoSiz];
+
+	std::shared_ptr<KdTexture>m_playerStatusInfoBackTex;
+	
+
+
 };

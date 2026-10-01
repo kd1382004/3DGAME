@@ -70,6 +70,19 @@ void SceneManager::ImGUI()
 	m_currentScene->ImGUi();
 }
 
+void SceneManager::ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack)
+{
+	if (!_spRtPack) { return; }
+	_spRtPack->ClearTexture();
+
+	m_rtChanger.ChangeRenderTarget(*_spRtPack);
+}
+
+void SceneManager::UndoRenderTarget()
+{
+	m_rtChanger.UndoRenderTarget();
+}
+
 void SceneManager::ChangeScene(SceneType _sceneType)
 {
 	if (m_currentScene)
