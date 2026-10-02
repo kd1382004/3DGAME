@@ -132,9 +132,63 @@ private:
 	//////////////////////////////////////////////////
 	//武器
 
+	//アイコンとの当り判定
+	void WeponStrengtheningIconHit();
+
+	struct WeponStrengtheningInfo
+	{
+		//現LV
+		int Lv;
+
+		int ID;
+
+		//アイコン
+		std::shared_ptr<KdTexture>iconTex;
+
+		//アイコンの位置
+		Math::Vector2 iconPos;
+
+		//アイコンのサイズ
+		Math::Vector2 iconSiz;
+
+		//当たってるか
+		bool m_hit = false;
+
+		//説明画像
+		std::shared_ptr<KdTexture>m_ExplanationTex;
+	};
+
+	enum WeponStrengtheningID
+	{
+		//攻撃力
+		WeponStrengthening_Attck,
+
+		//スタミナ
+		WeponStrengthening_Stamina,
+
+		//Chargeタイム
+		WeponStrengthening_ChargeTime,
+
+		//衝撃波攻撃(これはLV1がマックスでLv1になったらこれ以下の強化を許す)
+		WeaponStrengthening_ShockWave,	
+
+		//衝撃波の飛距離
+		WeaponStrengthening_ShockWave_maxDistanceM,
+
+		//衝撃波の速度
+		WeaponStrengthening_ShockWave_speed,
+
+		//衝撃波の貫通力(何体まで当たっていいか)
+		WeaponStrengthening_ShockWave_hitNum,
+
+		WeponStrengtheningSiz
+	};
+
+	int m_selectWeponStrengtheningID;
+	Math::Vector2 m_selectWeponStrengtheningIconSiz;
 	
-	
-	
+	WeponStrengtheningInfo m_weponStrengtheningInfo[WeponStrengtheningSiz];
+
 	//////////////////////////////////////////////////
 	//プレイヤーステータス
 	std::shared_ptr<KdRenderTargetPack> m_spRtTargetPack;

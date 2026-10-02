@@ -1,4 +1,4 @@
-﻿#include "HPBar.h"
+#include "HPBar.h"
 
 #include"../../../Info/NumDraw/NumDraw.h"
 
@@ -89,13 +89,7 @@ void HPBar::DrawSprite()
 		pivot = { 0.5f, 0.5f };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_HPBarIconFrameTex, m_HPBarIconFrameTex2DPos.x, m_HPBarIconFrameTex2DPos.y, m_HPBarIconFrameTexLength.x * m_siz, m_HPBarIconFrameTexLength.y * m_siz, &m_HPBarIconFrameTexRect, &kWhiteColor, pivot);
 
-		Math::Vector2 pos = m_HPBarIconFrameTex2DPos;
-
-		if (m_LV > 9)
-		{
-			pos.x += m_HPBarIconFrameTexLength.x / 2;
-		}
-		NumDraw::GetInstance().Drow(m_LV, RAligned, pos, kWhiteColor, m_siz);
+		NumDraw::GetInstance().Drow(m_LV, CAligned, m_HPBarIconFrameTex2DPos, kWhiteColor, m_siz);
 	}
 }
 

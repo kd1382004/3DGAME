@@ -301,9 +301,6 @@ float4 main(VSOutput In) : SV_Target0
 				{
 					outColor += g_SpotLights[i].Color;
 				}
-
-				
-				
 			}
 		}
 	}

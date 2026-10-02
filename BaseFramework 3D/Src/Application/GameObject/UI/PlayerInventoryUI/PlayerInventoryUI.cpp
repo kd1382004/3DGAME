@@ -147,6 +147,74 @@ void PlayerInventoryUI::Init()
 		m_playerStatusInfoBackTex = std::make_shared<KdTexture>();
 		m_playerStatusInfoBackTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/back.png");
 	}
+
+	////////////////////////////////////////////////////////////////////////////
+	//武器強化用
+	Math::Vector2 weponStrengtheningBasePos = {-350,-70};
+	float weponStrengtheningOffset = 100.0f;
+	float vecL = 200.0f;
+
+	float rad = DirectX::XMConvertToRadians(90.0f); // 0°,90°,180°,270°
+
+	m_selectWeponStrengtheningIconSiz = { 64,64 }; 
+
+	for (int i = 0; i < WeponStrengtheningSiz; i++)
+	{
+		Math::Vector2 pos = weponStrengtheningBasePos;
+
+		switch (i)
+		{
+		case PlayerInventoryUI::WeponStrengthening_Attck:
+			pos.x -= weponStrengtheningOffset;
+			break;
+		case PlayerInventoryUI::WeponStrengthening_Stamina:
+			pos.y += weponStrengtheningOffset;
+			break;
+		case PlayerInventoryUI::WeponStrengthening_ChargeTime:
+			pos.y -= weponStrengtheningOffset;
+			break;
+		case PlayerInventoryUI::WeaponStrengthening_ShockWave:
+			pos.x += weponStrengtheningOffset;
+			break;
+		case PlayerInventoryUI::WeaponStrengthening_ShockWave_maxDistanceM:
+			rad = DirectX::XMConvertToRadians(45.0f);
+			pos.x = m_weponStrengtheningInfo[WeaponStrengthening_ShockWave].iconPos.x + cos(rad) * vecL;
+			pos.y = m_weponStrengtheningInfo[WeaponStrengthening_ShockWave].iconPos.y + sin(rad) * vecL;
+			break;
+		case PlayerInventoryUI::WeaponStrengthening_ShockWave_speed:
+			rad = DirectX::XMConvertToRadians(0.0f);
+			pos.x = m_weponStrengtheningInfo[WeaponStrengthening_ShockWave].iconPos.x + cos(rad) * vecL;
+			pos.y = m_weponStrengtheningInfo[WeaponStrengthening_ShockWave].iconPos.y + sin(rad) * vecL;
+			break;
+		case PlayerInventoryUI::WeaponStrengthening_ShockWave_hitNum:
+			rad = DirectX::XMConvertToRadians(-45.0f);
+			pos.x = m_weponStrengtheningInfo[WeaponStrengthening_ShockWave].iconPos.x + cos(rad) * vecL;
+			pos.y = m_weponStrengtheningInfo[WeaponStrengthening_ShockWave].iconPos.y + sin(rad) * vecL;
+			break;
+		case PlayerInventoryUI::WeponStrengtheningSiz:
+			break;
+		default:
+			break;
+		}
+
+		m_weponStrengtheningInfo[i].Lv = 0;
+		m_weponStrengtheningInfo[i].iconPos = pos;
+		m_weponStrengtheningInfo[i].iconSiz = m_selectWeponStrengtheningIconSiz;
+		if (!m_weponStrengtheningInfo[i].iconTex)
+		{
+			m_weponStrengtheningInfo[i].iconTex = std::make_shared<KdTexture>();
+			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/WeponStrengtheningIcon";
+			filePath += std::to_string(i) + ".png";
+			m_weponStrengtheningInfo[i].iconTex->Load(filePath);
+		}
+		if (!m_weponStrengtheningInfo[i].m_ExplanationTex)
+		{
+			m_weponStrengtheningInfo[i].m_ExplanationTex = std::make_shared<KdTexture>();
+			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/WeponStrengtheningIcon";
+			filePath += std::to_string(i) + ".png";
+			m_weponStrengtheningInfo[i].m_ExplanationTex->Load(filePath);
+		}
+	}
 }
 
 void PlayerInventoryUI::PreUpdate()
@@ -360,6 +428,7 @@ void PlayerInventoryUI::PotionUpdate()
 
 void PlayerInventoryUI::WeponUpdate()
 {
+	WeponStrengtheningIconHit();
 }
 
 void PlayerInventoryUI::PlayerStatusUpdate()
@@ -376,6 +445,12 @@ void PlayerInventoryUI::PotionDraw()
 
 void PlayerInventoryUI::WeponDraw()
 {
+	for (int i = 0; i < WeponStrengtheningSiz; i++)
+	{
+		if (!m_weponStrengtheningInfo[i].iconTex) { continue; }
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weponStrengtheningInfo[i].iconTex, m_weponStrengtheningInfo[i].iconPos.x, m_weponStrengtheningInfo[i].iconPos.y, m_weponStrengtheningInfo[i].iconSiz.x, m_weponStrengtheningInfo[i].iconSiz.y);
+	}
+
 }
 
 void PlayerInventoryUI::PlayerStatusDraw()
@@ -595,4 +670,33 @@ void PlayerInventoryUI::PotionIUse()
 
 
 	m_num = spPlayer->GetPlayerInventory()->GetPotionsInventoryNum(m_selectPotionID);
+}
+
+void PlayerInventoryUI::WeponStrengtheningIconHit()
+{
+	POINT mousePos = MouseInfo::Instance().m_windowPos;
+
+	for (auto& wepon : m_weponStrengtheningInfo)
+	{
+		float Left = wepon.iconPos.x- m_selectWeponStrengtheningIconSiz.x / 2;
+		float Right = wepon.iconPos.x + m_selectWeponStrengtheningIconSiz.x / 2;
+		float Top = wepon.iconPos.y + m_selectWeponStrengtheningIconSiz.y / 2;
+		float Bot = wepon.iconPos.y - m_selectWeponStrengtheningIconSiz.y / 2;
+
+
+		if (mousePos.x >= Left && mousePos.x <= Right &&
+			mousePos.y >= Bot && mousePos.y <= Top)
+		{
+			wepon.m_hit = true;
+			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
+			{
+				m_back2Tex = wepon.m_ExplanationTex;
+				m_selectWeponStrengtheningID = wepon.ID;
+			}
+		}
+		else
+		{
+			wepon.m_hit = false;
+		}
+	}
 }

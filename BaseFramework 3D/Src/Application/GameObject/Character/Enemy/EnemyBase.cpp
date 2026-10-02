@@ -88,7 +88,7 @@ void EnemyBase::PostUpdate()
 
 	if (!m_isInView) { return; }
 	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
-		{ 5,5,5 },								//色
+		{ 10,10,10 },								//色
 		10,										//半径	
 		m_pos + Math::Vector3(0, 1, 0)		//座標
 	);

@@ -421,13 +421,13 @@ void GameScene::GenerateMap()
 	if (!m_spCamera) { return; }
 	if (!m_spUIManager) { return; }
 
-	m_displayFloor = 10;
-
 	//全effect停止
 	KdEffekseerManager::GetInstance().StopAllEffect();
 
 	int baseSize = 30;              // 1階のマップサイズ
 	float growth = 1.01f;
+
+
 
 	m_mapGenerateDisplayFloor = m_displayFloor;
 
@@ -453,8 +453,6 @@ void GameScene::GenerateMap()
 	if (m_displayFloor % m_bossInterval != 0)
 	{
 		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
-
-		m_spUIManager->SetMinimapRevealAll(true);
 	}
 	else
 	{

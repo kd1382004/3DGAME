@@ -161,11 +161,11 @@ void KdSpriteShader::DrawTex(const KdTexture* tex, int x, int y, int w, int h, c
 	Math::Vector2 uvMax = { 1, 1 };
 	if (srcRect)
 	{
-		uvMin.x = srcRect->x / (float)tex->GetInfo().Width;
-		uvMin.y = srcRect->y / (float)tex->GetInfo().Height;
-
-		uvMax.x = (srcRect->x + srcRect->width) / (float)tex->GetInfo().Width;
-		uvMax.y = (srcRect->y + srcRect->height) / (float)tex->GetInfo().Height;
+		// 0.1ピクセル分だけ内側に寄せることで隣の文字の映り込みを防止
+		uvMin.x = (srcRect->x + 0.1f) / (float)tex->GetInfo().Width;
+		uvMin.y = (srcRect->y + 0.1f) / (float)tex->GetInfo().Height;
+		uvMax.x = (srcRect->x + srcRect->width - 0.1f) / (float)tex->GetInfo().Width;
+		uvMax.y = (srcRect->y + srcRect->height - 0.1f) / (float)tex->GetInfo().Height;
 	}
 
 	// ★ 回転の準備

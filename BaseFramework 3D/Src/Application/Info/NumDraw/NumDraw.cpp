@@ -1,4 +1,4 @@
-#include "NumDraw.h"
+﻿#include "NumDraw.h"
 #include <string>
 #include <vector>
 #include <cmath>
@@ -50,18 +50,24 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 		switch (_aligned)
 		{
 		case LAligned:
-			// 左揃え：_pos から右方向へ順番に配置
-			drawPos.x = _pos.x + k * charW;
+			// 左揃え：_pos から右方向へ順番に配置（_pos.x が左端）
+			drawPos.x = _pos.x + (k + 0.5f) * charW;
 			break;
 
 		case RAligned:
-			// 右揃え：_pos を右端として、左方向へ戻って配置
-			drawPos.x = _pos.x - (totalGlyphs - 1 - k) * charW;
+			// 右揃え：_pos を右端として、左方向へ戻って配置（_pos.x が右端）
+			drawPos.x = _pos.x - (totalGlyphs - k - 0.5f) * charW;
+			break;
+
+		case CAligned:
+			// 中央揃え：_pos を全体の中央とする
+			drawPos.x = _pos.x + (k - totalGlyphs / 2.0f + 0.5f) * charW;
 			break;
 
 		default:
 			break;
 		}
+
 
 		KdShaderManager::Instance().m_spriteShader.DrawTex(
 			m_tex,

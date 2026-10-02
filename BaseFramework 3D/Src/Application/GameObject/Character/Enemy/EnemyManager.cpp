@@ -91,6 +91,19 @@ void EnemyManager::PreDraw()
 			}
 		}
 	}
+
+
+	if (m_enemyBoss)
+	{
+		std::shared_ptr<UIMapManager>spUIMapManager = spUIManager->GetUIMapManager();
+		if (spUIMapManager)
+		{
+			m_enemyBoss->PreDraw();
+			spUIMapManager->GetUIMap_Enemy()->SetEnemyPosAngleList(m_enemyBoss->GetPos(), m_enemyBoss->GetAngle());
+		}
+	}
+
+
 }
 
 void EnemyManager::DrawLit()

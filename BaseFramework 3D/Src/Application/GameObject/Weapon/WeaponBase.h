@@ -153,13 +153,13 @@ protected:
 	float m_m_chargeAttackMaxCost = 20;
 
 	//Charge攻撃が当たっていい敵の数
-	int m_hitNum = 100;
+	int m_hitNum = 1;
 
 	//進んで良い最大の距離
 	float m_maxDistanceM = 100;
 
 	//1秒あたりに進む距離
-	float m_chargeAttackSpeed = 10;
+	float m_chargeAttackSpeed = 30;
 
 	//最大ダメージ
 	float m_chargeAttackMaxdamage = 100;

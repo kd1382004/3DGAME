@@ -4,6 +4,7 @@ enum Aligned
 {
 	LAligned, //左揃え
 	RAligned, //右揃え
+	CAligned, //中央揃え
 };
 
 class NumDraw
