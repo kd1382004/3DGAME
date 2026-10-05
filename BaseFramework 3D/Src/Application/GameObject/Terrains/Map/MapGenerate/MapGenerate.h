@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class MapBase;
 class MapObjManager;
@@ -239,6 +239,10 @@ private:
 
 
 	void SlopeCheck(std::vector<std::vector<FloorInfo>>* map);
+
+	// 広い通路（2x2等の太い通路）をスリム化・クリーンアップする
+	void CleanupWideCorridors(std::vector<std::vector<FloorInfo>>& map);
+	bool CanRemoveCorridorTile(int x, int y, std::vector<std::vector<FloorInfo>>& map);
 
 
 

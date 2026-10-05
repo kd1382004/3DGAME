@@ -55,7 +55,7 @@ void BuffUI::DrawSprite()
 
 	for (auto buffIcon : m_PotionBuffUIInfoList)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPotionTexInfo->GetIcon(buffIcon.m_ID), buffIcon.m_pos.x, buffIcon.m_pos.y, m_iconSiz.x, m_iconSiz.y, nullptr, nullptr, pivo);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPotionTexInfo->GetPotionIcon(buffIcon.m_ID), buffIcon.m_pos.x, buffIcon.m_pos.y, m_iconSiz.x, m_iconSiz.y, nullptr, nullptr, pivo);
 
 		pivo = { 0.5,0 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_buffTex, buffIcon.m_pos.x, buffIcon.m_pos.y, nullptr, nullptr, pivo, buffIcon.m_angle);

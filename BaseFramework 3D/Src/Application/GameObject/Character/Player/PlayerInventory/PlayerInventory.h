@@ -19,6 +19,7 @@ public:
 	void Init();
 
 	std::vector<Inventory> GetPotionsInventory() { return m_potionsInventory; }
+	std::vector<Inventory> GetWeaponsStrengtheningInventory() { return m_weaponsStrengtheningInventory; }
 
 
 	//ポーションがインベントリで増えたとき
@@ -27,13 +28,27 @@ public:
 	//ポーションが使われたとき
 	void UsePotionsInventory(int _PotionsType);
 
+	//ポーションの数を取得
 	int GetPotionsInventoryNum(int _PotionsType);
+
+	//武器強化素材がインベントリで増えたとき
+	void AddWeaponsStrengtheningInventory(int _WeaponsStrengtheningType);
+
+	//武器強化素材が使われたとき
+	void UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType);
+
+	//武器強化素材の数を取得
+	int GetWeaponsStrengtheningInventoryNum(int _WeaponsStrengtheningType);
 
 	void SetItemGetUIController(std::shared_ptr<ItemGetUIController>_ItemGetUIController) { m_wpItemGetUIController = _ItemGetUIController; }
 private:
 
 	//各番号のポーションがどれだけあるか
 	std::vector<Inventory>m_potionsInventory;
+
+
+	//各番号の武器強化素材がどれだけあるか
+	std::vector<Inventory>m_weaponsStrengtheningInventory;
 
 
 	std::weak_ptr<ItemGetUIController>m_wpItemGetUIController;

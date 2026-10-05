@@ -21,6 +21,11 @@ void AttackGage::Init()
 		m_attackGagekTex = std::make_shared<KdTexture>();
 		m_attackGagekTex->Load("Asset/Textures/GameUI/AttackGage/AttackGageTex.png");
 
+		long w = m_attackGagekTex->GetWidth();
+		long h = m_attackGagekTex->GetHeight();
+
+		m_attackGageaTexLength = { (float)w,(float)h };
+		m_attackGageTexRect = { 0, 0, w, h };
 	}
 }
 
@@ -47,7 +52,7 @@ void AttackGage::DrawSprite()
 	//攻撃ゲージ背景
 	if (m_attackGageBackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_attackGagekTex, m_attackGageBackTex2DPos.x, m_attackGageBackTex2DPos.y, m_attackGageackBackTexLength.x * m_siz * m_attackGageTexPercent, m_attackGageackBackTexLength.y * m_siz, &m_attackGageTexRect, &kRedColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_attackGagekTex, m_attackGageTex2DPos.x, m_attackGageTex2DPos.y, m_attackGageaTexLength.x * m_siz * m_attackGageTexPercent, m_attackGageaTexLength.y * m_siz, &m_attackGageTexRect, &kRedColor, pivot);
 	}
 }
 
@@ -58,11 +63,11 @@ void AttackGage::SetAttackGageTexPercent(float _percent)
 	m_attackGageTexPercent = 1 - percent;
 
 	// rectを計算
-	float totalSrcWidth = m_attackGageackBackTexLength.x;
+	float totalSrcWidth = m_attackGageaTexLength.x;
 	long left = static_cast<long>(totalSrcWidth * percent);
 	long w = static_cast<long>(totalSrcWidth * m_attackGageTexPercent);
 	long top = 0;
-	long height = static_cast<long>(m_attackGageackBackTexLength.y);
+	long height = static_cast<long>(m_attackGageaTexLength.y);
 	m_attackGageTexRect = { left, top, w, height }; 
 }
 

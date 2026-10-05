@@ -17,6 +17,7 @@ public:
 	void Set2DPos(const Math::Vector2& pos) {
 		m_2DPos = pos;
 		m_attackGageBackTex2DPos = { m_2DPos.x - m_attackGageackBackTexLength.x / 2.0f * m_siz ,m_2DPos.y };
+		m_attackGageTex2DPos = { m_2DPos.x - m_attackGageaTexLength.x / 2.0f * m_siz ,m_2DPos.y };
 	}
 
 	//パーセント(0.0f～1.0f)
@@ -50,7 +51,7 @@ private:
 	Math::Vector2 m_attackGageTex2DPos = Math::Vector2::Zero;
 
 	//画像の立て横の長さ
-	Math::Vector2 m_attackGageackTexLength = Math::Vector2::Zero;
+	Math::Vector2 m_attackGageaTexLength = Math::Vector2::Zero;
 
 	//画像の切り取り範囲
 	Math::Rectangle m_attackGageTexRect;

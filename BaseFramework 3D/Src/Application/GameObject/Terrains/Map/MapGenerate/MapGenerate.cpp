@@ -1,5 +1,7 @@
-﻿#include "MapGenerate.h"
+#include "MapGenerate.h"
 #include<array>
+#include<queue>
+#include<set>
 #include"../FloorBase/FloorBase.h"
 #include"../WallBase/WallBase.h"
 #include"../Stairs/StairsBase.h"
@@ -278,6 +280,9 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			applyPathToMap(ansB);
 		}
 	}
+
+	// 2x2等の太い通路を検出して1マス幅にスリム化
+	CleanupWideCorridors(map);
 
 
 
@@ -1118,12 +1123,45 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 			bool inRoomA = (x >= _A.m_roomEnd.FarLeft && x <= _A.m_roomEnd.FarRight &&
 							y >= _A.m_roomEnd.topEnd && y <= _A.m_roomEnd.downEnd);
 
-			if (!inRoomA && map[y][x].m_tileType != TileType::None)
+			if (!inRoomA)
 			{
-				hB = map[y][x].m_heightLevel;
-				actualSteps = i + 1;
-				path2D.resize(actualSteps);
-				break;
+				// 直接既存床に到達
+				if (map[y][x].m_tileType != TileType::None)
+				{
+					hB = map[y][x].m_heightLevel;
+					actualSteps = i + 1;
+					path2D.resize(actualSteps);
+					break;
+				}
+
+				// 隣接マス（上下左右）に部屋A以外の既存通路があるかチェックし、あればそのマスに合流・接続して終了
+				static const int dx[] = { 0, 0, -1, 1 };
+				static const int dy[] = { -1, 1, 0, 0 };
+				bool hitNeighbor = false;
+				for (int d = 0; d < 4; d++)
+				{
+					int nx = x + dx[d];
+					int ny = y + dy[d];
+					if (ny >= 0 && ny < static_cast<int>(map.size()) &&
+						nx >= 0 && nx < static_cast<int>(map[ny].size()))
+					{
+						// 直前のマスでなければ判定
+						if (i > 0 && nx == static_cast<int>(path2D[i - 1].x) && ny == static_cast<int>(path2D[i - 1].y)) continue;
+
+						bool neighborInRoomA = (nx >= _A.m_roomEnd.FarLeft && nx <= _A.m_roomEnd.FarRight &&
+												ny >= _A.m_roomEnd.topEnd && ny <= _A.m_roomEnd.downEnd);
+
+						if (!neighborInRoomA && map[ny][nx].m_tileType != TileType::None)
+						{
+							hB = map[ny][nx].m_heightLevel;
+							actualSteps = i + 1;
+							path2D.resize(actualSteps);
+							hitNeighbor = true;
+							break;
+						}
+					}
+				}
+				if (hitNeighbor) break;
 			}
 		}
 	}
@@ -1575,6 +1613,142 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 					else
 					{
 						(*map)[y][x].m_angle = 90;
+					}
+				}
+			}
+		}
+	}
+}
+
+bool MapGenerate::CanRemoveCorridorTile(int x, int y, std::vector<std::vector<FloorInfo>>& map)
+{
+	int mapH = static_cast<int>(map.size());
+	int mapW = mapH > 0 ? static_cast<int>(map[0].size()) : 0;
+
+	// 通常の通路(Floor)のみ削除検討。RoomやSlopee、Noneは対象外
+	if (map[y][x].m_tileType != TileType::Floor) return false;
+
+	static const int dx[] = { 0, 0, -1, 1 };
+	static const int dy[] = { -1, 1, 0, 0 };
+
+	std::vector<std::pair<int, int>> neighbors;
+	for (int d = 0; d < 4; d++)
+	{
+		int nx = x + dx[d];
+		int ny = y + dy[d];
+		if (ny >= 0 && ny < mapH && nx >= 0 && nx < mapW)
+		{
+			if (map[ny][nx].m_tileType != TileType::None)
+			{
+				neighbors.push_back({ nx, ny });
+			}
+		}
+	}
+
+	// 行き止まり（隣接1個以下）や0個の場合は削除しない
+	if (neighbors.size() <= 1) return false;
+
+	// (x, y)をNoneにしたと仮定して、全隣接歩行マスが他の経路で繋がっているかBFSで判定
+	FloorInfo backup = map[y][x];
+	map[y][x].m_tileType = TileType::None;
+
+	bool allConnected = true;
+	for (size_t i = 1; i < neighbors.size(); i++)
+	{
+		std::queue<std::pair<int, int>> q;
+		std::set<std::pair<int, int>> visited;
+
+		q.push(neighbors[0]);
+		visited.insert(neighbors[0]);
+
+		bool reached = false;
+		while (!q.empty())
+		{
+			auto cur = q.front();
+			q.pop();
+
+			if (cur == neighbors[i])
+			{
+				reached = true;
+				break;
+			}
+
+			for (int d = 0; d < 4; d++)
+			{
+				int nx = cur.first + dx[d];
+				int ny = cur.second + dy[d];
+				if (ny >= 0 && ny < mapH && nx >= 0 && nx < mapW)
+				{
+					if (map[ny][nx].m_tileType != TileType::None && visited.find({ nx, ny }) == visited.end())
+					{
+						// マンハッタン距離が離れすぎていないか確認（ローカルな迂回路探索）
+						if (std::abs(nx - x) + std::abs(ny - y) <= 6)
+						{
+							visited.insert({ nx, ny });
+							q.push({ nx, ny });
+						}
+					}
+				}
+			}
+		}
+
+		if (!reached)
+		{
+			allConnected = false;
+			break;
+		}
+	}
+
+	// 復元
+	map[y][x] = backup;
+
+	return allConnected;
+}
+
+void MapGenerate::CleanupWideCorridors(std::vector<std::vector<FloorInfo>>& map)
+{
+	int mapH = static_cast<int>(map.size());
+	int mapW = mapH > 0 ? static_cast<int>(map[0].size()) : 0;
+
+	bool changed = true;
+	int passes = 0;
+	while (changed && passes < 10)
+	{
+		changed = false;
+		passes++;
+
+		for (int y = 0; y < mapH - 1; y++)
+		{
+			for (int x = 0; x < mapW - 1; x++)
+			{
+				// 2x2 ブロック（(x,y), (x+1,y), (x,y+1), (x+1,y+1)）で4マスがFloor以上（歩行マス）か判定
+				if (map[y][x].m_tileType != TileType::None &&
+					map[y + 1][x].m_tileType != TileType::None &&
+					map[y][x + 1].m_tileType != TileType::None &&
+					map[y + 1][x + 1].m_tileType != TileType::None)
+				{
+					// 少なくとも1つがRoomなら部屋の一部として許容（部屋の周囲の角が削られないようにする）
+					if (map[y][x].m_tileType == TileType::Room ||
+						map[y + 1][x].m_tileType == TileType::Room ||
+						map[y][x + 1].m_tileType == TileType::Room ||
+						map[y + 1][x + 1].m_tileType == TileType::Room)
+					{
+						continue;
+					}
+
+					// 2x2の純粋な通路塊が存在する場合、4マスのうち削除可能なFloorマスを1つ消去
+					std::pair<int, int> candidates[4] = {
+						{x, y}, {x + 1, y}, {x, y + 1}, {x + 1, y + 1}
+					};
+
+					for (const auto& cand : candidates)
+					{
+						if (CanRemoveCorridorTile(cand.first, cand.second, map))
+						{
+							map[cand.second][cand.first].m_tileType = TileType::None;
+							changed = true;
+							break;
+						}
 					}
 				}
 			}

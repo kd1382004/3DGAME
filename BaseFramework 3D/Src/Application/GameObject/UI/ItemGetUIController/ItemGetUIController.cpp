@@ -115,11 +115,23 @@ void ItemGetUIController::DrawSprite()
 
 }
 
-void ItemGetUIController::AddGetItemList(GetItem Item)
+void ItemGetUIController::AddGetItemList(GetItem Item, ItemType type)
 {
 
 	if (!m_spPotionTexInfo) { return; }
 
-	Item.IconTex = m_spPotionTexInfo->GetIcon(Item.ID);
+
+	switch (type)
+	{
+	case Potion:
+
+		Item.IconTex = m_spPotionTexInfo->GetPotionIcon(Item.ID);
+		break;
+	case WeaponsStrengthening:
+		Item.IconTex = m_spPotionTexInfo->GetWeaponsStrengtheningIcon(Item.ID);
+		break;
+	default:
+		break;
+	}
 	m_getItemList.push_back(Item);
 }

@@ -31,6 +31,12 @@ struct GetItem
 	int ID;
 };
 
+enum ItemType
+{
+	Potion,
+	WeaponsStrengthening
+};
+
 class ItemGetUIController :public UIBase
 {
 public:
@@ -43,7 +49,7 @@ public:
 	void DrawSprite()override;
 
 
-	void AddGetItemList(GetItem Item);
+	void AddGetItemList(GetItem Item, ItemType type);
 private:
 
 	std::list<GetItem> m_getItemList;

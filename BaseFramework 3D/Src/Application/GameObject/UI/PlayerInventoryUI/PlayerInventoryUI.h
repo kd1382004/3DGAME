@@ -86,11 +86,11 @@ private:
 
 	//各処理用
 	void PotionUpdate();
-	void WeponUpdate();
+	void WeaponsStrengtheningUpdate();
 	void PlayerStatusUpdate();
 
 	void PotionDraw();
-	void WeponDraw();
+	void WeaponsStrengtheningDraw();
 	void PlayerStatusDraw();
 	void PlayerStatusPreDraw();
 
@@ -132,10 +132,13 @@ private:
 	//////////////////////////////////////////////////
 	//武器
 
-	//アイコンとの当り判定
-	void WeponStrengtheningIconHit();
+	//あるものを入れてく関数
+	void WeaponsStrengtheningTexInfo();
 
-	struct WeponStrengtheningInfo
+	//アイコンとの当り判定
+	void WeaponsStrengtheningIconHit();
+
+	struct WeaponsStrengtheningInfo
 	{
 		//現LV
 		int Lv;
@@ -156,38 +159,56 @@ private:
 
 		//説明画像
 		std::shared_ptr<KdTexture>m_ExplanationTex;
+
+
+		//強化アイテムの数
+		int num;
+
+		//強化アイテムの画像
+		std::shared_ptr<KdTexture>iconStrengtheningTex;
+
+		//強化アイテムの位置
+		Math::Vector2 iconStrengtheningPos;
+
+		//アイコンのサイズ
+		Math::Vector2 iconStrengtheningSiz;
 	};
 
 	enum WeponStrengtheningID
 	{
 		//攻撃力
-		WeponStrengthening_Attck,
+		WeaponsStrengthening_Attck,
 
 		//スタミナ
-		WeponStrengthening_Stamina,
+		WeaponsStrengthening_Stamina,
 
 		//Chargeタイム
-		WeponStrengthening_ChargeTime,
+		WeaponsStrengthening_ChargeTime,
 
 		//衝撃波攻撃(これはLV1がマックスでLv1になったらこれ以下の強化を許す)
-		WeaponStrengthening_ShockWave,	
+		WeaponsStrengthening_ShockWave,	
 
 		//衝撃波の飛距離
-		WeaponStrengthening_ShockWave_maxDistanceM,
+		WeaponsStrengthening_ShockWave_maxDistanceM,
 
 		//衝撃波の速度
-		WeaponStrengthening_ShockWave_speed,
+		WeaponsStrengthening_ShockWave_speed,
 
 		//衝撃波の貫通力(何体まで当たっていいか)
-		WeaponStrengthening_ShockWave_hitNum,
+		WeaponsStrengthening_ShockWave_hitNum,
 
-		WeponStrengtheningSiz
+		WeaponsStrengtheningSiz
 	};
 
-	int m_selectWeponStrengtheningID;
-	Math::Vector2 m_selectWeponStrengtheningIconSiz;
+	int m_selectWeaponsStrengtheningID;
+	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;
 	
-	WeponStrengtheningInfo m_weponStrengtheningInfo[WeponStrengtheningSiz];
+	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
+
+	ItemIconInfo m_weaponsStrengtheningIconInfo;
+
+	//次のLVにするために必要な強化アイテムの数
+	int m_selectWeaponsStrengtheningnextLVNum = 0;
 
 	//////////////////////////////////////////////////
 	//プレイヤーステータス

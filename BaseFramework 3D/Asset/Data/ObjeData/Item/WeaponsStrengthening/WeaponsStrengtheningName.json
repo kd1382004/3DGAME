@@ -1,0 +1,33 @@
+{
+	"inventory": [
+		{
+			"id": 0,
+			"name": "WeaponStrengthening_Attack"
+		},
+		{
+			"id": 1,
+			"name": "WeaponStrengthening_Stamina"
+		},
+		{
+			"id": 2,
+			"name": "WeaponStrengthening_ChargeTime"
+		},
+		{
+			"id": 3,
+			"name": "WeaponStrengthening_ShockWave"
+		},
+		{
+			"id": 4,
+			"name": "WeaponStrengthening_ShockWave_maxDistanceM"
+		},
+		{
+			"id": 5,
+			"name": "WeaponStrengthening_ShockWave_speed"
+		},
+		{
+			"id": 6,
+			"name": "WeaponStrengthening_ShockWave_hitNum"
+		}
+	]
+}
+

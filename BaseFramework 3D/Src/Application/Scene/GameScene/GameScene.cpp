@@ -338,7 +338,7 @@ void GameScene::Init()
 
 	std::shared_ptr<BuffUI>spBuffUI = std::make_shared<BuffUI>();
 	spBuffUI->Init();
-	spBuffUI->Set2DPos({ -80,-320 });
+	spBuffUI->Set2DPos({ -180,-320 });
 	spBuffUI->SetPotionTexInfo(m_spUIManager->GetPotionTexInfo());
 	spBuffUI->SetPlayer(m_spPlayer);
 	m_spUIManager->AddUIObj(spBuffUI);
