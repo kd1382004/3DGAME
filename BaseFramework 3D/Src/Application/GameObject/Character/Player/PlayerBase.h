@@ -152,6 +152,8 @@ public:
 	float GetMaxMP() { return m_staminaMax; }
 
 	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
+
+	std::weak_ptr<WeaponBase> GetWeapon() { return m_wpWepon; }
 protected:
 
 	//LV

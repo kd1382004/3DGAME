@@ -100,10 +100,10 @@ void PlayerInventory::AddWeaponsStrengtheningInventory(int _WeaponsStrengthening
 	spItemGetUIController->AddGetItemList(item, ItemType::WeaponsStrengthening);
 }
 
-void PlayerInventory::UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType)
+void PlayerInventory::UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType, int _num)
 {
 	if (_WeaponsStrengtheningType < 0 || _WeaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return; }
-	m_weaponsStrengtheningInventory[_WeaponsStrengtheningType].m_num--;
+	m_weaponsStrengtheningInventory[_WeaponsStrengtheningType].m_num -= _num;
 }
 
 int PlayerInventory::GetWeaponsStrengtheningInventoryNum(int _WeaponsStrengtheningType)

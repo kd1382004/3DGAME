@@ -33,7 +33,7 @@ public:
 
 	void SetCharacterAttackPower(float _power) { m_characterAttackPower = _power; }
 
-    virtual	void SetNowChargeTime(float _time)
+	virtual	void SetNowChargeTime(float _time)
 	{
 		m_chargeTime = _time;
 		if (m_chargeTime >= m_chargeTimeMax) { m_chargeTime = m_chargeTimeMax; }
@@ -70,6 +70,55 @@ public:
 	void SetChargeAttackMaxDamage(float maxDamage)
 	{
 		m_chargeAttackMaxdamage = maxDamage;
+	}
+
+
+
+	//武器の情報
+	//武器の強化ができたかどうか
+	bool AddWeaponsStrengtheningInfo(int id, int lv = 1)
+	{
+		if (id < 0 || id >= WeaponsStrengtheningSiz){ return false; }
+		if (!m_weaponsStrengtheningInfo[id].strengtheningFlg) { return false; }
+		m_weaponsStrengtheningInfo[id].Lv += lv;
+		m_weaponsStrengtheningInfo[id].strengtheningItemNum -= m_weaponsStrengtheningInfo[id].nextLvNum;
+		m_weaponsStrengtheningInfo[id].nextLvNum++;
+		return true;
+	}
+
+	int GetWeaponsStrengtheningLv(int id)
+	{
+		if (id < 0 || id >= WeaponsStrengtheningSiz) return 0;
+		return m_weaponsStrengtheningInfo[id].Lv;
+	}
+
+	int GetWeaponsStrengtheningNextLvNum(int id)
+	{
+		if (id < 0 || id >= WeaponsStrengtheningSiz) return 0;
+		return m_weaponsStrengtheningInfo[id].nextLvNum;
+	}
+
+	bool IsWeaponsStrengtheningPossible(int id)
+	{
+		if (id < 0 || id >= WeaponsStrengtheningSiz) return false;
+
+		if (m_weaponsStrengtheningInfo[id].strengtheningItemNum >= m_weaponsStrengtheningInfo[id].nextLvNum)
+		{
+			m_weaponsStrengtheningInfo[id].strengtheningFlg = true;
+		}
+		else
+		{
+			m_weaponsStrengtheningInfo[id].strengtheningFlg = false;
+		}
+
+		return m_weaponsStrengtheningInfo[id].strengtheningFlg;
+	}
+
+	void SetWeaponsStrengtheningNum(int id,int strengtheningItemNum)
+	{
+		if (id < 0 || id >= WeaponsStrengtheningSiz) return;
+		m_weaponsStrengtheningInfo[id].strengtheningItemNum = strengtheningItemNum;
+		IsWeaponsStrengtheningPossible(id);
 	}
 
 protected:
@@ -149,6 +198,7 @@ protected:
 	//Charge攻撃を使うのに使うスタミナコスト
 	float m_chargeAttackCost = 0;
 
+
 	//Charge攻撃を使うのに使うスタミナコストのマックス値
 	float m_m_chargeAttackMaxCost = 20;
 
@@ -163,5 +213,42 @@ protected:
 
 	//最大ダメージ
 	float m_chargeAttackMaxdamage = 100;
+
+	enum WeponStrengtheningID
+	{
+		//攻撃力
+		WeaponsStrengthening_Attck,
+
+		//スタミナ
+		WeaponsStrengthening_Stamina,
+
+		//Chargeタイム
+		WeaponsStrengthening_ChargeTime,
+
+		//衝撃波攻撃(これはLV1がマックスでLv1になったらこれ以下の強化を許す)
+		WeaponsStrengthening_ShockWave,
+
+		//衝撃波の飛距離
+		WeaponsStrengthening_ShockWave_maxDistanceM,
+
+		//衝撃波の速度
+		WeaponsStrengthening_ShockWave_speed,
+
+		//衝撃波の貫通力(何体まで当たっていいか)
+		WeaponsStrengthening_ShockWave_hitNum,
+
+		WeaponsStrengtheningSiz
+	};
+
+	struct WeaponsStrengtheningInfo
+	{
+		int Lv = 0;
+		int LvMax = 0;
+		int nextLvNum = 1;
+		int strengtheningItemNum = 0;
+		bool strengtheningFlg = false;
+	};
+
+	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
 };
 

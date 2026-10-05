@@ -47,6 +47,7 @@ private:
 
 
 	std::shared_ptr<KdTexture>m_back2Tex;
+	std::shared_ptr<KdTexture>m_Changeback2Tex;
 	std::shared_ptr<KdTexture>m_notSelsect;
 	Math::Vector2 m_back2Tex2DPos;
 	Math::Vector2 m_back2Tex2DSiz;
@@ -98,6 +99,8 @@ private:
 	//ポーション系
 	std::weak_ptr<PotionTexInfo>m_wpPotionTexInfo;
 
+	void PotionInfoInit();
+
 	//あるものを入れてく関数
 	void AddPotionTexInfo();
 
@@ -132,11 +135,19 @@ private:
 	//////////////////////////////////////////////////
 	//武器
 
+	void WeaponsStrengtheningInfoInit();
+
 	//あるものを入れてく関数
 	void WeaponsStrengtheningTexInfo();
 
 	//アイコンとの当り判定
 	void WeaponsStrengtheningIconHit();
+
+	//武器強化ボタンとのあたり判定
+	void WeaponsStrengtheningButtonHit();
+
+	std::shared_ptr<KdTexture>m_weaponsStrengtheningButtonTex;
+	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
 
 	struct WeaponsStrengtheningInfo
 	{
@@ -144,6 +155,12 @@ private:
 		int Lv;
 
 		int ID;
+
+		//次のLVにするために必要な強化アイテムの数
+		int nextLvNum;
+
+		//強化が可能かどうか
+		bool strengtheningFlg = false;
 
 		//アイコン
 		std::shared_ptr<KdTexture>iconTex;
@@ -172,6 +189,8 @@ private:
 
 		//アイコンのサイズ
 		Math::Vector2 iconStrengtheningSiz;
+
+		float timer = 0.0f;
 	};
 
 	enum WeponStrengtheningID

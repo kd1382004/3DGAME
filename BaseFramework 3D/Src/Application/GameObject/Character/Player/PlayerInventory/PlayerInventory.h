@@ -35,7 +35,7 @@ public:
 	void AddWeaponsStrengtheningInventory(int _WeaponsStrengtheningType);
 
 	//武器強化素材が使われたとき
-	void UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType);
+	void UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType,int _num);
 
 	//武器強化素材の数を取得
 	int GetWeaponsStrengtheningInventoryNum(int _WeaponsStrengtheningType);
