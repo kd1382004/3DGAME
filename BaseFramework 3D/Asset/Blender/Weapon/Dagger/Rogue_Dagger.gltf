@@ -8,12 +8,32 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				0
+				2
 			]
 		}
 	],
 	"nodes":[
 		{
+			"name":"guard",
+			"translation":[
+				0,
+				0.19603851437568665,
+				0
+			]
+		},
+		{
+			"name":"SwordTip",
+			"translation":[
+				0,
+				1.302741527557373,
+				0
+			]
+		},
+		{
+			"children":[
+				0,
+				1
+			],
 			"mesh":0,
 			"name":"Rogue_Dagger"
 		}

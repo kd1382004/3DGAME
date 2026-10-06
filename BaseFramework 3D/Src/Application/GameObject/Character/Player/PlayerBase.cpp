@@ -407,7 +407,6 @@ Math::Vector3 PlayerBase::GetBonePosition(std::string _boneName)
 	//
 	auto* Node = m_spCharaModel->FindNode(_boneName);
 	Math::Vector3 Pos = Node->m_worldTransform.Translation();
-
 	return Pos;
 }
 

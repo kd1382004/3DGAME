@@ -12,15 +12,21 @@ void Dagger::Init()
 	{
 		m_spWeaponModel = std::make_shared<KdModelWork>();
 		m_spWeaponModel->SetModelData("Asset/Models/Weapon/Dagger/Rogue_Dagger.gltf");
+
+
+		Math::Matrix swordtip = m_spWeaponModel->FindNode("SwordTip")->m_localTransform;
+		Math::Matrix guard = m_spWeaponModel->FindNode("guard")->m_localTransform;
+
+
+		m_weaponLength = (swordtip - guard).Translation().Length();
+		tipLocalPos = swordtip.Translation();
+		baseLocalPos = guard.Translation();
 	}
 
 	if (!m_pDebugWire)
 	{
 		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 	}
-
-	m_localPos = Math::Vector3(0.0f, 1.2f, 0.0f);
-
 
 	if (!m_tPoly)
 	{
