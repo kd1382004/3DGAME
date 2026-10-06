@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class MapBase;
 class MapObjManager;
@@ -158,11 +158,11 @@ private:
 	//部屋のTypeごとの宝箱の数
 	struct RoomTreasuerChestNum
 	{
-		float m_TreasuerChestRoomMaxNum = 5;
-		float m_TreasuerChestRoomMineNum = 3;
+		float m_TreasuerChestRoomMaxNum = 7;
+		float m_TreasuerChestRoomMineNum = 4;
 
-		float m_NotTreasuerChestRoomMaxNum = 2;
-		float m_NotTreasuerChestRoomMineNum = 0;
+		float m_NotTreasuerChestRoomMaxNum = 3;
+		float m_NotTreasuerChestRoomMineNum = 1;
 	};
 
 	//部屋のTypeごとの宝箱の割合(部屋のタイル数にかける)

@@ -1,6 +1,14 @@
 ﻿#pragma once
 
+enum ItemType
+{
+	Potion,
+	Weapon
+};
+
+
 struct LootItem {
+	int type;
 	int id;
 	std::string name;
 	std::string rank;
@@ -13,7 +21,9 @@ struct LootTable {
 
 class LootTableManager {
 public:
-	LootTableManager() { Load(path); };
+	LootTableManager() {
+			Load(m_path);
+	};
 	~LootTableManager() {};
 
 	void Load(const std::string& path);
@@ -22,5 +32,5 @@ public:
 private:
 	LootTable m_table;
 
-	std::string path = "Asset/Data/ObjeData/Item/treasure_slot1_table.json";
+	std::string m_path = "Asset/Data/ObjeData/Item/TreasureChestTable/slot.json";
 };

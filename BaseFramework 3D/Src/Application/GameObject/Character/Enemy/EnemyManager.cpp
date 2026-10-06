@@ -51,6 +51,13 @@ void EnemyManager::PreUpdate()
 	}
 
 
+	if (m_enemyBoss)
+	{
+		if (m_enemyBoss->IsExpired())
+		{
+			m_enemyBoss = nullptr;
+		}
+	}
 
 	for (const auto& enemy : m_enemyUpdateList)
 	{

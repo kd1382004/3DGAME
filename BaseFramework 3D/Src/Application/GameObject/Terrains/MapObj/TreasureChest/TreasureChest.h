@@ -26,6 +26,8 @@ public:
 	void SetUIManager(std::shared_ptr<UIManager> _spUIManager);
 
 	void SetLootTableManager(std::shared_ptr<LootTableManager> _spLootTableManager) { m_wpLootTableManager = _spLootTableManager; };
+
+	void SetTreasureChestLv(int lv) { m_TreasureChestLv = lv; }
 private:
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 	std::weak_ptr<CameraBase>m_wpCamera;
@@ -44,4 +46,10 @@ private:
 	KdCollider::BoxInfo m_frustumBox;
 
 	bool m_isInView = false;
+
+	//宝箱の中身
+	int m_TreasureChestLv = 2;
+
+
+	std::string m_TreasureChestGetItnLootpath = "slot";
 };

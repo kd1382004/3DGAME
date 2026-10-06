@@ -91,7 +91,7 @@ void Dagger::Update()
 		if (spGameObj->Intersects(box, &results))
 		{
 			m_hitCharactersList.push_back(spGameObj);
-			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_ChargeLV));
+			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower + (m_ChargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2) * 10;
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 
@@ -147,21 +147,45 @@ void Dagger::DrawLit()
 
 void Dagger::ChargAttackPlay()
 {
-	if (m_ChargeLV > 0)
+	if (m_ChargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv > 0)
 	{
-		m_chargeAttackMaxdamage = m_characterAttackPower * (m_baseWeaponStatus.attackPower * (1 + m_ChargeLV * 0.2));
+		m_chargeAttackMaxdamage = m_characterAttackPower + (m_baseWeaponStatus.attackPower * (m_ChargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2);
+
+		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack;
+
+		for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv; i++)
+		{
+			spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
+			spDagger_ChargeAttack->Init();
+
+			float maxDistanceM = m_maxDistanceM * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_maxDistanceM].Lv * 0.3) * 10;
+			float chargeAttackSpeed = m_chargeAttackSpeed * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_speed].Lv * 0.3);
+
+			int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_hitNum].Lv * 1);
 
 
-		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
-		spDagger_ChargeAttack->Init();
 
-		float maxDistanceM = m_maxDistanceM * (m_ChargeLV * 0.3);
-		float chargeAttackSpeed = m_chargeAttackSpeed * (m_ChargeLV * 0.3);
+			float spread = 30.0f; // 角度の広がり
+			float t;
+			if (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv - 1 == 0)
+			{
+				t = 0;
+				spread = 0;
+			}
+			else
+			{
+				t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv - 1); // 0～1
+			}
 
-		spDagger_ChargeAttack->SetShockwaveStatus(m_hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), m_attackAngle);
-		spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
-		spDagger_ChargeAttack->SetMapObjList(m_objList);
-		SceneManager::Instance().AddObject(spDagger_ChargeAttack);
+			float ang = m_attackAngle - spread * 0.5f + spread * t;
+
+			spDagger_ChargeAttack->SetShockwaveStatus(hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), ang);
+			spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
+			spDagger_ChargeAttack->SetMapObjList(m_objList);
+			SceneManager::Instance().AddObject(spDagger_ChargeAttack);
+		}
+
+
 	}
 
 

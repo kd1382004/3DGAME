@@ -225,7 +225,7 @@ protected:
 		//Chargeタイム
 		WeaponsStrengthening_ChargeTime,
 
-		//衝撃波攻撃(これはLV1がマックスでLv1になったらこれ以下の強化を許す)
+		//衝撃波攻撃(Lv分衝撃波を飛ばす)
 		WeaponsStrengthening_ShockWave,
 
 		//衝撃波の飛距離
@@ -250,5 +250,9 @@ protected:
 	};
 
 	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
+
+
+
+
 };
 

@@ -44,10 +44,10 @@ void TreasureChest::Init()
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape("TreasureChest", m_treasureChestModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion|KdCollider::TypeGround);
+		m_pCollider->RegisterCollisionShape("TreasureChest", m_treasureChestModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion | KdCollider::TypeGround);
 	}
 
-	
+
 
 
 	if (!m_treasureChestModel) { return; }
@@ -88,9 +88,9 @@ void TreasureChest::Init()
 
 void TreasureChest::Update()
 {
-	
+
 	if (m_IsOpen)
-	{ 
+	{
 		m_treasureChestAnimetor->AdvanceTime(m_treasureChestModel->WorkNodes(), 100);
 		m_treasureChestModel->CalcNodeMatrices();
 		if (m_treasureChestAnimetor->IsAnimationEnd())
@@ -127,9 +127,30 @@ void TreasureChest::Update()
 				std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
 				if (m_spLootTableManager)
 				{
-					LootItem item = m_spLootTableManager->GetRandomLoot("treasure_slot_1");
 
-					spPlayer->GetPlayerInventory()->AddPotionsInventory(item.id);
+					std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestLv);
+
+					int itenNun = KdRandom::GetInt(2, 4 + m_TreasureChestLv);
+					for (int i = 0; i < itenNun; i++)
+					{
+						LootItem item = m_spLootTableManager->GetRandomLoot(path);
+
+						switch (item.type)
+						{
+						case Potion:
+							spPlayer->GetPlayerInventory()->AddPotionsInventory(item.id);
+							break;
+						case Weapon:
+							spPlayer->GetPlayerInventory()->AddWeaponsStrengtheningInventory(item.id);
+							break;
+						default:
+							break;
+						}
+
+
+					}
+
+
 				}
 			}
 		}
@@ -143,7 +164,7 @@ void TreasureChest::PostUpdate()
 		{ 20,20,20 },								//色
 		10,										//半径	
 		GetPos() + Math::Vector3(0, 2, 0)		//座標
-		);
+	);
 }
 
 void TreasureChest::GenerateDepthMapFromLight()

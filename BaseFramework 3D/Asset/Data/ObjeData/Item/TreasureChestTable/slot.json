@@ -1,0 +1,193 @@
+{
+	"rank_weights": {
+		"common": 1.0,
+		"uncommon": 0.5,
+		"rare": 0.2,
+		"epic": 0.05,
+		"legendary": 0.01
+	},
+
+	"slots": {
+		"slot0": {
+			"type0": [
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"rank": "epic",
+					"type": 0
+				},
+				{
+					"id": 2,
+					"name": "AttackBoostPotion",
+					"rank": "common",
+					"type": 0
+				}
+			],
+			"type1": [
+				{
+					"id": 0,
+					"name": "WeaponsStrengthening_Attck",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 1,
+					"name": "WeaponsStrengthening_Stamina",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 2,
+					"name": "WeaponsStrengthening_ChargeTime",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 3,
+					"name": "WeaponsStrengthening_ShockWave",
+					"rank": "legendary",
+					"type": 1
+				}
+			]
+		},
+
+		"slot1": {
+			"type0": [
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"rank": "epic",
+					"type": 0
+				},
+				{
+					"id": 2,
+					"name": "AttackBoostPotion",
+					"rank": "common",
+					"type": 0
+				}
+			],
+			"type1": [
+				{
+					"id": 0,
+					"name": "WeaponsStrengthening_Attck",
+					"rank": "rare",
+					"type": 1
+				},
+				{
+					"id": 1,
+					"name": "WeaponsStrengthening_Stamina",
+					"rank": "rare",
+					"type": 1
+				},
+				{
+					"id": 2,
+					"name": "WeaponsStrengthening_ChargeTime",
+					"rank": "rare",
+					"type": 1
+				},
+				{
+					"id": 3,
+					"name": "WeaponsStrengthening_ShockWave",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 4,
+					"name": "WeaponsStrengthening_ShockWave_maxDistanceM",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 5,
+					"name": "WeaponsStrengthening_ShockWave_speed",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 6,
+					"name": "WeaponsStrengthening_ShockWave_hitNum",
+					"rank": "epic",
+					"type": 1
+				}
+			]
+		},
+		"slot2": {
+			"type0": [
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"rank": "rare",
+					"type": 0
+				},
+				{
+					"id": 2,
+					"name": "AttackBoostPotion",
+					"rank": "common",
+					"type": 0
+				}
+			],
+			"type1": [
+				{
+					"id": 0,
+					"name": "WeaponsStrengthening_Attck",
+					"rank": "uncommon",
+					"type": 1
+				},
+				{
+					"id": 1,
+					"name": "WeaponsStrengthening_Stamina",
+					"rank": "uncommon",
+					"type": 1
+				},
+				{
+					"id": 2,
+					"name": "WeaponsStrengthening_ChargeTime",
+					"rank": "uncommon",
+					"type": 1
+				},
+				{
+					"id": 3,
+					"name": "WeaponsStrengthening_ShockWave",
+					"rank": "rare",
+					"type": 1
+				},
+				{
+					"id": 4,
+					"name": "WeaponsStrengthening_ShockWave_maxDistanceM",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 5,
+					"name": "WeaponsStrengthening_ShockWave_speed",
+					"rank": "epic",
+					"type": 1
+				},
+				{
+					"id": 6,
+					"name": "WeaponsStrengthening_ShockWave_hitNum",
+					"rank": "epic",
+					"type": 1
+				}
+			]
+		}
+	}
+}
