@@ -1,4 +1,4 @@
-#include "MapManager.h"
+﻿#include "MapManager.h"
 #include "MapBase.h"
 #include "MapGenerate/MapGenerate.h"
 #include "../../Camera/CameraBase.h"
@@ -148,13 +148,6 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 
 	m_chunks = m_spMapGenerate->GetChunks();
-
-
-	//A*の初期化
-	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
-	//A*の設定
-	ApplyWalkableFromMap(mapData);
-
 
 	//プレイヤーを設定
 	std::shared_ptr<PlayerBase> spPlayerBase = m_wpPlayerBase.lock();
@@ -334,7 +327,10 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 
 
-
+	//A*の初期化
+	CreateNodeGrid(static_cast<int>(_mapSiz.x), static_cast<int>(_mapSiz.y), m_mapTileSiz);
+	//A*の設定
+	ApplyWalkableFromMap(mapData);
 
 
 
@@ -567,24 +563,39 @@ void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 
 void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapData)
 {
-	for (size_t y = 0; y < mapData.size(); y++)
+	int height = static_cast<int>(mapData.size());
+	if (height == 0) return;
+	int width = static_cast<int>(mapData[0].size());
+	for (int y = 0; y < height; y++)
 	{
-		for (size_t x = 0; x < mapData[y].size(); x++)
+		for (int x = 0; x < width; x++)
 		{
-			if (mapData[y][x])
+			// 床ではない（壁/空きマス）場合はスキップ
+			if (!mapData[y][x]) continue;
+			// 隣接マス（上下左右）が「マップ外」または「床ではない（＝壁がある）」かを判定
+			bool wallNorth = (y == 0) || !mapData[y - 1][x];          // 上側（Y-1）に壁
+			bool wallSouth = (y == height - 1) || !mapData[y + 1][x];  // 下側（Y+1）に壁
+			bool wallWest = (x == 0) || !mapData[y][x - 1];          // 左側（X-1）に壁
+			bool wallEast = (x == width - 1) || !mapData[y][x + 1];  // 右側（X+1）に壁
+			// タイル内の 3x3 サブノードに対してフラグを設定
+			for (int dy = 0; dy < 3; dy++)
 			{
-				// 同一タイル内の3x3（中央＋周り8個）全てのサブノードを歩行可能に設定
-				for (int dy = 0; dy < 3; dy++)
+				for (int dx = 0; dx < 3; dx++)
 				{
-					for (int dx = 0; dx < 3; dx++)
+					int subX = x * 3 + dx;
+					int subY = y * 3 + dy;
+					if (subY >= static_cast<int>(m_nodes.size()) || subX >= static_cast<int>(m_nodes[subY].size()))
 					{
-						int subX = static_cast<int>(x) * 3 + dx;
-						int subY = static_cast<int>(y) * 3 + dy;
-						if (subY < static_cast<int>(m_nodes.size()) && subX < static_cast<int>(m_nodes[subY].size()))
-						{
-							m_nodes[subY][subX].walkable = true;
-						}
+						continue;
 					}
+					// 基本は通行可能 (true) に初期化
+					bool isWalkable = true;
+					// 壁が立っている側のサブノード列は通行不可 (false) に設定
+					if (wallNorth && dy == 0) isWalkable = false; // 上端（dy = 0）
+					if (wallSouth && dy == 2) isWalkable = false; // 下端（dy = 2）
+					if (wallWest && dx == 0) isWalkable = false; // 左端（dx = 0）
+					if (wallEast && dx == 2) isWalkable = false; // 右端（dx = 2）
+					m_nodes[subY][subX].walkable = isWalkable;
 				}
 			}
 		}

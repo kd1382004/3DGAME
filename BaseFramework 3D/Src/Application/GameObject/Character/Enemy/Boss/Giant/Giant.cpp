@@ -150,14 +150,16 @@ void Giant::DrawLit()
 	if (m_spCharaModel)
 	{
 
-
 		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(false);
+		UAEffectShaderManager::Instance().WriteCBBoxEffectEnable(false);
 
 		//モデルが暗すぎるため無理やり明るく
 		Math::Color color = { 5,5,5,1 };
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld, color);
 
+
 		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(true);
+		UAEffectShaderManager::Instance().WriteCBBoxEffectEnable(true);
 
 
 	}
@@ -176,7 +178,7 @@ void Giant::AttackMode()
 		if (m_attackCoolTime >= 0)
 		{
 			m_attackCoolTime -= DeltaTime::Instance().GetGameDeltaTime();
-			
+
 			std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
 			if (spAttackGage)
 			{
@@ -188,7 +190,7 @@ void Giant::AttackMode()
 		else
 		{
 
-			if (KdRandom::GetInt(1, 10) < 100)
+			if (KdRandom::GetInt(1, 100) < 10)
 			{
 				m_giantAttackMode = GiantAttackMode::JumpSlamAttack;
 			}
@@ -295,7 +297,7 @@ void Giant::LeftAttackUpdate()
 		dir.x = sinf(yawRad);
 		dir.y = 0.0f;
 		dir.z = cosf(yawRad);
-		Math::Vector3 attackPos = m_pos+ dir*10;
+		Math::Vector3 attackPos = m_pos + dir * 5;
 
 		spleftAttack->SetTargetCenterPos(attackPos);
 		spleftAttack->SetAngleY(m_angle);
@@ -456,7 +458,7 @@ void Giant::ChangeAnime()
 	if (!m_AnimeChangeFlg) { return; }
 
 	//攻撃中は変更しない
-	if (m_attackFlg&&!m_isDead) { return; }
+	if (m_attackFlg && !m_isDead) { return; }
 
 	switch (m_enemyAnimeMode)
 	{

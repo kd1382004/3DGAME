@@ -6,6 +6,7 @@ struct Texs
 	std::string m_name;
 	std::shared_ptr<KdTexture>m_Icon;
 	std::shared_ptr<KdTexture>m_Explanation;
+	std::shared_ptr<KdTexture>m_Name;
 };
 
 
@@ -31,5 +32,6 @@ private:
 	std::string m_potionPath = "Asset/Textures/GameUI/Item/Potion/";
 	std::string m_weaponsStrengtheningPath = "Asset/Textures/GameUI/Item/WeaponsStrengthening/";
 	std::string m_Icom = "/Icon.png";
-	std::string m_Explanation = "/Explanation.png";
+	std::string m_Explanation = "/SelectExplanationBase.png";
+	std::string m_Name = "/SelectNameBase.png";
 };

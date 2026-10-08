@@ -82,15 +82,19 @@ void PotionTexInfo::Load()
 		{
 			std::shared_ptr<KdTexture>icon = std::make_shared<KdTexture>();
 			std::shared_ptr<KdTexture>explanation = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>name = std::make_shared<KdTexture>();
 
 			std::string iconPath = m_potionPath + tex.m_name + m_Icom;
 			std::string explanationPath = m_potionPath + tex.m_name + m_Explanation;
+			std::string namePath = m_potionPath + tex.m_name + m_Name;
 
 			icon->Load(iconPath);
 			explanation->Load(explanationPath);
+			name->Load(namePath);
 
 			tex.m_Icon = icon;
 			tex.m_Explanation = explanation;
+			tex.m_Name = name;
 		}
 	}
 
@@ -121,15 +125,19 @@ void PotionTexInfo::Load()
 		{
 			std::shared_ptr<KdTexture>icon = std::make_shared<KdTexture>();
 			std::shared_ptr<KdTexture>explanation = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>name = std::make_shared<KdTexture>();
 
 			std::string iconPath = m_weaponsStrengtheningPath + tex.m_name + m_Icom;
 			std::string explanationPath = m_weaponsStrengtheningPath + tex.m_name + m_Explanation;
+			std::string namePath = m_weaponsStrengtheningPath + tex.m_name + m_Name;
 
 			icon->Load(iconPath);
 			explanation->Load(explanationPath);
+			name->Load(namePath);
 
 			tex.m_Icon = icon;
 			tex.m_Explanation = explanation;
+			tex.m_Name = name;
 		}
 	}
 }

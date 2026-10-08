@@ -207,7 +207,7 @@ void Dagger::ChargAttackPlay()
 void Dagger::SetNowChargeTime(float _time)
 {
 	m_chargeTime = _time;
-
+	m_chargeTimeMaxFlg = false;
 
 	if (m_chargeTime < m_chargeTimeMax / 3.0f)
 	{
@@ -303,6 +303,7 @@ void Dagger::SetNowChargeTime(float _time)
 		m_chargeTime = m_chargeTimeMax;
 
 		m_ChargeLV = 2;
+		m_chargeTimeMaxFlg = true;
 	}
 }
 

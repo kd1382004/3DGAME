@@ -78,7 +78,7 @@ public:
 	//武器の強化ができたかどうか
 	bool AddWeaponsStrengtheningInfo(int id, int lv = 1)
 	{
-		if (id < 0 || id >= WeaponsStrengtheningSiz){ return false; }
+		if (id < 0 || id >= WeaponsStrengtheningSiz) { return false; }
 		if (!m_weaponsStrengtheningInfo[id].strengtheningFlg) { return false; }
 		m_weaponsStrengtheningInfo[id].Lv += lv;
 		m_weaponsStrengtheningInfo[id].strengtheningItemNum -= m_weaponsStrengtheningInfo[id].nextLvNum;
@@ -114,16 +114,35 @@ public:
 		return m_weaponsStrengtheningInfo[id].strengtheningFlg;
 	}
 
-	void SetWeaponsStrengtheningNum(int id,int strengtheningItemNum)
+	void SetWeaponsStrengtheningNum(int id, int strengtheningItemNum)
 	{
 		if (id < 0 || id >= WeaponsStrengtheningSiz) return;
 		m_weaponsStrengtheningInfo[id].strengtheningItemNum = strengtheningItemNum;
 		IsWeaponsStrengtheningPossible(id);
 	}
 
+	float GetChargeAttackMaxCost()
+	{
+		float lv = (float)m_weaponsStrengtheningInfo[WeaponsStrengthening_Stamina].Lv;
+		float decay = powf(0.9f, lv);
+		return m_m_chargeAttackMaxCost * decay;
+	}
+
+	bool GetChargeTimeMaxFlg() { return m_chargeTimeMaxFlg; }
+
+
+	float GetAddCargeTime()
+	{
+		int lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_ChargeTime].Lv;
+	
+		return m_addCargeTime * powf(1.05f, lv);;
+	}
 protected:
 
+	//1秒当りにたまるCharge時間
+	float m_addCargeTime = 1;
 
+	bool m_chargeTimeMaxFlg = false;
 	float m_attackAngle = 0;
 	float m_chargeTime = 0;
 	float m_chargeTimeMax = 0;
@@ -195,12 +214,8 @@ protected:
 	////////////////////////////////////////////////
 	//Charge攻撃パラメーター
 
-	//Charge攻撃を使うのに使うスタミナコスト
-	float m_chargeAttackCost = 0;
-
-
-	//Charge攻撃を使うのに使うスタミナコストのマックス値
-	float m_m_chargeAttackMaxCost = 20;
+	//Charge攻撃を使うのに使う1秒当りのスタミナコスト値
+	float m_m_chargeAttackMaxCost = 10;
 
 	//Charge攻撃が当たっていい敵の数
 	int m_hitNum = 1;

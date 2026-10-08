@@ -28,6 +28,14 @@ public:
 	void SetPotionTexInfo(std::shared_ptr<PotionTexInfo> _spPotionTexInfo) { m_wpPotionTexInfo = _spPotionTexInfo; }
 private:
 
+	std::shared_ptr<KdTexture>m_selectNameTex;
+	std::shared_ptr<KdTexture>m_NotselectNameTex;
+	Math::Vector2 m_selectNameTexPos;
+
+	std::shared_ptr<KdTexture>m_selectExplanationTex;
+	std::shared_ptr<KdTexture>m_NotselectExplanationTex;
+	Math::Vector2 m_selectExplanationTexPos;
+
 
 
 
@@ -49,8 +57,13 @@ private:
 	std::shared_ptr<KdTexture>m_back2Tex;
 	std::shared_ptr<KdTexture>m_Changeback2Tex;
 	std::shared_ptr<KdTexture>m_notSelsect;
+
 	Math::Vector2 m_back2Tex2DPos;
 	Math::Vector2 m_back2Tex2DSiz;
+
+	std::shared_ptr<KdTexture>m_inventoryTypeTex;
+	Math::Vector2 m_inventoryType2DPos;
+	Math::Vector2 m_inventoryTypeSiz;
 
 	std::shared_ptr<KdTexture>m_UseTex;
 	Math::Vector2 m_UseTex2DPos;
@@ -147,7 +160,9 @@ private:
 	void WeaponsStrengtheningButtonHit();
 
 	std::shared_ptr<KdTexture>m_weaponsStrengtheningButtonTex;
+	std::shared_ptr<KdTexture>m_LVTex;
 	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
+	Math::Vector2 m_LVTex2DPos;
 
 	struct WeaponsStrengtheningInfo
 	{

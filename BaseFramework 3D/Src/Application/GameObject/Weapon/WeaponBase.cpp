@@ -56,6 +56,8 @@ Math::Vector3 WeaponBase::GetCloseAttackHitCharacter()
 		auto spGameObj = wpGameObj.lock();
 		if (!spGameObj) continue;
 
+		if (spGameObj->GetIsDead()) { continue; }
+
 		float dist = (spGameObj->GetPos() - GetPos()).Length();
 
 		dist = abs(dist);

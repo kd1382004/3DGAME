@@ -457,11 +457,23 @@ void PlayerBase::WeaponUpdate()
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.SwordAttackAnime), false);
 
 
-		m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime();
+
 		m_chargeAttacFlg = true;
 		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
 		if (spWeapon)
 		{
+			
+
+			float cost = spWeapon->GetChargeAttackMaxCost()* DeltaTime::Instance().GetGameDeltaTime();
+			if (!spWeapon->GetChargeTimeMaxFlg())
+			{
+				if (ConsumeStamina(cost))
+				{
+					m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime()* spWeapon->GetAddCargeTime();
+				}
+			}
+			
+
 			spWeapon->SetNowChargeTime(m_chargeAttackCount);
 		}
 	}

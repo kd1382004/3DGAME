@@ -1,4 +1,4 @@
-#include "MapGenerate.h"
+﻿#include "MapGenerate.h"
 #include<array>
 #include<queue>
 #include<set>
@@ -251,7 +251,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				}
 			}
 		}
-	};
+		};
 
 	for (auto& p : pairs)
 	{
@@ -294,7 +294,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 	auto isValidGrid = [&](int nx, int ny) {
 		return ny >= 0 && ny < mapH && nx >= 0 && nx < mapW;
-	};
+		};
 
 	auto canSlopeVertical = [&](int x, int y) {
 		if (!isValidGrid(x, y)) return false;
@@ -307,7 +307,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 		bool rightNone = !isValidGrid(x + 1, y) || (map[y][x + 1].m_tileType == TileType::None);
 
 		return up && down && leftNone && rightNone;
-	};
+		};
 
 	auto canSlopeHorizontal = [&](int x, int y) {
 		if (!isValidGrid(x, y)) return false;
@@ -320,7 +320,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 		bool downNone = !isValidGrid(x, y + 1) || (map[y + 1][x].m_tileType == TileType::None);
 
 		return left && right && upNone && downNone;
-	};
+		};
 
 	static const int dx[] = { 0, 0, -1, 1 };
 	static const int dy[] = { -1, 1, 0, 0 };
@@ -347,7 +347,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 					bool isVertDir = (dx[d] == 0);
 					bool canSlopeInDir = isVertDir ? (canSlopeVertical(x, y) && canSlopeVertical(nx, ny))
-												   : (canSlopeHorizontal(x, y) && canSlopeHorizontal(nx, ny));
+						: (canSlopeHorizontal(x, y) && canSlopeHorizontal(nx, ny));
 
 					// 方向沿いにスロープが置けない場合、高さ差は0（完全フラット）に強制
 					if (!canSlopeInDir)
@@ -628,10 +628,10 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
 
 							wallPos.y -= tileSiz;
-							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, rID, x, y, map, { static_cast<float>( cx) ,static_cast<float>(cy) });
+							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, rID, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) });
 							wallPos.y += tileSiz;
 
-					
+
 							m_chunks[cy][cx].push_back(wall);
 						}
 
@@ -651,15 +651,43 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
 							int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
 							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) }, &torchFlg);
-							wallPos.y += tileSiz;
 
-					
+
+
 							m_chunks[cy][cx].push_back(wall);
+
+							wallPos.y += tileSiz;
 						}
 
 
 
 					}
+				}
+
+				//tenzyou
+				if (1)
+				{
+					std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
+
+					Math::Vector3 floorPos = pos;
+
+
+					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax ; i++)
+					{
+						floorPos.y += tileSiz;
+					}
+
+					floorPos.y += 1;
+
+					mapA->SetModel(m_spFloorModel);
+					mapA->Init();
+					mapA->SetPos(floorPos);
+					mapA->SetMapObjType(MapObjType::None);
+					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+					ret->push_back(mapA);
+					m_chunks[cy][cx].push_back(mapA);
+
 				}
 			}
 			/////////////////////////////////////////////////////
@@ -1121,7 +1149,7 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 			x >= 0 && x < static_cast<int>(map[y].size()))
 		{
 			bool inRoomA = (x >= _A.m_roomEnd.FarLeft && x <= _A.m_roomEnd.FarRight &&
-							y >= _A.m_roomEnd.topEnd && y <= _A.m_roomEnd.downEnd);
+				y >= _A.m_roomEnd.topEnd && y <= _A.m_roomEnd.downEnd);
 
 			if (!inRoomA)
 			{
@@ -1149,7 +1177,7 @@ std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _A,
 						if (i > 0 && nx == static_cast<int>(path2D[i - 1].x) && ny == static_cast<int>(path2D[i - 1].y)) continue;
 
 						bool neighborInRoomA = (nx >= _A.m_roomEnd.FarLeft && nx <= _A.m_roomEnd.FarRight &&
-												ny >= _A.m_roomEnd.topEnd && ny <= _A.m_roomEnd.downEnd);
+							ny >= _A.m_roomEnd.topEnd && ny <= _A.m_roomEnd.downEnd);
 
 						if (!neighborInRoomA && map[ny][nx].m_tileType != TileType::None)
 						{
@@ -1320,8 +1348,8 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 			}
 
 			//周りになかったら置く
-			if (IsSetTorch(_x, _y, map,4 ))
-			{				
+			if (IsSetTorch(_x, _y, map, 4))
+			{
 				placeTorch = true;
 			}
 
@@ -1343,7 +1371,7 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 	}
 }
 
-void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _obj,Math::Vector2 _chunk)
+void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _obj, Math::Vector2 _chunk)
 {
 	std::shared_ptr<MapObjManager>spMapObjManager = m_wpMapObjManager.lock();
 	if (!spMapObjManager) { return; }
@@ -1480,7 +1508,7 @@ bool MapGenerate::IsSetTorch(int x, int y, const std::vector<std::vector<FloorIn
 	//周囲にあったら設置できない
 
 	//上下
-	for (int i = -num;i <= num;i++)
+	for (int i = -num; i <= num; i++)
 	{
 		if (isValid(x, y + i) && map[y + i][x].m_setTorchFlg)
 		{
@@ -1490,9 +1518,9 @@ bool MapGenerate::IsSetTorch(int x, int y, const std::vector<std::vector<FloorIn
 	}
 
 	//左右
-	for (int i = -num;i <= num;i++)
+	for (int i = -num; i <= num; i++)
 	{
-		if (isValid(x + i, y) && map[y ][x + i].m_setTorchFlg)
+		if (isValid(x + i, y) && map[y][x + i].m_setTorchFlg)
 		{
 			return false;
 		}
@@ -1515,7 +1543,7 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 
 	auto isValid = [&](int nx, int ny) {
 		return ny >= 0 && ny < height && nx >= 0 && nx < width;
-	};
+		};
 
 	auto canSlopeVertical = [&](int x, int y) {
 		if (!isValid(x, y)) return false;
@@ -1528,7 +1556,7 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 		bool rightNone = !isValid(x + 1, y) || (origMap[y][x + 1].m_tileType == TileType::None);
 
 		return up && down && leftNone && rightNone;
-	};
+		};
 
 	auto canSlopeHorizontal = [&](int x, int y) {
 		if (!isValid(x, y)) return false;
@@ -1541,7 +1569,7 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 		bool downNone = !isValid(x, y + 1) || (origMap[y + 1][x].m_tileType == TileType::None);
 
 		return left && right && upNone && downNone;
-	};
+		};
 
 	for (int y = 0; y < height; y++)
 	{

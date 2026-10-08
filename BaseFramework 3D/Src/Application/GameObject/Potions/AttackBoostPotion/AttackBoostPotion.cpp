@@ -7,13 +7,13 @@ void AttackBoostPotion::UseAttackBoostPotion(int ID)
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
 	if (spPlayer)
 	{
-		int boost = 10;
+		int boost = spPlayer->GetAttackBase() * 0.1;
 
 		std::shared_ptr<PlayerBuffManager>spPlayerBuffManager = spPlayer->GetPlayerBuffManager();
 		if (spPlayerBuffManager)
 		{
 			StatusBuff buff;
-			buff.m_buffAttck += 10;
+			buff.m_buffAttck += boost;
 			buff.m_maxSeconds = 100;
 			buff.m_nowSeconds = buff.m_maxSeconds;
 			buff.m_ID = ID;

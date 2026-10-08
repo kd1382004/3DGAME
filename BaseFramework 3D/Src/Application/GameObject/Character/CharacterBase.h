@@ -104,6 +104,9 @@ public:
 	///////////////////////////////////////////
 
 	virtual void SetAccessoryManager(std::shared_ptr<AccessoryManager>_spAccessoryManager) { m_wpAccessoryManager = _spAccessoryManager; }
+
+
+	bool GetIsDead() { return m_isDead; }
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
