@@ -57,8 +57,7 @@ void MapBase::DrawLit()
 void MapBase::GenerateDepthMapFromLight()
 {
 	if (!m_spModel) { return; }
-	if (!m_isInView) { return; }
-
+	
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
 }
 

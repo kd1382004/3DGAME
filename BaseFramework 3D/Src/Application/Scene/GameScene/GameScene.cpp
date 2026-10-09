@@ -219,7 +219,7 @@ void GameScene::Init()
 
 
 	//KdShaderManager::Instance().WorkAmbientController().SetDirLight({ 1,-1,1 }, { 0,0,0 });
-
+	KdShaderManager::Instance().WorkAmbientController().SetDirLightShadowArea({ 200.0f, 200.0f }, 50.0f);
 
 
 	//Fog(霧)

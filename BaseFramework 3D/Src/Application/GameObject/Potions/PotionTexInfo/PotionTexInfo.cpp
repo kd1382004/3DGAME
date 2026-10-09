@@ -26,6 +26,17 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetPotionExplanation(int _ID)
 	return nullptr;
 }
 
+std::shared_ptr<KdTexture> PotionTexInfo::GetPotionName(int _ID)
+{
+	for (auto& tex : m_PotionTexs)
+	{
+		if (tex.ID == _ID)
+		{
+			return tex.m_Name;
+		}
+	}
+	return nullptr;
+}
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningIcon(int _ID)
 {
@@ -50,6 +61,18 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningExplanation(int
 		}
 	}
 
+	return nullptr;
+}
+
+std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningName(int _ID)
+{
+	for (auto& tex : m_WeaponsStrengtheningTexs)
+	{
+		if (tex.ID == _ID)
+		{
+			return tex.m_Name;
+		}
+	}
 	return nullptr;
 }
 

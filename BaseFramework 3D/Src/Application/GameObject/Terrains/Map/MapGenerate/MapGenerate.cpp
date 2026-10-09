@@ -136,7 +136,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			bool canPlace = true;
 
 			//部屋同士何タイル開けるか
-			int minMargin = m_heightLevelMax + 3;
+			int minMargin = m_heightLevel + 3;
 			int aX = KdRandom::GetInt(minMargin, minMargin + 3);
 			int aY = KdRandom::GetInt(minMargin, minMargin + 3);
 
@@ -162,7 +162,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			// 空いてるなら作る
 			if (canPlace)
 			{
-				int heightLevel = KdRandom::GetInt(0, m_heightLevelMax);
+				int heightLevel = KdRandom::GetInt(0, m_heightLevel);
 
 				for (int y = roomY; y < roomY + roomH; y++)
 				{
@@ -652,8 +652,6 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
 							std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, createStairs, ret, rID, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) }, &torchFlg);
 
-
-
 							m_chunks[cy][cx].push_back(wall);
 
 							wallPos.y += tileSiz;
@@ -664,15 +662,15 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					}
 				}
 
-				//tenzyou
-				if (1)
+
 				{
+					//tenzyou
 					std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
 
 					Math::Vector3 floorPos = pos;
 
 
-					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax ; i++)
+					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax; i++)
 					{
 						floorPos.y += tileSiz;
 					}
@@ -687,8 +685,8 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
 					ret->push_back(mapA);
 					m_chunks[cy][cx].push_back(mapA);
-
 				}
+
 			}
 			/////////////////////////////////////////////////////
 		}

@@ -130,6 +130,7 @@ private:
 		std::string m_name;
 		std::shared_ptr<KdTexture>m_IconTex;
 		std::shared_ptr<KdTexture>m_ExplanationTex;
+		std::shared_ptr<KdTexture> m_NameTex;
 	};
 
 	
@@ -206,6 +207,8 @@ private:
 		Math::Vector2 iconStrengtheningSiz;
 
 		float timer = 0.0f;
+
+		std::shared_ptr<KdTexture> m_NameTex;
 	};
 
 	enum WeponStrengtheningID

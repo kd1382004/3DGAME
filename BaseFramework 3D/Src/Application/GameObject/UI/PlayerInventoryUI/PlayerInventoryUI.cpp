@@ -443,13 +443,14 @@ void PlayerInventoryUI::PlayerInventoryOpen()
 			if (m_itemIconInfo.size() > 0)
 			{
 				m_selectExplanationTex = m_itemIconInfo[0].m_ExplanationTex;
+				m_selectNameTex = m_itemIconInfo[0].m_NameTex;
 				m_selectPotionID = m_itemIconInfo[0].m_ItemID;
 			}
 			else
 			{
 				m_Changeback2Tex = m_notSelsect;
+				m_selectNameTex = m_NotselectNameTex;
 			}
-
 		}
 	}
 
@@ -808,15 +809,15 @@ void PlayerInventoryUI::PotionInfoInit()
 	if (m_itemIconInfo.size() != 0)
 	{
 		m_selectExplanationTex = m_itemIconInfo[0].m_ExplanationTex;
+		m_selectNameTex = m_itemIconInfo[0].m_NameTex;
 		m_selectPotionID = m_itemIconInfo[0].m_ItemID;
 	}
 	else
 	{
 		m_selectPotionID = -999;
 		m_selectExplanationTex = m_NotselectExplanationTex;
+		m_selectNameTex = m_NotselectNameTex;
 	}
-
-
 }
 
 void PlayerInventoryUI::AddPotionTexInfo()
@@ -847,7 +848,9 @@ void PlayerInventoryUI::AddPotionTexInfo()
 			{
 				itemIconInfo.m_IconTex = _spPotionTexInfo->GetPotionIcon(itemIconInfo.m_ItemID);
 				itemIconInfo.m_ExplanationTex = _spPotionTexInfo->GetPotionExplanation(itemIconInfo.m_ItemID);
+				itemIconInfo.m_NameTex = _spPotionTexInfo->GetPotionName(itemIconInfo.m_ItemID); // ← 追加
 			}
+
 
 
 			m_itemIconInfo.push_back(itemIconInfo);
@@ -868,6 +871,7 @@ void PlayerInventoryUI::IconHit()
 	if (m_itemIconInfo.size() <= 0)
 	{
 		m_selectExplanationTex = m_NotselectExplanationTex;
+		m_selectNameTex = m_NotselectNameTex;
 		return;
 	}
 
@@ -890,6 +894,7 @@ void PlayerInventoryUI::IconHit()
 			{
 				m_selectExplanationTex = potion.m_ExplanationTex;
 				m_selectPotionID = potion.m_ItemID;
+				m_selectNameTex = potion.m_NameTex;
 			}
 		}
 		else
@@ -938,32 +943,20 @@ void PlayerInventoryUI::PotionIUse()
 
 void PlayerInventoryUI::WeaponsStrengtheningInfoInit()
 {
-	std::shared_ptr<PlayerBase> spPlayer = m_wpPlayerBase.lock();
-	if (!spPlayer) { return; }
-
-	std::shared_ptr<WeaponBase> spWeapon = spPlayer->GetWeapon().lock();
-	if (!spWeapon) { return; }
-
-
+	// ... 略 ...
 	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
 	{
-		m_weaponsStrengtheningInfo[i].strengtheningFlg = spWeapon->IsWeaponsStrengtheningPossible(i);
-		m_weaponsStrengtheningInfo[i].Lv = spWeapon->GetWeaponsStrengtheningLv(i);
-		m_weaponsStrengtheningInfo[i].num = spPlayer->GetPlayerInventory()->GetWeaponsStrengtheningInventoryNum(i);
-		m_weaponsStrengtheningInfo[i].nextLvNum = spWeapon->GetWeaponsStrengtheningNextLvNum(i);
-
-
-
-
+		// ... 略 ...
 		if (!m_weaponsStrengtheningInfo[i].m_ExplanationTex)
 		{
 			std::shared_ptr<PotionTexInfo>_spTexInfo = m_wpPotionTexInfo.lock();
 			if (!_spTexInfo) { continue; }
 			m_weaponsStrengtheningInfo[i].m_ExplanationTex = _spTexInfo->GetWeaponsStrengtheningExplanation(i);
+			m_weaponsStrengtheningInfo[i].m_NameTex = _spTexInfo->GetWeaponsStrengtheningName(i);
 		}
 	}
-
 	m_selectExplanationTex = m_weaponsStrengtheningInfo[0].m_ExplanationTex;
+	m_selectNameTex = m_weaponsStrengtheningInfo[0].m_NameTex;
 	m_num = m_weaponsStrengtheningInfo[0].Lv;
 	m_selectWeaponsStrengtheningnextLVNum = m_weaponsStrengtheningInfo[0].nextLvNum;
 	m_selectWeaponsStrengtheningID = 0;
@@ -1039,6 +1032,7 @@ void PlayerInventoryUI::WeaponsStrengtheningIconHit()
 				m_selectWeaponsStrengtheningID = weapon.ID;
 				m_num = weapon.Lv;
 				m_selectWeaponsStrengtheningnextLVNum = weapon.nextLvNum;
+				m_selectNameTex = weapon.m_NameTex;
 			}
 		}
 		else

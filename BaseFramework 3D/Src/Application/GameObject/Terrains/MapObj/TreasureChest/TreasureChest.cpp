@@ -159,7 +159,7 @@ void TreasureChest::Update()
 
 void TreasureChest::PostUpdate()
 {
-	if (!m_isInView) { return; }
+	//if (!m_isInView) { return; }
 	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
 		{ 20,20,20 },								//色
 		10,										//半径	

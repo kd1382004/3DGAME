@@ -19,9 +19,11 @@ public:
 
 	std::shared_ptr<KdTexture> GetPotionIcon(int _ID);
 	std::shared_ptr<KdTexture> GetPotionExplanation(int _ID);
+	std::shared_ptr<KdTexture> GetPotionName(int _ID);
 
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningIcon(int _ID);
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningExplanation(int _ID);
+	std::shared_ptr<KdTexture> GetWeaponsStrengtheningName(int _ID);
 private:
 
 	void Load();

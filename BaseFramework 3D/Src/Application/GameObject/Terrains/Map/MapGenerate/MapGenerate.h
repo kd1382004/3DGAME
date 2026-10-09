@@ -204,7 +204,7 @@ private:
 	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel, int x, int y);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y,std::vector<std::vector<FloorInfo>>& map,Math::Vector2 chunkNum, bool* _flg = nullptr);
+	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, Math::Vector2 chunkNum, bool* _flg = nullptr);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;
@@ -230,11 +230,12 @@ private:
 
 	//トーチを設置していいか
 	//num...直線方向にnumずつ見る
-	bool IsSetTorch(int x, int y, const std::vector<std::vector<FloorInfo>>& map,int num);
+	bool IsSetTorch(int x, int y, const std::vector<std::vector<FloorInfo>>& map, int num);
 	///////////////////
 
 
-	static const int m_heightLevelMax = 2;
+	static const int m_heightLevel = 2;
+	static const int m_heightLevelMax = m_heightLevel + 1;
 
 
 
