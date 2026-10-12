@@ -321,6 +321,7 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.h" />
+    <ClInclude Include="Src\Application\GameObject\TitelMove\TitelMove.h" />
     <ClInclude Include="Src\Application\GameObject\UI\AttackGage\AttackGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\BuffUI\BuffUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HitDamage\HitDamage.h" />
@@ -339,6 +340,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.h" />
+    <ClInclude Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateBase.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateManager.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.h" />
@@ -451,6 +453,7 @@
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Slope\Slope.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\Stairs\StairsBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\WallBase\WallBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\TitelMove\TitelMove.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\AttackGage\AttackGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\BuffUI\BuffUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HitDamage\HitDamage.cpp" />
@@ -469,6 +472,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.cpp" />
+    <ClCompile Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.cpp" />

@@ -2,21 +2,50 @@
 #include"../../../Info/KeyInfo/KeyInfo.h"
 #include"../../Character/Player/PlayerBase.h"
 #include"../../../Scene/GameScene/GameScene.h"
+#include"../WarpGateManager.h"
+EscapeGate::~EscapeGate()
+{
+	auto spEffect = m_wpWarpGatEffect.lock();
+	if (spEffect)
+	{
+		spEffect->StopEffect();
+	}
+}
 void EscapeGate::Init()
 {
 
 	if (!m_spWarpGate)
 	{
 		m_spWarpGate = std::make_shared<KdModelData>();
-		m_spWarpGate->Load("Asset/Models/WarpGate/WarpGateblend.gltf");
+		m_spWarpGate->Load("Asset/Models/WarpGate/Fine/WarpGateblend.gltf");
 	}
+
 
 
 	WarpGateBase::Init();
 }
 
-void EscapeGate::Update()	
+void EscapeGate::Update()
 {
+	auto spEffect = m_wpWarpGatEffect.lock();
+	if (spEffect)
+	{
+
+		if (!spEffect->IsPlaying())
+		{
+			m_wpWarpGatEffect = KdEffekseerManager::GetInstance().Play(
+				"WarpGate/Fine/Fine.efkefc", GetPos(), 1.0f, 1.0f, true
+			);
+		}
+	}
+	else
+	{
+		m_wpWarpGatEffect = KdEffekseerManager::GetInstance().Play(
+			"WarpGate/Fine/Fine.efkefc", GetPos(), 1.0f, 1.0f, true
+		);
+	}
+
+
 	if (PlayerHit())
 	{
 		std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
@@ -32,6 +61,17 @@ void EscapeGate::Update()
 		{
 			spGameScene->ChangeResultScene();
 			m_isExpired = true;
+			if (spEffect)
+			{
+				spEffect->StopEffect();
+			}
+
+			auto spWarpGateManager = m_wpWarpGateManager.lock();
+			if (spWarpGateManager)
+			{
+				spWarpGateManager->WarpGateReset();
+			}
+
 		}
 
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class MapBase;
 class MapObjManager;
@@ -117,6 +117,9 @@ public:
 
 	Math::Vector3 GetBossSpawnPos() { return m_bossSpawnPos; }
 
+	Math::Vector3 GetNextWarpGatePos() const { return m_nextWarpGatePos; }
+	Math::Vector3 GetEscapeWarpGatePos() const { return m_escapeWarpGatePos; }
+
 
 	void SetMapObjManager(std::shared_ptr<MapObjManager>_obj) { m_wpMapObjManager = _obj; }
 
@@ -214,6 +217,10 @@ private:
 
 	//ボスの出現位置
 	Math::Vector3 m_bossSpawnPos;
+
+	//ワープゲートの出現位置
+	Math::Vector3 m_nextWarpGatePos;
+	Math::Vector3 m_escapeWarpGatePos;
 
 
 	//////////////////////////////////

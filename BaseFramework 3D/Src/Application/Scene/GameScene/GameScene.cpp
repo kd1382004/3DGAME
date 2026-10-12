@@ -84,11 +84,11 @@ void GameScene::ImGUi()
 	}
 }
 
-void GameScene::WarpGateInit(Math::Vector3 _setPos)
+void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos)
 {
 	if (!m_spWarpGateManager) { return; }
 
-	m_spWarpGateManager->WarpGateInit(_setPos);
+	m_spWarpGateManager->WarpGateInit(_setNextGatePos, _setEacapeGatePos);
 }
 
 void GameScene::SetGameResult()
@@ -217,10 +217,7 @@ void GameScene::Init()
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
-
-	//KdShaderManager::Instance().WorkAmbientController().SetDirLight({ 1,-1,1 }, { 0,0,0 });
-	KdShaderManager::Instance().WorkAmbientController().SetDirLightShadowArea({ 200.0f, 200.0f }, 50.0f);
-
+	KdShaderManager::Instance().WorkAmbientController().SetDirLightShadowArea({ 200.0f, 200.0f }, 70.0f);
 
 	//Fog(霧)
 	//distance...距離
@@ -235,6 +232,7 @@ void GameScene::Init()
 
 	//アンビエント
 	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+
 
 	/////////////////////////////////////////
 	//ゲームシーン

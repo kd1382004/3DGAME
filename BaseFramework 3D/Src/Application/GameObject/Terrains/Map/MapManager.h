@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <cmath>
 
 class MapBase;
@@ -118,7 +118,17 @@ public:
 
 	std::vector<std::shared_ptr<MapBase>> GetUpdateChankes() { return m_updateChankes; }
 
+
+	///////////////////////////////////////
+	//マップ上のランダムな座標を返す
+	Math::Vector3 GetRandomPos();
+	Math::Vector3 GetNextWarpGatePos() { return m_NextWarpGatePos; }
+	Math::Vector3 GetEscapeWarpGatePos() { return m_EscapeWarpGatePos; }
+
 private:
+
+	Math::Vector3 m_NextWarpGatePos;
+	Math::Vector3 m_EscapeWarpGatePos;
 
 	////////////////////////////////////////////
 	/// <ノード>

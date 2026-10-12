@@ -4,6 +4,7 @@
 #include"../../Scene/SceneManager.h"
 
 #include"EscapeGate/EscapeGate.h"
+#include"NextStageGate/NextStageGate.h"
 void WarpGateManager::Init()
 {
 
@@ -50,13 +51,35 @@ void WarpGateManager::DrawLit()
 		warp->DrawLit();
 	}
 }
-void WarpGateManager::WarpGateInit(Math::Vector3 _setPos)
-{
-	std::shared_ptr<EscapeGate>_spWarpGate = std::make_shared<EscapeGate>();
-	_spWarpGate->Init();
-	_spWarpGate->SetPos(_setPos);
-	_spWarpGate->SetPlayer(m_wpPlayer.lock());
-	_spWarpGate->SetGameScene(m_wpGameScene.lock());
 
-	m_warpGateList.push_back(_spWarpGate);
+void WarpGateManager::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos)
+{
+	auto self = std::static_pointer_cast<WarpGateManager>(shared_from_this());
+
+	std::shared_ptr<EscapeGate>_spEscapeGate = std::make_shared<EscapeGate>();
+	_spEscapeGate->Init();
+	_spEscapeGate->SetPos(_setEacapeGatePos);
+	_spEscapeGate->SetPlayer(m_wpPlayer.lock());
+	_spEscapeGate->SetGameScene(m_wpGameScene.lock());
+	_spEscapeGate->SetWarpGateManager(self);
+
+	m_warpGateList.push_back(_spEscapeGate);
+
+	std::shared_ptr<NextStageGate>_spNextStageGate = std::make_shared<NextStageGate>();
+	_spNextStageGate->Init();
+	_spNextStageGate->SetPos(_setNextGatePos);
+	_spNextStageGate->SetPlayer(m_wpPlayer.lock());
+	_spNextStageGate->SetGameScene(m_wpGameScene.lock());
+	_spNextStageGate->SetWarpGateManager(self);
+
+	m_warpGateList.push_back(_spNextStageGate);
 }
+
+void WarpGateManager::WarpGateReset()
+{
+	for (auto obj : m_warpGateList)
+	{
+		obj->SetIsExpired(true);
+	}
+}
+

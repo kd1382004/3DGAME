@@ -16,12 +16,12 @@ public:
 	void PreDraw() override;
 	void DrawLit()override;
 
-	void WarpGateInit(Math::Vector3 _setPos);
+	void WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos);
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayer) { m_wpPlayer = _spPlayer; }
 	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
 
-	void WarpGateReset() { m_warpGateList.clear(); }
+	void WarpGateReset();
 private:
 	//プレイヤー
 	std::weak_ptr<PlayerBase>m_wpPlayer;

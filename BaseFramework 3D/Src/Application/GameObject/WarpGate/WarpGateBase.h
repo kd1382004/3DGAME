@@ -1,6 +1,7 @@
 ﻿#pragma once
 class PlayerBase;
 class GameScene;
+class WarpGateManager;
 
 class WarpGateBase :public KdGameObject
 {
@@ -22,8 +23,11 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayer) { m_wpPlayer = _spPlayer; }
 	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
+	void SetWarpGateManager(std::shared_ptr<WarpGateManager>_spWarpGateManager) { m_wpWarpGateManager = _spWarpGateManager; }
 	
 	void SetIsExpired(bool _flg) { m_isExpired = _flg; };
+
+
 
 protected:
 
@@ -33,6 +37,7 @@ protected:
 	//プレイヤー
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 	std::weak_ptr<GameScene>m_wpGameScene;
+	std::weak_ptr<WarpGateManager>m_wpWarpGateManager;
 
 	//3Dモデル
 	std::shared_ptr<KdModelData>m_spWarpGate;
@@ -40,4 +45,6 @@ protected:
 	//座標
 	Math::Vector3 m_pos;
 
+
+	std::weak_ptr<KdEffekseerObject> m_wpWarpGatEffect;
 };

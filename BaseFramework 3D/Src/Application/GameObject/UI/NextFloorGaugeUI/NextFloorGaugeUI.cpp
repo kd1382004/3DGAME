@@ -20,8 +20,6 @@ void NextFloorGaugeUI::Init()
 
 void NextFloorGaugeUI::Update()
 {
-
-
 	if (KeyInfo::Instance().GetValidKeyPush(m_actionKey))
 	{
 		m_actionKeyAlpha = 1.0f;

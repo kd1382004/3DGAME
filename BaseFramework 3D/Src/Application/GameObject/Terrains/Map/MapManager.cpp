@@ -1,4 +1,4 @@
-﻿#include "MapManager.h"
+#include "MapManager.h"
 #include "MapBase.h"
 #include "MapGenerate/MapGenerate.h"
 #include "../../Camera/CameraBase.h"
@@ -356,6 +356,9 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	Math::Vector3 basePos;
 	mapData = m_spMapGenerate->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &basePos);
 
+	m_NextWarpGatePos = m_spMapGenerate->GetNextWarpGatePos();
+	m_EscapeWarpGatePos = m_spMapGenerate->GetEscapeWarpGatePos();
+
 	m_chunks = m_spMapGenerate->GetChunks();
 
 	//A*の初期化
@@ -529,6 +532,25 @@ bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 		}
 	}
 	return false;
+}
+
+Math::Vector3 MapManager::GetRandomPos()
+{
+	Math::Vector3 retPos = {};
+	while (1)
+	{
+		auto it = m_mapObj.begin();
+		std::advance(it, rand() % m_mapObj.size());
+		auto& randomElem = *it;
+
+		if (randomElem->GetMapObjType() == MapObjType::Ground)
+		{
+			retPos = randomElem->GetPos();
+			break;
+		}
+	}
+
+	return retPos;
 }
 
 

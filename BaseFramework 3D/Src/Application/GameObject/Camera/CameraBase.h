@@ -75,6 +75,10 @@ public:
 	//_time ...　近づけてから戻るまでの時間
 	void SetEvasionCamera(float _time);
 
+	// 目標のYaw角度(度数法)に向けて制限付きで回転させる
+	// maxSpeedDegPerSec ... 1秒あたりの最大回転角度
+	void RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec);
+
 protected:
 
 	//回避成功

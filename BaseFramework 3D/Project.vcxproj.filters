@@ -307,6 +307,12 @@
     <Filter Include="Src\Application\GameObject\Effect\Potions\AttackBoostPotion">
       <UniqueIdentifier>{1958ce4f-5db7-40f9-8a46-531ff6997c2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\TitelMove">
+      <UniqueIdentifier>{dd5b301f-c667-4d68-9e4c-575423fa0bac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\WarpGate\NextStageGate">
+      <UniqueIdentifier>{360a09be-c80d-48e1-ab60-52d8c1d39a79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -717,6 +723,12 @@
     <ClInclude Include="Src\Framework\Shader\UAEffectShaderManager.h">
       <Filter>Src\Framework\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\TitelMove\TitelMove.h">
+      <Filter>Src\Application\GameObject\TitelMove</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.h">
+      <Filter>Src\Application\GameObject\WarpGate\NextStageGate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1090,6 +1102,12 @@
     </ClCompile>
     <ClCompile Include="Src\Framework\Shader\UAEffectShaderManager.cpp">
       <Filter>Src\Framework\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\TitelMove\TitelMove.cpp">
+      <Filter>Src\Application\GameObject\TitelMove</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.cpp">
+      <Filter>Src\Application\GameObject\WarpGate\NextStageGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

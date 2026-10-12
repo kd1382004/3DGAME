@@ -844,6 +844,18 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				m_bossSpawnPos = { xPos ,0,zPos };
 			}
 
+			// 脱出用ゲート (中央の左側)
+			if (x == centerX - 1 && y == centerY)
+			{
+				m_escapeWarpGatePos = { xPos, 0, zPos };
+			}
+
+			// 次の階層用ゲート (中央の右側)
+			if (x == centerX + 1 && y == centerY)
+			{
+				m_nextWarpGatePos = { xPos, 0, zPos };
+			}
+
 
 
 			if (y == 0 && x == 0)

@@ -5,7 +5,7 @@ class EscapeGate:public WarpGateBase
 {
 public:
 	EscapeGate() {};
-	~EscapeGate()override {};
+	~EscapeGate()override;
 
 	void Init()override;
 	void Update()override;

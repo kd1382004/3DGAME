@@ -193,3 +193,20 @@ void CameraBase::UpdateRotateByMouse()
 
 
 
+void CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
+{
+	// 目標角度と現在角度の差分
+	float diff = targetYawDeg - m_DegAng.y;
+	// -180度 〜 +180度の範囲に正規化（最短ルートで旋回）
+	while (diff > 180.0f)  diff -= 360.0f;
+	while (diff < -180.0f) diff += 360.0f;
+	// 1フレームあたりの最大回転量（制限）
+	float maxStep = maxSpeedDegPerSec * DeltaTime::Instance().GetGameDeltaTime();
+	// 回転量を制限
+	float step = std::clamp(diff, -maxStep, maxStep);
+	// 反映
+	m_DegAng.y += step;
+	// 角度を 0 〜 360 度の範囲内に保つ
+	if (m_DegAng.y >= 360.0f) m_DegAng.y -= 360.0f;
+	if (m_DegAng.y < 0.0f)    m_DegAng.y += 360.0f;
+}

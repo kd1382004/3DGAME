@@ -29,7 +29,7 @@ public:
 	std::shared_ptr<PotionUseController> GetPotionUseController() { return m_spPotionUseController; };
 
 
-	void WarpGateInit(Math::Vector3 _setPos);
+	void WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos);
 
 	//ゲーム結果の保存
 	void SetGameResult()override;

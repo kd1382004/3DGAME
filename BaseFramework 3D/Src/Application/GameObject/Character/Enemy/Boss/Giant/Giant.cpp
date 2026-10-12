@@ -1,4 +1,4 @@
-﻿#include "Giant.h"
+#include "Giant.h"
 
 #include"../../../../UI/HPBar/HPBar.h"
 #include"../../../../UI/AttackGage/AttackGage.h"
@@ -8,6 +8,8 @@
 
 #include"../../../../../Scene/SceneManager.h"
 #include"../../../../../Scene/GameScene/GameScene.h"
+
+#include"../../../../Terrains/Map/MapManager.h"
 void Giant::Init()
 {
 	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Boss/Giant/Status/Status.json";
@@ -53,9 +55,14 @@ void Giant::Update()
 		if (m_spAnimetor->IsAnimationEnd())
 		{
 			std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
-			if (spGameScene)
+			std::shared_ptr<MapManager>spMapManager = m_wpMapManager.lock();
+			if (spGameScene&& spMapManager)
 			{
-				spGameScene->WarpGateInit(m_pos);
+				Math::Vector3 nextPos = spMapManager->GetNextWarpGatePos();
+				Math::Vector3 eacapePos = spMapManager->GetEscapeWarpGatePos();
+
+
+				spGameScene->WarpGateInit(nextPos, eacapePos);
 			}
 			m_isExpired = true;
 		}

@@ -251,6 +251,14 @@ private:
 	//プレイヤーステータス
 	std::shared_ptr<KdRenderTargetPack> m_spRtTargetPack;
 
+	std::shared_ptr<KdCamera> m_spStatusCamera;
+	float m_statusCamAngleY = 0.0f;   // Y軸回転角度 (度)
+	float m_statusCamDistance =4.0f;   // プレイヤーからの距離 (お好みに合わせて調整)
+	float m_statusCamPitch = 8.0f;   // 少し見下ろす角度 (度)
+	float m_statusCamHeightOffset = 2;   // プレイヤーの注視点(胸・腰の高さ)
+	float m_statusCamRotateSpeed = 45.0f;  // 回転速度 (度/秒: 45度なら約8秒で1周)
+
+
 
 	struct PlayerStatusInfo
 	{
