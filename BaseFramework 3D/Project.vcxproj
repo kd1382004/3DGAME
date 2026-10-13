@@ -332,6 +332,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.h" />
     <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\UI2\UIBase2.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIBase.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIManager.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMapManager.h" />
@@ -464,6 +465,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\UI2\UIBase2.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMapManager.cpp" />

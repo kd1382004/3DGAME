@@ -84,6 +84,17 @@ float4 main(VSOutput In) : SV_Target0
 	// ラフネスを逆転させ「滑らか」さにする
 	float smoothness = 1.0 - roughness;
 	float specPower = pow(2, 11 * smoothness); // 1～2048
+	//------------------------------------------
+	// ライティング
+	//------------------------------------------
+	// 最終的な色
+	float3 outColor = 0;
+	
+		// 材質の拡散色　非金属ほど材質の色になり、金属ほど拡散色は無くなる
+	const float3 baseDiffuse = lerp(baseColor.rgb, float3(0, 0, 0), metallic);
+		// 材質の反射色　非金属ほど光の色をそのまま反射し、金属ほど材質の色が乗る
+	const float3 baseSpecular = lerp(0.04, baseColor.rgb, metallic);
+
 
 
 	//スフィアカラー
@@ -94,7 +105,7 @@ float4 main(VSOutput In) : SV_Target0
 			float3 v = g_circleEffects[i].colorPos - In.wPos;
 			if (length(v) < g_circleEffects[i].colorRadius)
 			{
-				baseColor.rgb += g_circleEffects[i].colorColor;
+				outColor.rgb += g_circleEffects[i].colorColor;
 			}
 		}
 	}
@@ -112,30 +123,22 @@ float4 main(VSOutput In) : SV_Target0
 			float s = sin(angle);
         // 逆回転（-angle）を適用してボックスのローカル空間へ変換
 			float3 localPos;
-			localPos.x = v.x * c - v.z * s; 
+			localPos.x = v.x * c - v.z * s;
 			localPos.y = v.y;
-			localPos.z = v.x * s + v.z * c; 
+			localPos.z = v.x * s + v.z * c;
         // OBB 判定（XYZ 半径）
 			if (abs(localPos.x) < g_boxEffects[i].colorRadiusX &&
             abs(localPos.y) < g_boxEffects[i].colorRadiusY &&
             abs(localPos.z) < g_boxEffects[i].colorRadiusZ)
 			{
-				baseColor.rgb += g_boxEffects[i].colorColor;
+				outColor.rgb += g_boxEffects[i].colorColor;
 			}
 		}
 	}
-	
-	//------------------------------------------
-	// ライティング
-	//------------------------------------------
-	// 最終的な色
-	float3 outColor = 0;
-	
-		// 材質の拡散色　非金属ほど材質の色になり、金属ほど拡散色は無くなる
-	const float3 baseDiffuse = lerp(baseColor.rgb, float3(0, 0, 0), metallic);
-		// 材質の反射色　非金属ほど光の色をそのまま反射し、金属ほど材質の色が乗る
-	const float3 baseSpecular = lerp(0.04, baseColor.rgb, metallic);
 
+
+
+	
 	//-------------------------------
 	// シャドウマッピング(影判定)
 	//-------------------------------

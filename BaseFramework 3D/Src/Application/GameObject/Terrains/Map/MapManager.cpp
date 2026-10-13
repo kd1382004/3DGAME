@@ -1,4 +1,4 @@
-#include "MapManager.h"
+﻿#include "MapManager.h"
 #include "MapBase.h"
 #include "MapGenerate/MapGenerate.h"
 #include "../../Camera/CameraBase.h"
@@ -16,6 +16,13 @@ void MapManager::Init()
 	m_spMapGenerate = std::make_shared<MapGenerate>();
 
 	CHUNK_SIZE = m_spMapGenerate->GetCHUNK_SIZE();
+
+
+	if (!m_spBoxModel)
+	{
+		m_spBoxModel = std::make_shared<KdModelData>();
+		m_spBoxModel->Load("Asset/Models/Terrains/Map/Box/Base.gltf");
+	}
 }
 
 void MapManager::Update()
@@ -40,6 +47,17 @@ void MapManager::DrawLit()
 	{
 		mapObj->DrawLit();
 	}
+
+	if (m_spBoxModel)
+	{
+		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_boxPos);
+		Math::Matrix sMat = Math::Matrix::CreateScale(m_boxSiz / 2);
+
+		Math::Matrix mat = sMat * tMat;
+
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spBoxModel, mat);
+	}
+
 }
 
 void MapManager::PreDraw()
@@ -316,9 +334,17 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			int cy = tileY / CHUNK_SIZE;
 			spTreasureChest->SetChunkNum(Math::Vector2(static_cast<float>(cx), static_cast<float>(cy)));
 
-			spTreasureChest->SetUIManager(m_wpUIManager.lock());
+
+
+			auto spUIManage = m_wpUIManager.lock();
+
+			spTreasureChest->SetUIManager(spUIManage);
 			spTreasureChest->SetPlayer(m_wpPlayerBase.lock());
 			spTreasureChest->SetCamera(m_wpCamera.lock());
+			if (spUIManage)
+			{
+				spTreasureChest->SetUITex(spUIManage->GetTresureChestUiTex());
+			}
 
 			spMapObjManager->AddMapObj(spTreasureChest);
 		}
@@ -353,8 +379,8 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	//敵が歩ける一覧
 	std::vector<std::vector<bool>> mapData;
 
-	Math::Vector3 basePos;
-	mapData = m_spMapGenerate->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &basePos);
+	Math::Vector3 m_mapBasePos = {};
+	mapData = m_spMapGenerate->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &m_mapBasePos);
 
 	m_NextWarpGatePos = m_spMapGenerate->GetNextWarpGatePos();
 	m_EscapeWarpGatePos = m_spMapGenerate->GetEscapeWarpGatePos();
@@ -392,7 +418,7 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 		std::shared_ptr<UIMapManager> spUIMapManager = spUIManager->GetUIMapManager();
 		if (spUIMapManager)
 		{
-			spUIMapManager->SetBase3DPos(basePos);
+			spUIMapManager->SetBase3DPos(m_mapBasePos);
 			spUIMapManager->SetTileSiz(m_mapTileSiz);
 			spUIMapManager->GetUIMap_Map()->PosListReset();
 			spUIMapManager->ResetTreasureChest();
@@ -476,6 +502,27 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 
 	// 最後に push_back
 	m_updateChankes.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
+
+
+	int minChunkX = cx - static_cast<int>(m_updateChunkRadius.x);
+	int maxChunkX = cx + static_cast<int>(m_updateChunkRadius.x);
+
+	int minChunkY = cy - static_cast<int>(m_updateChunkRadius.y);
+	int maxChunkY = cy + static_cast<int>(m_updateChunkRadius.y);	
+
+	// ワールド座標に変換
+	float worldMinX = minChunkX * CHUNK_SIZE * m_mapTileSiz;
+	float worldMaxX = (maxChunkX + 1) * CHUNK_SIZE * m_mapTileSiz;
+
+	float worldMinZ = -(minChunkY * CHUNK_SIZE * m_mapTileSiz);
+	float worldMaxZ = -((maxChunkY + 1) * CHUNK_SIZE * m_mapTileSiz);
+
+	float sizeX = worldMaxX - worldMinX;
+	float sizeZ = worldMaxZ - worldMinZ;
+	float sizeY = m_mapTileSiz * m_spMapGenerate->GetHeightLevelMax();
+
+	m_boxPos = { GetCHUNKCenterPos()};
+	m_boxSiz = { sizeX ,sizeY * 2,sizeZ };
 }
 
 bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
@@ -483,7 +530,7 @@ bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
 	// ワールド座標 → タイル座標へ変換（切り下げ）
 	int tileX = static_cast<int>(std::floor(_pos.x / m_mapTileSiz));
 	int tileY = static_cast<int>(std::floor(-_pos.z / m_mapTileSiz));
-	
+
 	// タイル座標 → チャンク番号へ変換
 	int cx = static_cast<int>(std::floor(static_cast<float>(tileX) / CHUNK_SIZE));
 	int cy = static_cast<int>(std::floor(static_cast<float>(tileY) / CHUNK_SIZE));
@@ -552,6 +599,29 @@ Math::Vector3 MapManager::GetRandomPos()
 
 	return retPos;
 }
+
+Math::Vector3 MapManager::GetCHUNKCenterPos()
+{
+	// チャンク番号（float なので int にキャスト）
+	int cx = static_cast<int>(m_chankeNum.x);
+	int cy = static_cast<int>(m_chankeNum.y);
+
+	// チャンクのワールド座標サイズ
+	float chunkWorldSize = CHUNK_SIZE * m_mapTileSiz;
+
+	// チャンクの左上（minX, minZ）
+	float minX = cx * chunkWorldSize;
+	float minZ = -(cy * chunkWorldSize);
+
+	// チャンク中心
+	float centerX = minX + chunkWorldSize * 0.5f;
+	float centerZ = minZ - chunkWorldSize * 0.5f;
+
+
+	// Y は地面高さに合わせる（必要なら変更）
+	return Math::Vector3(centerX, m_mapBasePos.y, centerZ);
+}
+
 
 
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)
@@ -771,7 +841,7 @@ std::vector<Node*> MapManager::GetNeighbors(Node* node)
 	int height = static_cast<int>(m_nodes.size());
 
 	// 周囲8方向のオフセット (上下左右 ＋ 斜め4方向)
-	static const int dirX[8] = {  0,  0, -1,  1, -1,  1, -1,  1 };
+	static const int dirX[8] = { 0,  0, -1,  1, -1,  1, -1,  1 };
 	static const int dirY[8] = { -1,  1,  0,  0, -1, -1,  1,  1 };
 
 	for (int i = 0; i < 8; i++)

@@ -14,6 +14,9 @@
 
 
 #include"LootTableManager/LootTableManager.h"
+
+
+#include"../../../UI/UI2/UIBase2.h"
 TreasureChest::~TreasureChest()
 {
 	auto spUIMap_TreasureChest = m_wpUIMap_TreasureChest.lock();
@@ -113,10 +116,33 @@ void TreasureChest::Update()
 
 		float dist = (PlayerPos - Pos).Length();
 
-		if (dist < 5)
+		if (dist < m_openSiz)
 		{
 			int key = spPlayer->GetActionKeyConfig().interact;
 
+			auto spUIMapManager = m_wpUIManager.lock();
+			std::shared_ptr<UIBase2>spUI = nullptr;
+			if (spUIMapManager)
+			{
+				spUI = spUIMapManager->GetUIBase2();
+			}
+			if (spUI)
+			{
+				
+				Math::Vector3 set2DPos;
+
+				std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+				if (!spCamera) { return; }
+
+				Math::Vector3 set3DPos = GetPos();
+				set3DPos.y += 2;
+				spCamera->GetCamera()->ConvertWorldToScreenDetail(set3DPos, set2DPos);
+
+				spUI->SetDrawFlg(true);
+				spUI->Set2DPos({ set2DPos.x,set2DPos.y });
+				spUI->SetTex(m_uiTex);
+				spUI->SetDrawKey(key);
+			}
 
 			if (KeyInfo::Instance().GetValidKeyPush(key, true))
 			{

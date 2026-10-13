@@ -7,6 +7,7 @@
 
 #include"HPBar/HPBar.h"
 
+#include"UI2/UIBase2.h"
 
 #include"UIMap/UIMapManager.h"
 
@@ -16,6 +17,19 @@
 void UIManager::Init()
 {
 	m_pauseStop = false;
+
+
+	m_UIBase2 = std::make_shared<UIBase2>();
+	m_spUIList.push_back(m_UIBase2);
+
+
+
+
+	if (!m_tresureChestUiTex)
+	{
+		m_tresureChestUiTex = std::make_shared<KdTexture>();
+		m_tresureChestUiTex->Load("Asset/Textures/GameUI/TreasureChest/TreasureChestOpenUI.png");
+	}
 }
 
 void UIManager::PreUpdate()
@@ -48,6 +62,11 @@ void UIManager::PreUpdate()
 		);
 
 		m_spUIListOldSiz = m_spUIList.size();
+	}
+
+	if (m_UIBase2)
+	{
+		m_UIBase2->SetDrawFlg(false);
 	}
 
 

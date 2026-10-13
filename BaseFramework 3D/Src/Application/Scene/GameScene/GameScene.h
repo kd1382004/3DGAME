@@ -18,7 +18,7 @@ class GameScene : public BaseScene, public std::enable_shared_from_this<GameScen
 public:
 
 	GameScene() {}
-	~GameScene() {}
+	~GameScene() override{}
 
 	void ImGUi()override;
 
@@ -72,12 +72,4 @@ private:
 	//ゲーム結果
 	int m_killEnemy = 0;
 	int m_killBoss = 0;
-
-
-	//フォグ
-	Math::Vector3 m_FOGCol = { 0.35,0.35,0.38 };
-	float m_FOGdensity = 0.02;
-
-	//アンビエント
-	Math::Vector4 m_ambient = {1,1,1,1};
 };

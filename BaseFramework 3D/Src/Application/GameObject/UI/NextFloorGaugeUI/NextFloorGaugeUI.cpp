@@ -13,7 +13,7 @@ void NextFloorGaugeUI::Init()
 
 		m_gaugePercent = 0;
 
-		m_2DPos = { 100, 100 };
+		m_2DPos = { 50, 50 };
 		m_actionKeySiz = { 32,32 };
 	}
 }

@@ -7,6 +7,7 @@ class MapManager;
 class TPSCamera;
 class TitelMove;
 class MapObjManager;
+class EnemyManager;
 
 class TitleScene : public BaseScene
 {
@@ -22,7 +23,7 @@ private :
 	void Event() override;
 
 	std::shared_ptr<TPSCamera> m_spCamera;
-
+	std::shared_ptr<EnemyManager>m_spEnemyManager;
 	std::shared_ptr<MapManager>m_spMapManager;
 	std::shared_ptr<TitleSceneEditor>m_spTitleSceneEditor;
 	std::shared_ptr<TitelMove> m_spTitelMove;

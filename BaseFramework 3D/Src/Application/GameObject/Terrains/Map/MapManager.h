@@ -122,13 +122,21 @@ public:
 	///////////////////////////////////////
 	//マップ上のランダムな座標を返す
 	Math::Vector3 GetRandomPos();
+	
+	
 	Math::Vector3 GetNextWarpGatePos() { return m_NextWarpGatePos; }
 	Math::Vector3 GetEscapeWarpGatePos() { return m_EscapeWarpGatePos; }
+
+	Math::Vector3 GetCHUNKCenterPos();
+
 
 private:
 
 	Math::Vector3 m_NextWarpGatePos;
 	Math::Vector3 m_EscapeWarpGatePos;
+
+
+	Math::Vector3 m_mapBasePos;
 
 	////////////////////////////////////////////
 	/// <ノード>
@@ -199,5 +207,11 @@ private:
 	//更新チャンク
 	//縦横に+-xyずつ
 	Math::Vector2 m_updateChunkRadius = { 1,1 };
+
+	//チャンクを囲むボックス
+	Math::Vector3 m_boxPos;
+	Math::Vector3 m_boxSiz;
+
+	std::shared_ptr<KdModelData>m_spBoxModel;
 };
 

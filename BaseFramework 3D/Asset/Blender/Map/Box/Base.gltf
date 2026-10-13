@@ -18,24 +18,9 @@
 			"name":"\u7acb\u65b9\u4f53"
 		}
 	],
-	"materials":[
-		{
-			"doubleSided":true,
-			"name":"\u30de\u30c6\u30ea\u30a2\u30eb",
-			"normalTexture":{
-				"index":0
-			},
-			"pbrMetallicRoughness":{
-				"baseColorTexture":{
-					"index":1
-				},
-				"metallicFactor":0
-			}
-		}
-	],
 	"meshes":[
 		{
-			"name":"\u7acb\u65b9\u4f53",
+			"name":"\u7acb\u65b9\u4f53.002",
 			"primitives":[
 				{
 					"attributes":{
@@ -43,32 +28,9 @@
 						"NORMAL":1,
 						"TEXCOORD_0":2
 					},
-					"indices":3,
-					"material":0
+					"indices":3
 				}
 			]
-		}
-	],
-	"textures":[
-		{
-			"sampler":0,
-			"source":0
-		},
-		{
-			"sampler":0,
-			"source":1
-		}
-	],
-	"images":[
-		{
-			"mimeType":"image/png",
-			"name":"NormalMap",
-			"uri":"NormalMap.png"
-		},
-		{
-			"mimeType":"image/png",
-			"name":"stone_2_c",
-			"uri":"stone_2_c.png"
 		}
 	],
 	"accessors":[
@@ -77,14 +39,14 @@
 			"componentType":5126,
 			"count":24,
 			"max":[
-				5.000835418701172,
-				-0.004474163055419922,
-				5.000835418701172
+				1.1446785926818848,
+				2.120567798614502,
+				1.1446785926818848
 			],
 			"min":[
-				-5.000835418701172,
-				-2.004808187484741,
-				-5.000835418701172
+				-1.1446785926818848,
+				-0.1687893271446228,
+				-1.1446785926818848
 			],
 			"type":"VEC3"
 		},
@@ -131,12 +93,6 @@
 			"byteLength":72,
 			"byteOffset":768,
 			"target":34963
-		}
-	],
-	"samplers":[
-		{
-			"magFilter":9729,
-			"minFilter":9987
 		}
 	],
 	"buffers":[

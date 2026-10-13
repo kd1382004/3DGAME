@@ -57,15 +57,15 @@ public:
 	//描画先を変更
 	void ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack);
 	void UndoRenderTarget();
+
+	//初期に戻す
+	void UnFogAmbient();
 private:
 
 	// マネージャーの初期化
 	// インスタンス生成(アプリ起動)時にコンストラクタで自動実行
-	void Init()
-	{
-		// 開始シーンに切り替え
-		ChangeScene(m_currentSceneType);
-	}
+	void Init();
+	
 
 	// シーン切り替え関数
 	void ChangeScene(SceneType _sceneType);
@@ -88,6 +88,23 @@ private:
 
 	//描画先管理
 	KdRenderTargetChanger m_rtChanger;
+
+
+	/////////////////////////////////////
+	//フォグ
+	Math::Vector3 m_FOGCol = { 0.35,0.35,0.38 };
+	float m_FOGdensity = 0.02;
+
+	bool m_fogFlg = false;
+
+	//アンビエント
+	Math::Vector4 m_ambient = { 1,1,1,1 };
+
+	void FogAmbientJsonSave();
+	void FogAmbientJsonLode();
+
+	std::string m_FogAmbientJsonFilePath = "Asset/Data/ObjeData/FogAmbient/FogAmbientJsonSave.json";
+
 private:
 
 	SceneManager() { Init(); }

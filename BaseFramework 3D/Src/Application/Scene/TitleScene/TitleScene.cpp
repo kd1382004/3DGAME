@@ -13,27 +13,11 @@
 #include"../../GameObject/Terrains/Map/MapManager.h"
 #include"../../GameObject/Terrains/MapObj/MapObjManager.h"
 #include"../../GameObject/TitelMove/TitelMove.h"
-
+#include"../../GameObject/Character/Enemy/EnemyManager.h"
+#include"../../GameObject/Character/Enemy/EnemyBase.h"
 void TitleScene::Init()
 {
-	//KdShaderManager::Instance().WorkAmbientController().SetDirLight({ 1,-1,1 }, { 0,0,0 });
-	KdShaderManager::Instance().WorkAmbientController().SetDirLightShadowArea({ 200.0f, 200.0f }, 70.0f);
-
-	//Fog(霧)
-	//distance...距離
-	//height ...高さ
-	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(true, false);
-
-	//距離フォグの設定
-	//col...色
-	//density...密度
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog({ 0.35,0.35,0.38 }, 0.02);
-
-
-	//アンビエント
-	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight({ 1,1,1,1 });
-
-
+	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 
 	m_spTitleSceneEditor = std::make_shared<TitleSceneEditor>();
 
@@ -49,7 +33,6 @@ void TitleScene::Init()
 
 	MouseInfo::Instance().SetMouseFreeFlg(true);
 
-	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 
 
 	/////////////////////////////////////////
@@ -68,6 +51,12 @@ void TitleScene::Init()
 	m_objList.push_back(m_spMapManager);
 	
 
+	/////////////////////////////////////////
+	//敵
+	/////////////////////////////////////////
+	m_spEnemyManager = std::make_shared<EnemyManager>();
+	m_spEnemyManager->Init();
+	m_objList.push_back(m_spEnemyManager);
 
 	/////////////////////////////////////////
 	//マップオブジェクト
@@ -90,9 +79,15 @@ void TitleScene::Init()
 	m_spCamera->SetTarget(m_spTitelMove);
 	m_spMapManager->SetCamera(m_spCamera);
 	m_spMapManager->SetMapObjManager(m_spMapObjManager);
+	m_spMapManager->SetEnemyManager(m_spEnemyManager);
+	m_spMapObjManager->ObjSetCamera(m_spCamera);
 
-
-	
+	m_spEnemyManager->SetMapManager(m_spMapManager);
+	m_spEnemyManager->SetCamera(m_spCamera);
+	if (m_spCamera)
+	{
+		KdEffekseerManager::GetInstance().SetCamera(m_spCamera->GetCamera());
+	}
 
 
 
@@ -170,8 +165,7 @@ void TitleScene::Event()
 			// XZ平面の進行方向からYaw角度(度数法)を算出
 			float targetYaw = DirectX::XMConvertToDegrees(std::atan2(moveVec.x, moveVec.z));
 			// 第2引数で最大回転速度（度/秒）を指定して回転
-			// 例: 60.0f = 1秒間に最大60度旋回（数値を小さくするほどゆっくり、大きくするほど素早く追従）
-			m_spCamera->RotateTowardsY(targetYaw, 90.0f);
+			m_spCamera->RotateTowardsY(targetYaw, 60.0f);
 		}
 	}
 
@@ -184,5 +178,21 @@ void TitleScene::Event()
 	if (m_spMapObjManager)
 	{
 		m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
+	}
+
+	if (m_spEnemyManager)
+	{
+		m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
+	}
+
+	//敵のあたり判定リストを毎フレーム更新
+	if (!m_spEnemyManager) { return; }
+	for (auto enemy : m_spEnemyManager->GetEnemyUpdateList())
+	{
+		m_spMapManager->MapHitEnemy(enemy);
+		if (m_spMapObjManager)
+		{
+			m_spMapObjManager->MapObjHit(enemy);
+		}
 	}
 }

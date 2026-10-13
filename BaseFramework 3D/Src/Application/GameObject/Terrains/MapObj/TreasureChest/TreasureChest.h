@@ -7,6 +7,7 @@ class CameraBase;
 class UIManager;
 class UIMap_TreasureChest;
 class LootTableManager;
+class UIBase2;
 
 class TreasureChest:public MapObjBase
 {
@@ -28,12 +29,16 @@ public:
 	void SetLootTableManager(std::shared_ptr<LootTableManager> _spLootTableManager) { m_wpLootTableManager = _spLootTableManager; };
 
 	void SetTreasureChestLv(int lv) { m_TreasureChestLv = lv; }
+
+	//UIBase2に入れるテクスチャ
+	void SetUITex(std::shared_ptr<KdTexture>_tex) { m_uiTex = _tex; }
 private:
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 	std::weak_ptr<CameraBase>m_wpCamera;
 	std::weak_ptr<UIManager>m_wpUIManager;
 	std::weak_ptr<UIMap_TreasureChest>m_wpUIMap_TreasureChest;
 	std::weak_ptr<LootTableManager>m_wpLootTableManager;
+	std::weak_ptr<UIBase2>m_UIBase2;
 
 	std::shared_ptr<KdModelWork>m_treasureChestModel = nullptr;
 	std::shared_ptr<KdAnimator>	m_treasureChestAnimetor = nullptr;
@@ -52,4 +57,11 @@ private:
 
 
 	std::string m_TreasureChestGetItnLootpath = "slot";
+
+	//UIBase2に入れるテクスチャ
+	std::shared_ptr<KdTexture>m_uiTex;
+
+
+	//オープン可能範囲
+	float m_openSiz = 3;
 };

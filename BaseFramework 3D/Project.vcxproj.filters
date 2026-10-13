@@ -313,6 +313,9 @@
     <Filter Include="Src\Application\GameObject\WarpGate\NextStageGate">
       <UniqueIdentifier>{360a09be-c80d-48e1-ab60-52d8c1d39a79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\UI2">
+      <UniqueIdentifier>{4335795c-8817-4066-bcce-846c9185a63f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -729,6 +732,9 @@
     <ClInclude Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.h">
       <Filter>Src\Application\GameObject\WarpGate\NextStageGate</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\UI2\UIBase2.h">
+      <Filter>Src\Application\GameObject\UI\UI2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1108,6 +1114,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.cpp">
       <Filter>Src\Application\GameObject\WarpGate\NextStageGate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\UI2\UIBase2.cpp">
+      <Filter>Src\Application\GameObject\UI\UI2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -370,7 +370,7 @@ void PlayerInventoryUI::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_inventoryTypeTex, m_inventoryType2DPos.x, m_inventoryType2DPos.y, m_inventoryTypeSiz.x, m_inventoryTypeSiz.y, &rec, nullptr, pivo);
 	}
 
-	if (m_back2Tex  && m_nowInventoryType != PlayerInventoryUI::PlayerStatus)
+	if (m_back2Tex && m_nowInventoryType != PlayerInventoryUI::PlayerStatus)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_back2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y, m_back2Tex2DSiz.x, m_back2Tex2DSiz.y);
 		Math::Vector2 pos = m_back2Tex2DPos;
@@ -639,28 +639,39 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 		{
 
 			// 時間経過による点滅（パルス）アニメーション
-			m_weaponsStrengtheningInfo[i].timer += 0.05f;
-			for (int j = 0; j < 10; j++)
+			m_weaponsStrengtheningInfo[i].timer += 0.01f;
+
+			float pulse = (sinf(m_weaponsStrengtheningInfo[i].timer) + 1.0f) * 0.5f;
+
+			// ★ 大きくなって小さくなるスケール
+			float scale = 1.0f + pulse * 0.25f;
+
+			// 青(0,0,1) → 白(1,1,1) → 青(0,0,1)
+			float r = pulse;
+			float g = pulse;
+			float b = 1.0f;
+
+			float alpha = 0.4f + pulse * 0.4f;
+
+			Math::Color auraColor = { r, g, b, alpha };
+
+			// 発光オーラ描画
+			KdShaderManager::Instance().m_spriteShader.DrawTex(
+				m_weaponsStrengtheningInfo[i].iconTex,
+				m_weaponsStrengtheningInfo[i].iconPos.x,
+				m_weaponsStrengtheningInfo[i].iconPos.y,
+				m_weaponsStrengtheningInfo[i].iconSiz.x * scale,
+				m_weaponsStrengtheningInfo[i].iconSiz.y * scale,
+				nullptr,
+				&auraColor
+			);
+
+
+
+			if (m_weaponsStrengtheningInfo[i].timer > 1)
 			{
-				float pulse = (sinf(m_weaponsStrengtheningInfo[i].timer) + 1.0f) * 0.5f;
-
-				// 少し大きめのサイズに設定（オーラ効果）
-				float scale = 1.2f + pulse * 0.05f + j * 0.01f;
-
-				Math::Color auraColor = { 0, 0, 1, 0.4f + pulse * 0.4f + j * 0.01f };
-				// 背面に発光オーラを描画
-				KdShaderManager::Instance().m_spriteShader.DrawTex(
-					m_weaponsStrengtheningInfo[i].iconTex,
-					m_weaponsStrengtheningInfo[i].iconPos.x,
-					m_weaponsStrengtheningInfo[i].iconPos.y,
-					m_weaponsStrengtheningInfo[i].iconSiz.x * scale,
-					m_weaponsStrengtheningInfo[i].iconSiz.y * scale,
-					nullptr,
-					&auraColor
-				);
-
+				m_weaponsStrengtheningInfo[i].timer -= 1;
 			}
-
 
 
 		}
@@ -769,12 +780,17 @@ void PlayerInventoryUI::PlayerStatusPreDraw()
 	std::shared_ptr<PlayerBase> spPlayer = m_wpPlayerBase.lock();
 	if (spPlayer)
 	{
+
+
 		// レンダーターゲットを切り替え
 		SceneManager::Instance().ChangeRendertarget(m_spRtTargetPack);
 		// 背景を完全透明(アルファ0)にクリアしたい場合 (UIの上にキャラだけ重ねる場合におすすめ)
 		m_spRtTargetPack->ClearTexture(Math::Color(0.0f, 0.0f, 0.0f, 0.0f));
 		// 1. メインシーン用のカメラ設定を退避
 		const auto prevCameraCB = KdShaderManager::Instance().GetCameraCB();
+
+		KdShaderManager::Instance().WorkAmbientController().SetFogEnable(false, false);
+		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight({ 0,0,0,0 });
 
 		// 3. プレイヤーの中心(注視点)とカメラ行列を計算
 		Math::Vector3 targetPos = spPlayer->GetPos() + Math::Vector3(0.0f, m_statusCamHeightOffset, 0.0f);
@@ -796,6 +812,8 @@ void PlayerInventoryUI::PlayerStatusPreDraw()
 		SceneManager::Instance().UndoRenderTarget();
 		// 6. メインカメラの定数バッファを復元 (メイン画面描画への影響を防止)
 		KdShaderManager::Instance().WriteCBCamera(prevCameraCB.mView.Invert(), prevCameraCB.mProj);
+
+		SceneManager::Instance().UnFogAmbient();
 	}
 
 

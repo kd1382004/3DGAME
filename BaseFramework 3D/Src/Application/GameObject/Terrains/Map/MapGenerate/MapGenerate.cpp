@@ -918,14 +918,43 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				// 隣接マスに壁が必要か判定
 				if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel, x, y))
 				{
+					
+
 					Math::Vector3 wallPos = { xPos + dir.offset.x, 0, zPos + dir.offset.z };
 
+					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax; i++)
+					{
+						
+
+						int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+						int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+
+						std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) });
+
+						m_chunks[cy][cx].push_back(wall);
+
+						wallPos.y += tileSiz;
+					}
+
+				}
+
+
+				{
+					std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
+
+					float yPos = tileSiz * m_heightLevelMax;
+
+					Math::Vector3 pos = { xPos,yPos,zPos };
+
+					mapA->Init();
+					mapA->SetPos(pos);
+					mapA->SetMapObjType(MapObjType::None);
+					mapA->SetGroundType(GroundType::Room);
+					mapA->SerRoomID(0);
+					ret->push_back(mapA);
 					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
 					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
-
-					std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) });
-
-					m_chunks[cy][cx].push_back(wall);
+					m_chunks[cy][cx].push_back(mapA);
 				}
 			}
 		}

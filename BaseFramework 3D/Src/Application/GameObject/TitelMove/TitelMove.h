@@ -32,6 +32,9 @@ public:
 	bool IsMoving() const { return m_moveFlg; }
 	void SetMoveFlg(bool flg) { m_moveFlg = flg; }
 
+	void SetNodeNearDistance(float dist) { m_nodeNearDistance = dist; }
+	float GetNodeNearDistance() const { return m_nodeNearDistance; }
+
 	const Math::Vector3& GetMoveVec() const { return m_moveVec; }
 
 private:
@@ -42,12 +45,13 @@ private:
 	Math::Vector3 m_nextPos;
 	Math::Vector3 m_moveVec = Math::Vector3::Zero; // 進行方向ベクトル
 	float m_speed = 10.0f;
+	float m_nodeNearDistance = 1.0f; // ノード到達判定の半径
 	// ノード経路情報
 	std::vector<Node*> m_path;
 	int m_pathIndex = 0;
 	// 動いているかどうか
 	bool m_moveFlg = false;
 	// 待機時間
-	float m_watiMax = 3.0f;
+	float m_watiMax = 0.0f;
 	float m_nowWati = 0.0f;
 };

@@ -46,31 +46,6 @@ void GameScene::ImGUi()
 		Camera->ImGUI();
 	}
 
-	//FOGImGUI
-	if (ImGui::TreeNode(U8("FOG")))
-	{
-		ImGui::InputFloat(U8("R"), &m_FOGCol.x, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("G"), &m_FOGCol.y, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("B"), &m_FOGCol.z, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("m_FOGdensity"), &m_FOGdensity, 0.01f, 1.0f, "%.2f");
-		ImGui::TreePop();
-	}
-
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
-
-	//FOGImGUI
-	if (ImGui::TreeNode(U8("ambient")))
-	{
-		ImGui::InputFloat(U8("X"), &m_ambient.x, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("Y"), &m_ambient.y, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("Z"), &m_ambient.z, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("W"), &m_ambient.w, 0.01f, 1.0f, "%.2f");
-		ImGui::TreePop();
-	}
-
-	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
-
-
 	//ImGUI
 	if (ImGui::TreeNode(U8("階数")))
 	{
@@ -207,31 +182,18 @@ void GameScene::Event()
 	}
 
 
-	KdDebugGUI::Instance().ClearLog();
-	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);
+	/*KdDebugGUI::Instance().ClearLog();
+	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);*/
 }
-
 
 void GameScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
-	KdShaderManager::Instance().WorkAmbientController().SetDirLightShadowArea({ 200.0f, 200.0f }, 70.0f);
-
-	//Fog(霧)
-	//distance...距離
-	//height ...高さ
-	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(true, false);
-
-	//距離フォグの設定
-	//col...色
-	//density...密度
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
 
 
-	//アンビエント
-	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+
 
 
 	/////////////////////////////////////////
@@ -239,6 +201,14 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	auto self = shared_from_this();
 	m_displayFloor = 0;
+
+	/////////////////////////////////////////
+	//カメラ
+	/////////////////////////////////////////
+	m_spCamera = std::make_shared<TPSCamera>();
+	m_spCamera->Init();
+	m_objList.push_back(m_spCamera);
+
 
 	/////////////////////////////////////////
 	//プレイヤー
@@ -257,6 +227,14 @@ void GameScene::Init()
 	m_objList.push_back(m_spWeapon);
 
 	/////////////////////////////////////////
+	//マップ
+	/////////////////////////////////////////
+	m_spMapManager = std::make_shared<MapManager>();
+	m_spMapManager->Init();
+	m_objList.push_back(m_spMapManager);
+
+
+	/////////////////////////////////////////
 	//敵
 	/////////////////////////////////////////
 	m_spEnemyManager = std::make_shared<EnemyManager>();
@@ -264,20 +242,9 @@ void GameScene::Init()
 	m_objList.push_back(m_spEnemyManager);
 
 
-	/////////////////////////////////////////
-	//カメラ
-	/////////////////////////////////////////
-	m_spCamera = std::make_shared<TPSCamera>();
-	m_spCamera->Init();
-	m_objList.push_back(m_spCamera);
 
 
-	/////////////////////////////////////////
-	//マップ
-	/////////////////////////////////////////
-	m_spMapManager = std::make_shared<MapManager>();
-	m_spMapManager->Init();
-	m_objList.push_back(m_spMapManager);
+
 
 	/////////////////////////////////////////
 	//マップオブジェクト
@@ -349,10 +316,6 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	//プレイヤーにセット
 	/////////////////////////////////////////
-	if (m_spCamera)
-	{
-		KdEffekseerManager::GetInstance().SetCamera(m_spCamera->GetCamera());
-	}
 	m_spPlayer->SetCamera(m_spCamera);
 	m_spPlayer->SetGameScene(self);
 	m_spPlayer->SetWepon(m_spWeapon);
@@ -398,6 +361,11 @@ void GameScene::Init()
 	m_spWarpGateManager->SetPlayer(m_spPlayer);
 	m_spWarpGateManager->SetGameScene(self);
 
+
+	if (m_spCamera)
+	{
+		KdEffekseerManager::GetInstance().SetCamera(m_spCamera->GetCamera());
+	}
 
 
 	//マップの成長率を設定

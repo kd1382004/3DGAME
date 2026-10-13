@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class MapBase;
 class MapObjManager;
@@ -132,6 +132,7 @@ public:
 
 	void SetCamera(std::shared_ptr<CameraBase> _spCamera) { m_wpCamera = _spCamera; }
 
+	const int GetHeightLevelMax() { return m_heightLevelMax; }
 
 private:
 
@@ -272,7 +273,7 @@ private:
 	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
 
 
-	const	int  CHUNK_SIZE = 8;
+	const	int  CHUNK_SIZE =7;
 
 
 
