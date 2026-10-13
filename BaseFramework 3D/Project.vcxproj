@@ -324,6 +324,7 @@
     <ClInclude Include="Src\Application\GameObject\TitelMove\TitelMove.h" />
     <ClInclude Include="Src\Application\GameObject\UI\AttackGage\AttackGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\BuffUI\BuffUI.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\DrawTex\DrawTex.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HitDamage\HitDamage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.h" />
@@ -457,6 +458,7 @@
     <ClCompile Include="Src\Application\GameObject\TitelMove\TitelMove.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\AttackGage\AttackGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\BuffUI\BuffUI.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\DrawTex\DrawTex.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HitDamage\HitDamage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.cpp" />

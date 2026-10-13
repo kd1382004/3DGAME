@@ -15,6 +15,10 @@
 #include"../../GameObject/TitelMove/TitelMove.h"
 #include"../../GameObject/Character/Enemy/EnemyManager.h"
 #include"../../GameObject/Character/Enemy/EnemyBase.h"
+
+
+#include"../../GameObject/UI/UIManager.h"
+#include"../../GameObject/UI/DrawTex/DrawTex.h"
 void TitleScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
@@ -70,11 +74,24 @@ void TitleScene::Init()
 	/////////////////////////////////////////
 	m_spTitelMove = std::make_shared<TitelMove>();
 	m_objList.push_back(m_spTitelMove);
+	
+	
+	/////////////////////////////////////////
+	// UI
+	/////////////////////////////////////////
+	std::shared_ptr<UIManager>spUIManager = std::make_shared<UIManager>();
+	spUIManager->Init();
+
+	m_objList.push_back(spUIManager);
 
 
-
-
-
+	std::shared_ptr<DrawTex>spDrawTex = std::make_shared<DrawTex>();
+	spDrawTex->Init();
+	spDrawTex->Set2DPos({0,200});
+	spDrawTex->LoadTex("Asset/Textures/Tite/紅フードと不思議の迷宮.png");
+	spUIManager->AddUIObj(spDrawTex);
+	
+	/////////////////////////////////////////
 	m_spTitelMove->SetMapManager(m_spMapManager);
 	m_spCamera->SetTarget(m_spTitelMove);
 	m_spMapManager->SetCamera(m_spCamera);
