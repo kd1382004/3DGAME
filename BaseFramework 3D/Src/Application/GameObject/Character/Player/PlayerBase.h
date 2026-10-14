@@ -336,4 +336,13 @@ protected:
 	////////////////////////////////////
 	//アクセサリー
 	std::shared_ptr<PlayerAccessory>m_spPlayerAccessory;
+
+	//死亡アニメーションが終わったかどうか
+	bool m_isDeadAnime = false;
+
+	//ゲームシーンに死亡アニメーションが終わったかどうかを送ったかどうか
+	bool m_isGameScenouto = false;
+
+
+	std::string m_sunaNum = "Suna/Suna.efkefc";
 };

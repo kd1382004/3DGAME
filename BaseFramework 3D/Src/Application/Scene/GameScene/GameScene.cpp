@@ -1,12 +1,12 @@
 ﻿#include "GameScene.h"
-#include"../SceneManager.h"
-
 //プレイヤー
 #include"../../GameObject/Character/Player/PlayerBase.h"
 #include"../../GameObject/Character/Player/PlayerBuffManager/PlayerBuffManager.h"
 
 #include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
 #include"../../Info/MouseInfo/MouseInfo.h"
+#include"../../Info/FadeDraw/FadeDraw.h"
+
 
 //マップ
 #include"../../GameObject/Terrains/Map/MapManager.h"
@@ -69,20 +69,50 @@ void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEa
 void GameScene::SetGameResult()
 {
 	GameResult gameResult;
-	gameResult.enemyKillCount = m_killEnemy;
-	gameResult.floorReached = m_displayFloor;
-	gameResult.playTime = 0;
+	gameResult.displayFloorInfo = m_DisplayFloorInfo;
+
+
+	if (m_spPlayer)
+	{
+		gameResult.playerDead = m_spPlayer->GetIsDead();
+	}
 
 	SceneManager::Instance().SetGameResult(gameResult);
 }
 
 void GameScene::ChangeResultScene()
 {
+	FadeDraw::Instance().SetFadeType(FedeOut, 3);
 	SceneManager::Instance().SetNextScene(SceneManager::SceneType::Result);
+}
+
+void GameScene::AddEnemyKill()
+{
+	m_DisplayFloorInfo[m_displayFloor].enemyKillCount++;
+	m_DisplayFloorInfo[0].enemyKillCount++;
+}
+
+void GameScene::PlayerDefeat()
+{
+	m_playerDefeatFlg = true;
+
+	FadeDraw::Instance().SetFadeType(FedeIn, 3);
 }
 
 void GameScene::Event()
 {
+	if (m_playerDefeatFlg)
+	{
+		if (!FadeDraw::Instance().GetFadeFlg())
+		{
+			ChangeResultScene();
+		}
+
+		return;
+	}
+
+
+
 	////////////////////////////////////////////
 	//デバック
 	static bool REFLG = false;
@@ -182,8 +212,15 @@ void GameScene::Event()
 	}
 
 
-	/*KdDebugGUI::Instance().ClearLog();
-	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);*/
+	KdDebugGUI::Instance().ClearLog();
+	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);
+
+
+
+	float dt = DeltaTime::Instance().GetRealDeltaTime();
+
+	m_DisplayFloorInfo[m_displayFloor].playTimeSc += dt;
+	m_DisplayFloorInfo[0].playTimeSc += dt;
 }
 
 void GameScene::Init()
@@ -191,8 +228,8 @@ void GameScene::Init()
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
-
-
+	DisplayFloorInfo displayFloorInfo;
+	m_DisplayFloorInfo.push_back(displayFloorInfo);
 
 
 
@@ -403,6 +440,11 @@ void GameScene::GenerateMap()
 	}
 
 	m_displayFloor++;
+	DisplayFloorInfo displayFloorInfo;
+	displayFloorInfo.DisplayFloor = m_displayFloor;
+	m_DisplayFloorInfo.push_back(displayFloorInfo);
+
+	m_DisplayFloorInfo[0].DisplayFloor = m_displayFloor;
 
 	int mapSizeX = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorX) * std::pow(growth, m_mapGenerateDisplayFloor));
 	int mapSizeY = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorY) * std::pow(growth, m_mapGenerateDisplayFloor));

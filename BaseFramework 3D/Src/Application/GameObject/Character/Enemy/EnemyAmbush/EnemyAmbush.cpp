@@ -1,6 +1,6 @@
-#include "EnemyAmbush.h"
+﻿#include "EnemyAmbush.h"
 #include"../../../Terrains/Map/MapManager.h"
-
+#include"../../Player/PlayerBase.h"
 void EnemyAmbush::Init()
 {
 	wanderRadius = 15;
@@ -51,6 +51,18 @@ void EnemyAmbush::Update()
 		m_pDebugWire->AddDebugSphere(GetPos(), 1.0f);
 		m_pDebugWire->AddDebugSphere(m_spawnPos, wanderRadius, { 1,1,1,1 });
 	}
+
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
+	if (spPlayer)
+	{
+		if (spPlayer->GetIsDead())
+		{
+			m_playerChaseFlg = false;
+			return;
+		}
+	}
+
+
 
 	if (!m_playerChaseFlg)
 	{

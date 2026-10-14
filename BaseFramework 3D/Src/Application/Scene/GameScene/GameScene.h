@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include"../BaseScene/BaseScene.h"
+#include"../SceneManager.h"
+
 
 class CharacterBase;
 class MapManager;
@@ -37,7 +39,10 @@ public:
 	//リザルトシーンに移行
 	void ChangeResultScene();
 
-	void AddEnemyKill() { m_killEnemy++; }
+	void AddEnemyKill();
+
+
+	void PlayerDefeat();
 private:
 
 	void Event() override;
@@ -72,4 +77,8 @@ private:
 	//ゲーム結果
 	int m_killEnemy = 0;
 	int m_killBoss = 0;
+	float m_playtime=0;
+	bool m_playerDefeatFlg = false;
+
+	std::vector<DisplayFloorInfo>m_DisplayFloorInfo;
 };

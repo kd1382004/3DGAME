@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 //===================================================
 //
@@ -62,10 +62,10 @@ public:
 	// ・color			… 色(RGBA) nullptrでデフォルトの白(kWhiteColor)が使用される
 	// ・pivot			… 基準点 0.0～1.0の範囲で指定する
 	void DrawTex(const KdTexture* tex, int x, int y, int w, int h, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f }, const float& degree = 0);
-	void DrawTex(const std::weak_ptr<KdTexture> tex, int x, int y, int w, int h, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f })
+	void DrawTex(const std::weak_ptr<KdTexture> tex, int x, int y, int w, int h, const Math::Rectangle* srcRect = nullptr, const Math::Color* color = &kWhiteColor, const Math::Vector2& pivot = { 0.5, 0.5f }, const float& degree = 0)
 	{
 		if (tex.expired())return;
-		DrawTex(tex.lock().get(), x, y, w, h, srcRect, color, pivot);
+		DrawTex(tex.lock().get(), x, y, w, h, srcRect, color, pivot, degree);
 	}
 
 	// 2D画像描画(Begin～End間で実行すると、処理効率が上がる)

@@ -1,16 +1,28 @@
 ﻿#pragma once
 
-//ゲームリザルト
-struct GameResult
+//各階層での情報
+struct DisplayFloorInfo
 {
+	//階層
+	int DisplayFloor = 0;
+
 	//敵を倒した数
 	int enemyKillCount = 0;
 
-	//到達した階層
-	int floorReached = 0;
+	//開けた宝箱の数
+	int TreasureChestsNum = 0;
 
-	//プレイ時間(秒)
-	float playTime = 0.0f;
+	//その階層にいた時間(秒)
+	float playTimeSc = 0;
+};
+
+//ゲームリザルト
+struct GameResult
+{
+	std::vector<DisplayFloorInfo>displayFloorInfo;
+
+	//プレイヤー死亡
+	bool playerDead = false;
 };
 
 class BaseScene;
@@ -65,7 +77,7 @@ private:
 	// マネージャーの初期化
 	// インスタンス生成(アプリ起動)時にコンストラクタで自動実行
 	void Init();
-	
+
 
 	// シーン切り替え関数
 	void ChangeScene(SceneType _sceneType);

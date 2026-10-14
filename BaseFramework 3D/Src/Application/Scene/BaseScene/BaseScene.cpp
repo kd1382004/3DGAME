@@ -1,5 +1,5 @@
 ﻿#include "BaseScene.h"
-
+#include"../../Info/FadeDraw/FadeDraw.h"
 void BaseScene::PreUpdate()
 {
 	// Updateの前の更新処理
@@ -61,6 +61,8 @@ void BaseScene::Update()
 			obj->Update();
 		}
 	}
+
+	FadeDraw::Instance().Update();
 }
 
 void BaseScene::PostUpdate()
@@ -167,6 +169,9 @@ void BaseScene::DrawSprite()
 		}
 	}
 	KdShaderManager::Instance().m_spriteShader.End();
+
+
+	FadeDraw::Instance().DrawSprite();
 }
 
 void BaseScene::DrawDebug()

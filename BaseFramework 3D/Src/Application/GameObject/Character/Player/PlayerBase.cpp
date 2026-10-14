@@ -143,18 +143,16 @@ void PlayerBase::PreUpdate()
 
 void PlayerBase::Update()
 {
-	if (m_isDead)
+	if (m_isDead && m_isDeadAnime)
 	{
-		//デバック用プレイヤー死亡後Result移行
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
+		if (spGameScene && !m_isGameScenouto)
 		{
-			std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
-			if (spGameScene)
-			{
-				spGameScene->ChangeResultScene();
-			}
+			spGameScene->PlayerDefeat();
+			m_isGameScenouto = true;
 		}
 	}
+
 
 
 	//バフのアップデート
@@ -462,17 +460,17 @@ void PlayerBase::WeaponUpdate()
 		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
 		if (spWeapon)
 		{
-			
 
-			float cost = spWeapon->GetChargeAttackMaxCost()* DeltaTime::Instance().GetGameDeltaTime();
+
+			float cost = spWeapon->GetChargeAttackMaxCost() * DeltaTime::Instance().GetGameDeltaTime();
 			if (!spWeapon->GetChargeTimeMaxFlg())
 			{
 				if (ConsumeStamina(cost))
 				{
-					m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime()* spWeapon->GetAddCargeTime();
+					m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime() * spWeapon->GetAddCargeTime();
 				}
 			}
-			
+
 
 			spWeapon->SetNowChargeTime(m_chargeAttackCount);
 		}
@@ -708,7 +706,6 @@ void PlayerBase::Move()
 
 		//////////////////////////////////////////////////////////////
 
-
 	}
 	else
 	{
@@ -771,9 +768,9 @@ void PlayerBase::MoveNowSpeedDecision()
 	}
 
 
-	
 
-	
+
+
 }
 
 void PlayerBase::JumpAndGravity()
@@ -918,6 +915,16 @@ void PlayerBase::PlayerAnimeModeUpdate()
 	{
 		spWeapon->SetParentMatrix(m_weponParentMatrix);
 		spWeapon->SetParentRotation(rot);
+	}
+
+
+	if (m_nowPlayerAnimeMode == PlayerBase::DeathAnime)
+	{
+		if (m_spAnimetor->IsAnimationEnd())
+		{
+
+			m_isDeadAnime = true;
+		}
 	}
 
 }

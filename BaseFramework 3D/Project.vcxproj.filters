@@ -319,6 +319,9 @@
     <Filter Include="Src\Application\GameObject\UI\DrawTex">
       <UniqueIdentifier>{98fdff74-b045-46a6-a13c-722f8addded6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Info\FadeDraw">
+      <UniqueIdentifier>{a033bac6-d98b-4398-bd7e-7ef9982467ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -741,6 +744,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\DrawTex\DrawTex.h">
       <Filter>Src\Application\GameObject\UI\DrawTex</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Info\FadeDraw\FadeDraw.h">
+      <Filter>Src\Application\Info\FadeDraw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1126,6 +1132,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\DrawTex\DrawTex.cpp">
       <Filter>Src\Application\GameObject\UI\DrawTex</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Info\FadeDraw\FadeDraw.cpp">
+      <Filter>Src\Application\Info\FadeDraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

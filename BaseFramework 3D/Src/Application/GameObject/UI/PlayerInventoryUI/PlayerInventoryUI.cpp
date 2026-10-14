@@ -428,6 +428,18 @@ void PlayerInventoryUI::DrawSprite()
 
 void PlayerInventoryUI::PlayerInventoryOpen()
 {
+
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
+	if (spPlayer)
+	{
+		if (spPlayer->GetIsDead())
+		{
+			m_playerInventoryUIFlg = false;
+			return;
+		}
+	}
+
+
 	if (KeyInfo::Instance().GetValidKeyPush(VK_TAB, true))
 	{
 		m_playerInventoryUIFlg = !m_playerInventoryUIFlg;
