@@ -7,6 +7,22 @@ MouseInfo::~MouseInfo()
 
 }
 
+void MouseInfo::SetMouseType(MouseType _type)
+{
+
+	if (m_mouseType != MouseType::MouseType_HIT&& m_mouseOldType!= MouseType::MouseType_HIT)
+	{
+		if (m_spHitSE)
+		{
+			m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+			m_spHitSE->Play();
+		}
+	}
+
+
+	m_mouseType = _type;
+}
+
 void MouseInfo::SetMousePosFixMousePos()
 {
 	if (!m_FocusWindowFlg)
@@ -34,6 +50,15 @@ POINT MouseInfo::GetWindouMousePos()
 	return pos;
 }
 
+void MouseInfo::SEMouseClickPlay()
+{
+	if (m_spClickSE)
+	{
+		m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		m_spClickSE->Play();
+	}
+}
+
 void MouseInfo::Init()
 {
 	// ↓ウィンドウ中央座標
@@ -55,6 +80,19 @@ void MouseInfo::Init()
 	{
 		m_mousePointer = std::make_shared<KdTexture>();
 		m_mousePointer->Load("Asset/Textures/Mouse/MousePointer.png");
+	}
+
+	if (!m_spClickSE)
+	{
+		m_spClickSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/click.wav", false);
+		m_spClickSE->Stop();
+		m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+	}
+	if (!m_spHitSE)
+	{
+		m_spHitSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/Hit.wav", false);
+		m_spHitSE->Stop();
+		m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 	}
 }
 
@@ -86,7 +124,7 @@ void MouseInfo::Update()
 
 	//************************************************
 	//デバック用のマウスフリー切り替え
-	
+
 
 	KeyInfo::Instance().SetKeyValid('Q');
 	KeyInfo::Instance().SetKeyValid('E');
@@ -99,6 +137,9 @@ void MouseInfo::Update()
 	{
 		SetMouseFreeFlg(false);
 	}
+
+
+	m_mouseOldType = m_mouseType;
 
 	if (m_mouseFreeFlg)
 	{
@@ -129,7 +170,7 @@ void MouseInfo::Update()
 		//マウスの座標系を実行ウィンドウの座標(中心が(0,0)に補正)
 		m_windowPos.x -= m_fixMousePos.x;
 		m_windowPos.y -= m_fixMousePos.y;
-		m_windowPos.y *= -1;	
+		m_windowPos.y *= -1;
 	}
 	//************************************************
 }
@@ -156,6 +197,6 @@ void MouseInfo::DrawSprite()
 	}
 
 	Math::Vector2 piv = { 0,1 };
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, &rec,nullptr, piv);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, &rec, nullptr, piv);
 
 }

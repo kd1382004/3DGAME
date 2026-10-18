@@ -64,4 +64,7 @@ private:
 
 	//オープン可能範囲
 	float m_openSiz = 3;
+
+	//音
+	std::shared_ptr<KdSoundInstance3D> m_spTreasureChestSE;
 };

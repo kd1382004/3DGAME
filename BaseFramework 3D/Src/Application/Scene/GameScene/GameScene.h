@@ -20,7 +20,7 @@ class GameScene : public BaseScene, public std::enable_shared_from_this<GameScen
 public:
 
 	GameScene() {}
-	~GameScene() override{}
+	~GameScene() override;
 
 	void ImGUi()override;
 
@@ -40,6 +40,7 @@ public:
 	void ChangeResultScene();
 
 	void AddEnemyKill();
+	void AddTreasureChestsNum();
 
 
 	void PlayerDefeat();
@@ -81,4 +82,9 @@ private:
 	bool m_playerDefeatFlg = false;
 
 	std::vector<DisplayFloorInfo>m_DisplayFloorInfo;
+
+	//音
+
+	std::shared_ptr<KdSoundInstance> m_spGameBGM;
+	std::shared_ptr<KdSoundInstance> m_spBossBGM;
 };

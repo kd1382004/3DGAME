@@ -18,7 +18,7 @@
 				},
 				{
 					"id": 1,
-					"name": "AttackBoostPotion",
+					"name": "AttackBaseUPPotion",
 					"rank": "epic",
 					"type": 0
 				},
@@ -26,6 +26,30 @@
 					"id": 2,
 					"name": "AttackBoostPotion",
 					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 3,
+					"name": "InstantStaminaHealPotion",
+					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBaseUPPotion",
+					"rank": "rare",
+					"type": 0
+				},
+				{
+					"id": 5,
+					"name": "StaminaRegenBoostPotion",
+					"rank": "uncommon",
+					"type": 0
+				},
+				{
+					"id": 6,
+					"name": "StaminaMaxUPPotion",
+					"rank": "rare",
 					"type": 0
 				}
 			],
@@ -67,7 +91,7 @@
 				},
 				{
 					"id": 1,
-					"name": "AttackBoostPotion",
+					"name": "AttackBaseUPPotion",
 					"rank": "epic",
 					"type": 0
 				},
@@ -75,6 +99,30 @@
 					"id": 2,
 					"name": "AttackBoostPotion",
 					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 3,
+					"name": "InstantStaminaHealPotion",
+					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBaseUPPotion",
+					"rank": "rare",
+					"type": 0
+				},
+				{
+					"id": 5,
+					"name": "StaminaRegenBoostPotion",
+					"rank": "uncommon",
+					"type": 0
+				},
+				{
+					"id": 6,
+					"name": "StaminaMaxUPPotion",
+					"rank": "rare",
 					"type": 0
 				}
 			],
@@ -133,7 +181,7 @@
 				},
 				{
 					"id": 1,
-					"name": "AttackBoostPotion",
+					"name": "AttackBaseUPPotion",
 					"rank": "rare",
 					"type": 0
 				},
@@ -141,6 +189,30 @@
 					"id": 2,
 					"name": "AttackBoostPotion",
 					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 3,
+					"name": "InstantStaminaHealPotion",
+					"rank": "common",
+					"type": 0
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBaseUPPotion",
+					"rank": "rare",
+					"type": 0
+				},
+				{
+					"id": 5,
+					"name": "StaminaRegenBoostPotion",
+					"rank": "uncommon",
+					"type": 0
+				},
+				{
+					"id": 6,
+					"name": "StaminaMaxUPPotion",
+					"rank": "rare",
 					"type": 0
 				}
 			],

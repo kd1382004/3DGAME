@@ -1,4 +1,4 @@
-﻿#include "Enemy_Goblin.h"
+#include "Enemy_Goblin.h"
 #include"Attack/Attack_Slamming/Attack_Slamming.h"
 
 #include"../../../../Scene/SceneManager.h"
@@ -32,6 +32,39 @@ void Goblin::Init()
 		EnemyBase::Init();
 
 		m_viewAngle = 90;
+
+
+
+		if (!m_spWalk3DSE)
+		{
+			m_spWalk3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/Walk.wav", m_pos, false);
+			if (m_spWalk3DSE)
+			{
+				m_spWalk3DSE->Stop();
+				m_spWalk3DSE->SetCurveDistanceScaler(20.0f);
+			}
+		}
+		if (!m_spDash3DSE)
+		{
+			// 走る音（ゴブリンの足音のピッチを上げて走る音にする）
+			m_spDash3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/Walk.wav", m_pos, false);
+			if (m_spDash3DSE)
+			{
+				m_spDash3DSE->Stop();
+				m_spDash3DSE->SetPitch(0.4f);
+				m_spDash3DSE->SetCurveDistanceScaler(20.0f);
+			}
+		}
+		if (!m_spCrying3DSE)
+		{
+			// 攻撃時の叫び声SE
+			m_spCrying3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/CryingSound.wav", m_pos, false);
+			if (m_spCrying3DSE)
+			{
+				m_spCrying3DSE->Stop();
+				m_spCrying3DSE->SetCurveDistanceScaler(20.0f);
+			}
+		}
 	}
 
 }
@@ -64,9 +97,7 @@ void Goblin::Update()
 		ChangeAnime();
 	}
 
-
-
-	
+	UpdateFootstepSE();
 }
 
 void Goblin::PreUpdate()
@@ -116,6 +147,22 @@ void Goblin::Release()
 		spAttack->FinishAttack_Slamming();
 		m_hitTriggered = false;
 	}
+
+	if (m_spWalk3DSE)
+	{
+		m_spWalk3DSE->Stop();
+		m_spWalk3DSE = nullptr;
+	}
+	if (m_spDash3DSE)
+	{
+		m_spDash3DSE->Stop();
+		m_spDash3DSE = nullptr;
+	}
+	if (m_spCrying3DSE)
+	{
+		m_spCrying3DSE->Stop();
+		m_spCrying3DSE = nullptr;
+	}
 }
 
 void Goblin::ChangeAnime()
@@ -144,6 +191,12 @@ void Goblin::ChangeAnime()
 	case EnemyBase::EnemyAnimeMode_Attck:
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.SlammingDownAttackAnime), false);
 		m_attackFlg = true;
+		if (m_spCrying3DSE)
+		{
+			m_spCrying3DSE->SetPos(m_pos);
+			m_spCrying3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+			m_spCrying3DSE->Play(false);
+		}
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.DieAnime), false);
@@ -187,6 +240,11 @@ void Goblin::Attack()
 			Math::Vector3 handPos = handNode->m_worldTransform.Translation() + m_pos;
 			spAttack->SetPos(handPos);
 			spAttack->SetKnockbackDir(m_mWorld.Backward());
+
+			if (m_spCrying3DSE && m_spCrying3DSE->IsPlaying())
+			{
+				m_spCrying3DSE->SetPos(m_pos);
+			}
 
 			if (m_spAnimetor)
 			{
@@ -260,3 +318,64 @@ void Goblin::AttacksSlammingDown()
 	SetAttackGagePercent(m_attackWait / m_attackWaitMax);
 }
 
+void Goblin::UpdateFootstepSE()
+{
+	if (m_isDead || m_attackFlg)
+	{
+		if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); }
+		if (m_spDash3DSE) { m_spDash3DSE->Stop(); }
+		if (m_isDead && m_spCrying3DSE) { m_spCrying3DSE->Stop(); }
+		return;
+	}
+
+	float seVol = VOLInfo::Instance().GetMSSEVol();
+
+	// プレイヤーを発見して走っている時
+	if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run)
+	{
+		if (m_spWalk3DSE)
+		{
+			m_spWalk3DSE->Stop();
+		}
+
+		if (m_spDash3DSE)
+		{
+			m_spDash3DSE->SetPos(m_pos);
+			m_spDash3DSE->SetVolume(seVol);
+			if (!m_spDash3DSE->IsPlaying())
+			{
+				m_spDash3DSE->Play();
+			}
+		}
+	}
+	// 歩いている時
+	else if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Walk)
+	{
+		if (m_spDash3DSE)
+		{
+			m_spDash3DSE->Stop();
+		}
+
+		if (m_spWalk3DSE)
+		{
+			m_spWalk3DSE->SetPos(m_pos);
+			m_spWalk3DSE->SetVolume(seVol);
+			if (!m_spWalk3DSE->IsPlaying())
+			{
+				m_spWalk3DSE->Play();
+			}
+		}
+	}
+	// 待機中など停止時
+	else
+	{
+		if (m_spWalk3DSE)
+		{
+			m_spWalk3DSE->Stop();
+		}
+		if (m_spDash3DSE)
+		{
+			m_spDash3DSE->Stop();
+		}
+	}
+}

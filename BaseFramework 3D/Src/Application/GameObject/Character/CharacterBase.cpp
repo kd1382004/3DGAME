@@ -90,6 +90,7 @@ void CharacterBase::ImGUI()
 		}
 
 
+
 		if (ImGui::Button(U8("保存")))
 		{
 			SaveCharaStatus(m_charaStatusFilePath);
@@ -183,8 +184,15 @@ void CharacterBase::CollisionUpdate()
 	// レイの発射方向を設定
 	rayInfo.m_dir = Math::Vector3::Down;
 
-	// 階段・坂を下る際の吸着用に、下方向への到達距離
-	rayInfo.m_range = enableStepHigh ;
+	// 段差登りの許容範囲
+	rayInfo.m_range = enableStepHigh;
+
+	// 階段・坂を下る際の吸着用に、下方向への到達距離を確保（接地中かつ上昇ジャンプ中でない場合）
+	if (m_groundHit && m_Gravity >= 0.0f)
+	{
+		static float stepDown = 0.6f;
+		rayInfo.m_range += stepDown;
+	}
 
 	// 落下中（m_Gravity > 0）であれば、その移動分もレイを伸ばす
 	if (m_Gravity > 0.0f)

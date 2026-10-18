@@ -19,6 +19,9 @@ private:
 
 	void Release()override;
 
+	// 3D足音SE更新
+	void UpdateFootstepSE();
+
 	////////////////////////////////////////////
 	//アニメーションモード
 	struct GoblinAnimeName
@@ -63,4 +66,9 @@ private:
 
 	//叩きつけ攻撃のあたり判定を出すタイミング
 	float m_SlammingDownAttackAnimeHitTriggerTime = 0.58f;
+
+	// 3D足音SE
+	std::shared_ptr<KdSoundInstance3D> m_spWalk3DSE;
+	std::shared_ptr<KdSoundInstance3D> m_spDash3DSE;
+	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
 };

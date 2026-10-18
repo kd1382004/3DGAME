@@ -17,8 +17,12 @@
 #include"../../GameObject/Character/Enemy/EnemyBase.h"
 
 
+#include"../../GameObject/UI/VOLUI/VOLUI.h"
 #include"../../GameObject/UI/UIManager.h"
 #include"../../GameObject/UI/DrawTex/DrawTex.h"
+
+
+
 void TitleScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
@@ -35,10 +39,6 @@ void TitleScene::Init()
 
 	SetObjeList();
 
-	MouseInfo::Instance().SetMouseFreeFlg(true);
-
-
-
 	/////////////////////////////////////////
 	//カメラ
 	/////////////////////////////////////////
@@ -53,7 +53,7 @@ void TitleScene::Init()
 	m_spMapManager = std::make_shared<MapManager>();
 	m_spMapManager->Init();
 	m_objList.push_back(m_spMapManager);
-	
+
 
 	/////////////////////////////////////////
 	//敵
@@ -74,23 +74,28 @@ void TitleScene::Init()
 	/////////////////////////////////////////
 	m_spTitelMove = std::make_shared<TitelMove>();
 	m_objList.push_back(m_spTitelMove);
-	
-	
+
+
 	/////////////////////////////////////////
 	// UI
 	/////////////////////////////////////////
 	std::shared_ptr<UIManager>spUIManager = std::make_shared<UIManager>();
 	spUIManager->Init();
-
 	m_objList.push_back(spUIManager);
 
 
 	std::shared_ptr<DrawTex>spDrawTex = std::make_shared<DrawTex>();
 	spDrawTex->Init();
-	spDrawTex->Set2DPos({0,200});
+	spDrawTex->Set2DPos({ 0,200 });
+
 	spDrawTex->LoadTex("Asset/Textures/Tite/紅フードと不思議の迷宮.png");
 	spUIManager->AddUIObj(spDrawTex);
-	
+
+
+	std::shared_ptr<VOLUI>spVOLUI = std::make_shared<VOLUI>();
+	spVOLUI->Init();
+	spVOLUI->SetVolPos({ 400,-300 });
+	spUIManager->AddUIObj(spVOLUI);
 	/////////////////////////////////////////
 	m_spTitelMove->SetMapManager(m_spMapManager);
 	m_spCamera->SetTarget(m_spTitelMove);
@@ -119,6 +124,16 @@ void TitleScene::Init()
 	m_spTitelMove->SetMoveFlg(true);
 
 	m_spMapManager->SetPlayerChanke(m_spMapManager->GetPlayerSpawnPos());
+
+	//音
+	if (!m_spTitelBGM)
+	{
+		m_spTitelBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Titel/TitelBGM.wav", true);
+		if (m_spTitelBGM)
+		{
+			m_spTitelBGM->SetVolume(VOLInfo::Instance().GetBGMVol());
+		}
+	}
 }
 
 void TitleScene::SetObjeList()
@@ -157,6 +172,14 @@ void TitleScene::SetObjeList()
 }
 
 
+TitleScene::~TitleScene()
+{
+	if (m_spTitelBGM)
+	{
+		m_spTitelBGM->Stop();
+	}
+}
+
 void TitleScene::ImGUi()
 {
 	if (m_spTitleSceneEditor)
@@ -167,6 +190,13 @@ void TitleScene::ImGUi()
 
 void TitleScene::Event()
 {
+	if (m_spTitelBGM)
+	{
+		m_spTitelBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
+	}
+
+	MouseInfo::Instance().SetMouseFreeFlg(true);
+
 	if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 	{
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);

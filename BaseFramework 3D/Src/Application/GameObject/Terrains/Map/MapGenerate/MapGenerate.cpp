@@ -656,9 +656,6 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 							wallPos.y += tileSiz;
 						}
-
-
-
 					}
 				}
 
@@ -668,7 +665,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
 
 					Math::Vector3 floorPos = pos;
-
+					
 
 					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax; i++)
 					{

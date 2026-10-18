@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class PlayerBase;
 
@@ -21,6 +21,9 @@ struct StatusBuff
 
 	//上げるHPの量(数値)
 	int m_buffHP = 0;
+
+	//上げるスタミナ回復量の量(数値)
+	float m_buffStaminaRegen = 0.0f;
 };
 
 //Statusのアップ

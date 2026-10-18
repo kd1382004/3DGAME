@@ -54,11 +54,23 @@ void KdAudioManager::Update()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void KdAudioManager::SetListnerMatrix(const Math::Matrix& mWorld)
 {
+	// 行列が不正（0行列やNaN）の場合は処理しない
+	if (mWorld == Math::Matrix::Identity || std::isnan(mWorld._11)) { return; }
+
 	// 座標
 	m_listener.SetPosition(mWorld.Translation());
 
-	// 正面方向
-	m_listener.OrientFront = mWorld.Backward();
+	// 正面方向・上方向
+	Math::Vector3 front = mWorld.Backward();
+	Math::Vector3 top   = mWorld.Up();
+
+	if (front.LengthSquared() > 0.0001f && top.LengthSquared() > 0.0001f)
+	{
+		front.Normalize();
+		top.Normalize();
+		m_listener.OrientFront = front;
+		m_listener.OrientTop   = top;
+	}
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -363,6 +375,8 @@ void KdSoundInstance3D::Play(bool loop)
 	if (!m_instance) { return; }
 
 	KdSoundInstance::Play(loop);
+
+	m_instance->Apply3D(m_ownerListener, m_emitter, false);
 }
 
 void KdSoundInstance3D::SetPos(const Math::Vector3& rPos)

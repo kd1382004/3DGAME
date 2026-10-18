@@ -150,6 +150,34 @@ public:
 	void SetAccessoryManager(std::shared_ptr<AccessoryManager>_spAccessoryManager)override;
 
 	float GetMaxMP() { return m_staminaMax; }
+	float GetStaminaMax() { return m_staminaMax; }
+	float GetStaminaNow() { return m_staminaNow; }
+	float GetStaminaRegen() { return m_staminaRegenPerSec + m_staminaRegenBuff; }
+
+	// スタミナ即座に回復
+	void StaminaHeal(float _amount)
+	{
+		m_staminaNow = std::min(m_staminaMax, m_staminaNow + _amount);
+	}
+
+	// スタミナ回復量アップ（永続）
+	void BoostStaminaRegenBase(float _amount)
+	{
+		m_staminaRegenPerSec += _amount;
+	}
+
+	// スタミナ回復量アップ（時間制限バフ）
+	void AddStaminaRegenBuff(float _amount)
+	{
+		m_staminaRegenBuff += _amount;
+	}
+
+	// スタミナ量増加（最大スタミナ永続増加）
+	void AddMaxStamina(float _boost)
+	{
+		m_staminaMax += _boost;
+		m_staminaNow += _boost;
+	}
 
 	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
 
@@ -301,6 +329,9 @@ protected:
 	//自然回復速度(1秒あたり)
 	float m_staminaRegenPerSec = 1;
 
+	//バフによる回復速度増加量(1秒あたり)
+	float m_staminaRegenBuff = 0;
+
 	//スタミナ減少
 	// _amount...実際に減らす量
 	//戻り値 ... _amount分減少できたかどうか
@@ -345,4 +376,9 @@ protected:
 
 
 	std::string m_sunaNum = "Suna/Suna.efkefc";
+
+	//音
+	std::shared_ptr<KdSoundInstance> m_spDamageSE;
+	std::shared_ptr<KdSoundInstance> m_spRollSE;
+	std::shared_ptr<KdSoundInstance> m_spJumpSE;
 };

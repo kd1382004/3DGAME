@@ -39,6 +39,20 @@
 //アクセサリー
 #include"../../GameObject/Accessory/AccessoryManager.h"
 
+GameScene::~GameScene()
+{
+	if (m_spBossBGM)
+	{
+		m_spBossBGM->Stop();
+	}
+
+	if (m_spGameBGM)
+	{
+		m_spGameBGM->Stop();
+	}
+
+}
+
 void GameScene::ImGUi()
 {
 	for (auto Camera : m_spCharacterStatus)
@@ -82,6 +96,7 @@ void GameScene::SetGameResult()
 
 void GameScene::ChangeResultScene()
 {
+	SetGameResult();
 	FadeDraw::Instance().SetFadeType(FedeOut, 3);
 	SceneManager::Instance().SetNextScene(SceneManager::SceneType::Result);
 }
@@ -90,6 +105,12 @@ void GameScene::AddEnemyKill()
 {
 	m_DisplayFloorInfo[m_displayFloor].enemyKillCount++;
 	m_DisplayFloorInfo[0].enemyKillCount++;
+}
+
+void GameScene::AddTreasureChestsNum()
+{
+	m_DisplayFloorInfo[m_displayFloor].TreasureChestsNum++;
+	m_DisplayFloorInfo[0].TreasureChestsNum++;
 }
 
 void GameScene::PlayerDefeat()
@@ -398,6 +419,12 @@ void GameScene::Init()
 	m_spWarpGateManager->SetPlayer(m_spPlayer);
 	m_spWarpGateManager->SetGameScene(self);
 
+	/////////////////////////////////////////
+	//マップオブジェクトにセット
+	/////////////////////////////////////////
+	m_spMapObjManager->SetGameScene(self);
+
+
 
 	if (m_spCamera)
 	{
@@ -409,6 +436,24 @@ void GameScene::Init()
 	m_mapLinearGrowthPerFloor = 5;
 	m_mapLinearGrowthPerFloorX = 5 * KdRandom::GetFloat(0.8f, 1.2f);
 	m_mapLinearGrowthPerFloorY = 5 * KdRandom::GetFloat(0.8f, 1.2f);
+	//マップ生成
+	GenerateMap();
+	//音
+
+	if (!m_spGameBGM)
+	{
+		m_spGameBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Game/GameBGM.wav", true);
+		m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
+		m_spGameBGM->Stop();
+	}
+
+	if (!m_spBossBGM)
+	{
+		m_spBossBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Game/BossBGM.wav", true);
+		m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
+		m_spBossBGM->Stop();
+	}
+
 
 	//マップ生成
 	GenerateMap();
@@ -460,6 +505,17 @@ void GameScene::GenerateMap()
 
 	if (m_displayFloor % m_bossInterval != 0)
 	{
+		if (m_spBossBGM)
+		{
+			m_spBossBGM->Stop();
+		}
+
+		if (m_spGameBGM && !m_spGameBGM->IsPlaying())
+		{
+			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
+			m_spGameBGM->Play();
+		}
+
 		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
 	}
 	else
@@ -469,6 +525,19 @@ void GameScene::GenerateMap()
 		mapSizeY = 11;
 		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
 		m_spUIManager->SetMinimapRevealAll(true);
+
+
+
+		if (m_spBossBGM)
+		{
+			m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
+			m_spBossBGM->Play();
+		}
+
+		if (m_spGameBGM)
+		{
+			m_spGameBGM->Stop();
+		}
 	}
 
 

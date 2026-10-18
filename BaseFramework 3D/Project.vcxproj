@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -279,6 +279,7 @@
     <ClInclude Include="Src\Application\GameObject\Accessory\Flashlight\Flashlight.h" />
     <ClInclude Include="Src\Application\GameObject\Button\ButtonBase.h" />
     <ClInclude Include="Src\Application\GameObject\Button\GameButton\GameButton.h" />
+    <ClInclude Include="Src\Application\GameObject\Button\TitleButton\TitleButton.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\CameraBase.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.h" />
@@ -306,6 +307,10 @@
     <ClInclude Include="Src\Application\GameObject\Potions\AttackBaseUPPotion\AttackBaseUPPotion.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\AttackBoostPotion\AttackBoostPotion.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\InstantHealPotion\InstantHealPotion.h" />
+    <ClInclude Include="Src\Application\GameObject\Potions\InstantStaminaHealPotion\InstantStaminaHealPotion.h" />
+    <ClInclude Include="Src\Application\GameObject\Potions\StaminaMaxUPPotion\StaminaMaxUPPotion.h" />
+    <ClInclude Include="Src\Application\GameObject\Potions\StaminaRegenBaseUPPotion\StaminaRegenBaseUPPotion.h" />
+    <ClInclude Include="Src\Application\GameObject\Potions\StaminaRegenBoostPotion\StaminaRegenBoostPotion.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\PotionsType.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\PotionUseController.h" />
@@ -341,6 +346,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\VOLUI\VOLUI.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateBase.h" />
@@ -354,6 +360,7 @@
     <ClInclude Include="Src\Application\Info\KeyInfo\KeyInfo.h" />
     <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h" />
     <ClInclude Include="Src\Application\Info\NumDraw\NumDraw.h" />
+    <ClInclude Include="Src\Application\Info\VOL\VOLInfo.h" />
     <ClInclude Include="Src\Application\main.h" />
     <ClInclude Include="Src\Application\Scene\BaseScene\BaseScene.h" />
     <ClInclude Include="Src\Application\Scene\GameScene\GameScene.h" />
@@ -415,6 +422,7 @@
     <ClCompile Include="Src\Application\GameObject\Accessory\Flashlight\Flashlight.cpp" />
     <ClCompile Include="Src\Application\GameObject\Button\ButtonBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Button\GameButton\GameButton.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Button\TitleButton\TitleButton.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\CameraBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.cpp" />
@@ -442,6 +450,10 @@
     <ClCompile Include="Src\Application\GameObject\Potions\AttackBaseUPPotion\AttackBaseUPPotion.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\AttackBoostPotion\AttackBoostPotion.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\InstantHealPotion\InstantHealPotion.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Potions\InstantStaminaHealPotion\InstantStaminaHealPotion.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Potions\StaminaMaxUPPotion\StaminaMaxUPPotion.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Potions\StaminaRegenBaseUPPotion\StaminaRegenBaseUPPotion.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Potions\StaminaRegenBoostPotion\StaminaRegenBoostPotion.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\PotionUseController.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.cpp" />
@@ -476,6 +488,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Map\UIMap_Map.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_Player\UIMap_Player.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UIMap\UIMap_TreasureChest\UIMap_TreasureChest.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\VOLUI\VOLUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.cpp" />
     <ClCompile Include="Src\Application\GameObject\WarpGate\WarpGateBase.cpp" />
@@ -488,6 +501,7 @@
     <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp" />
     <ClCompile Include="Src\Application\Info\MouseInfo\MouseInfo.cpp" />
     <ClCompile Include="Src\Application\Info\NumDraw\NumDraw.cpp" />
+    <ClCompile Include="Src\Application\Info\VOL\VOLInfo.cpp" />
     <ClCompile Include="Src\Application\main.cpp" />
     <ClCompile Include="Src\Application\Scene\BaseScene\BaseScene.cpp" />
     <ClCompile Include="Src\Application\Scene\GameScene\GameScene.cpp" />

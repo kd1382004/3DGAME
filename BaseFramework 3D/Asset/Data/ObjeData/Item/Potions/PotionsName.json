@@ -11,7 +11,22 @@
 		{
 			"id": 2,
 			"name": "AttackBoostPotion"
+		},
+		{
+			"id": 3,
+			"name": "InstantStaminaHealPotion"
+		},
+		{
+			"id": 4,
+			"name": "StaminaRegenBaseUPPotion"
+		},
+		{
+			"id": 5,
+			"name": "StaminaRegenBoostPotion"
+		},
+		{
+			"id": 6,
+			"name": "StaminaMaxUPPotion"
 		}
 	]
 }
-

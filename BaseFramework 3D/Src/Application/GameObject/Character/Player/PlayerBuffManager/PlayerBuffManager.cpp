@@ -1,4 +1,4 @@
-﻿#include "PlayerBuffManager.h"
+#include "PlayerBuffManager.h"
 #include"../PlayerBase.h"
 
 void PlayerBuffManager::Update()
@@ -31,6 +31,7 @@ void PlayerBuffManager::BuffFinish(const StatusBuff& _statusBuff)
 		spPlayer->AddMaxHP(-_statusBuff.m_buffHP);
 		spPlayer->BoostAddAttack(-_statusBuff.m_buffAttck);
 		spPlayer->BoostAddDefense(-_statusBuff.m_buffDefense);
+		spPlayer->AddStaminaRegenBuff(-_statusBuff.m_buffStaminaRegen);
 	}
 }
 
@@ -58,6 +59,7 @@ void PlayerBuffManager::AddStatusBuff(StatusBuff _statusBuff)
 		spPlayer->AddMaxHP(_statusBuff.m_buffHP);
 		spPlayer->BoostAddAttack(_statusBuff.m_buffAttck);
 		spPlayer->BoostAddDefense(_statusBuff.m_buffDefense);
+		spPlayer->AddStaminaRegenBuff(_statusBuff.m_buffStaminaRegen);
 		m_statusBuffList.push_back(_statusBuff);
 	}
 

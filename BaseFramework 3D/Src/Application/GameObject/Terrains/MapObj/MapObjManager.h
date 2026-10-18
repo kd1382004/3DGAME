@@ -3,6 +3,7 @@
 class MapObjBase;
 class CameraBase;
 class MapManager;
+class GameScene;
 
 class MapObjManager :public KdGameObject
 {
@@ -25,7 +26,7 @@ public:
 	void DrawEffect() override;
 	void DrawDebug()override;
 
-	void AddMapObj(std::shared_ptr<MapObjBase>_obj) { m_mapObjList.push_back(_obj); }
+	void AddMapObj(std::shared_ptr<MapObjBase>_obj);
 
 	void ResetMapObj() { m_mapObjList.clear(); }
 
@@ -39,10 +40,14 @@ public:
 	void MapObjHit(const std::shared_ptr<KdGameObject>& obj);
 
 	std::list<std::shared_ptr<MapObjBase>> GetMapUpdateObj() { return m_mapObjUpdateList; }
+
+	void SetGameScene(std::shared_ptr<GameScene>_spgameScene) { m_wpGameScene = _spgameScene; }
 private:
 
 	std::list<std::shared_ptr<MapObjBase>>m_mapObjList;
 
 	//更新処理するチャンクにあるオブジェだけ入れる
 	std::list<std::shared_ptr<MapObjBase>>m_mapObjUpdateList;
+
+	std::weak_ptr<GameScene>m_wpGameScene;
 };

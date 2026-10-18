@@ -26,6 +26,9 @@ void EnemyAmbush::Update()
 			//徘徊
 			Wander();
 		}
+
+
+
 	}
 	else
 	{
@@ -36,8 +39,6 @@ void EnemyAmbush::Update()
 
 
 	AngeleUpdate();
-
-
 
 	//座標行列を作る
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);

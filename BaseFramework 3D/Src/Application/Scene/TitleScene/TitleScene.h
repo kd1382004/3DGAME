@@ -14,7 +14,7 @@ class TitleScene : public BaseScene
 public :
 
 	TitleScene()  {}
-	~TitleScene() {}
+	~TitleScene()override;
 
 	void ImGUi()override;
 	void Init()  override;
@@ -35,4 +35,7 @@ private :
 
 
 	std::shared_ptr<KdGameObject> m_dummy;
+
+	//音
+	std::shared_ptr<KdSoundInstance> m_spTitelBGM;
 };

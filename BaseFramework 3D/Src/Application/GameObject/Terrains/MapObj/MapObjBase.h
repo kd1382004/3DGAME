@@ -2,6 +2,7 @@
 
 
 class CameraBase;
+class GameScene;
 
 class MapObjBase:public KdGameObject
 {
@@ -19,8 +20,9 @@ public:
 
 	//チャンク内にいるか
 	virtual void SetInHaunk(bool _flg) {};
+	void SetGameScene(std::shared_ptr<GameScene>_spgameScene) { m_wpGameScene = _spgameScene; }
 protected:
-
+	std::weak_ptr<GameScene>m_wpGameScene;
 	std::weak_ptr<CameraBase>m_wpCamera;
 
 	Math::Vector2 m_chunkNum = Math::Vector2::Zero;

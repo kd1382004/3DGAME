@@ -490,6 +490,7 @@ void PlayerInventoryUI::InventoryTypeChangeUpdate()
 		if (mousePos.x >= Left && mousePos.x <= Right &&
 			mousePos.y >= Bot && mousePos.y <= Top)
 		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			Icon.m_hit = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
@@ -950,6 +951,7 @@ void PlayerInventoryUI::IconHit()
 		if (mousePos.x >= Left && mousePos.x <= Right &&
 			mousePos.y >= Bot && mousePos.y <= Top)
 		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			potion.m_hit = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
@@ -969,9 +971,7 @@ void PlayerInventoryUI::IconHit()
 
 void PlayerInventoryUI::PotionIUse()
 {
-	if (m_itemIconInfo.size() <= 0 || m_selectPotionID == -999) { return; }
-	std::shared_ptr<PotionUseController >spPotionUseController = m_wpPotionUseController.lock();
-	if (!spPotionUseController) { return; }
+
 
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
 	if (!spPlayer) { return; }
@@ -987,8 +987,12 @@ void PlayerInventoryUI::PotionIUse()
 	if (mousePos.x >= Left && mousePos.x <= Right &&
 		mousePos.y >= Bot && mousePos.y <= Top)
 	{
+		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 		if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 		{
+			if (m_itemIconInfo.size() <= 0 || m_selectPotionID == -999) { return; }
+			std::shared_ptr<PotionUseController >spPotionUseController = m_wpPotionUseController.lock();
+			if (!spPotionUseController) { return; }
 
 			spPotionUseController->SetPlayer(spPlayer);
 			spPotionUseController->PotionUse(m_selectPotionID);
@@ -1004,16 +1008,20 @@ void PlayerInventoryUI::PotionIUse()
 
 void PlayerInventoryUI::WeaponsStrengtheningInfoInit()
 {
-	// ... 略 ...
 	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
 	{
-		// ... 略 ...
 		if (!m_weaponsStrengtheningInfo[i].m_ExplanationTex)
 		{
 			std::shared_ptr<PotionTexInfo>_spTexInfo = m_wpPotionTexInfo.lock();
 			if (!_spTexInfo) { continue; }
 			m_weaponsStrengtheningInfo[i].m_ExplanationTex = _spTexInfo->GetWeaponsStrengtheningExplanation(i);
 			m_weaponsStrengtheningInfo[i].m_NameTex = _spTexInfo->GetWeaponsStrengtheningName(i);
+			
+			std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
+			if (!spPlayer) { return; }
+			std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
+			if (!spWeapon) { return; }
+			m_weaponsStrengtheningInfo[i].nextLvNum = spWeapon->GetWeaponsStrengtheningNextLvNum(i);
 		}
 	}
 	m_selectExplanationTex = m_weaponsStrengtheningInfo[0].m_ExplanationTex;
@@ -1086,6 +1094,7 @@ void PlayerInventoryUI::WeaponsStrengtheningIconHit()
 		if (mousePos.x >= Left && mousePos.x <= Right &&
 			mousePos.y >= Bot && mousePos.y <= Top)
 		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			weapon.m_hit = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
@@ -1123,8 +1132,10 @@ void PlayerInventoryUI::WeaponsStrengtheningButtonHit()
 	if (mousePos.x >= Left && mousePos.x <= Right &&
 		mousePos.y >= Bot && mousePos.y <= Top)
 	{
+		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 		if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 		{
+			
 			if (spWeapon->IsWeaponsStrengtheningPossible(m_selectWeaponsStrengtheningID))
 			{
 				spWeapon->AddWeaponsStrengtheningInfo(m_selectWeaponsStrengtheningID);

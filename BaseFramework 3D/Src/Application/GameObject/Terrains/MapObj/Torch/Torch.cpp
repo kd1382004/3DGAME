@@ -43,9 +43,20 @@ void Torch::Init()
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape("TreasureChest", m_spTorchModel,KdCollider::TypeCameraOcclusion);
+		m_pCollider->RegisterCollisionShape("TreasureChest", m_spTorchModel, KdCollider::TypeCameraOcclusion);
 	}
 
+
+	if (!m_spFireSE)
+	{
+
+		m_spFireSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Torch/Fire.wav", m_pos, false);
+		if (m_spFireSE)
+		{
+			m_spFireSE->Stop();
+			m_spFireSE->SetCurveDistanceScaler(20.0f);
+		}
+	}
 
 	m_effectLocalPos = { 0.0f, 1.0f,-0.7f };
 
@@ -57,6 +68,9 @@ void Torch::Init()
 
 void Torch::PostUpdate()
 {
+
+
+
 	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 	if (!spCamera) { return; }
 	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
@@ -69,6 +83,13 @@ void Torch::PostUpdate()
 			m_radius,										//半径	
 			worldEffectPos		//座標
 		);
+	}
+
+	if (m_spFireSE)
+	{
+		m_spFireSE->SetPos(worldEffectPos);
+		m_spFireSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		m_spFireSE->Play();
 	}
 }
 
@@ -153,7 +174,7 @@ void Torch::SetEffectUpdate(bool _flg)
 			);
 		}
 	}
-} 
+}
 
 void Torch::Release()
 {
@@ -162,5 +183,10 @@ void Torch::Release()
 	{
 		spEffect->SetLoop(false);
 		spEffect->StopEffect();
+	}
+
+	if (m_spFireSE)
+	{
+		m_spFireSE->Stop();
 	}
 }

@@ -47,4 +47,7 @@ private:
 	Math::Vector3 m_effectLocalColoer;
 	float m_radius;
 
+	//音
+	std::shared_ptr<KdSoundInstance3D> m_spFireSE;
+
 };

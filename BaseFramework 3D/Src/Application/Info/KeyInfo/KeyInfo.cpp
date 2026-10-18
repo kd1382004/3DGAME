@@ -1,4 +1,6 @@
 ﻿#include "KeyInfo.h"
+#include"../MouseInfo/MouseInfo.h"
+
 
 void KeyInfo::SetKeyValid(int _key)
 {
@@ -33,7 +35,7 @@ void KeyInfo::SetKeyValid(int _key)
 		int Num = _key - '0';
 		KeyNum[Num].m_validFlg = true;
 	}
-	else if(_key==VK_SHIFT) //シフト
+	else if (_key == VK_SHIFT) //シフト
 	{
 		Shift.m_validFlg = true;
 	}
@@ -125,6 +127,13 @@ void KeyInfo::UpdateKey()
 
 		if (GetAsyncKeyState(key) & 0x8000)
 		{
+			if (key == VK_LBUTTON && !Mousebutton[i].m_pushFlg&& MouseInfo::Instance().GetMouseFreeFlg())
+			{
+				MouseInfo::Instance().SEMouseClickPlay();
+			}
+
+
+
 			Mousebutton[i].m_pushFlg = true;
 
 			if (Mousebutton[i].m_useFlg)
@@ -220,11 +229,12 @@ bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
 		int Num = _key - '0';
 		flg = GetValidKeyPush(&KeyNum[Num], _useFlg, _flg);
 	}
-	else if (_key ==VK_SHIFT)
+	else if (_key == VK_SHIFT)
 	{
 		int Num = _key;
 		flg = GetValidKeyPush(&Shift, _useFlg, _flg);
-	}else if(_key==VK_TAB)
+	}
+	else if (_key == VK_TAB)
 	{
 		int Num = _key;
 		flg = GetValidKeyPush(&KeyTAB, _useFlg, _flg);

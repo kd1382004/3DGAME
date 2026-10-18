@@ -43,4 +43,10 @@ private:
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV2Effect;
 
 	int m_ChargeLV = 0;
+
+
+	//音
+	std::shared_ptr<KdSoundInstance> m_spDaggerSE;
+	std::shared_ptr<KdSoundInstance> m_spChargeSE;
+	std::shared_ptr<KdSoundInstance> m_spHitSE;
 };

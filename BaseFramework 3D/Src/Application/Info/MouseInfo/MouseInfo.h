@@ -38,7 +38,7 @@ public:
 	POINT GetFixMousePos() const { return m_fixMousePos; }
 
 	//マウスの状態セッター
-	void SetMouseType(MouseType _type) { m_mouseType = _type; }
+	void SetMouseType(MouseType _type);
 
 	//マウスをウィンドウ上の中央にセット
 	void SetMousePosFixMousePos();
@@ -49,6 +49,9 @@ public:
 
 	//ウィンドウ上でのマウスの中央
 	POINT GetWindouMousePos();
+
+
+	void SEMouseClickPlay();
 private:
 
 	void Init();
@@ -63,12 +66,19 @@ private:
 
 	//マウスの状態管理
 	MouseType m_mouseType = MouseType::MouseType_Nomal;
+	MouseType m_mouseOldType = MouseType::MouseType_Nomal;
 
 	//ウィンドウ単位でのフォーカスがあるかどうか
 	bool m_FocusWindowFlg = false;
 
 
 	std::shared_ptr<KdTexture> m_mousePointer;
+
+
+
+	//音
+	std::shared_ptr<KdSoundInstance> m_spClickSE;
+	std::shared_ptr<KdSoundInstance> m_spHitSE;
 public:
 
 	// シングルトンパターン

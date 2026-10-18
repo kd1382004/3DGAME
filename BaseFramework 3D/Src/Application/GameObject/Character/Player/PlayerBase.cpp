@@ -1,4 +1,4 @@
-﻿#include "PlayerBase.h"
+#include "PlayerBase.h"
 #include"../../Camera/CameraBase.h"
 #include"../../../Info/KeyInfo/KeyInfo.h"
 #include"../../../Scene/GameScene/GameScene.h"
@@ -114,6 +114,32 @@ void PlayerBase::Init()
 	{
 		m_spPlayerAccessory = std::make_unique<PlayerAccessory>();
 		m_spPlayerAccessory->Init();
+	}
+
+	if (!m_spWalkSE)
+	{
+		m_spWalkSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Walk.wav", false);
+		m_spWalkSE->Stop();
+	}
+	if (!m_spDashSE)
+	{
+		m_spDashSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Dash.wav", false);
+		m_spDashSE->Stop();
+	}
+	if (!m_spDamageSE)
+	{
+		m_spDamageSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Damage.wav", false);
+		m_spDamageSE->Stop();
+	}
+	if (!m_spRollSE)
+	{
+		m_spRollSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Roll.wav", false);
+		m_spRollSE->Stop();
+	}
+	if (!m_spJumpSE)
+	{
+		m_spJumpSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Jump.wav", false);
+		m_spJumpSE->Stop();
 	}
 }
 
@@ -334,6 +360,12 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 	if (m_spDamageOverlay)
 	{
 		m_spDamageOverlay->OnDamaged(_damage, m_status.HP.maxHP);
+	}
+
+	if (m_spDamageSE)
+	{
+		m_spDamageSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		m_spDamageSE->Play();
 	}
 
 }
@@ -704,6 +736,48 @@ void PlayerBase::Move()
 		m_moveVec *= m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 		m_pos += m_moveVec;
 
+
+		if (m_moveMode == MoveMode::MoveWalk)
+		{
+			if (m_spWalkSE && !m_spWalkSE->IsPlaying() && m_groundHit)
+			{
+				m_spWalkSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spWalkSE->Play();
+			}
+			if (m_spDashSE)
+			{
+				m_spDashSE->Stop();
+			}
+
+		}
+
+		if (m_moveMode == MoveMode::MoveRun)
+		{
+			if (m_spDashSE && !m_spDashSE->IsPlaying() && m_groundHit)
+			{
+				m_spDashSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spDashSE->Play();
+			}
+			if (m_spWalkSE)
+			{
+				m_spWalkSE->Stop();
+			}
+		}
+
+
+		if (!m_groundHit)
+		{
+			if (m_spDashSE)
+			{
+				m_spDashSE->Stop();
+			}
+			if (m_spWalkSE)
+			{
+				m_spWalkSE->Stop();
+			}
+		}
+
+
 		//////////////////////////////////////////////////////////////
 
 	}
@@ -712,6 +786,15 @@ void PlayerBase::Move()
 		//動いてないならストップを入れる
 		m_moveMode = MoveMode::MoveStop;
 		m_nowPlayerAnimeMode = PlayerBase::IdleAnime;
+
+		if (m_spWalkSE)
+		{
+			m_spWalkSE->Stop();
+		}
+		if (m_spDashSE)
+		{
+			m_spDashSE->Stop();
+		}
 	}
 	//////////////////////////////////////////////////////////////
 }
@@ -788,7 +871,6 @@ void PlayerBase::JumpAndGravity()
 		m_jumpFlg = true;
 	}
 
-	m_jumpFlg = true;
 	//////////////////////////////////////////////////////////////
 	//ジャンプ処理
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump, true, true))
@@ -798,6 +880,14 @@ void PlayerBase::JumpAndGravity()
 			m_jumpPower = 1;
 			m_Gravity = -m_jumpPower;
 			m_jumpFlg = false;
+
+			if (m_spJumpSE)
+			{
+				m_spJumpSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spJumpSE->Play();
+			}
+			if (m_spDashSE) { m_spDashSE->Stop(); }
+			if (m_spWalkSE) { m_spWalkSE->Stop(); }
 		}
 
 	}
@@ -941,7 +1031,8 @@ bool PlayerBase::ConsumeStamina(float _amount)
 
 void PlayerBase::StaminaManager()
 {
-	m_staminaNow += m_staminaRegenPerSec * DeltaTime::Instance().GetGameDeltaTime();
+	float totalRegen = m_staminaRegenPerSec + m_staminaRegenBuff;
+	m_staminaNow += totalRegen * DeltaTime::Instance().GetGameDeltaTime();
 
 	if (m_staminaNow < 0.0f) { m_staminaNow = 0.0f; }
 
@@ -980,6 +1071,12 @@ void PlayerBase::EvasionUpdate()
 				m_moveVec = Math::Vector3::TransformNormal(m_moveVec, camera->GetRotationYMatrix());
 				m_moveVec.y = 0;
 				m_moveVec.Normalize();
+			}
+
+			if (m_spRollSE)
+			{
+				m_spRollSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spRollSE->Play();
 			}
 		}
 	}

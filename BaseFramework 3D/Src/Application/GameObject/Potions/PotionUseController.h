@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include"PotionsType.h"
 
 class PlayerBase;
@@ -27,4 +27,11 @@ private:
 	void UseBaseAttackUPPotion();
 
 	void UseAttackBoostPotion();
+
+	/////////////////
+	//スタミナ関係
+	void UseInstantStaminaHeal();
+	void UseStaminaRegenBaseUPPotion();
+	void UseStaminaRegenBoostPotion();
+	void UseStaminaMaxUPPotion();
 };

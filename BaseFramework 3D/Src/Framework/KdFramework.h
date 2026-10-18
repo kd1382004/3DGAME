@@ -83,3 +83,4 @@
 
 //自分追加
 #include"Shader/UAEffectShaderManager.h"
+#include"../Application/Info/VOL/VOLInfo.h"

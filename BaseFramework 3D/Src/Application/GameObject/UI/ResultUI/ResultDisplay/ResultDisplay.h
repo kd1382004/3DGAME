@@ -36,11 +36,15 @@ private:
 	Math::Vector2 m_base2DPos;
 	Math::Vector2 m_baseNumPos;
 
+	std::shared_ptr<KdTexture>m_ResultBackTex;
 	std::shared_ptr<KdTexture>m_OverallResultTex;
 	std::shared_ptr<KdTexture>m_HierarchyTex;
 	std::shared_ptr<KdTexture>m_DisplayFloorTex;
 	std::shared_ptr<KdTexture>m_enemyKillTex;
 	std::shared_ptr<KdTexture>m_playTimeScTex;
+	std::shared_ptr<KdTexture>m_TimeColonTex;
+	std::shared_ptr<KdTexture>m_TreasureChestsNumTex;
+	std::shared_ptr<KdTexture>m_backTex;
 
 
 	////////////////////////////////////////////////
@@ -56,6 +60,9 @@ private:
 	bool m_ArrowLHiFlg = false;
 
 	float m_AroowHitScale = 1.1;
+
+	float m_AroowAlpha = 1;
+	float m_AddAroowAlpha = 1;
 
 	void ArrowUpdate();
 

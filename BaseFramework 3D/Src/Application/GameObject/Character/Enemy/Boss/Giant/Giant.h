@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include"../../EnemyBase.h"
 
 class GameScene;
@@ -10,7 +10,7 @@ class Giant :public EnemyBase
 {
 public:
 	Giant() {};
-	~Giant() {};
+	~Giant() override { Release(); };
 
 	void Init()override;
 	void PreUpdate()override;
@@ -151,4 +151,15 @@ private:
 
 	//ノード名を入れる
 	Math::Matrix GetBoneWorldMatrix(std::string _nodeName);
+
+	void Release() override;
+
+	// 3D足音SE更新
+	void UpdateFootstepSE();
+
+	// 3DサウンドSE
+	std::shared_ptr<KdSoundInstance3D> m_spRun3DSE;
+	std::shared_ptr<KdSoundInstance3D> m_spPunch3DSE;
+	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
+	std::shared_ptr<KdSoundInstance3D> m_spDon3DSE;
 };

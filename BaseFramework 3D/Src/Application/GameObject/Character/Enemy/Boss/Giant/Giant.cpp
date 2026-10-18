@@ -35,6 +35,43 @@ void Giant::Init()
 		m_playerChaseFlg = true;
 		m_attackFlg = false;
 		m_PlayerChaseDir = 4;
+
+		if (!m_spRun3DSE)
+		{
+			m_spRun3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Walk.wav", m_pos, false);
+			if (m_spRun3DSE)
+			{
+				m_spRun3DSE->Stop();
+				m_spRun3DSE->SetCurveDistanceScaler(30.0f);
+			}
+		}
+		if (!m_spPunch3DSE)
+		{
+			m_spPunch3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Punch.wav", m_pos, false);
+			if (m_spPunch3DSE)
+			{
+				m_spPunch3DSE->Stop();
+				m_spPunch3DSE->SetCurveDistanceScaler(30.0f);
+			}
+		}
+		if (!m_spCrying3DSE)
+		{
+			m_spCrying3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/CryingSound.wav", m_pos, false);
+			if (m_spCrying3DSE)
+			{
+				m_spCrying3DSE->Stop();
+				m_spCrying3DSE->SetCurveDistanceScaler(30.0f);
+			}
+		}
+		if (!m_spDon3DSE)
+		{
+			m_spDon3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Don.wav", m_pos, false);
+			if (m_spDon3DSE)
+			{
+				m_spDon3DSE->Stop();
+				m_spDon3DSE->SetCurveDistanceScaler(30.0f);
+			}
+		}
 	}
 }
 
@@ -50,6 +87,8 @@ void Giant::Update()
 
 	if (m_isDead)
 	{
+		if (m_spRun3DSE) { m_spRun3DSE->Stop(); }
+		if (m_spCrying3DSE) { m_spCrying3DSE->Stop(); }
 		if (!m_spAnimetor) { return; }
 		EnemyAnimeModeUpdate();
 		if (m_spAnimetor->IsAnimationEnd())
@@ -104,6 +143,8 @@ void Giant::Update()
 	{
 		AttackUpdate();
 	}
+
+	UpdateFootstepSE();
 
 	//座標行列を作る
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
@@ -197,7 +238,7 @@ void Giant::AttackMode()
 		else
 		{
 
-			if (KdRandom::GetInt(1, 100) < 10)
+			if (KdRandom::GetInt(1, 100) < 20)
 			{
 				m_giantAttackMode = GiantAttackMode::JumpSlamAttack;
 			}
@@ -208,7 +249,6 @@ void Giant::AttackMode()
 
 		}
 
-		m_giantAttackMode = GiantAttackMode::LeftPunchAttack;
 		switch (m_giantAttackMode)
 		{
 		case Giant::LeftPunchAttack:
@@ -226,6 +266,13 @@ void Giant::AttackMode()
 			m_JumpSlamAttackMode = JumpSlamAttackMode_JumpSlamAttack;
 			m_attackFlg = true;
 			m_attackCoolTime = m_attackCoolTimeMax;
+
+			if (m_spCrying3DSE)
+			{
+				m_spCrying3DSE->SetPos(m_pos);
+				m_spCrying3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spCrying3DSE->Play(false);
+			}
 			break;
 		default:
 			break;
@@ -285,6 +332,13 @@ void Giant::LeftAttackUpdate()
 			{
 				spleftAttack->SetAttckFlg(true);
 				m_IsAttackleftHITFlg = true;
+
+				if (m_spPunch3DSE)
+				{
+					m_spPunch3DSE->SetPos(m_pos);
+					m_spPunch3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+					m_spPunch3DSE->Play(false);
+				}
 			}
 			m_playerChaseFlg = false;
 			m_moveVec = {};
@@ -365,6 +419,13 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 			{
 				spAttackJumpSlam->SetAttckFlg(true);
 				m_IsAttackJumpSlamHITFlg = true;
+
+				if (m_spDon3DSE)
+				{
+					m_spDon3DSE->SetPos(m_pos);
+					m_spDon3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+					m_spDon3DSE->Play(false);
+				}
 			}
 			else
 			{
@@ -375,6 +436,11 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 
 				Math::Vector3 pos = startPos + (m_attackJumpSlamTargetPos - startPos) * t;  // t=0でstart, t=1でplayer
 				m_pos = pos;
+
+				if (m_spCrying3DSE && m_spCrying3DSE->IsPlaying())
+				{
+					m_spCrying3DSE->SetPos(m_pos);
+				}
 
 				m_moveVec = (m_attackJumpSlamTargetPos - startPos);
 				m_moveVec.Normalize();
@@ -504,4 +570,52 @@ Math::Matrix Giant::GetBoneWorldMatrix(std::string _nodeName)
 
 	return handWorld;
 }
+
+void Giant::Release()
+{
+	EnemyBase::Release();
+
+	if (m_spRun3DSE)
+	{
+		m_spRun3DSE->Stop();
+		m_spRun3DSE = nullptr;
+	}
+	if (m_spPunch3DSE)
+	{
+		m_spPunch3DSE->Stop();
+		m_spPunch3DSE = nullptr;
+	}
+	if (m_spCrying3DSE)
+	{
+		m_spCrying3DSE->Stop();
+		m_spCrying3DSE = nullptr;
+	}
+	if (m_spDon3DSE)
+	{
+		m_spDon3DSE->Stop();
+		m_spDon3DSE = nullptr;
+	}
+}
+
+void Giant::UpdateFootstepSE()
+{
+	if (m_isDead || m_attackFlg || !m_playerChaseFlg)
+	{
+		if (m_spRun3DSE) { m_spRun3DSE->Stop(); }
+		return;
+	}
+
+	float seVol = VOLInfo::Instance().GetMSSEVol();
+
+	if (m_spRun3DSE)
+	{
+		m_spRun3DSE->SetPos(m_pos);
+		m_spRun3DSE->SetVolume(seVol);
+		if (!m_spRun3DSE->IsPlaying())
+		{
+			m_spRun3DSE->Play();
+		}
+	}
+}
+
 

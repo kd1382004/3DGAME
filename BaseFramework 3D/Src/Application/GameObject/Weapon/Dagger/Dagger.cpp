@@ -1,4 +1,6 @@
 ﻿#include "Dagger.h"
+#include <cmath>
+#include <algorithm>
 #include"../../Character/CharacterBase.h"
 #include"ChargeAttack/Dagger_ChargeAttack.h"
 
@@ -38,6 +40,31 @@ void Dagger::Init()
 	}
 
 	m_chargeTimeMax = 3;
+
+	if (!m_spDaggerSE)
+	{
+		m_spDaggerSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Dagger/Dagger.wav");
+		if (m_spDaggerSE)
+		{
+			m_spDaggerSE->Stop();
+		}
+	}
+	if (!m_spChargeSE)
+	{
+		m_spChargeSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Dagger/Charge.wav");
+		if (m_spChargeSE)
+		{
+			m_spChargeSE->Stop();
+		}
+	}
+	if (!m_spHitSE)
+	{
+		m_spHitSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Dagger/Hit.wav");
+		if (m_spHitSE)
+		{
+			m_spHitSE->Stop();
+		}
+	}
 }
 
 void Dagger::Update()
@@ -112,6 +139,13 @@ void Dagger::Update()
 
 			float hitStopTime = 0.03f;
 			DeltaTime::Instance().HitStop(hitStopTime);
+
+			if (m_spHitSE)
+			{
+				m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spHitSE->Play();
+			}
+
 		}
 	}
 
@@ -305,6 +339,29 @@ void Dagger::SetNowChargeTime(float _time)
 		m_ChargeLV = 2;
 		m_chargeTimeMaxFlg = true;
 	}
+
+
+	if (m_spChargeSE)
+	{
+		// 1. チャージ速度強化(Lv)による速度倍率に応じた基本ピッチ (log2)
+		float speedRate = (m_addCargeTime > 0.0f) ? (GetAddCargeTime() / m_addCargeTime) : 1.0f;
+		float basePitch = (speedRate > 0.0f) ? std::log2(speedRate) : 0.0f;
+
+		// 2. チャージ進行度 (0.0 ～ 1.0) に応じたピッチ上昇量 (最大 +0.4f)
+		float progress = (m_chargeTimeMax > 0.0f) ? (m_chargeTime / m_chargeTimeMax) : 0.0f;
+		progress = std::clamp(progress, 0.0f, 1.0f);
+		float progressPitch = progress * 0.4f;
+
+		// 総合ピッチ (-1.0f ～ 1.0f の範囲に制限)
+		float finalPitch = std::clamp(basePitch + progressPitch, -1.0f, 1.0f);
+		m_spChargeSE->SetPitch(finalPitch);
+
+		if (!m_spChargeSE->IsPlaying())
+		{
+			m_spChargeSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+			m_spChargeSE->Play();
+		}
+	}
 }
 
 void Dagger::SetAttackFlg(bool _flg)
@@ -330,6 +387,19 @@ void Dagger::SetAttackFlg(bool _flg)
 	if (spEffect2 && spEffect2->IsPlaying())
 	{
 		spEffect2->StopEffect();
+	}
+
+
+	if (m_spDaggerSE && _flg)
+	{
+		m_spDaggerSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		m_spDaggerSE->Play();
+	}
+
+
+	if (m_spChargeSE)
+	{
+		m_spChargeSE->Stop();
 	}
 }
 

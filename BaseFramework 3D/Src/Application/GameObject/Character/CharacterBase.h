@@ -301,4 +301,8 @@ protected:
 
 	////////////////////////////////
 	std::weak_ptr<AccessoryManager>m_wpAccessoryManager;
+
+	//音
+	std::shared_ptr<KdSoundInstance> m_spWalkSE;
+	std::shared_ptr<KdSoundInstance> m_spDashSE;
 };

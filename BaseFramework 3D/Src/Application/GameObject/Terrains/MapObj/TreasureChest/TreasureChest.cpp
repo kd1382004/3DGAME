@@ -2,6 +2,7 @@
 #include"../../../Character/Player/PlayerBase.h"
 #include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
 
+#include"../../../../Scene/GameScene/GameScene.h"
 
 
 #include"../../../../Info/KeyInfo/KeyInfo.h"
@@ -23,6 +24,11 @@ TreasureChest::~TreasureChest()
 	if (spUIMap_TreasureChest)
 	{
 		spUIMap_TreasureChest->SetExpired(true);
+	}
+
+	if (m_spTreasureChestSE)
+	{
+		m_spTreasureChestSE->Stop();
 	}
 }
 
@@ -86,6 +92,18 @@ void TreasureChest::Init()
 
 	m_frustumBox = KdCollider::BoxInfo(0, localOBB);
 
+
+	if (!m_spTreasureChestSE)
+	{
+
+		m_spTreasureChestSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/TreasureChest/TreasureChest.wav", GetPos(), false);
+		if (m_spTreasureChestSE)
+		{
+			m_spTreasureChestSE->Stop();
+			m_spTreasureChestSE->SetCurveDistanceScaler(1.0f);
+		}
+	}
+
 }
 
 
@@ -103,6 +121,12 @@ void TreasureChest::Update()
 			if (spUIMap_TreasureChest)
 			{
 				spUIMap_TreasureChest->SetExpired(true);
+			}
+
+			auto spGameScene = m_wpGameScene.lock();
+			if (spGameScene)
+			{
+				spGameScene->AddTreasureChestsNum();
 			}
 		}
 		return;
@@ -175,8 +199,11 @@ void TreasureChest::Update()
 
 
 					}
+				}
 
-
+				if (m_spTreasureChestSE)
+				{
+					m_spTreasureChestSE->Stop();
 				}
 			}
 		}
@@ -191,6 +218,17 @@ void TreasureChest::PostUpdate()
 		10,										//半径	
 		GetPos() + Math::Vector3(0, 2, 0)		//座標
 	);
+
+	if (m_spTreasureChestSE)
+	{
+		m_spTreasureChestSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		if (!m_spTreasureChestSE->IsPlaying())
+		{
+			m_spTreasureChestSE->Play(true);
+		}
+		m_spTreasureChestSE->SetPos(GetPos());
+
+	}
 }
 
 void TreasureChest::GenerateDepthMapFromLight()

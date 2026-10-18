@@ -105,6 +105,14 @@ void MapObjManager::DrawDebug()
 	}
 }
 
+void MapObjManager::AddMapObj(std::shared_ptr<MapObjBase> _obj)
+{
+	
+		_obj->SetGameScene(m_wpGameScene.lock());
+		m_mapObjList.push_back(_obj);
+	
+}
+
 void MapObjManager::ObjSetCamera(std::shared_ptr<CameraBase> _spCameraBase)
 {
 	for (auto& obj : m_mapObjList)
