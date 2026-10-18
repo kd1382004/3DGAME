@@ -192,7 +192,7 @@ void TitleScene::Event()
 {
 	if (m_spTitelBGM)
 	{
-		m_spTitelBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
+		m_spTitelBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.5);
 	}
 
 	MouseInfo::Instance().SetMouseFreeFlg(true);

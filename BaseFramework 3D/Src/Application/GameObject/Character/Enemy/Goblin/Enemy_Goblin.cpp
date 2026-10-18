@@ -1,4 +1,4 @@
-#include "Enemy_Goblin.h"
+﻿#include "Enemy_Goblin.h"
 #include"Attack/Attack_Slamming/Attack_Slamming.h"
 
 #include"../../../../Scene/SceneManager.h"
@@ -341,7 +341,7 @@ void Goblin::UpdateFootstepSE()
 		if (m_spDash3DSE)
 		{
 			m_spDash3DSE->SetPos(m_pos);
-			m_spDash3DSE->SetVolume(seVol);
+			m_spDash3DSE->SetVolume(seVol*0.3);
 			if (!m_spDash3DSE->IsPlaying())
 			{
 				m_spDash3DSE->Play();
@@ -359,7 +359,7 @@ void Goblin::UpdateFootstepSE()
 		if (m_spWalk3DSE)
 		{
 			m_spWalk3DSE->SetPos(m_pos);
-			m_spWalk3DSE->SetVolume(seVol);
+			m_spWalk3DSE->SetVolume(seVol * 0.3);
 			if (!m_spWalk3DSE->IsPlaying())
 			{
 				m_spWalk3DSE->Play();
