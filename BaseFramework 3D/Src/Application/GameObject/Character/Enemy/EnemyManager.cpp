@@ -1,4 +1,4 @@
-﻿#include "EnemyManager.h"
+#include "EnemyManager.h"
 #include"EnemyBase.h"
 
 #include"Goblin/Enemy_Goblin.h"
@@ -10,6 +10,7 @@
 #include"../../UI/UIManager.h"
 #include"../../UI/UIMap/UIMapManager.h"
 #include"../../UI/UIMap/UIMap_Enemy/UIMap_Enemy.h"
+#include"../../../Scene/GameScene/GameScene.h"
 void EnemyManager::Init()
 {
 	SetEnemyListPlayer();
@@ -158,6 +159,15 @@ void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 	spBoss->SetGameScene(m_wpGameScene.lock());
 	spBoss->SetEnemyManager(m_wpEnemyManager.lock());
 	spBoss->SetHitDamage(m_wpHitDamage.lock());
+
+	int floor = 1;
+	auto spGameScene = m_wpGameScene.lock();
+	if (spGameScene)
+	{
+		floor = spGameScene->GetDisplayFloor();
+	}
+	spBoss->SetLV(floor);
+
 	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
 	if (spMapManager)
 	{
@@ -217,6 +227,15 @@ void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 	spEnemyAmbush->AddUIList(m_wpUIManager.lock());
 	spEnemyAmbush->SetHitDamage(m_wpHitDamage.lock());
 	spEnemyAmbush->SetEnemyManager(m_wpEnemyManager.lock());
+
+	int floor = 1;
+	auto spGameScene = m_wpGameScene.lock();
+	if (spGameScene)
+	{
+		floor = spGameScene->GetDisplayFloor();
+	}
+	spEnemyAmbush->SetLV(floor);
+
 	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
 	if (spMapManager)
 	{

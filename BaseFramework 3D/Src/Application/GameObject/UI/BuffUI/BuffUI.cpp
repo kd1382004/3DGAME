@@ -1,4 +1,4 @@
-﻿#include "BuffUI.h"
+#include "BuffUI.h"
 
 #include"../../Potions/PotionTexInfo/PotionTexInfo.h"
 
@@ -39,6 +39,7 @@ void BuffUI::PreDraw()
 		buffUI.m_pos.x += m_iconSiz.x * i;
 
 		m_PotionBuffUIInfoList.push_back(buffUI);
+		i++;
 	}
 
 }
@@ -51,14 +52,13 @@ void BuffUI::DrawSprite()
 	std::shared_ptr<PotionTexInfo>m_spPotionTexInfo = m_wpPotionTexInfo.lock();
 	if (!m_spPotionTexInfo) { return; }
 
-	Math::Vector2 pivo = { 0.5,0.5 };
-
 	for (auto buffIcon : m_PotionBuffUIInfoList)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPotionTexInfo->GetPotionIcon(buffIcon.m_ID), buffIcon.m_pos.x, buffIcon.m_pos.y, m_iconSiz.x, m_iconSiz.y, nullptr, nullptr, pivo);
+		Math::Vector2 iconPiv = { 0.5f, 0.5f };
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPotionTexInfo->GetPotionIcon(buffIcon.m_ID), buffIcon.m_pos.x, buffIcon.m_pos.y, m_iconSiz.x, m_iconSiz.y, nullptr, nullptr, iconPiv);
 
-		pivo = { 0.5,0 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_buffTex, buffIcon.m_pos.x, buffIcon.m_pos.y, nullptr, nullptr, pivo, buffIcon.m_angle);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_buffTex, buffIcon.m_pos.x, buffIcon.m_pos.y, nullptr, nullptr, pivo);
+		Math::Vector2 needlePiv = { 0.5f, 0.0f };
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_buffTex, buffIcon.m_pos.x, buffIcon.m_pos.y, nullptr, nullptr, needlePiv, buffIcon.m_angle);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_buffTex, buffIcon.m_pos.x, buffIcon.m_pos.y, nullptr, nullptr, needlePiv);
 	}
 }

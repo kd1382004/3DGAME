@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include"../BaseScene/BaseScene.h"
 #include"../SceneManager.h"
@@ -29,6 +29,9 @@ public:
 
 
 	std::shared_ptr<PotionUseController> GetPotionUseController() { return m_spPotionUseController; };
+	std::shared_ptr<TPSCamera> GetCamera() const { return m_spCamera; }
+	std::shared_ptr<UIManager> GetUIManager() const { return m_spUIManager; }
+	int GetDisplayFloor() const { return m_displayFloor; }
 
 
 	void WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos);

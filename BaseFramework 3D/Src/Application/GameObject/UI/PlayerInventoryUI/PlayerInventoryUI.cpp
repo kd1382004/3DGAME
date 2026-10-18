@@ -24,7 +24,6 @@ void PlayerInventoryUI::Init()
 	KeyInfo::Instance().SetKeyValid(VK_TAB);
 	m_playerInventoryUIFlg = false;
 
-
 	if (!m_back1Tex)
 	{
 		m_back1Tex = std::make_shared<KdTexture>();
@@ -457,6 +456,11 @@ void PlayerInventoryUI::PlayerInventoryOpen()
 
 		if (m_playerInventoryUIFlg)
 		{
+			if (spPlayer)
+			{
+				spPlayer->StopSound();
+			}
+
 			AddPotionTexInfo();
 			if (m_itemIconInfo.size() > 0)
 			{
@@ -893,15 +897,26 @@ void PlayerInventoryUI::AddPotionTexInfo()
 	m_itemIconInfo.clear();
 
 	int i = 0;
-	Math::Vector2 m_iconBase2DPos = { -420, 90 }; // 初期位置
-	float m_iconSpacing = 5;
+	int j = 0;
+	Math::Vector2 m_iconBase2DPos = { -475, 90 }; // 初期位置
+	float m_iconSpacing = 10;
 	for (Inventory potion : spPlayerInventory->GetPotionsInventory())
 	{
 		if (potion.m_num > 0)
 		{
 			ItemIconInfo itemIconInfo;
 			itemIconInfo.m_ItemID = potion.m_ID;
-			itemIconInfo.m_2DPos = { m_iconBase2DPos.x + i * m_iconDimensions.w + i * m_iconSpacing, m_iconBase2DPos.y };
+
+
+			if (i > 20)
+			{
+				j++;
+				i = 0;
+			}
+
+			float x = m_iconBase2DPos.x + i * m_iconDimensions.w + i * m_iconSpacing;
+			float y = m_iconBase2DPos.y - j * m_iconDimensions.h - j * m_iconSpacing;
+			itemIconInfo.m_2DPos = { x,y  };
 			itemIconInfo.m_num = potion.m_num;
 			itemIconInfo.m_name = potion.m_name;
 
@@ -912,8 +927,6 @@ void PlayerInventoryUI::AddPotionTexInfo()
 				itemIconInfo.m_ExplanationTex = _spPotionTexInfo->GetPotionExplanation(itemIconInfo.m_ItemID);
 				itemIconInfo.m_NameTex = _spPotionTexInfo->GetPotionName(itemIconInfo.m_ItemID); // ← 追加
 			}
-
-
 
 			m_itemIconInfo.push_back(itemIconInfo);
 			i++;

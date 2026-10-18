@@ -91,10 +91,10 @@ void SceneManager::ImGUI()
 	//FOGImGUI
 	if (ImGui::TreeNode(U8("ambient")))
 	{
-		ImGui::InputFloat(U8("X"), &m_ambient.x, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("Y"), &m_ambient.y, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("Z"), &m_ambient.z, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("W"), &m_ambient.w, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("X"), &m_ambient.x, 0.01f, 1.0f, "%.3f");
+		ImGui::InputFloat(U8("Y"), &m_ambient.y, 0.01f, 1.0f, "%.3f");
+		ImGui::InputFloat(U8("Z"), &m_ambient.z, 0.01f, 1.0f, "%.3f");
+		ImGui::InputFloat(U8("W"), &m_ambient.w, 0.01f, 1.0f, "%.3f");
 		ImGui::TreePop();
 
 		if (ImGui::Button(U8("hozonn")))

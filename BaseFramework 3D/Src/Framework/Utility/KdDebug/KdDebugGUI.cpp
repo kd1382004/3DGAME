@@ -44,7 +44,9 @@ void KdDebugGUI::GuiProcess()
 {
 	// 初期化されてないなら動作させない
 	if (!m_uqLog) return;
-
+	//自分追加
+	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
+	{
 	//===========================================================
 	// ImGui開始
 	//===========================================================
@@ -79,17 +81,16 @@ void KdDebugGUI::GuiProcess()
 
 //	KdDebugGUI::Instance().AddLog("TestLog\n");
 
-	//自分追加
-	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
-	{
+
 		SceneManager::Instance().ImGUI();
-	}
+
 
 	//===========================================================
 	// ここより上にImGuiの描画はする事
 	//===========================================================
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	}
 }
 
 void KdDebugGUI::AddLog(const char* fmt,...)

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include"../CharacterBase.h"
 
 class PlayerBase;
@@ -58,6 +58,9 @@ public:
 	void SetEnemyManager(std::shared_ptr<EnemyManager>_spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
 	std::shared_ptr<EnemyManager> GetEnemyManager() { return m_wpEnemyManager.lock(); }
 
+	// レベル設定・取得
+	virtual void SetLV(int _lv);
+	int GetLV() const { return m_LV; }
 
 	void SetMoveVec(Math::Vector3 _vec)
 	{
@@ -65,6 +68,11 @@ public:
 		m_moveVec.Normalize();
 	}
 protected:
+
+	// レベルおよび基準ステータス
+	int m_LV = 1;
+	Status m_baseStatus;
+	virtual void ApplyLevelStatus();
 
 	std::weak_ptr<EnemyManager>m_wpEnemyManager;
 

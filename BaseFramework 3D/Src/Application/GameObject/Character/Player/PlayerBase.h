@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include"../CharacterBase.h"
 
 
@@ -182,6 +182,9 @@ public:
 	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
 
 	std::weak_ptr<WeaponBase> GetWeapon() { return m_wpWepon; }
+
+	// インベントリ表示時などのSE全停止処理
+	void StopSound();
 protected:
 
 	//LV

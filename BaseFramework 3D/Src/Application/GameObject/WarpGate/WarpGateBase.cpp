@@ -1,5 +1,9 @@
-﻿#include "WarpGateBase.h"
+#include "WarpGateBase.h"
 #include"../Character/Player/PlayerBase.h"
+#include"../../Scene/GameScene/GameScene.h"
+#include"../UI/UIManager.h"
+#include"../UI/UI2/UIBase2.h"
+#include"../Camera/TPSCamera/TPSCamera.h"
 
 void WarpGateBase::Init()
 {
@@ -46,4 +50,34 @@ bool WarpGateBase::PlayerHit()
 	}
 
 	return false;
+}
+
+void WarpGateBase::ShowGuideUI(int key)
+{
+	if (!m_spGuideUITex) { return; }
+
+	auto spGameScene = m_wpGameScene.lock();
+	if (!spGameScene) { return; }
+
+	auto spUIManager = spGameScene->GetUIManager();
+	if (!spUIManager) { return; }
+
+	auto spUI = spUIManager->GetUIBase2();
+	if (!spUI) { return; }
+
+	auto spCamera = spGameScene->GetCamera();
+	if (!spCamera || !spCamera->GetCamera()) { return; }
+
+	Math::Vector3 set2DPos;
+	Math::Vector3 set3DPos = GetPos();
+	set3DPos.y += 2.0f;
+	spCamera->GetCamera()->ConvertWorldToScreenDetail(set3DPos, set2DPos);
+
+	if (set2DPos.z > 0.0f)
+	{
+		spUI->SetDrawFlg(true);
+		spUI->Set2DPos({ set2DPos.x, set2DPos.y });
+		spUI->SetTex(m_spGuideUITex);
+		spUI->SetDrawKey(key);
+	}
 }

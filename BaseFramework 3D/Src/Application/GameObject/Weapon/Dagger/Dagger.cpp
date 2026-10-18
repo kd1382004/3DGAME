@@ -1,4 +1,4 @@
-﻿#include "Dagger.h"
+#include "Dagger.h"
 #include <cmath>
 #include <algorithm>
 #include"../../Character/CharacterBase.h"
@@ -400,6 +400,40 @@ void Dagger::SetAttackFlg(bool _flg)
 	if (m_spChargeSE)
 	{
 		m_spChargeSE->Stop();
+	}
+}
+
+void Dagger::StopWeaponSE()
+{
+	if (m_spChargeSE)
+	{
+		m_spChargeSE->Stop();
+	}
+
+	if (m_spDaggerSE)
+	{
+		m_spDaggerSE->Stop();
+	}
+
+	//レベル0を止める
+	auto spEffect0 = m_wpChargeLV0Effect.lock();
+	if (spEffect0 && spEffect0->IsPlaying())
+	{
+		spEffect0->StopEffect();
+	}
+
+	//レベル1を止める
+	auto spEffect1 = m_wpChargeLV1Effect.lock();
+	if (spEffect1 && spEffect1->IsPlaying())
+	{
+		spEffect1->StopEffect();
+	}
+
+	//レベル2を止める
+	auto spEffect2 = m_wpChargeLV2Effect.lock();
+	if (spEffect2 && spEffect2->IsPlaying())
+	{
+		spEffect2->StopEffect();
 	}
 }
 

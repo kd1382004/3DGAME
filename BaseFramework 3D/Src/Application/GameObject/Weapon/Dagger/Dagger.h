@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include"../WeaponBase.h"
 
 class Dagger :public WeaponBase
@@ -16,6 +16,8 @@ public:
 	void SetNowChargeTime(float _time)override;
 	
 	void SetAttackFlg(bool _flg)override;
+
+	void StopWeaponSE()override;
 private:
 
 	// 武器の長さ

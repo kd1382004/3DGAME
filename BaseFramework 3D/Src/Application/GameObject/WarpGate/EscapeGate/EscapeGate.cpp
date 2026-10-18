@@ -1,4 +1,4 @@
-﻿#include "EscapeGate.h"
+#include "EscapeGate.h"
 #include"../../../Info/KeyInfo/KeyInfo.h"
 #include"../../Character/Player/PlayerBase.h"
 #include"../../../Scene/GameScene/GameScene.h"
@@ -20,7 +20,11 @@ void EscapeGate::Init()
 		m_spWarpGate->Load("Asset/Models/WarpGate/Fine/WarpGateblend.gltf");
 	}
 
-
+	if (!m_spGuideUITex)
+	{
+		m_spGuideUITex = std::make_shared<KdTexture>();
+		m_spGuideUITex->Load("Asset/Textures/GameUI/WarpGate/Escape.png");
+	}
 
 	WarpGateBase::Init();
 }
@@ -56,6 +60,7 @@ void EscapeGate::Update()
 		if (!spGameScene) { return; }
 
 		int key = spPlayer->GetActionKeyConfig().interact;
+		ShowGuideUI(key);
 
 		if (KeyInfo::Instance().GetValidKeyPush(key))
 		{

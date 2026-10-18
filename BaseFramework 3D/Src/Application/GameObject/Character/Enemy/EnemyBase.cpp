@@ -28,6 +28,7 @@ void EnemyBase::Init()
 
 
 	LoadCharaStatus(m_charaStatusFilePath);
+	m_baseStatus = m_status;
 
 	if (!m_spCharaModel) { return; }
 
@@ -288,12 +289,47 @@ void EnemyBase::PlayerChase()
 
 }
 
+void EnemyBase::SetLV(int _lv)
+{
+
+	_lv += KdRandom::GetInt(-1, 1);
+
+	m_LV = std::max(1, _lv);
+	ApplyLevelStatus();
+	auto spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		spHPBar->SetLV(m_LV);
+		spHPBar->SetHPBarTexPercent(m_status.HP.nowHP / m_status.HP.maxHP);
+	}
+}
+
+void EnemyBase::ApplyLevelStatus()
+{
+	if (m_LV <= 1) { return; }
+
+	// 階層（LV）ごとにステータスを強化
+	float hpScale = 1.0f + (m_LV - 1) * 0.20f;
+	float attackScale = 1.0f + (m_LV - 1) * 0.1f;
+	float defenseAdd = static_cast<float>(m_LV - 1) * 0.3f;
+
+	m_status.HP.maxHP = std::round(m_baseStatus.HP.baseHP * hpScale);
+	m_status.HP.nowHP = m_status.HP.maxHP;
+
+	m_status.attck.baseAttckPowe = std::round(m_baseStatus.attck.baseAttckPowe * attackScale);
+	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
+
+	m_status.defense.baseDefensePowe = m_baseStatus.defense.baseDefensePowe + defenseAdd;
+	m_status.defense.nowDefense = m_status.defense.baseDefensePowe + m_status.defense.addDefense;
+}
+
 void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 {
 	if (_spUIManager)
 	{
 		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
 		spHPBar->Init();
+		spHPBar->SetLV(m_LV);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 

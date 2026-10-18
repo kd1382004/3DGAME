@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class CharacterBase;
 class MapBase;
@@ -44,6 +44,9 @@ public:
 
 	//Charge攻撃をするときに呼び出す
 	virtual void ChargAttackPlay() {};
+
+	//武器のSEを停止
+	virtual void StopWeaponSE() {};
 
 
 

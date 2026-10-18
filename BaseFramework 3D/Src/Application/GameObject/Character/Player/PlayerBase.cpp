@@ -1113,3 +1113,22 @@ void PlayerBase::EvasionUpdate()
 
 
 }
+
+void PlayerBase::StopSound()
+{
+	if (m_spWalkSE) { m_spWalkSE->Stop(); }
+	if (m_spDashSE) { m_spDashSE->Stop(); }
+	if (m_spRollSE) { m_spRollSE->Stop(); }
+	if (m_spJumpSE) { m_spJumpSE->Stop(); }
+	if (m_spDamageSE) { m_spDamageSE->Stop(); }
+
+	std::shared_ptr<WeaponBase> spWeapon = m_wpWepon.lock();
+	if (spWeapon)
+	{
+		spWeapon->StopWeaponSE();
+	}
+
+	// チャージ中に開いた場合はチャージ状態も解除
+	m_chargeAttacFlg = false;
+	m_chargeAttackCount = 0;
+}

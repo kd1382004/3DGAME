@@ -18,12 +18,8 @@ void UIManager::Init()
 {
 	m_pauseStop = false;
 
-
 	m_UIBase2 = std::make_shared<UIBase2>();
 	m_spUIList.push_back(m_UIBase2);
-
-
-
 
 	if (!m_tresureChestUiTex)
 	{

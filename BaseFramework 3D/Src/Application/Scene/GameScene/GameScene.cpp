@@ -242,11 +242,22 @@ void GameScene::Event()
 
 	m_DisplayFloorInfo[m_displayFloor].playTimeSc += dt;
 	m_DisplayFloorInfo[0].playTimeSc += dt;
+
+
+	if (GetAsyncKeyState('5') & 0x8000)
+	{
+		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
+	}
+
+	if (GetAsyncKeyState('6') & 0x8000)
+	{
+		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
+	}
 }
 
 void GameScene::Init()
 {
-	DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
+	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
 	DisplayFloorInfo displayFloorInfo;

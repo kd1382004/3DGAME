@@ -1,4 +1,4 @@
-﻿#include "NextStageGate.h"
+#include "NextStageGate.h"
 #include"../../../Info/KeyInfo/KeyInfo.h"
 #include"../../Character/Player/PlayerBase.h"
 #include"../../../Scene/GameScene/GameScene.h"
@@ -20,7 +20,11 @@ void NextStageGate::Init()
 		m_spWarpGate->Load("Asset/Models/WarpGate/Next/WarpGateblend.gltf");
 	}
 
-
+	if (!m_spGuideUITex)
+	{
+		m_spGuideUITex = std::make_shared<KdTexture>();
+		m_spGuideUITex->Load("Asset/Textures/GameUI/WarpGate/Next.png");
+	}
 
 	WarpGateBase::Init();
 }
@@ -56,6 +60,7 @@ void NextStageGate::Update()
 		if (!spGameScene) { return; }
 
 		int key = spPlayer->GetActionKeyConfig().interact;
+		ShowGuideUI(key);
 
 		if (KeyInfo::Instance().GetValidKeyPush(key))
 		{

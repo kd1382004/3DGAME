@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 class PlayerBase;
 class GameScene;
 class WarpGateManager;
@@ -47,4 +47,8 @@ protected:
 
 
 	std::weak_ptr<KdEffekseerObject> m_wpWarpGatEffect;
+	
+	// 操作案内UI用テクスチャ
+	std::shared_ptr<KdTexture> m_spGuideUITex;
+	void ShowGuideUI(int key);
 };
