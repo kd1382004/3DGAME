@@ -53,6 +53,7 @@ void Torch::Init()
 		m_spFireSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Torch/Fire.wav", m_pos, false);
 		if (m_spFireSE)
 		{
+			m_spFireSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 			m_spFireSE->Stop();
 			m_spFireSE->SetCurveDistanceScaler(20.0f);
 		}
@@ -89,7 +90,11 @@ void Torch::PostUpdate()
 	{
 		m_spFireSE->SetPos(worldEffectPos);
 		m_spFireSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-		m_spFireSE->Play();
+		if (!m_spFireSE->IsPlaying())
+		{
+			m_spFireSE->Play();
+		}
+
 	}
 }
 
@@ -160,6 +165,11 @@ void Torch::SetEffectUpdate(bool _flg)
 			// SetLoop(false) してから StopEffect を呼ぶことで自動再再生を防ぎ、消去＆停止させる
 			spEffect->SetLoop(false);
 			spEffect->StopEffect();
+		}
+
+		if (m_spFireSE && m_spFireSE->IsPlaying())
+		{
+			m_spFireSE->Stop();
 		}
 	}
 	else

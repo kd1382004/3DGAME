@@ -1,4 +1,4 @@
-#include "Giant.h"
+﻿#include "Giant.h"
 
 #include"../../../../UI/HPBar/HPBar.h"
 #include"../../../../UI/AttackGage/AttackGage.h"
@@ -73,6 +73,8 @@ void Giant::Init()
 			}
 		}
 	}
+
+	m_attackCoolTime = 5;
 }
 
 void Giant::PreUpdate()
@@ -95,7 +97,7 @@ void Giant::Update()
 		{
 			std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
 			std::shared_ptr<MapManager>spMapManager = m_wpMapManager.lock();
-			if (spGameScene&& spMapManager)
+			if (spGameScene && spMapManager)
 			{
 				Math::Vector3 nextPos = spMapManager->GetNextWarpGatePos();
 				Math::Vector3 eacapePos = spMapManager->GetEscapeWarpGatePos();
@@ -391,11 +393,15 @@ void Giant::LeftAttackUpdate()
 
 void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 {
+	std::shared_ptr<AttackJumpSlam>spAttackJumpSlam = m_wpAttackJumpSlam.lock();
+
 	//モデルのアニメーション事態に動きがあるためそれをなくす(x.z成分)
 	AttackJumpSlamAnimeUpdate();
 	float p = m_spAnimetor->GetAnimeProgress();
 	if (p == 1)
 	{
+
+
 		m_JumpSlamAttackMode = JumpSlamAttackMode_Idle;
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.IdleAnime), true);
 		m_attackJumpSlamIdleNow = m_attackJumpSlamIdleMax;
@@ -403,7 +409,7 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 	}
 
 
-	std::shared_ptr<AttackJumpSlam>spAttackJumpSlam = m_wpAttackJumpSlam.lock();
+
 	if (spAttackJumpSlam)
 	{
 		if (p < 0.3)
@@ -411,7 +417,7 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 			m_attackJumpSlamTargetPos = m_playerPos;
 		}
 
-
+		spAttackJumpSlam->SetRadiusDrawFlg(true);
 		if (!m_IsAttackJumpSlamHITFlg)
 		{
 
@@ -453,6 +459,10 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 			{
 				spAttackJumpSlam->SetAttckFlg(false);
 				m_playerChaseFlg = false;
+
+
+				spAttackJumpSlam->SetRadiusDrawFlg(false);
+
 			}
 		}
 
@@ -594,6 +604,12 @@ void Giant::Release()
 	{
 		m_spDon3DSE->Stop();
 		m_spDon3DSE = nullptr;
+	}
+
+	auto sp = m_wpGameScene.lock();
+	if (sp)
+	{
+		sp->AddEnemyKill();
 	}
 }
 

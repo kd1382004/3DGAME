@@ -1,4 +1,4 @@
-#include "Dagger.h"
+﻿#include "Dagger.h"
 #include <cmath>
 #include <algorithm>
 #include"../../Character/CharacterBase.h"
@@ -123,6 +123,9 @@ void Dagger::Update()
 		std::list<KdCollider::CollisionResult> results;
 		if (spGameObj->Intersects(box, &results))
 		{
+			m_defenseIgnore =1.0f - std::pow(0.85f,m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
+
+
 			m_hitCharactersList.push_back(spGameObj);
 			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower + (m_ChargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2) * 10;
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
@@ -134,7 +137,7 @@ void Dagger::Update()
 				dir,
 				m_baseWeaponStatus.startup,
 				false,
-				m_baseWeaponStatus.poiseBreak
+				m_defenseIgnore
 			);
 
 			float hitStopTime = 0.03f;

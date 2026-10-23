@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class CharacterBase;
 class MapBase;
@@ -243,6 +243,9 @@ protected:
 		//Chargeタイム
 		WeaponsStrengthening_ChargeTime,
 
+		//防御無視
+		WeaponsStrengthening_DefenseIgnore,
+
 		//衝撃波攻撃(Lv分衝撃波を飛ばす)
 		WeaponsStrengthening_ShockWave,
 
@@ -269,8 +272,8 @@ protected:
 
 	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
 
-
-
+	//防御無視の値
+	float m_defenseIgnore = 0;
 
 };
 

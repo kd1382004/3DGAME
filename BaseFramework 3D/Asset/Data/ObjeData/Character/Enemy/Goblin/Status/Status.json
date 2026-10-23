@@ -6,7 +6,7 @@
         "baseAttckPowe": 10.0
     },
     "defense": {
-        "baseDefensePowe": 1.0
+        "baseDefensePowe": 100.0
     },
     "moveSpeed": {
         "baseSpeed": 5,

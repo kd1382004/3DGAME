@@ -1,4 +1,4 @@
-#include "PlayerBase.h"
+﻿#include "PlayerBase.h"
 #include"../../Camera/CameraBase.h"
 #include"../../../Info/KeyInfo/KeyInfo.h"
 #include"../../../Scene/GameScene/GameScene.h"
@@ -512,6 +512,7 @@ void PlayerBase::WeaponUpdate()
 		m_chargeAttacFlg = false;
 		if (m_chargeAttackCount != 0)
 		{
+			m_NowNormalAttack = true;
 			m_normalAttack = false;
 			m_chargeAttackCount = 0;
 			std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
@@ -933,11 +934,9 @@ void PlayerBase::PlayerAnimeModeUpdate()
 			if (spWeapon)
 			{
 				spWeapon->SetAttackFlg(false);
+				m_NowNormalAttack = false;
 			}
 		}
-
-
-
 
 		break;
 	default:
@@ -1054,6 +1053,7 @@ void PlayerBase::EvasionUpdate()
 
 	//攻撃中は無理
 	if (m_chargeAttacFlg) { return; }
+	if (m_NowNormalAttack) { return; }
 
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.evasion, true))
 	{

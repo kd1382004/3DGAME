@@ -34,6 +34,8 @@ public:
 	void SetExpired(bool _flg) { m_isExpired = _flg; }
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
+
+	void SetRadiusDrawFlg(bool _flg){ m_radiusDrawFlg = _flg; }
 private:
 
 	void SetAttackStatus();
@@ -67,4 +69,7 @@ private:
 
 	//攻撃範囲表示用変数
 	float m_radiusPercent = 0;
+
+	//
+	bool m_radiusDrawFlg=false;
 };

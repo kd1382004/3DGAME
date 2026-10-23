@@ -30,6 +30,11 @@ public:
 
 	void SetDamage(int _damage, Math::Vector3 _3DPos)
 	{
+		float randX = KdRandom::GetFloat(-1, 1);
+		float randY = KdRandom::GetFloat(-0.5, 0.5);
+		float randZ = KdRandom::GetFloat(-1, 1);
+		_3DPos += { randX, randY, randZ };
+
 		HitDamageDrawInfo damageInfo;
 		damageInfo.m_3DPos = _3DPos;
 		damageInfo.m_Damage = _damage;

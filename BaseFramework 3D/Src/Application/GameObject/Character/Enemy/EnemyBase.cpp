@@ -319,7 +319,7 @@ void EnemyBase::ApplyLevelStatus()
 	m_status.attck.baseAttckPowe = std::round(m_baseStatus.attck.baseAttckPowe * attackScale);
 	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
 
-	m_status.defense.baseDefensePowe = m_baseStatus.defense.baseDefensePowe + defenseAdd;
+	m_status.defense.baseDefensePowe +=defenseAdd;
 	m_status.defense.nowDefense = m_status.defense.baseDefensePowe + m_status.defense.addDefense;
 }
 

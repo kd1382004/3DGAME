@@ -7,7 +7,7 @@ struct Node; // ノード構造体の前方宣言を追加
 class TitelMove :public CharacterBase
 {
 public:
-	TitelMove() {};
+	TitelMove();
 	~TitelMove() override {};
 	void Update() override;
 	void PostUpdate() override;

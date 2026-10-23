@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"../CharacterBase.h"
 
 
@@ -357,6 +357,7 @@ protected:
 	////////////////////////////////////
 	//通常攻撃
 	bool m_normalAttack = false;
+	bool m_NowNormalAttack = false;
 	float m_normalAttackWaitMax = 1;
 	float m_normalAttackWaitNow = 0;
 

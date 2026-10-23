@@ -119,7 +119,7 @@ private:
 
 	//アイコンとマウスが当たってるか
 	void IconHit();
-	
+
 	struct ItemIconInfo
 	{
 		int m_ItemID;
@@ -133,7 +133,7 @@ private:
 		std::shared_ptr<KdTexture> m_NameTex;
 	};
 
-	
+
 	std::vector<ItemIconInfo> m_itemIconInfo;
 	struct { int w; int h; } m_iconDimensions;
 
@@ -144,6 +144,9 @@ private:
 	void PotionIUse();
 
 	int m_num = 0;
+
+	//ポーションselect
+	std::shared_ptr<KdTexture>m_potionSelectTex;
 
 
 	//////////////////////////////////////////////////
@@ -160,10 +163,21 @@ private:
 	//武器強化ボタンとのあたり判定
 	void WeaponsStrengtheningButtonHit();
 
+	std::shared_ptr<KdTexture>m_PreconditionNodeTex;
 	std::shared_ptr<KdTexture>m_weaponsStrengtheningButtonTex;
+	std::shared_ptr<KdTexture>m_selectTex;
 	std::shared_ptr<KdTexture>m_LVTex;
 	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
 	Math::Vector2 m_LVTex2DPos;
+	Math::Vector2 m_selectTex2DPos;
+	float m_selectAdd = 0.1;
+	float m_selectDefoAdd = 0.1;
+	float m_selectAddNum = 0.05;
+	float m_selectAddTotal =0;
+	float m_selectAddTotalMax =50;
+
+
+	bool m_PreconditionNodeFlg = false;
 
 	struct WeaponsStrengtheningInfo
 	{
@@ -222,8 +236,11 @@ private:
 		//Chargeタイム
 		WeaponsStrengthening_ChargeTime,
 
+		//防御無視
+		WeaponsStrengthening_DefenseIgnore,
+
 		//衝撃波攻撃(これはLV1がマックスでLv1になったらこれ以下の強化を許す)
-		WeaponsStrengthening_ShockWave,	
+		WeaponsStrengthening_ShockWave,
 
 		//衝撃波の飛距離
 		WeaponsStrengthening_ShockWave_maxDistanceM,
@@ -239,7 +256,7 @@ private:
 
 	int m_selectWeaponsStrengtheningID;
 	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;
-	
+
 	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
 
 	ItemIconInfo m_weaponsStrengtheningIconInfo;
@@ -253,7 +270,7 @@ private:
 
 	std::shared_ptr<KdCamera> m_spStatusCamera;
 	float m_statusCamAngleY = 0.0f;   // Y軸回転角度 (度)
-	float m_statusCamDistance =4.0f;   // プレイヤーからの距離 (お好みに合わせて調整)
+	float m_statusCamDistance = 4.0f;   // プレイヤーからの距離 (お好みに合わせて調整)
 	float m_statusCamPitch = 8.0f;   // 少し見下ろす角度 (度)
 	float m_statusCamHeightOffset = 2;   // プレイヤーの注視点(胸・腰の高さ)
 	float m_statusCamRotateSpeed = 45.0f;  // 回転速度 (度/秒: 45度なら約8秒で1周)
@@ -294,7 +311,7 @@ private:
 	PlayerStatusInfo m_playerStatusInfo[PlayerStatusInfoSiz];
 
 	std::shared_ptr<KdTexture>m_playerStatusInfoBackTex;
-	
+
 
 
 };

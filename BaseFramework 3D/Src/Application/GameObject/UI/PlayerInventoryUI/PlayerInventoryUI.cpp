@@ -83,6 +83,12 @@ void PlayerInventoryUI::Init()
 		m_UseTex2DPos = { x,y };
 	}
 
+	if (!m_potionSelectTex)
+	{
+		m_potionSelectTex = std::make_shared<KdTexture>();
+		m_potionSelectTex->Load("Asset/Textures/GameUI/Item/Potion/PotionSelect.png");
+	}
+
 	m_iconDimensions = { 40,40 };
 	m_layerPriority = 1;
 
@@ -189,8 +195,8 @@ void PlayerInventoryUI::Init()
 
 	////////////////////////////////////////////////////////////////////////////
 	//武器強化用
-	Math::Vector2 weaponsStrengtheningBasePos = { -350,-70 };
-	float weaponsStrengtheningOffset = 100.0f;
+	Math::Vector2 weaponsStrengtheningBasePos = { m_back1Tex2DPos.x,-150 };
+	float weaponsStrengtheningOffset = 150.0f;
 	float vecL = 200.0f;
 
 
@@ -200,6 +206,18 @@ void PlayerInventoryUI::Init()
 		m_weaponsStrengtheningButtonTex2DPos = m_UseTex2DPos;
 		m_weaponsStrengtheningButtonTex = std::make_shared<KdTexture>();
 		m_weaponsStrengtheningButtonTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/StrengtheningButton.png");
+	}
+	if (!m_PreconditionNodeTex)
+	{
+		m_weaponsStrengtheningButtonTex2DPos = m_UseTex2DPos;
+		m_PreconditionNodeTex = std::make_shared<KdTexture>();
+		m_PreconditionNodeTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/Not.png");
+	}
+	if (!m_selectTex)
+	{
+		m_selectTex2DPos = m_UseTex2DPos;
+		m_selectTex = std::make_shared<KdTexture>();
+		m_selectTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/select.png");
 	}
 
 	if (!m_LVTex)
@@ -224,31 +242,34 @@ void PlayerInventoryUI::Init()
 		switch (i)
 		{
 		case PlayerInventoryUI::WeaponsStrengthening_Attck:
-			pos.x -= weaponsStrengtheningOffset;
+			pos.x -= weaponsStrengtheningOffset * 2;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Stamina:
-			pos.y += weaponsStrengtheningOffset;
+			pos.x -= weaponsStrengtheningOffset;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ChargeTime:
-			pos.y -= weaponsStrengtheningOffset;
+			pos.x += weaponsStrengtheningOffset * 2;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ShockWave:
+			pos.x = m_back1Tex2DPos.x;
+			break;
+		case PlayerInventoryUI::WeaponsStrengthening_DefenseIgnore:
 			pos.x += weaponsStrengtheningOffset;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
 			rad = DirectX::XMConvertToRadians(45.0f);
-			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + cos(rad) * vecL;
-			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + sin(rad) * vecL;
+			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + sin(rad) * vecL;
+			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + cos(rad) * vecL;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_speed:
 			rad = DirectX::XMConvertToRadians(0.0f);
-			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + cos(rad) * vecL;
-			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + sin(rad) * vecL;
+			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + sin(rad) * vecL;
+			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + cos(rad) * vecL;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_hitNum:
 			rad = DirectX::XMConvertToRadians(-45.0f);
-			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + cos(rad) * vecL;
-			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + sin(rad) * vecL;
+			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + sin(rad) * vecL;
+			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + cos(rad) * vecL;
 			break;
 		case PlayerInventoryUI::WeaponsStrengtheningSiz:
 			break;
@@ -555,6 +576,40 @@ void PlayerInventoryUI::WeaponsStrengtheningUpdate()
 	WeaponsStrengtheningTexInfo();
 
 	WeaponsStrengtheningButtonHit();
+
+
+
+
+	//serrekuto
+	m_selectTex2DPos = m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].iconPos;
+	m_selectTex2DPos.y += m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].iconSiz.y / 2;
+
+	m_selectTex2DPos.y += m_selectAdd;
+	m_selectAddTotal += abs(m_selectAdd);
+
+	if (m_selectAdd > 0)
+	{
+		m_selectAdd += m_selectAddNum;
+	}
+	else
+	{
+		m_selectAdd -= m_selectAddNum;
+	}
+
+	if (m_selectAddTotal >= m_selectAddTotalMax)
+	{
+		m_selectAddTotal = 0;
+		if (m_selectAdd > 0)
+		{
+			m_selectAdd = -m_selectDefoAdd;
+		}
+		else
+		{
+			m_selectAdd = m_selectDefoAdd;
+		}
+	}
+
+
 }
 
 void PlayerInventoryUI::PlayerStatusUpdate()
@@ -571,6 +626,12 @@ void PlayerInventoryUI::PotionDraw()
 	for (auto tex : m_itemIconInfo)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_IconTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
+
+		if (tex.m_ItemID == m_selectPotionID)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
+		}
+
 	}
 }
 
@@ -586,32 +647,12 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 		switch (i)
 		{
 		case PlayerInventoryUI::WeaponsStrengthening_Attck:
-			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
-			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
-
-			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Stamina].iconPos.x;
-			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Stamina].iconPos.y;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Stamina:
-			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
-			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
-
-			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x;
-			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ChargeTime:
-			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
-			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
-
-			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].iconPos.x;
-			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].iconPos.y;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ShockWave:
-			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
-			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
-
-			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ChargeTime].iconPos.x;
-			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ChargeTime].iconPos.y;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
 			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
@@ -647,31 +688,51 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 	{
 		if (!m_weaponsStrengtheningInfo[i].iconTex) { continue; }
 
+		Math::Color iconCol = { 1,1,1,1 };
+
+		switch (i)
+		{
+		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
+		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_speed:
+		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_hitNum:
+
+			if (m_weaponsStrengtheningInfo[WeponStrengtheningID::WeaponsStrengthening_ShockWave].Lv == 0)
+			{
+				m_weaponsStrengtheningInfo[i].strengtheningFlg = false;
+				iconCol = { 0.5,0.5,0.5,1 };
+			}
+			break;
+		}
+
+		if (m_weaponsStrengtheningInfo[i].Lv == 0)
+		{
+			iconCol = { 0.5,0.5,0.5,1 };
+		}
 
 
 
 		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
 		// 強化が可能なら光らす
-		if (m_weaponsStrengtheningInfo[i].strengtheningFlg)
-		{
+
 
 			// 時間経過による点滅（パルス）アニメーション
-			m_weaponsStrengtheningInfo[i].timer += 0.01f;
+		m_weaponsStrengtheningInfo[i].timer += 0.01f;
 
-			float pulse = (sinf(m_weaponsStrengtheningInfo[i].timer) + 1.0f) * 0.5f;
+		float pulse = (sinf(m_weaponsStrengtheningInfo[i].timer) + 1.0f) * 0.5f;
 
-			// ★ 大きくなって小さくなるスケール
-			float scale = 1.0f + pulse * 0.25f;
+		// ★ 大きくなって小さくなるスケール
+		float scale = 1.0f + pulse * 0.25f;
 
-			// 青(0,0,1) → 白(1,1,1) → 青(0,0,1)
-			float r = pulse;
-			float g = pulse;
-			float b = 1.0f;
+		// 青(0,0,1) → 白(1,1,1) → 青(0,0,1)
+		float r = pulse;
+		float g = pulse;
+		float b = 1.0f;
 
-			float alpha = 0.4f + pulse * 0.4f;
+		float alpha = 1;
 
-			Math::Color auraColor = { r, g, b, alpha };
-
+		Math::Color auraColor = { r, g, b, alpha };
+		if (m_weaponsStrengtheningInfo[i].strengtheningFlg)
+		{
 			// 発光オーラ描画
 			KdShaderManager::Instance().m_spriteShader.DrawTex(
 				m_weaponsStrengtheningInfo[i].iconTex,
@@ -682,19 +743,17 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 				nullptr,
 				&auraColor
 			);
+		}
 
 
-
-			if (m_weaponsStrengtheningInfo[i].timer > 1)
-			{
-				m_weaponsStrengtheningInfo[i].timer -= 1;
-			}
-
-
+		if (m_weaponsStrengtheningInfo[i].timer > 1)
+		{
+			m_weaponsStrengtheningInfo[i].timer -= 1;
 		}
 		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
+
 		// 通常のアイコン描画
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x, m_weaponsStrengtheningInfo[i].iconSiz.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x, m_weaponsStrengtheningInfo[i].iconSiz.y, nullptr, &iconCol);
 
 	}
 
@@ -727,10 +786,18 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 
 
 	//強化ボタン
-	if (m_weaponsStrengtheningButtonTex)
+	if (m_weaponsStrengtheningButtonTex && !m_PreconditionNodeFlg)
 	{
 
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningButtonTex, m_weaponsStrengtheningButtonTex2DPos.x, m_weaponsStrengtheningButtonTex2DPos.y);
+
+	}
+
+	//前提ノード
+	if (m_PreconditionNodeTex && m_PreconditionNodeFlg)
+	{
+
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_PreconditionNodeTex, m_weaponsStrengtheningButtonTex2DPos.x, m_weaponsStrengtheningButtonTex2DPos.y);
 
 	}
 
@@ -739,6 +806,11 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 	{
 		Math::Vector2 pivo = { 0,0.5 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_LVTex, m_LVTex2DPos.x, m_LVTex2DPos.y, nullptr, nullptr, pivo);
+	}
+	if (m_selectTex)
+	{
+		Math::Vector2 pivo = { 0.5,0 };
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_selectTex, m_selectTex2DPos.x, m_selectTex2DPos.y, nullptr, nullptr, pivo);
 	}
 
 }
@@ -916,7 +988,7 @@ void PlayerInventoryUI::AddPotionTexInfo()
 
 			float x = m_iconBase2DPos.x + i * m_iconDimensions.w + i * m_iconSpacing;
 			float y = m_iconBase2DPos.y - j * m_iconDimensions.h - j * m_iconSpacing;
-			itemIconInfo.m_2DPos = { x,y  };
+			itemIconInfo.m_2DPos = { x,y };
 			itemIconInfo.m_num = potion.m_num;
 			itemIconInfo.m_name = potion.m_name;
 
@@ -938,6 +1010,25 @@ void PlayerInventoryUI::AddPotionTexInfo()
 				m_selectPotionID = -999;
 			}
 		}
+	}
+
+
+
+
+	bool flg = false;
+	for (auto& potion : m_itemIconInfo)
+	{
+		if (m_selectPotionID == potion.m_ItemID)
+		{
+			flg = true;
+		}
+	}
+
+	if (!flg && m_itemIconInfo.size() != 0)
+	{
+		m_selectExplanationTex = m_itemIconInfo[0].m_ExplanationTex;
+		m_selectPotionID = m_itemIconInfo[0].m_ItemID;
+		m_selectNameTex = m_itemIconInfo[0].m_NameTex;
 	}
 }
 
@@ -1029,7 +1120,7 @@ void PlayerInventoryUI::WeaponsStrengtheningInfoInit()
 			if (!_spTexInfo) { continue; }
 			m_weaponsStrengtheningInfo[i].m_ExplanationTex = _spTexInfo->GetWeaponsStrengtheningExplanation(i);
 			m_weaponsStrengtheningInfo[i].m_NameTex = _spTexInfo->GetWeaponsStrengtheningName(i);
-			
+
 			std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
 			if (!spPlayer) { return; }
 			std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
@@ -1142,13 +1233,30 @@ void PlayerInventoryUI::WeaponsStrengtheningButtonHit()
 	float Bot = m_weaponsStrengtheningButtonTex2DPos.y - m_weaponsStrengtheningButtonTex->GetHeight() / 2;
 
 
+	//前提ノード確認
+	switch (m_selectWeaponsStrengtheningID)
+	{
+	case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
+	case PlayerInventoryUI::WeaponsStrengthening_ShockWave_speed:
+	case PlayerInventoryUI::WeaponsStrengthening_ShockWave_hitNum:
+
+		if (m_weaponsStrengtheningInfo[WeponStrengtheningID::WeaponsStrengthening_ShockWave].Lv == 0)
+		{
+			//解放されていなければ強化できない
+			m_PreconditionNodeFlg = true;
+			return;
+		}
+		break;
+	}
+	m_PreconditionNodeFlg = false;
+
 	if (mousePos.x >= Left && mousePos.x <= Right &&
 		mousePos.y >= Bot && mousePos.y <= Top)
 	{
 		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 		if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 		{
-			
+
 			if (spWeapon->IsWeaponsStrengtheningPossible(m_selectWeaponsStrengtheningID))
 			{
 				spWeapon->AddWeaponsStrengtheningInfo(m_selectWeaponsStrengtheningID);

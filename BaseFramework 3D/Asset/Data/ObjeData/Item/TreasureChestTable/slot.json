@@ -74,6 +74,12 @@
 				},
 				{
 					"id": 3,
+					"name": "WeaponsStrengthening_DefenseIgnore",
+					"rank": "legendary",
+					"type": 1
+				},
+				{
+					"id": 4,
 					"name": "WeaponsStrengthening_ShockWave",
 					"rank": "legendary",
 					"type": 1
@@ -147,24 +153,30 @@
 				},
 				{
 					"id": 3,
+					"name": "WeaponsStrengthening_DefenseIgnore",
+					"rank": "legendary",
+					"type": 1
+				},
+				{
+					"id": 4,
 					"name": "WeaponsStrengthening_ShockWave",
 					"rank": "epic",
 					"type": 1
 				},
 				{
-					"id": 4,
+					"id": 5,
 					"name": "WeaponsStrengthening_ShockWave_maxDistanceM",
 					"rank": "epic",
 					"type": 1
 				},
 				{
-					"id": 5,
+					"id": 6,
 					"name": "WeaponsStrengthening_ShockWave_speed",
 					"rank": "epic",
 					"type": 1
 				},
 				{
-					"id": 6,
+					"id": 7,
 					"name": "WeaponsStrengthening_ShockWave_hitNum",
 					"rank": "epic",
 					"type": 1
@@ -237,24 +249,30 @@
 				},
 				{
 					"id": 3,
+					"name": "WeaponsStrengthening_DefenseIgnore",
+					"rank": "common",
+					"type": 1
+				},
+				{
+					"id": 4,
 					"name": "WeaponsStrengthening_ShockWave",
 					"rank": "rare",
 					"type": 1
 				},
 				{
-					"id": 4,
+					"id": 5,
 					"name": "WeaponsStrengthening_ShockWave_maxDistanceM",
 					"rank": "epic",
 					"type": 1
 				},
 				{
-					"id": 5,
+					"id": 6,
 					"name": "WeaponsStrengthening_ShockWave_speed",
 					"rank": "epic",
 					"type": 1
 				},
 				{
-					"id": 6,
+					"id": 7,
 					"name": "WeaponsStrengthening_ShockWave_hitNum",
 					"rank": "epic",
 					"type": 1

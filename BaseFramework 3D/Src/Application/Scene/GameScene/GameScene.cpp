@@ -447,8 +447,8 @@ void GameScene::Init()
 	m_mapLinearGrowthPerFloor = 5;
 	m_mapLinearGrowthPerFloorX = 5 * KdRandom::GetFloat(0.8f, 1.2f);
 	m_mapLinearGrowthPerFloorY = 5 * KdRandom::GetFloat(0.8f, 1.2f);
-	//マップ生成
-	GenerateMap();
+
+
 	//音
 
 	if (!m_spGameBGM)
@@ -483,11 +483,11 @@ void GameScene::GenerateMap()
 	//全effect停止
 	KdEffekseerManager::GetInstance().StopAllEffect();
 
-	int baseSize = 30;              // 1階のマップサイズ
+	int baseSize = 24;              // 1階のマップサイズ
 	float growth = 1.01f;
 
 
-
+	
 	m_mapGenerateDisplayFloor = m_displayFloor;
 
 	if (m_displayFloor > m_mapGenerateDisplayFloorMax)
@@ -523,7 +523,7 @@ void GameScene::GenerateMap()
 
 		if (m_spGameBGM && !m_spGameBGM->IsPlaying())
 		{
-			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
+			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.4);
 			m_spGameBGM->Play();
 		}
 

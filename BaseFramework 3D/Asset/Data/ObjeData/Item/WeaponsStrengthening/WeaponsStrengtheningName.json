@@ -14,18 +14,22 @@
 		},
 		{
 			"id": 3,
-			"name": "WeaponStrengthening_ShockWave"
+			"name": "WeaponsStrengthening_DefenseIgnore"
 		},
 		{
 			"id": 4,
-			"name": "WeaponStrengthening_ShockWave_maxDistanceM"
+			"name": "WeaponStrengthening_ShockWave"
 		},
 		{
 			"id": 5,
-			"name": "WeaponStrengthening_ShockWave_speed"
+			"name": "WeaponStrengthening_ShockWave_maxDistanceM"
 		},
 		{
 			"id": 6,
+			"name": "WeaponStrengthening_ShockWave_speed"
+		},
+		{
+			"id": 7,
 			"name": "WeaponStrengthening_ShockWave_hitNum"
 		}
 	]

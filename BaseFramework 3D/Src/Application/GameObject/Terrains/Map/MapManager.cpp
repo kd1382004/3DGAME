@@ -508,7 +508,7 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	int maxChunkX = cx + static_cast<int>(m_updateChunkRadius.x);
 
 	int minChunkY = cy - static_cast<int>(m_updateChunkRadius.y);
-	int maxChunkY = cy + static_cast<int>(m_updateChunkRadius.y);	
+	int maxChunkY = cy + static_cast<int>(m_updateChunkRadius.y);
 
 	// ワールド座標に変換
 	float worldMinX = minChunkX * CHUNK_SIZE * m_mapTileSiz;
@@ -521,7 +521,7 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	float sizeZ = worldMaxZ - worldMinZ;
 	float sizeY = m_mapTileSiz * m_spMapGenerate->GetHeightLevelMax();
 
-	m_boxPos = { GetCHUNKCenterPos()};
+	m_boxPos = { GetCHUNKCenterPos() };
 	m_boxSiz = { sizeX ,sizeY * 2,sizeZ };
 }
 
