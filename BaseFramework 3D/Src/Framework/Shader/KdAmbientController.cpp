@@ -1,4 +1,4 @@
-#include "KdAmbientController.h"
+﻿#include "KdAmbientController.h"
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // シェーダーマネージャで設定したシェーダーの初期値を取得してくる
@@ -23,9 +23,9 @@ void KdAmbientController::Init()
 
 		m_parameter.m_distanceFogColor = cbFog.DistanceFogColor;
 		m_parameter.m_distanceFogDensity = cbFog.DistanceFogDensity;
-		
+
 		m_parameter.m_heightFogColor = cbFog.HeightFogColor;
-		m_parameter.m_heightFogTopValue= cbFog.HeightFogTopValue;
+		m_parameter.m_heightFogTopValue = cbFog.HeightFogTopValue;
 		m_parameter.m_heightFogBottomValue = cbFog.HeightFogBottomValue;
 		m_parameter.m_heightFogBeginDistance = cbFog.HeightFogBeginDistance;
 	}
@@ -145,13 +145,13 @@ void KdAmbientController::SetheightFog(const Math::Vector3& col, float topValue,
 	m_parameter.m_heightFogTopValue = topValue;
 
 	m_parameter.m_heightFogBottomValue = bottomValue;
-	
+
 	m_parameter.m_heightFogBeginDistance = distance;
 
 	m_dirtyFogHeight = true;
 }
 
-void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg, bool IsBright, bool isShadow)
+void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg, bool IsBright)
 {
 	SpotLight sl;
 	sl.Color = color;
@@ -164,15 +164,7 @@ void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius,
 
 	sl.IsBright = IsBright;
 
-	// シャドウ付きライトは常に先頭(インデックス0)にしてシャドウ判定と完全に一致させる
-	if (isShadow)
-	{
-		m_spotLights.push_front(sl);
-	}
-	else
-	{
-		m_spotLights.push_back(sl);
-	}
+	m_spotLights.push_back(sl);
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -203,7 +195,7 @@ void KdAmbientController::WriteLightParams()
 		KdShaderManager::Instance().WriteCBPointLight(m_pointLights);
 	}
 
-	if(m_spotLights.size())
+	if (m_spotLights.size())
 	{
 		KdShaderManager::Instance().WriteCBSpotLight(m_spotLights);
 	}

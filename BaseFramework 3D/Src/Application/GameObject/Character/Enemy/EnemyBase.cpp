@@ -224,6 +224,53 @@ void EnemyBase::SearchPlayer()
 	}
 }
 
+float EnemyBase::CalcSightLightDistance(const Math::Vector3& _eyePos, const Math::Vector3& _dir, float _maxDist, float _halfAngleDeg)
+{
+	float hitDist = _maxDist;
+
+	// レイを飛ばす方向（正面、左右の視野方向）
+	std::vector<Math::Vector3> rayDirs;
+	rayDirs.push_back(_dir); // 正面
+
+	// 左右の視野端へのレイ（壁に対して斜めの時にも突き抜けを防ぐ）
+	float rad = DirectX::XMConvertToRadians(_halfAngleDeg * 0.7f);
+	Math::Matrix rotL = Math::Matrix::CreateRotationY(rad);
+	Math::Matrix rotR = Math::Matrix::CreateRotationY(-rad);
+	rayDirs.push_back(Math::Vector3::TransformNormal(_dir, rotL));
+	rayDirs.push_back(Math::Vector3::TransformNormal(_dir, rotR));
+
+	for (const auto& rDir : rayDirs)
+	{
+		KdCollider::RayInfo ray(
+			KdCollider::TypeBump | KdCollider::TypeCameraOcclusion,
+			_eyePos,
+			rDir,
+			_maxDist
+		);
+
+		for (auto& wpObj : m_wpHitObjectList)
+		{
+			if (auto spObj = wpObj.lock())
+			{
+				std::list<KdCollider::CollisionResult> results;
+				if (spObj->Intersects(ray, &results))
+				{
+					for (const auto& ret : results)
+					{
+						float d = _maxDist - ret.m_overlapDistance;
+						if (d < hitDist)
+						{
+							hitDist = d;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return std::max(0.1f, hitDist);
+}
+
 void EnemyBase::PlayerChase()
 {
 	float dist = (m_playerPos - m_pos).Length();

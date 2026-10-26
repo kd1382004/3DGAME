@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"../CharacterBase.h"
 
 class PlayerBase;
@@ -113,6 +113,9 @@ protected:
 
 	//プレイヤーChaseフラグ
 	bool m_playerChaseFlg = false;
+
+	// 壁などの遮蔽物を考慮した視界スポットライトの有効照射距離を計算
+	float CalcSightLightDistance(const Math::Vector3& _eyePos, const Math::Vector3& _dir, float _maxDist, float _halfAngleDeg);
 
 	//スポーン地点に戻る
 	bool m_returnSpawnPosFlg = false;

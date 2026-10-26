@@ -277,28 +277,49 @@ float4 main(VSOutput In) : SV_Target0
 			// 設定された照射角度（CosAngle）の内側か判定
 			if (cosAngle > g_SpotLights[i].CosAngle)
 			{
-				// ★追加: スポットライトシャドウ判定
+				// ★スポットライトシャドウ判定（シャドウ有効かつ主スポットライトの時）
 				float spotShadow = 1.0;
-				if (g_SL_ShadowEnable.x != 0 && i == 0) // 主スポットライト（インデックス0）に対して影判定
-				{
-					// ピクセルのワールド座標をスポットライトの深度空間へ変換
-					float4 slPos = mul(float4(In.wPos, 1), g_SL_mLightVP);
-					slPos.xyz /= slPos.w;
-					// 照射範囲内かチェック
-					if (abs(slPos.x) <= 1.0 && abs(slPos.y) <= 1.0 && slPos.z >= 0.0 && slPos.z <= 1.0)
-					{
-						float2 uv = slPos.xy * float2(1, -1) * 0.5 + 0.5;
-						float z = slPos.z - 0.001; // アクネ対策バイアス
-						spotShadow = g_spotShadowMap.SampleCmpLevelZero(g_ssCmp, uv, z);
-					}
-					else
-					{
-						// ライトの後方(z < 0)は影にするが、前方の範囲外はコーン角の減衰に任せて光を消さない
-						spotShadow = (slPos.z < 0.0) ? 0.0 : 1.0;
-					}
-				}
+
 				if (g_SpotLights[i].IsBright)
 				{
+					if (g_SL_ShadowEnable.x != 0)
+					{
+					// ピクセルのワールド座標をスポットライトの深度空間へ変換
+						float4 slPos = mul(float4(In.wPos, 1), g_SL_mLightVP);
+						slPos.xyz /= slPos.w;
+					// 照射範囲内かチェック (NDC空間: x, y は -1～1、z は 0～1)
+						if (abs(slPos.x) <= 1.0 && abs(slPos.y) <= 1.0 && slPos.z >= 0.0 && slPos.z <= 1.0)
+						{
+							float2 uv = slPos.xy * float2(1, -1) * 0.5 + 0.5;
+							float currentZ = slPos.z - 0.0005; // アクネ対策バイアス
+
+						// テクスチャサイズ取得
+							float w, h;
+							g_spotShadowMap.GetDimensions(w, h);
+							float tw = 1.0 / w;
+							float th = 1.0 / h;
+
+						// 3x3 PCF によるソフトシャドウ（R32_FLOATカラーテクスチャから深度をサンプリングして比較）
+							spotShadow = 0.0;
+							for (int sy = -1; sy <= 1; sy++)
+							{
+								for (int sx = -1; sx <= 1; sx++)
+								{
+									float mapDepth = g_spotShadowMap.SampleLevel(g_ss, uv + float2(sx * tw, sy * th), 0).r;
+									spotShadow += (currentZ <= mapDepth) ? 1.0 : 0.0;
+								}
+							}
+							spotShadow *= 0.111111;
+						}
+						else
+						{
+						// ライトの後方(z < 0)は影にする
+							spotShadow = (slPos.z < 0.0) ? 0.0 : 1.0;
+						}
+					}
+
+		
+			
 					// 1. 距離による減衰
 					float distAtte = 1.0 - saturate(dist / g_SpotLights[i].Radius);
 					distAtte *= distAtte;

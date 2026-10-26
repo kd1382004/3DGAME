@@ -1,4 +1,4 @@
-#include "Enemy_Goblin.h"
+﻿#include "Enemy_Goblin.h"
 #include"Attack/Attack_Slamming/Attack_Slamming.h"
 
 #include"../../../../Scene/SceneManager.h"
@@ -119,16 +119,20 @@ void Goblin::PreUpdate()
 
 			// 視界範囲描画
 			Math::Vector3 pos = GetPos();
+			Math::Vector3 eyePos = pos + Math::Vector3(0, 1.0f, 0);
 			Math::Vector3 dir = m_mWorld.Backward();
 			dir.Normalize();
+
+			// 壁などの遮蔽物を考慮した照射距離を算出
+			float lightDist = CalcSightLightDistance(eyePos, dir, m_viewDistance, m_viewAngle * 0.5f);
 
 			// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
 			KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
 				{ 0.5f, 0.0f, 0.0f },			// 光の色・強度
-				m_viewDistance,			// 照射距離
-				m_pos,                  // 位置
-				dir,                    // 前方方向
-				m_viewAngle * 0.5f,      // 照射角 
+				lightDist,						// 遮蔽された照射距離
+				m_pos,							// 位置
+				dir,							// 前方方向
+				m_viewAngle * 0.5f,				// 照射角 
 				false
 			);
 		}

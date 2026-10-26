@@ -571,6 +571,11 @@ void KdStandardShader::BeginGenerateDepthMapFromSpotLight(const Math::Matrix& mL
 	// 既存の頂点シェーダーが参照する DirLight_mVP を一時的にスポットライトの行列に差し替える
 	m_savedDirLightVP = KdShaderManager::Instance().GetLightCB().DirLight_mVP;
 	KdShaderManager::Instance().WriteCBDirLightVP(mLightVP);
+
+	// パイプラインステートの設定（カリングと深度テスト）
+	KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
+	KdShaderManager::Instance().ChangeDepthStencilState(KdDepthStencilState::ZEnable);
+
 	m_spotShadowMapRTPack.ClearTexture(kRedColor);
 	m_spotShadowMapRTChanger.ChangeRenderTarget(m_spotShadowMapRTPack);
 }
