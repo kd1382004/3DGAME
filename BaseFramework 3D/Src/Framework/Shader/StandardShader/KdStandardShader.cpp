@@ -42,6 +42,9 @@ void KdStandardShader::BeginLit()
 
 	// 影ぼかし用の比較機能付きサンプラーのセット
 	KdShaderManager::Instance().ChangeSamplerState(KdSamplerState::Linear_Clamp_Cmp, 1);
+
+	// スロット13にスポットライトシャドウマップをセット
+	KdDirect3D::Instance().WorkDevContext()->PSSetShaderResources(13, 1, m_spotShadowMapRTPack.m_RTTexture->WorkSRViewAddress());
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -53,6 +56,9 @@ void KdStandardShader::EndLit()
 {
 	ID3D11ShaderResourceView* pNullSRV = nullptr;
 	KdDirect3D::Instance().WorkDevContext()->PSSetShaderResources(10, 1, &pNullSRV);
+
+	// スロット13の解放
+	KdDirect3D::Instance().WorkDevContext()->PSSetShaderResources(13, 1, &pNullSRV);
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -412,6 +418,7 @@ bool KdStandardShader::Init()
 
 		// 頂点シェーダー作成
 		if (FAILED(KdDirect3D::Instance().WorkDev()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, &m_VS_Lit))) {
+			
 			assert(0 && "頂点シェーダー作成失敗");
 			Release();
 			return false;
@@ -512,6 +519,10 @@ bool KdStandardShader::Init()
 		static_cast<float>(ds->GetHeight()),
 		0.0f, 1.0f };
 
+	// スポットライトシャドウ用レンダーターゲット (512x512)
+	m_spotShadowMapRTPack.CreateRenderTarget(512, 512, true, DXGI_FORMAT_R32_FLOAT);
+	m_spotShadowMapRTPack.ClearTexture(kRedColor);
+
 	m_depthMapFromLightRTPack.CreateRenderTarget(1024, 1024, true, DXGI_FORMAT_R32_FLOAT);
 	m_depthMapFromLightRTPack.ClearTexture(kRedColor);
 
@@ -542,6 +553,32 @@ void KdStandardShader::Release()
 	m_cb2_Material.Release();
 	// スキンメッシュ対応
 	m_cb3_Bone.Release();
+}
+
+void KdStandardShader::BeginGenerateDepthMapFromSpotLight(const Math::Matrix& mLightVP)
+{
+	if (KdShaderManager::Instance().SetVertexShader(m_VS_GenDepthFromLight))
+	{
+		KdShaderManager::Instance().SetInputLayout(m_inputLayout);
+		KdShaderManager::Instance().SetVSConstantBuffer(0, m_cb0_Obj.GetAddress());
+		KdShaderManager::Instance().SetVSConstantBuffer(1, m_cb1_Mesh.GetAddress());
+	}
+	KdShaderManager::Instance().SetVSConstantBuffer(3, m_cb3_Bone.GetAddress());
+	if (KdShaderManager::Instance().SetPixelShader(m_PS_GenDepthFromLight))
+	{
+		KdShaderManager::Instance().SetPSConstantBuffer(0, m_cb0_Obj.GetAddress());
+	}
+	// 既存の頂点シェーダーが参照する DirLight_mVP を一時的にスポットライトの行列に差し替える
+	m_savedDirLightVP = KdShaderManager::Instance().GetLightCB().DirLight_mVP;
+	KdShaderManager::Instance().WriteCBDirLightVP(mLightVP);
+	m_spotShadowMapRTPack.ClearTexture(kRedColor);
+	m_spotShadowMapRTChanger.ChangeRenderTarget(m_spotShadowMapRTPack);
+}
+void KdStandardShader::EndGenerateDepthMapFromSpotLight()
+{
+	m_spotShadowMapRTChanger.UndoRenderTarget();
+	// 平行光の行列を元に戻す
+	KdShaderManager::Instance().WriteCBDirLightVP(m_savedDirLightVP);
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////

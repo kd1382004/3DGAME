@@ -75,6 +75,10 @@ cbuffer cbLight : register(b9)
 		float3 Dir; // 照射方向ベクトル (正規化済み)
 		int IsBright; // 明度計算フラグ
 	} g_SpotLights[50];
+
+	//スポットライト用シャドウ情報
+	row_major float4x4 g_SL_mLightVP; // スポットライトの View * Proj 行列
+	int4 g_SL_ShadowEnable; // x: シャドウ有効フラグ (1: 有効, 0: 無効)
 };
 
 //------------------------------

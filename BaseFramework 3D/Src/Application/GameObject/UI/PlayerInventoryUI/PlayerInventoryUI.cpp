@@ -418,6 +418,13 @@ void PlayerInventoryUI::DrawSprite()
 	for (int i = 0; i < InventoryTypeSiz; i++)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_inventoryTypeChange[i].m_IconTex, m_inventoryTypeChange[i].m_2DPos.x, m_inventoryTypeChange[i].m_2DPos.y);
+
+
+		if (i == m_nowInventoryType)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionSelectTex, m_inventoryTypeChange[i].m_2DPos.x, m_inventoryTypeChange[i].m_2DPos.y);
+
+		}
 	}
 
 	//////////////////////////////////////////////////

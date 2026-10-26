@@ -11,6 +11,7 @@ Texture2D g_normalTex : register(t3); // 法線マップ
 Texture2D g_dirShadowMap : register(t10); // 平行光シャドウマップ
 Texture2D g_dissolveTex : register(t11); // ディゾルブマップ
 Texture2D g_environmentTex : register(t12); // 反射景マップ
+Texture2D g_spotShadowMap : register(t13); // スポットライトシャドウマップ
 
 // サンプラ
 SamplerState g_ss : register(s0); // 通常のテクスチャ描画用
@@ -276,33 +277,49 @@ float4 main(VSOutput In) : SV_Target0
 			// 設定された照射角度（CosAngle）の内側か判定
 			if (cosAngle > g_SpotLights[i].CosAngle)
 			{
-				
-
+				// ★追加: スポットライトシャドウ判定
+				float spotShadow = 1.0;
+				if (g_SL_ShadowEnable.x != 0 && i == 0) // 主スポットライト（インデックス0）に対して影判定
+				{
+					// ピクセルのワールド座標をスポットライトの深度空間へ変換
+					float4 slPos = mul(float4(In.wPos, 1), g_SL_mLightVP);
+					slPos.xyz /= slPos.w;
+					// 照射範囲内かチェック
+					if (abs(slPos.x) <= 1.0 && abs(slPos.y) <= 1.0 && slPos.z >= 0.0 && slPos.z <= 1.0)
+					{
+						float2 uv = slPos.xy * float2(1, -1) * 0.5 + 0.5;
+						float z = slPos.z - 0.001; // アクネ対策バイアス
+						spotShadow = g_spotShadowMap.SampleCmpLevelZero(g_ssCmp, uv, z);
+					}
+					else
+					{
+						// ライトの後方(z < 0)は影にするが、前方の範囲外はコーン角の減衰に任せて光を消さない
+						spotShadow = (slPos.z < 0.0) ? 0.0 : 1.0;
+					}
+				}
 				if (g_SpotLights[i].IsBright)
 				{
 					// 1. 距離による減衰
 					float distAtte = 1.0 - saturate(dist / g_SpotLights[i].Radius);
-					distAtte *= distAtte; // 逆2乗減衰
-					// 2. 角度による減衰（コーンの外側に向かって滑らかに減衰する処理）
+					distAtte *= distAtte;
+					// 2. 角度による減衰
 					float angleAtte = saturate((cosAngle - g_SpotLights[i].CosAngle) / (1.0 - g_SpotLights[i].CosAngle));
-					// 最終減衰率
-					float totalAtte = distAtte * angleAtte;
+					// ★最終減衰率に spotShadow を乗算！（壁の裏は 0 になり光が消える）
+					float totalAtte = distAtte * angleAtte * spotShadow;
 					// --- Diffuse (拡散光) ---
 					float3 L = -lightDir;
 					float lightDiffuse = saturate(dot(L, wN));
 					lightDiffuse *= totalAtte;
-					//lightDiffuse /= 3.1415926535; // 正規化Lambert
 					outColor += (g_SpotLights[i].Color * lightDiffuse) * baseDiffuse * baseColor.a;
 					// --- Specular (反射光) ---
 					float spec = BlinnPhong(-lightDir, vCam, wN, specPower);
 					spec *= totalAtte;
 					outColor += (g_SpotLights[i].Color * spec) * baseSpecular * baseColor.a * 0.5;
-					// 明度（輝度）の加算
 					totalBrightness += totalAtte * g_SpotLights[i].IsBright;
 				}
 				else
 				{
-					outColor += g_SpotLights[i].Color;
+					outColor += g_SpotLights[i].Color * spotShadow;
 				}
 			}
 		}

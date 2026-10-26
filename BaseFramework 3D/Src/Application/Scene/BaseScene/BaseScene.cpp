@@ -1,4 +1,4 @@
-﻿#include "BaseScene.h"
+#include "BaseScene.h"
 #include"../../Info/FadeDraw/FadeDraw.h"
 void BaseScene::PreUpdate()
 {
@@ -107,6 +107,22 @@ void BaseScene::Draw()
 		}
 	}
 	KdShaderManager::Instance().m_StandardShader.EndGenerateDepthMapFromLight();
+
+	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+	// スポットライト用のシャドウマップ生成
+	if (KdShaderManager::Instance().WorkAmbientController().IsSpotLightShadowEnable())
+	{
+		KdShaderManager::Instance().m_StandardShader.BeginGenerateDepthMapFromSpotLight(
+			KdShaderManager::Instance().WorkAmbientController().GetSpotLightVP()
+		);
+		{
+			for (auto& obj : m_objList)
+			{
+				obj->GenerateDepthMapFromLight();
+			}
+		}
+		KdShaderManager::Instance().m_StandardShader.EndGenerateDepthMapFromSpotLight();
+	}
 
 	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 	// 陰影のないオブジェクト(背景など)はBeginとEndの間にまとめてDrawする

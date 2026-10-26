@@ -19,6 +19,7 @@
 #include"../../GameObject/UI/UIManager.h"
 #include"../../GameObject/UI/BuffUI/BuffUI.h"
 #include"../../GameObject/UI/HitDamage/HitDamage.h"
+#include"../../GameObject/UI/UI2/UIBase2.h"
 
 //武器
 #include"../../GameObject/Weapon/Dagger/Dagger.h"
@@ -381,6 +382,16 @@ void GameScene::Init()
 	spHitDamage->Init();
 	spHitDamage->SetCamera(m_spCamera);
 	m_spUIManager->AddUIObj(spHitDamage);
+
+	std::shared_ptr<UIBase2>spUIBase2 = std::make_shared<UIBase2>();
+	std::shared_ptr<KdTexture>spTex = std::make_shared<KdTexture>();
+	spTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/Potion.png");
+	spUIBase2->SetTex(spTex);
+	spUIBase2->Set2DPos({580, 320});
+	spUIBase2->SetDrawKey(VK_TAB);
+	spUIBase2->SetDrawKeyPos(DrawKeyPos_Bot);
+	spUIBase2->SetDrawFlg(true);
+	m_spUIManager->AddUIObj(spUIBase2);
 
 	/////////////////////////////////////////
 	//プレイヤーにセット

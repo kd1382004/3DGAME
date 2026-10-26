@@ -194,7 +194,17 @@ public:
 
 	std::shared_ptr<KdTexture>& GetDepthTex() { return m_depthMapFromLightRTPack.m_RTTexture; }
 
+	// スポットライト用シャドウマップ生成
+	void BeginGenerateDepthMapFromSpotLight(const Math::Matrix& mLightVP);
+	void EndGenerateDepthMapFromSpotLight();
+
+
 private:
+
+	// スポットライト深度用レンダーターゲット
+	KdRenderTargetPack		m_spotShadowMapRTPack;
+	KdRenderTargetChanger	m_spotShadowMapRTChanger;
+	Math::Matrix			m_savedDirLightVP; // 退避用
 
 	// マテリアルのセット
 	void WriteMaterial(const KdMaterial& material, const Math::Vector4& colRate, const Math::Vector3& emiRate);

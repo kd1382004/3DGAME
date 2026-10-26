@@ -82,9 +82,11 @@ private:
 	//////////////////////////////////////////
 	//Key描画用
 	std::shared_ptr<KdTexture> m_spKeyTexture;
+	std::shared_ptr<KdTexture> m_spKeyTexture2;
 
 	//Key1つのテクスチャサイズ
 	Math::Vector2 m_keyTexSiz;
+	Math::Vector2 m_keyTex2Siz;
 
 
 	Math::Rectangle GetKeySrcRect(int _key);

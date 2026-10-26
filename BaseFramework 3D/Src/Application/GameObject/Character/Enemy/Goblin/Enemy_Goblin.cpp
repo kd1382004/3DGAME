@@ -1,4 +1,4 @@
-﻿#include "Enemy_Goblin.h"
+#include "Enemy_Goblin.h"
 #include"Attack/Attack_Slamming/Attack_Slamming.h"
 
 #include"../../../../Scene/SceneManager.h"
@@ -117,18 +117,18 @@ void Goblin::PreUpdate()
 		if (CheckInScreen(spCamera->GetBoundingFrustum(), m_pos, m_viewDistance))
 		{
 
-			//視界範囲描画
+			// 視界範囲描画
 			Math::Vector3 pos = GetPos();
 			Math::Vector3 dir = m_mWorld.Backward();
 			dir.Normalize();
 
 			// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
 			KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
-				{ 0.5,0,0 },			// 光の色・強度
+				{ 0.5f, 0.0f, 0.0f },			// 光の色・強度
 				m_viewDistance,			// 照射距離
 				m_pos,                  // 位置
 				dir,                    // 前方方向
-				m_viewAngle * 0.5,      // 照射角 
+				m_viewAngle * 0.5f,      // 照射角 
 				false
 			);
 		}

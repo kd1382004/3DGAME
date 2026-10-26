@@ -183,12 +183,38 @@ void EnemyBase::SearchPlayer()
 
 		if (dist < m_viewDistance)
 		{
-			m_playerChaseFlg = true;
-
-			//アニメーション
-			m_AnimeChangeFlg = true;
-			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
-
+			// 敵の目線からプレイヤーへの遮蔽物（壁）チェック
+			Math::Vector3 eyePos = m_pos + Math::Vector3(0, 1.0f, 0);
+			Math::Vector3 toPlayerDir = (m_playerPos + Math::Vector3(0, 1.0f, 0)) - eyePos;
+			float playerDist = toPlayerDir.Length();
+			toPlayerDir.Normalize();
+			KdCollider::RayInfo sightRay(
+				KdCollider::TypeBump | KdCollider::TypeCameraOcclusion,
+				eyePos,
+				toPlayerDir,
+				playerDist
+			);
+			bool isBlocked = false;
+			for (auto& wpObj : m_wpHitObjectList)
+			{
+				if (auto spObj = wpObj.lock())
+				{
+					if (spObj->Intersects(sightRay, nullptr))
+					{
+						isBlocked = true; // 壁で遮られている！
+						break;
+					}
+				}
+			}
+			// 壁で遮られていない時だけ追跡開始
+			if (!isBlocked)
+			{
+				m_playerChaseFlg = true;
+				
+				//アニメーション
+				m_AnimeChangeFlg = true;
+				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
+			}
 		}
 	}
 
@@ -319,7 +345,7 @@ void EnemyBase::ApplyLevelStatus()
 	m_status.attck.baseAttckPowe = std::round(m_baseStatus.attck.baseAttckPowe * attackScale);
 	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
 
-	m_status.defense.baseDefensePowe +=defenseAdd;
+	m_status.defense.baseDefensePowe += defenseAdd;
 	m_status.defense.nowDefense = m_status.defense.baseDefensePowe + m_status.defense.addDefense;
 }
 

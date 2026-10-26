@@ -1,4 +1,4 @@
-﻿#include "KdAmbientController.h"
+#include "KdAmbientController.h"
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // シェーダーマネージャで設定したシェーダーの初期値を取得してくる
@@ -49,6 +49,9 @@ void KdAmbientController::Update()
 {
 	m_pointLights.clear();
 	m_spotLights.clear();
+
+	m_spotLightShadowEnable = false;
+	m_dirtySpotLightShadow = true;
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -148,7 +151,7 @@ void KdAmbientController::SetheightFog(const Math::Vector3& col, float topValue,
 	m_dirtyFogHeight = true;
 }
 
-void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg, bool IsBright)
+void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius, const Math::Vector3& pos, const Math::Vector3& dir, float angleDeg, bool IsBright, bool isShadow)
 {
 	SpotLight sl;
 	sl.Color = color;
@@ -161,7 +164,15 @@ void KdAmbientController::AddSpotLight(const Math::Vector3& color, float radius,
 
 	sl.IsBright = IsBright;
 
-	m_spotLights.push_back(sl);
+	// シャドウ付きライトは常に先頭(インデックス0)にしてシャドウ判定と完全に一致させる
+	if (isShadow)
+	{
+		m_spotLights.push_front(sl);
+	}
+	else
+	{
+		m_spotLights.push_back(sl);
+	}
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -199,6 +210,14 @@ void KdAmbientController::WriteLightParams()
 
 	// 影描画エリアの更新
 	KdShaderManager::Instance().WriteCBShadowArea(m_shadowProj, m_dirLightHeight);
+
+
+	if (m_dirtySpotLightShadow)
+	{
+		KdShaderManager::Instance().WriteCBSpotLightShadow(m_spotLightVP, m_spotLightShadowEnable);
+		m_dirtySpotLightShadow = false;
+	}
+
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////

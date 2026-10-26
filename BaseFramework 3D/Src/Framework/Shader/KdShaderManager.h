@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "StandardShader/KdStandardShader.h"
 #include "PostProcessShader/KdPostProcessShader.h"
@@ -137,6 +137,11 @@ public:
 		int SpotLight_Num = 0;
 		float _blank4[3] = { 0.0f, 0.0f, 0.0f };
 		std::array<SpotLight, 50> SpotLights;
+
+		//スポットライト用シャドウ情報
+		Math::Matrix	SpotLight_mVP;
+		int				SpotLight_ShadowEnable = 0;
+		float			_blank5[3] = { 0.0f, 0.0f, 0.0f };
 	};
 
 	static KdShaderManager& Instance()
@@ -236,6 +241,22 @@ public:
 
 	// 定数バッファ書き込み用関数
 	void WriteCBSpotLight(const std::list<SpotLight>& spotLights);
+
+	// スポットライトシャドウ情報書き込み
+	void WriteCBSpotLightShadow(const Math::Matrix& mVP, bool enable)
+	{
+		cbLight& light = m_cb9_Light.Work();
+		light.SpotLight_mVP = mVP;
+		light.SpotLight_ShadowEnable = enable ? 1 : 0;
+		m_cb9_Light.Write();
+	}
+
+	// 平行光VP行列の直接書き込み（シャドウ切り替え用）
+	void WriteCBDirLightVP(const Math::Matrix& mVP)
+	{
+		m_cb9_Light.Work().DirLight_mVP = mVP;
+		m_cb9_Light.Write();
+	}
 
 private:
 

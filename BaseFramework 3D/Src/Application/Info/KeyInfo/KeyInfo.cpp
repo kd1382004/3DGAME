@@ -127,7 +127,7 @@ void KeyInfo::UpdateKey()
 
 		if (GetAsyncKeyState(key) & 0x8000)
 		{
-			if (key == VK_LBUTTON && !Mousebutton[i].m_pushFlg&& MouseInfo::Instance().GetMouseFreeFlg())
+			if (key == VK_LBUTTON && !Mousebutton[i].m_pushFlg && MouseInfo::Instance().GetMouseFreeFlg())
 			{
 				MouseInfo::Instance().SEMouseClickPlay();
 			}
@@ -303,6 +303,16 @@ void KeyInfo::Init()
 		m_keyTexSiz.x = m_spKeyTexture->GetWidth() / AlphabetNum;
 		m_keyTexSiz.y = m_spKeyTexture->GetHeight();
 	}
+
+	if (!m_spKeyTexture2)
+	{
+		m_spKeyTexture2 = std::make_shared<KdTexture>();
+		m_spKeyTexture2->Load("Asset/Textures/Key/Keyboard Extras.png");
+
+		m_keyTex2Siz.x = m_spKeyTexture2->GetWidth() / 4;
+		m_keyTex2Siz.y = m_spKeyTexture2->GetHeight() / 4;
+
+	}
 }
 
 Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
@@ -322,17 +332,110 @@ Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
 		};
 	}
 
+	switch (_key)
+	{
+	case VK_TAB:
+		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_ESCAPE:
+		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_SNAPSHOT:
+		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_BACK:
+		srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_SHIFT:
+		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_PRIOR:
+		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+	
+	case VK_NEXT:
+		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+	
+	case VK_RETURN:
+		srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_CONTROL:
+		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_MENU:
+		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_SPACE:
+		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_INSERT:   srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_DELETE:
+		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_END:
+		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_HOME:
+		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+
+	case VK_PAUSE:
+		srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		break;
+	}
+
+
 	return srcRect;
 }
 
 void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, float _alpha, Math::Vector2 _pivot)
 {
 	if (!m_spKeyTexture) { return; }
-
-	Math::Rectangle srcRect = GetKeySrcRect(_key);
-
 	Math::Color color = { 1,1,1,_alpha };
+	Math::Rectangle srcRect;
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+	srcRect = GetKeySrcRect(_key);
 
+	if (_key >= 'A' && _key <= 'Z')
+	{
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+		return;
+	}
+
+
+	switch (_key)
+	{
+	case VK_TAB:
+	case VK_ESCAPE:
+	case VK_SNAPSHOT:
+	case VK_BACK:
+	case VK_SHIFT:
+	case VK_PRIOR:
+	case VK_NEXT:
+	case VK_RETURN:
+	case VK_CONTROL:
+	case VK_MENU:
+	case VK_SPACE:
+	case VK_INSERT:
+	case VK_DELETE:
+	case VK_END:
+	case VK_HOME:
+	case VK_PAUSE:
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture2, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+		return;
+	}
 }
