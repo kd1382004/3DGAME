@@ -43,7 +43,7 @@ void MapManager::PostUpdate()
 
 void MapManager::DrawLit()
 {
-	for (const auto& mapObj : m_updateChankes)
+	for (const auto& mapObj : m_darawChankes)
 	{
 		mapObj->DrawLit();
 	}
@@ -54,15 +54,16 @@ void MapManager::DrawLit()
 		Math::Matrix sMat = Math::Matrix::CreateScale(m_boxSiz / 2);
 
 		Math::Matrix mat = sMat * tMat;
-
+		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullNone);
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spBoxModel, mat);
+		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
 	}
 
 }
 
 void MapManager::PreDraw()
 {
-	for (const auto& mapObj : m_updateChankes)
+	for (const auto& mapObj : m_darawChankes)
 	{
 		mapObj->PreDraw();
 	}
@@ -70,7 +71,7 @@ void MapManager::PreDraw()
 
 void MapManager::GenerateDepthMapFromLight()
 {
-	for (const auto& mapObj : m_updateChankes)
+	for (const auto& mapObj : m_darawChankes)
 	{
 		mapObj->GenerateDepthMapFromLight();
 	}
@@ -236,6 +237,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 				Math::Vector3 m_pos;
 				int roomID = 0;
 				int floorNum = 0;
+				EnemyType enemyType = EnemyType::RoomEnemy;
 			};
 
 			std::vector<EnemySpawnList> enemySpawnList;
@@ -250,6 +252,20 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 				enemySpawn.m_pos = mapRoomList[i][j].m_pos;
 				enemySpawn.roomID = mapRoomList[i][j].m_roomID;
 				enemySpawn.floorNum = j;
+
+				if (mapRoomList[i][j].m_roomType == RoomType::RoomType_Stars)
+				{
+					enemySpawn.enemyType = EnemyType::RoomStarsEnemy;
+
+					int y = mapRoomList[i].size() / 2;
+
+					enemySpawn.m_pos = mapRoomList[i][y].m_pos;
+				}
+				else
+				{
+					enemySpawn.enemyType = EnemyType::RoomEnemy;
+				}
+
 				enemySpawnList.push_back(enemySpawn);
 			}
 
@@ -264,7 +280,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			// 先頭から必要数だけスポーン
 			for (int n = 0; n < roomEnemyNum; n++)
 			{
-				spEnemyManager->SpawnEnemy(RoomEnemy, enemySpawnList[n].m_pos);
+				spEnemyManager->SpawnEnemy(enemySpawnList[n].enemyType, enemySpawnList[n].m_pos);
 				mapRoomList[enemySpawnList[n].roomID][enemySpawnList[n].floorNum].m_Installation = true;
 			}
 		}
@@ -460,6 +476,7 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 
 	m_isChunkChanged = true;
 	m_updateChankes.clear();
+	m_darawChankes.clear();
 	m_chankeNum = { static_cast<float>(cx),static_cast<float>(cy) };
 
 	// チャンク範囲チェック
@@ -480,10 +497,13 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	}
 
 	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
+	std::unordered_set<std::shared_ptr<MapBase>> uniqueDarweSet;
 
-	for (int dy = -static_cast<int>(m_updateChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y); dy++)
+
+
+	for (int dy = -(int)m_updateChunkRadius.y - m_drawMargin; dy <= (int)m_updateChunkRadius.y + m_drawMargin; dy++)
 	{
-		for (int dx = -static_cast<int>(m_updateChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x); dx++)
+		for (int dx = -(int)m_updateChunkRadius.x - m_drawMargin; dx <= (int)m_updateChunkRadius.x + m_drawMargin; dx++)
 		{
 			int ncx = cx + dx;
 			int ncy = cy + dy;
@@ -494,35 +514,50 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 			{
 				if (auto spMapObj = wpMapObj.lock())
 				{
-					uniqueUpdateSet.insert(spMapObj);
+					if (dy >= -(int)m_updateChunkRadius.y && dy <= (int)m_updateChunkRadius.y + m_drawMargin &&
+						dx >= -(int)m_updateChunkRadius.x && dx <= (int)m_updateChunkRadius.x + m_drawMargin)
+					{
+						uniqueUpdateSet.insert(spMapObj);
+					}
+					uniqueDarweSet.insert(spMapObj);
 				}
 			}
 		}
 	}
 
+	int num = 1;
+
 	// 最後に push_back
 	m_updateChankes.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
+	m_darawChankes.assign(uniqueDarweSet.begin(), uniqueDarweSet.end());
 
+	int drawMinChunkX =
+		cx - ((int)m_updateChunkRadius.x + m_drawMargin);
 
-	int minChunkX = cx - static_cast<int>(m_updateChunkRadius.x);
-	int maxChunkX = cx + static_cast<int>(m_updateChunkRadius.x);
+	int drawMaxChunkX =
+		cx + ((int)m_updateChunkRadius.x + m_drawMargin);
 
-	int minChunkY = cy - static_cast<int>(m_updateChunkRadius.y);
-	int maxChunkY = cy + static_cast<int>(m_updateChunkRadius.y);
+	int drawMinChunkY =
+		cy - ((int)m_updateChunkRadius.y + m_drawMargin);
+
+	int drawMaxChunkY =
+		cy + ((int)m_updateChunkRadius.y + m_drawMargin);
 
 	// ワールド座標に変換
-	float worldMinX = minChunkX * CHUNK_SIZE * m_mapTileSiz;
-	float worldMaxX = (maxChunkX + 1) * CHUNK_SIZE * m_mapTileSiz;
+	float worldMinX = drawMinChunkX * CHUNK_SIZE * m_mapTileSiz;
 
-	float worldMinZ = -(minChunkY * CHUNK_SIZE * m_mapTileSiz);
-	float worldMaxZ = -((maxChunkY + 1) * CHUNK_SIZE * m_mapTileSiz);
+	float worldMaxX = (drawMaxChunkX + 1) * CHUNK_SIZE * m_mapTileSiz;
 
-	float sizeX = worldMaxX - worldMinX;
-	float sizeZ = worldMaxZ - worldMinZ;
+	float worldMinZ = -(drawMinChunkY * CHUNK_SIZE * m_mapTileSiz);
+
+	float worldMaxZ = -((drawMaxChunkY + 1) * CHUNK_SIZE * m_mapTileSiz);
+
+	float sizeX = fabsf(worldMaxX - worldMinX);
+	float sizeZ = fabsf(worldMaxZ - worldMinZ);
 	float sizeY = m_mapTileSiz * m_spMapGenerate->GetHeightLevelMax();
 
-	m_boxPos = { GetCHUNKCenterPos() };
-	m_boxSiz = { sizeX ,sizeY * 2,sizeZ };
+	m_boxPos = GetCHUNKCenterPos();
+	m_boxSiz = { sizeX, sizeY * 2.0f, sizeZ };
 }
 
 bool MapManager::GetChunksUpdate(Math::Vector3 _pos)

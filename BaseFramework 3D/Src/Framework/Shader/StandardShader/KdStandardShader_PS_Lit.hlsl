@@ -284,22 +284,22 @@ float4 main(VSOutput In) : SV_Target0
 				{
 					if (g_SL_ShadowEnable.x != 0)
 					{
-					// ピクセルのワールド座標をスポットライトの深度空間へ変換
+						// ピクセルのワールド座標をスポットライトの深度空間へ変換
 						float4 slPos = mul(float4(In.wPos, 1), g_SL_mLightVP);
 						slPos.xyz /= slPos.w;
-					// 照射範囲内かチェック (NDC空間: x, y は -1～1、z は 0～1)
+						// 照射範囲内かチェック (NDC空間: x, y は -1～1、z は 0～1)
 						if (abs(slPos.x) <= 1.0 && abs(slPos.y) <= 1.0 && slPos.z >= 0.0 && slPos.z <= 1.0)
 						{
 							float2 uv = slPos.xy * float2(1, -1) * 0.5 + 0.5;
 							float currentZ = slPos.z - 0.0005; // アクネ対策バイアス
 
-						// テクスチャサイズ取得
+							// テクスチャサイズ取得
 							float w, h;
 							g_spotShadowMap.GetDimensions(w, h);
 							float tw = 1.0 / w;
 							float th = 1.0 / h;
 
-						// 3x3 PCF によるソフトシャドウ（R32_FLOATカラーテクスチャから深度をサンプリングして比較）
+							// 3x3 PCF によるソフトシャドウ（R32_FLOATカラーテクスチャから深度をサンプリングして比較）
 							spotShadow = 0.0;
 							for (int sy = -1; sy <= 1; sy++)
 							{
@@ -313,7 +313,7 @@ float4 main(VSOutput In) : SV_Target0
 						}
 						else
 						{
-						// ライトの後方(z < 0)は影にする
+							// ライトの後方(z < 0)は影にする
 							spotShadow = (slPos.z < 0.0) ? 0.0 : 1.0;
 						}
 					}

@@ -31,7 +31,10 @@ enum RoomType
 	RoomType_SafeRoom,
 
 	//プレイヤースポーン部屋
-	RoomType_PlayerSpawn
+	RoomType_PlayerSpawn,
+
+	//階段部屋
+	RoomType_Stars
 };
 
 

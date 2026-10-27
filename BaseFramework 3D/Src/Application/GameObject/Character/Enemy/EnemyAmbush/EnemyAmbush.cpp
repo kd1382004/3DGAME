@@ -10,7 +10,13 @@ void EnemyAmbush::Init()
 
 void EnemyAmbush::Update()
 {
+	//重力
+	m_pos.y -= m_Gravity;
+	m_Gravity += m_gravityPower;
+
 	if (m_isDead) { return; }
+
+
 
 
 	if (!m_playerChaseFlg)

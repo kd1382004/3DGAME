@@ -11,8 +11,10 @@ class HitDamage;
 enum EnemyType
 {
 	//部屋タイプの敵
-	RoomEnemy
+	RoomEnemy,
 
+	//階段部屋タイプの敵
+	RoomStarsEnemy,
 };
 
 class EnemyManager:public KdGameObject, public std::enable_shared_from_this<EnemyManager>

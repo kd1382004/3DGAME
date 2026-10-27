@@ -343,6 +343,9 @@
     <Filter Include="Src\Application\GameObject\UI\VOLUI">
       <UniqueIdentifier>{a24f1a8f-6fac-4586-a60e-1dcbce1c6e7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Golem">
+      <UniqueIdentifier>{70abc824-48cb-4bcc-ae34-573bfda7d940}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -789,6 +792,9 @@
     <ClInclude Include="Src\Application\Info\VOL\VOLInfo.h">
       <Filter>Src\Application\Info\VOL</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Golem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1198,6 +1204,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Info\VOL\VOLInfo.cpp">
       <Filter>Src\Application\Info\VOL</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Golem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -24,8 +24,8 @@ void Flashlight::PostUpdate()
 	Math::Vector3 dir = m_mWorld.Backward(); // 前方ベクトル
 	dir.Normalize();
 
-	// スポットライトの位置（懐中電灯モデル自身の影で前方が遮られないよう、わずかに前方に配置）
-	Math::Vector3 lightPos = pos + dir * 0.15f;
+	// スポットライトの位置
+	Math::Vector3 lightPos = pos;
 
 	// スポットライトの View 行列を作成 (左手系LHを明示的に使用)
 	Math::Vector3 up = Math::Vector3::Up;

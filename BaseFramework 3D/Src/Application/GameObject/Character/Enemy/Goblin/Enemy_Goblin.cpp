@@ -7,6 +7,7 @@
 void Goblin::Init()
 {
 	EnemyAmbush::Init();
+	wanderRadius = 20;
 	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Goblin/Status/Status.json";
 	if (!m_spCharaModel)
 	{
@@ -71,9 +72,6 @@ void Goblin::Init()
 
 void Goblin::Update()
 {
-	m_pos.y -= m_Gravity;
-	m_Gravity += m_gravityPower;
-
 	EnemyAmbush::Update();
 
 	Attack();
@@ -108,7 +106,7 @@ void Goblin::PreUpdate()
 
 
 
-	if (!m_playerChaseFlg)
+	//if (!m_playerChaseFlg)
 	{
 		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 		if (!spCamera) { return; }
@@ -124,7 +122,7 @@ void Goblin::PreUpdate()
 			dir.Normalize();
 
 			// 壁などの遮蔽物を考慮した照射距離を算出
-			float lightDist = CalcSightLightDistance(eyePos, dir, m_viewDistance, m_viewAngle * 0.5f);
+			float lightDist = m_viewDistance;
 
 			// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
 			KdShaderManager::Instance().WorkAmbientController().AddSpotLight(

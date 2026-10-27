@@ -78,6 +78,7 @@ public:
 	void Update()override;
 	void PostUpdate()override;
 
+	void GenerateDepthMapFromLight()override;
 
 
 	void SetGameScene(const std::shared_ptr<GameScene>& _GameScene);
@@ -155,10 +156,8 @@ public:
 	float GetStaminaRegen() { return m_staminaRegenPerSec + m_staminaRegenBuff; }
 
 	// スタミナ即座に回復
-	void StaminaHeal(float _amount)
-	{
-		m_staminaNow = std::min(m_staminaMax, m_staminaNow + _amount);
-	}
+	void StaminaHeal(float _amount);
+
 
 	// スタミナ回復量アップ（永続）
 	void BoostStaminaRegenBase(float _amount)
@@ -173,11 +172,8 @@ public:
 	}
 
 	// スタミナ量増加（最大スタミナ永続増加）
-	void AddMaxStamina(float _boost)
-	{
-		m_staminaMax += _boost;
-		m_staminaNow += _boost;
-	}
+	void AddMaxStamina(float _boost);
+	
 
 	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
 
@@ -334,6 +330,9 @@ protected:
 
 	//バフによる回復速度増加量(1秒あたり)
 	float m_staminaRegenBuff = 0;
+
+
+	bool m_staminaRegenFlg = false;
 
 	//スタミナ減少
 	// _amount...実際に減らす量

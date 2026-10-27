@@ -136,9 +136,9 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			bool canPlace = true;
 
 			//部屋同士何タイル開けるか
-			int minMargin = m_heightLevel + 3;
-			int aX = KdRandom::GetInt(minMargin, minMargin + 3);
-			int aY = KdRandom::GetInt(minMargin, minMargin + 3);
+			int minMargin = m_heightLevelMax + 1;
+			int aX = KdRandom::GetInt(minMargin, minMargin + 2);
+			int aY = KdRandom::GetInt(minMargin, minMargin + 2);
 
 
 			for (int y = roomY - aY; y < roomY + roomH + aY; y++)
@@ -421,6 +421,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 		if (room.m_roomID == SetStairsRoomID)
 		{
 			room.m_stairsRoom = true;
+			roomTypeList[room.m_roomID] = RoomType_Stars;
 		}
 	}
 
@@ -665,7 +666,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					std::shared_ptr<FloorBase> mapA = std::make_shared<FloorBase>();
 
 					Math::Vector3 floorPos = pos;
-					
+
 
 					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax; i++)
 					{
@@ -732,6 +733,9 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			case RoomType_PlayerSpawn:
 				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_SafeRoom);
 				break;
+			case RoomType_Stars:
+				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(1);
+				break;
 			default:
 				break;
 			}
@@ -759,8 +763,10 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				break;
 			}
 
-			num = std::clamp(num, mine, max);
-			m_roomInfoList[i][j].m_roomTreasuerChestNum = static_cast<int>(num);
+			num = std::clamp(num,
+				std::min(mine, max),
+				std::max(mine, max));
+			m_roomInfoList[i][j].m_roomTreasuerChestNum = static_cast<int>(std::ceil(num));;
 
 		}
 	}
@@ -915,13 +921,13 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				// 隣接マスに壁が必要か判定
 				if (IsNeedWall(nx, ny, map, map[y][x].m_heightLevel, x, y))
 				{
-					
+
 
 					Math::Vector3 wallPos = { xPos + dir.offset.x, 0, zPos + dir.offset.z };
 
 					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax; i++)
 					{
-						
+
 
 						int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
 						int cy = std::min(chunkH - 1, y / CHUNK_SIZE);

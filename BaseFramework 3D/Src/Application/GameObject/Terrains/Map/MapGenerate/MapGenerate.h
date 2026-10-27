@@ -172,7 +172,7 @@ private:
 	//部屋のTypeごとの宝箱の割合(部屋のタイル数にかける)
 	struct RoomreasuerChestPercent
 	{
-		float m_TreasuerChestRoom = 0.15f;
+		float m_TreasuerChestRoom = 0.2f;
 		float m_NotTreasuerChestRoom = 0.1f;
 	};
 
@@ -273,7 +273,7 @@ private:
 	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
 
 
-	const	int  CHUNK_SIZE =7;
+	const	int  CHUNK_SIZE = 7;
 
 
 

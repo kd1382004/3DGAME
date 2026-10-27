@@ -182,7 +182,8 @@ private:
 
 	//更新処理するチャンク
 	std::vector<std::shared_ptr<MapBase>>m_updateChankes;
-
+	std::vector<std::shared_ptr<MapBase>>m_darawChankes;
+	int m_drawMargin = 1;
 	//チャンクのXYを保存
 	Math::Vector2 m_chankeNum = {-999,-999};
 

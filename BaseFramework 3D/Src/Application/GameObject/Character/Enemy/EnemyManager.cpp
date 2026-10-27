@@ -1,7 +1,8 @@
-#include "EnemyManager.h"
+﻿#include "EnemyManager.h"
 #include"EnemyBase.h"
 
 #include"Goblin/Enemy_Goblin.h"
+#include"Golem/Golem.h"
 
 #include"Boss/Giant/Giant.h"
 
@@ -216,8 +217,20 @@ void EnemyManager::SetEnemyListPlayer()
 
 void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
+	std::shared_ptr<EnemyBase>spEnemyAmbush;
+	switch (_enemyType)
+	{
+	case RoomEnemy:
+		spEnemyAmbush = std::make_shared<Goblin>();
+		break;
+	case RoomStarsEnemy:
+		spEnemyAmbush = std::make_shared<Golem>();
+		break;
+	default:
+		break;
+	}
 
-	std::shared_ptr<Goblin>spEnemyAmbush = std::make_shared<Goblin>();
+
 	spEnemyAmbush->SetPlayer(m_wpPlayer.lock());
 	spEnemyAmbush->SetMapManager(m_wpMapManager.lock());
 	spEnemyAmbush->Init();
@@ -241,7 +254,6 @@ void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 	{
 		spMapManager->MapHitEnemy(spEnemyAmbush);
 	}
-
-
 	m_enemyList.push_back(spEnemyAmbush);
+
 }
