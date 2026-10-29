@@ -4,6 +4,8 @@
 #include"../../../../Scene/SceneManager.h"
 
 #include"../../../Camera/CameraBase.h"
+
+
 void Goblin::Init()
 {
 	EnemyAmbush::Init();
@@ -76,13 +78,16 @@ void Goblin::Update()
 
 	Attack();
 
-	////重力
-	//m_pos.y -= m_Gravity;
-	//m_Gravity += m_gravityPower;
-
 	if (m_isDead)
 	{
 		if (!m_spAnimetor) { return; }
+
+		// 死亡時に出しっぱなしの攻撃判定を必ず消す
+		if (auto spAttack = m_wpAttack.lock())
+		{
+			spAttack->FinishAttack_Slamming();
+		}
+
 		if (m_spAnimetor->IsAnimationEnd())
 		{
 			m_isExpired = true;
@@ -103,18 +108,13 @@ void Goblin::PreUpdate()
 	EnemyBase::PreUpdate();
 	HPPosPostUpdate();
 
-
-
-
-	//if (!m_playerChaseFlg)
+	if (!m_playerChaseFlg)
 	{
 		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 		if (!spCamera) { return; }
 
-
 		if (CheckInScreen(spCamera->GetBoundingFrustum(), m_pos, m_viewDistance))
 		{
-
 			// 視界範囲描画
 			Math::Vector3 pos = GetPos();
 			Math::Vector3 eyePos = pos + Math::Vector3(0, 1.0f, 0);

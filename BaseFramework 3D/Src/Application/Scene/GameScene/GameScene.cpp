@@ -160,16 +160,19 @@ void GameScene::Event()
 	//更新チャンク決め
 	m_spMapManager->SetPlayerChanke(m_spPlayer->GetPos());
 
-	if (m_spMapObjManager)
+	// プレイヤーのチャンクが移動した時だけ、更新リストを再構築する
+	if (m_spMapManager->GetIsChunkChanged())
 	{
-		m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
-	}
+		if (m_spMapObjManager)
+		{
+			m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
+		}
+		if (m_spEnemyManager)
+		{
+			m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
+		}
 
-	if (m_spEnemyManager)
-	{
-		m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
 	}
-
 
 	//あたり判定セット
 
@@ -204,33 +207,15 @@ void GameScene::Event()
 	}
 
 
-	//敵同士のあたり判定
+	//武器とのあたり判定
 	auto& enemies = m_spEnemyManager->GetEnemyUpdateList();
-
-	for (auto itA = enemies.begin(); itA != enemies.end(); itA++)
+	for (auto& enemyA : enemies)
 	{
-		auto itB = itA;
-		itB++;
-		auto enemyA = *itA;
-		for (; itB != enemies.end(); itB++)
-		{
-
-			auto enemyB = *itB;
-
-			Math::Vector3 dic = enemyA->GetPos() - enemyB->GetPos();
-			if (dic.Length() < 10)
-			{
-				enemyA->RegistHitObject(enemyB);
-			}
-		}
-
-
-		//武器とのあたり判定
+		// 武器とのあたり判定
 		if (m_spWeapon)
 		{
 			m_spWeapon->AddAttackHitCharacterList(enemyA);
 		}
-
 	}
 
 
@@ -543,8 +528,8 @@ void GameScene::GenerateMap()
 	else
 	{
 		//ボス戦用マップ生成
-		mapSizeX = 11;
-		mapSizeY = 11;
+		mapSizeX = 7;
+		mapSizeY = 7;
 		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
 		m_spUIManager->SetMinimapRevealAll(true);
 

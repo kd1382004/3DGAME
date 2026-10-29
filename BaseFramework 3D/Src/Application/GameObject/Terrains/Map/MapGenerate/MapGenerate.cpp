@@ -1624,66 +1624,42 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* map)
 			// --- 縦直線スロープ (y+1 と y-1) ---
 			if (canSlopeVertical(x, y))
 			{
-				int UpheightLevel = origMap[y + 1][x].m_heightLevel;   // y+1 マスの高さ
-				int DownheightLevel = origMap[y - 1][x].m_heightLevel; // y-1 マスの
-				if (heightLevel != UpheightLevel)
+				int upH = origMap[y + 1][x].m_heightLevel;
+				int downH = origMap[y - 1][x].m_heightLevel;
+
+				// 自分より高い隣が1つだけ、反対側は自分と同じ高さ、のときだけ坂にする
+				if (upH == heightLevel + 1 && downH == heightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-					if (heightLevel < UpheightLevel)
-					{
-						(*map)[y][x].m_heightLevel = UpheightLevel;
-						(*map)[y][x].m_angle = 0;
-					}
-					else
-					{
-						(*map)[y][x].m_angle = 180;
-					}
+					(*map)[y][x].m_heightLevel = upH;
+					(*map)[y][x].m_angle = 0;      // 今と同じ向きの値
 				}
-				else if (heightLevel != DownheightLevel)
+				else if (downH == heightLevel + 1 && upH == heightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-					if (heightLevel < DownheightLevel)
-					{
-						(*map)[y][x].m_heightLevel = DownheightLevel;
-						(*map)[y][x].m_angle = 180;
-					}
-					else
-					{
-						(*map)[y][x].m_angle = 0;
-					}
+					(*map)[y][x].m_heightLevel = downH;
+					(*map)[y][x].m_angle = 180;
 				}
 			}
 			// --- 横直線スロープ (x-1 と x+1) ---
 			else if (canSlopeHorizontal(x, y))
 			{
-				int LeftHeightLevel = origMap[y][x - 1].m_heightLevel;  // x-1 マスの高さ
-				int RightHeightLevel = origMap[y][x + 1].m_heightLevel; // x+1 マスの高さ
+				int rightH = origMap[y][x + 1].m_heightLevel;
+				int leftH = origMap[y][x - 1].m_heightLevel;
 
-				if (heightLevel != LeftHeightLevel)
+				// 右が1段高く、左は同じ高さ
+				if (rightH == heightLevel + 1 && leftH == heightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-					if (heightLevel < LeftHeightLevel)
-					{
-						(*map)[y][x].m_heightLevel = LeftHeightLevel;
-						(*map)[y][x].m_angle = 90;
-					}
-					else
-					{
-						(*map)[y][x].m_angle = 270;
-					}
+					(*map)[y][x].m_heightLevel = rightH;
+					(*map)[y][x].m_angle = 270;
 				}
-				else if (heightLevel != RightHeightLevel)
+				// 左が1段高く、右は同じ高さ
+				else if (leftH == heightLevel + 1 && rightH == heightLevel)
 				{
 					(*map)[y][x].m_tileType = TileType::Slopee;
-					if (heightLevel < RightHeightLevel)
-					{
-						(*map)[y][x].m_heightLevel = RightHeightLevel;
-						(*map)[y][x].m_angle = 270;
-					}
-					else
-					{
-						(*map)[y][x].m_angle = 90;
-					}
+					(*map)[y][x].m_heightLevel = leftH;
+					(*map)[y][x].m_angle = 90;
 				}
 			}
 		}

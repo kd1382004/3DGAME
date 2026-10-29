@@ -87,12 +87,17 @@ void EnemyBase::PostUpdate()
 
 
 
-	if (!m_isInView) { return; }
-	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
-		{ 10,10,10 },								//色
-		10,										//半径	
-		m_pos + Math::Vector3(0, 1, 0)		//座標
-	);
+	//if (!m_isInView) { return; }
+	//// プレイヤーとの距離が一定以内の場合のみ、またはボスのみライトを追加
+	//Math::Vector3 diff = m_playerPos - m_pos;
+	//if (diff.LengthSquared() < 25.0f * 25.0f) // 25m以内のみ
+	//{
+	//	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
+	//		{ 10, 10, 10 },
+	//		10,
+	//		m_pos + Math::Vector3(0, 1, 0)
+	//	);
+	//}
 }
 
 void EnemyBase::PreDraw()

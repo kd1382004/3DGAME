@@ -11,8 +11,7 @@ void EnemyAmbush::Init()
 void EnemyAmbush::Update()
 {
 	//重力
-	m_pos.y -= m_Gravity;
-	m_Gravity += m_gravityPower;
+	ApplyGravity();
 
 	if (m_isDead) { return; }
 

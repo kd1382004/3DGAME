@@ -28,6 +28,8 @@ private:
 	{
 		std::string IdleAnime = "idle";
 		std::string WalkAnime = "walk";
+		std::string DashAnime = "run";
+		std::string DieAnime = "death";
 		//すまっしゅ
 		std::string smashAnime = "smash";
 	};
@@ -54,5 +56,5 @@ private:
 	float m_attackWait = m_attackWaitMax;
 
 	//叩きつけ攻撃のあたり判定を出すタイミング
-	float m_SlammingDownAttackAnimeHitTriggerTime = 0.58f;
+	float m_smasAttackAnimeHitTriggerTime = 0.46f;
 };

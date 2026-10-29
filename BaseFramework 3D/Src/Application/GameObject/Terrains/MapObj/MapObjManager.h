@@ -35,6 +35,7 @@ public:
 
 
 	void SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManager);
+	void SetMapObjDrawList(std::shared_ptr<MapManager> _spMapManager);
 
 	// マップオブジェクトと当たり判定させたい対象を登録
 	void MapObjHit(const std::shared_ptr<KdGameObject>& obj);
@@ -48,6 +49,7 @@ private:
 
 	//更新処理するチャンクにあるオブジェだけ入れる
 	std::list<std::shared_ptr<MapObjBase>>m_mapObjUpdateList;
+	std::list<std::shared_ptr<MapObjBase>>m_mapObjDrawList;
 
 	std::weak_ptr<GameScene>m_wpGameScene;
 };

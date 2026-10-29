@@ -173,7 +173,7 @@ public:
 
 	// スタミナ量増加（最大スタミナ永続増加）
 	void AddMaxStamina(float _boost);
-	
+
 
 	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
 
@@ -181,6 +181,12 @@ public:
 
 	// インベントリ表示時などのSE全停止処理
 	void StopSound();
+
+
+	//Effect
+	void PlayAttackBoostEffect();
+	void StopAttackBoostEffect();
+
 protected:
 
 	//LV
@@ -384,4 +390,10 @@ protected:
 	std::shared_ptr<KdSoundInstance> m_spDamageSE;
 	std::shared_ptr<KdSoundInstance> m_spRollSE;
 	std::shared_ptr<KdSoundInstance> m_spJumpSE;
+
+
+	//Effect
+	std::weak_ptr<KdEffekseerObject> m_wpHeelEffect;
+	std::weak_ptr<KdEffekseerObject> m_wpAttackBoostEffect;
+	bool m_isAttackBoostActive = false;
 };

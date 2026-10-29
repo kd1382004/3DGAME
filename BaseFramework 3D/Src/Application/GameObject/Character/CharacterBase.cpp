@@ -23,6 +23,8 @@ void CharacterBase::PostUpdate()
 
 void CharacterBase::GenerateDepthMapFromLight()
 {
+
+	if (!m_isInView) { return; }
 	if (m_spCharaModel)
 	{
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld);
@@ -31,6 +33,7 @@ void CharacterBase::GenerateDepthMapFromLight()
 
 void CharacterBase::DrawLit()
 {
+	if (!m_isInView) { return; }
 	if (m_spCharaModel)
 	{
 		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(false);
@@ -197,7 +200,7 @@ void CharacterBase::CollisionUpdate()
 	// 落下中（m_Gravity > 0）であれば、その移動分もレイを伸ばす
 	if (m_Gravity > 0.0f)
 	{
-		rayInfo.m_range += m_Gravity;
+		rayInfo.m_range += m_Gravity * DeltaTime::Instance().GetGameDeltaTime();
 	}
 
 	// 当たり判定をしたいタイプを設定
@@ -314,6 +317,14 @@ void CharacterBase::CollisionUpdate()
 void CharacterBase::Release()
 {
 	m_spCharaModel = nullptr;
+}
+
+void CharacterBase::ApplyGravity()
+{
+	float deltaTime = DeltaTime::Instance().GetGameDeltaTime();
+
+	m_pos.y -= m_Gravity * deltaTime;
+	m_Gravity += m_gravityPower * deltaTime;
 }
 
 float CharacterBase::DamagecClculationFormula(float _damage, float _ignoreRate)

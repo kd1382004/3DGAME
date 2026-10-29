@@ -68,8 +68,11 @@ void MapBase::DrawLit()
 void MapBase::GenerateDepthMapFromLight()
 {
 	if (!m_spModel) { return; }
+
+	// 床タイルは影を落とす必要がないためシャドウマップ生成から除外
+	if (m_mapObjType == MapObjType::Ground) { return; }
 	
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);;
 }
 
 void MapBase::PreDraw()

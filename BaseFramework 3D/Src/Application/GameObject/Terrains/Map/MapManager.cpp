@@ -1,4 +1,5 @@
-﻿#include "MapManager.h"
+﻿#include <queue>
+#include "MapManager.h"
 #include "MapBase.h"
 #include "MapGenerate/MapGenerate.h"
 #include "../../Camera/CameraBase.h"
@@ -260,6 +261,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 					int y = mapRoomList[i].size() / 2;
 
 					enemySpawn.m_pos = mapRoomList[i][y].m_pos;
+					mapRoomList[i][y].m_Installation = true;
 				}
 				else
 				{
@@ -501,9 +503,9 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 
 
 
-	for (int dy = -(int)m_updateChunkRadius.y - m_drawMargin; dy <= (int)m_updateChunkRadius.y + m_drawMargin; dy++)
+	for (int dy = -(int)m_updateChunkRadius.y - m_drawChunkRadius.y; dy <= (int)m_updateChunkRadius.y + m_drawChunkRadius.y; dy++)
 	{
-		for (int dx = -(int)m_updateChunkRadius.x - m_drawMargin; dx <= (int)m_updateChunkRadius.x + m_drawMargin; dx++)
+		for (int dx = -(int)m_updateChunkRadius.x - m_drawChunkRadius.x; dx <= (int)m_updateChunkRadius.x + m_drawChunkRadius.x; dx++)
 		{
 			int ncx = cx + dx;
 			int ncy = cy + dy;
@@ -514,8 +516,8 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 			{
 				if (auto spMapObj = wpMapObj.lock())
 				{
-					if (dy >= -(int)m_updateChunkRadius.y && dy <= (int)m_updateChunkRadius.y + m_drawMargin &&
-						dx >= -(int)m_updateChunkRadius.x && dx <= (int)m_updateChunkRadius.x + m_drawMargin)
+					if (dy >= -(int)m_updateChunkRadius.y && dy <= (int)m_updateChunkRadius.y + m_drawChunkRadius.y &&
+						dx >= -(int)m_updateChunkRadius.x && dx <= (int)m_updateChunkRadius.x + m_drawChunkRadius.x)
 					{
 						uniqueUpdateSet.insert(spMapObj);
 					}
@@ -532,16 +534,16 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	m_darawChankes.assign(uniqueDarweSet.begin(), uniqueDarweSet.end());
 
 	int drawMinChunkX =
-		cx - ((int)m_updateChunkRadius.x + m_drawMargin);
+		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x);
 
 	int drawMaxChunkX =
-		cx + ((int)m_updateChunkRadius.x + m_drawMargin);
+		cx + ((int)m_updateChunkRadius.x + m_drawChunkRadius.x);
 
 	int drawMinChunkY =
-		cy - ((int)m_updateChunkRadius.y + m_drawMargin);
+		cy - ((int)m_updateChunkRadius.y + m_drawChunkRadius.y);
 
 	int drawMaxChunkY =
-		cy + ((int)m_updateChunkRadius.y + m_drawMargin);
+		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y);
 
 	// ワールド座標に変換
 	float worldMinX = drawMinChunkX * CHUNK_SIZE * m_mapTileSiz;
@@ -616,6 +618,38 @@ bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 	return false;
 }
 
+bool MapManager::GetChunksDraw(Math::Vector2 _chunkNum)
+{
+	// チャンク範囲チェック
+	auto inRange = [&](int x, int y)
+		{
+			return y >= 0 && y < static_cast<int>(m_chunks.size()) &&
+				x >= 0 && x < static_cast<int>(m_chunks[y].size());
+		};
+	// float から int へ正確に変換（誤差防止）
+	int targetCx = static_cast<int>(std::round(_chunkNum.x));
+	int targetCy = static_cast<int>(std::round(_chunkNum.y));
+	int playerCx = static_cast<int>(std::round(m_chankeNum.x));
+	int playerCy = static_cast<int>(std::round(m_chankeNum.y));
+
+	// 修正：dy に .y、dx に .x を使用
+	for (int dy = -static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy++)
+	{
+		for (int dx = -static_cast<int>(m_updateChunkRadius.x + m_drawChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x + m_drawChunkRadius.x); dx++)
+		{
+			int ncx = playerCx + dx;
+			int ncy = playerCy + dy;
+			if (!inRange(ncx, ncy)) { continue; }
+			// int 型同士で安全・確実な比較
+			if (targetCx == ncx && targetCy == ncy)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 Math::Vector3 MapManager::GetRandomPos()
 {
 	Math::Vector3 retPos = {};
@@ -662,8 +696,8 @@ Math::Vector3 MapManager::GetCHUNKCenterPos()
 void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 {
 	// 1タイルあたり 3x3（中央＋周囲8マス = 全9ノード）に分割
-	int gridWidth = width * 3;
-	int gridHeight = height * 3;
+	int gridWidth = width;
+	int gridHeight = height;
 
 	m_nodes.resize(gridHeight);
 	for (int y = 0; y < gridHeight; y++)
@@ -704,27 +738,28 @@ void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapD
 			bool wallSouth = (y == height - 1) || !mapData[y + 1][x];  // 下側（Y+1）に壁
 			bool wallWest = (x == 0) || !mapData[y][x - 1];          // 左側（X-1）に壁
 			bool wallEast = (x == width - 1) || !mapData[y][x + 1];  // 右側（X+1）に壁
-			// タイル内の 3x3 サブノードに対してフラグを設定
-			for (int dy = 0; dy < 3; dy++)
-			{
-				for (int dx = 0; dx < 3; dx++)
-				{
-					int subX = x * 3 + dx;
-					int subY = y * 3 + dy;
-					if (subY >= static_cast<int>(m_nodes.size()) || subX >= static_cast<int>(m_nodes[subY].size()))
-					{
-						continue;
-					}
-					// 基本は通行可能 (true) に初期化
-					bool isWalkable = true;
-					// 壁が立っている側のサブノード列は通行不可 (false) に設定
-					if (wallNorth && dy == 0) isWalkable = false; // 上端（dy = 0）
-					if (wallSouth && dy == 2) isWalkable = false; // 下端（dy = 2）
-					if (wallWest && dx == 0) isWalkable = false; // 左端（dx = 0）
-					if (wallEast && dx == 2) isWalkable = false; // 右端（dx = 2）
-					m_nodes[subY][subX].walkable = isWalkable;
-				}
-			}
+			m_nodes[y][x].walkable = mapData[y][x];
+			//// タイル内の 3x3 サブノードに対してフラグを設定
+			//for (int dy = 0; dy < 3; dy++)
+			//{
+			//	for (int dx = 0; dx < 3; dx++)
+			//	{
+			//		int subX = x * 3 + dx;
+			//		int subY = y * 3 + dy;
+			//		if (subY >= static_cast<int>(m_nodes.size()) || subX >= static_cast<int>(m_nodes[subY].size()))
+			//		{
+			//			continue;
+			//		}
+			//		// 基本は通行可能 (true) に初期化
+			//		bool isWalkable = true;
+			//		// 壁が立っている側のサブノード列は通行不可 (false) に設定
+			//		if (wallNorth && dy == 0) isWalkable = false; // 上端（dy = 0）
+			//		if (wallSouth && dy == 2) isWalkable = false; // 下端（dy = 2）
+			//		if (wallWest && dx == 0) isWalkable = false; // 左端（dx = 0）
+			//		if (wallEast && dx == 2) isWalkable = false; // 右端（dx = 2）
+			//		m_nodes[subY][subX].walkable = isWalkable;
+			//	}
+			//}
 		}
 	}
 }
@@ -733,7 +768,7 @@ Math::Vector3 MapManager::NodeToWorld(const Node* node) const
 {
 	if (!node) return Math::Vector3::Zero;
 
-	float subTileSize = m_mapTileSiz / 3.0f;
+	float subTileSize = m_mapTileSiz;
 	float worldX = subTileSize * node->pos.x + subTileSize * 0.5f;
 	float worldZ = -(subTileSize * node->pos.y + subTileSize * 0.5f);
 
@@ -742,7 +777,7 @@ Math::Vector3 MapManager::NodeToWorld(const Node* node) const
 
 Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 {
-	float subTileSize = m_mapTileSiz / 3.0f;
+	float subTileSize = m_mapTileSiz;
 
 	// X は右へプラス
 	int x = static_cast<int>(floor(worldPos.x / subTileSize));
@@ -763,49 +798,61 @@ Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 	return &m_nodes[y][x];
 }
 
+struct PathQueueItem
+{
+	float fCost;
+	float hCost;
+	Node* node;
+
+	bool operator>(const PathQueueItem& other) const
+	{
+		if (fCost == other.fCost) return hCost > other.hCost;
+		return fCost > other.fCost;
+	}
+};
+
 std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 {
-	if (!start || !goal) return {};
+	if (!start || !goal || !start->walkable || !goal->walkable) return {};
+	if (start == goal) return { start };
 
-	for (auto& row : m_nodes)
+	// 探索IDをインクリメント（全ノードループ初期化を不要にする）
+	m_currentSearchId++;
+	if (m_currentSearchId == 0)
 	{
-		for (auto& node : row)
+		// uint32_t のオーバーフロー対策（42億回に1回）
+		for (auto& row : m_nodes)
 		{
-			node.gCost = FLT_MAX;
-			node.hCost = 0.0f;
-			node.parent = nullptr;
+			for (auto& node : row)
+			{
+				node.searchId = 0;
+			}
 		}
+		m_currentSearchId = 1;
 	}
 
-	// openList = 探索候補
-	std::vector<Node*> openList;
+	std::priority_queue<PathQueueItem, std::vector<PathQueueItem>, std::greater<PathQueueItem>> openQueue;
 
-	// closedList = 探索済み
-	std::vector<Node*> closedList;
-
-	// 初期化
+	// 開始ノードの初期化
+	start->searchId = m_currentSearchId;
 	start->gCost = 0.0f;
 	start->hCost = Heuristic(start, goal);
 	start->parent = nullptr;
+	start->inClosed = false;
 
-	openList.push_back(start);
+	openQueue.push({ start->fCost(), start->hCost, start });
 
-	while (!openList.empty())
+	while (!openQueue.empty())
 	{
-		// openList の中で fCost が最小のノードを探す
-		Node* current = openList[0];
-		for (auto* node : openList)
-		{
-			if (node->fCost() < current->fCost() ||
-				(node->fCost() == current->fCost() && node->hCost < current->hCost))
-			{
-				current = node;
-			}
-		}
+		PathQueueItem item = openQueue.top();
+		openQueue.pop();
+		Node* current = item.node;
 
-		// openList から current を削除
-		openList.erase(std::remove(openList.begin(), openList.end(), current), openList.end());
-		closedList.push_back(current);
+		// 既にクローズドリストに入っている（より良い経路で処理済み）ならスキップ
+		if (current->inClosed && current->searchId == m_currentSearchId)
+		{
+			continue;
+		}
 
 		// ゴールに到達したら経路復元
 		if (current == goal)
@@ -813,35 +860,37 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 			return BuildPath(goal);
 		}
 
+		current->inClosed = true;
+
 		// 隣接ノードを取得 (周囲8方向)
 		auto neighbors = GetNeighbors(current);
 
 		for (auto* neighbor : neighbors)
 		{
-			// 通れない or 探索済みならスキップ
-			if (!neighbor->walkable ||
-				std::find(closedList.begin(), closedList.end(), neighbor) != closedList.end())
+			if (!neighbor || !neighbor->walkable) continue;
+
+			// 初めて訪問したノードなら初期化
+			if (neighbor->searchId != m_currentSearchId)
 			{
-				continue;
+				neighbor->searchId = m_currentSearchId;
+				neighbor->gCost = FLT_MAX;
+				neighbor->inClosed = false;
+				neighbor->parent = nullptr;
 			}
+
+			if (neighbor->inClosed) continue;
 
 			// 直交か斜めかで移動コストを設定 (直交=1.0, 斜め=1.414)
 			float stepCost = (current->pos.x != neighbor->pos.x && current->pos.y != neighbor->pos.y) ? 1.41421356f : 1.0f;
 			float newCost = current->gCost + stepCost;
 
 			// 新しいルートの方が安いなら更新
-			if (newCost < neighbor->gCost ||
-				std::find(openList.begin(), openList.end(), neighbor) == openList.end())
+			if (newCost < neighbor->gCost)
 			{
 				neighbor->gCost = newCost;
 				neighbor->hCost = Heuristic(neighbor, goal);
 				neighbor->parent = current;
-
-				// openList に未登録なら追加
-				if (std::find(openList.begin(), openList.end(), neighbor) == openList.end())
-				{
-					openList.push_back(neighbor);
-				}
+				openQueue.push({ neighbor->fCost(), neighbor->hCost, neighbor });
 			}
 		}
 	}

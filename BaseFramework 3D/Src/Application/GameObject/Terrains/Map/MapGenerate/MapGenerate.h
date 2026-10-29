@@ -273,7 +273,7 @@ private:
 	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
 
 
-	const	int  CHUNK_SIZE = 7;
+	const	int  CHUNK_SIZE = 5;
 
 
 

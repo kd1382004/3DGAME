@@ -128,8 +128,7 @@ void Giant::Update()
 
 
 	//重力更新
-	m_pos.y -= m_Gravity;
-	m_Gravity += m_gravityPower;
+	ApplyGravity();
 
 
 	if (GetAsyncKeyState('V'))

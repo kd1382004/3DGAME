@@ -35,6 +35,9 @@ struct Node
 	// 経路復元用
 	Node* parent = nullptr;
 
+	uint32_t searchId = 0; // 今回の探索ID（これで初期化を判定）
+	bool inClosed = false;
+
 	float fCost() const { return gCost + hCost; }
 };
 
@@ -113,6 +116,7 @@ public:
 
 	//チャンク番号を渡して更新するかどうかを返す
 	bool GetChunksUpdate(Math::Vector2 _chunkNum);
+	bool GetChunksDraw(Math::Vector2 _chunkNum);
 
 	bool GetIsChunkChanged(){return m_isChunkChanged;}
 
@@ -148,6 +152,7 @@ private:
 	void ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapData);
 
 	std::vector<std::vector<Node>> m_nodes;
+	uint32_t m_currentSearchId = 0;
 
 	// 経路復元
 	std::vector<Node*> BuildPath(Node* goal) const;
@@ -183,7 +188,7 @@ private:
 	//更新処理するチャンク
 	std::vector<std::shared_ptr<MapBase>>m_updateChankes;
 	std::vector<std::shared_ptr<MapBase>>m_darawChankes;
-	int m_drawMargin = 1;
+	
 	//チャンクのXYを保存
 	Math::Vector2 m_chankeNum = {-999,-999};
 
@@ -207,7 +212,12 @@ private:
 
 	//更新チャンク
 	//縦横に+-xyずつ
-	Math::Vector2 m_updateChunkRadius = { 1,1 };
+	Math::Vector2 m_updateChunkRadius = {1,1};
+
+
+	//描画チャンク
+	//縦横に更新チャンクに対して+-xyずつ
+	Math::Vector2  m_drawChunkRadius = { 1, 1};
 
 	//チャンクを囲むボックス
 	Math::Vector3 m_boxPos;

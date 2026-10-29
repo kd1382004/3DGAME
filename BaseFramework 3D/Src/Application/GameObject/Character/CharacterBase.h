@@ -120,6 +120,8 @@ private:
 
 protected:
 
+	void ApplyGravity();
+
 	//ダメージ計算式
 	//ダメージ量を返す
 	float DamagecClculationFormula(float _damage, float _ignoreRate);
@@ -133,7 +135,8 @@ protected:
 
 	float m_Gravity = 0;
 
-	float m_gravityPower = 0.12f;
+
+	float m_gravityPower = 432.0f;
 
 	///////////////////////////////////////////
 	//キャラステータス

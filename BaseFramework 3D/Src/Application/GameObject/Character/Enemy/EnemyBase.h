@@ -95,7 +95,7 @@ protected:
 	Math::Vector3 m_playerPos;
 
 	//
-	float m_PlayerChaseDir = 1.5;
+	float m_PlayerChaseDir =5;
 
 
 	///////////////////////////////////////////

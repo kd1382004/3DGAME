@@ -51,7 +51,7 @@ void EnemyManager::PreUpdate()
 			}
 		}
 	}
-
+	
 
 	if (m_enemyBoss)
 	{

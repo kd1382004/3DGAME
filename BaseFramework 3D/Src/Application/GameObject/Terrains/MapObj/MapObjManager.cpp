@@ -9,35 +9,57 @@ void MapObjManager::Init()
 
 void MapObjManager::PreUpdate()
 {
-	// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
-	auto it = m_mapObjList.begin();
-
-	while (it != m_mapObjList.end())
 	{
-		if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+		// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
+		auto it = m_mapObjList.begin();
+
+		while (it != m_mapObjList.end())
 		{
-			// 無効なオブジェクトをリストから削除
-			it = m_mapObjList.erase(it);
-		}
-		else
-		{
-			++it;	// 次の要素へイテレータを進める
+			if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+			{
+				// 無効なオブジェクトをリストから削除
+				it = m_mapObjList.erase(it);
+			}
+			else
+			{
+				++it;	// 次の要素へイテレータを進める
+			}
 		}
 	}
 
-	// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
-	auto it1 = m_mapObjUpdateList.begin();
-
-	while (it1 != m_mapObjUpdateList.end())
 	{
-		if ((*it1)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+		// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
+		auto it = m_mapObjUpdateList.begin();
+
+		while (it != m_mapObjUpdateList.end())
 		{
-			// 無効なオブジェクトをリストから削除
-			it1 = m_mapObjUpdateList.erase(it1);
+			if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+			{
+				// 無効なオブジェクトをリストから削除
+				it = m_mapObjUpdateList.erase(it);
+			}
+			else
+			{
+				++it;	// 次の要素へイテレータを進める
+			}
 		}
-		else
+	}
+
+	{
+		// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
+		auto it = m_mapObjDrawList.begin();
+
+		while (it != m_mapObjDrawList.end())
 		{
-			++it1;	// 次の要素へイテレータを進める
+			if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+			{
+				// 無効なオブジェクトをリストから削除
+				it = m_mapObjDrawList.erase(it);
+			}
+			else
+			{
+				++it;	// 次の要素へイテレータを進める
+			}
 		}
 	}
 }
@@ -60,7 +82,7 @@ void MapObjManager::PostUpdate()
 
 void MapObjManager::GenerateDepthMapFromLight()
 {
-	for (auto& obj : m_mapObjUpdateList)
+	for (auto& obj : m_mapObjDrawList)
 	{
 		if (!obj) continue;
 		if (!obj->IsInView()) continue; // 画面外スキップ
@@ -71,7 +93,7 @@ void MapObjManager::GenerateDepthMapFromLight()
 
 void MapObjManager::PreDraw()
 {
-	for (auto& obj : m_mapObjUpdateList)
+	for (auto& obj : m_mapObjDrawList)
 	{
 		if (!obj) continue;
 		obj->PreDraw();
@@ -80,7 +102,7 @@ void MapObjManager::PreDraw()
 
 void MapObjManager::DrawLit()
 {
-	for (auto& obj : m_mapObjUpdateList)
+	for (auto& obj : m_mapObjDrawList)
 	{
 		if (!obj) continue;
 		if (!obj->IsInView()) continue; // 画面外スキップ
@@ -126,6 +148,7 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 	if (!_spMapManager) { return; }
 
 	m_mapObjUpdateList.clear();
+	m_mapObjDrawList.clear();
 	for (auto& obj : m_mapObjList)
 	{
 		Math::Vector2 chunkNum = obj->GetChunkNum();
@@ -138,7 +161,32 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 		{
 			obj->SetInHaunk(false);
 		}
+		
+		if (_spMapManager->GetChunksDraw(chunkNum))
+		{
+			m_mapObjDrawList.push_back(obj);
+		}
 	}
+}
+
+void MapObjManager::SetMapObjDrawList(std::shared_ptr<MapManager> _spMapManager)
+{
+	if (!_spMapManager) { return; }
+
+	m_mapObjDrawList.clear();
+	for (auto& obj : m_mapObjList)
+	{
+		Math::Vector2 chunkNum = obj->GetChunkNum();
+		if (_spMapManager->GetChunksUpdate(chunkNum))
+		{
+			obj->SetInHaunk(true);
+		}
+		else
+		{
+			obj->SetInHaunk(false);
+		}
+	}
+
 }
 
 void MapObjManager::MapObjHit(const std::shared_ptr<KdGameObject>& obj)

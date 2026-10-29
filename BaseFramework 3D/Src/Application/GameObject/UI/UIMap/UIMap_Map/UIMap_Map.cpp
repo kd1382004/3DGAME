@@ -123,33 +123,32 @@ void UIMap_Map::SetMinimapRevealAll(bool enable)
 void UIMap_Map::DiscoverTile()
 {
 	float discoverRadius = m_discoverTileNum * m_mapTexSiz.x;
-
+	std::unordered_set<int> revealedRooms;
 	for (auto& info : m_posList)
 	{
-		if (info.m_drawFlg) { continue; }
-
-
+		if (info.m_drawFlg) continue;
 		Math::Vector2 pos = { m_basePos.x + info.m_pos.x * m_siz, m_basePos.y + info.m_pos.y * m_siz };
 		float dist = (pos - m_minMapPlayerPos).Length();
-
 		if (dist < discoverRadius)
 		{
 			info.m_drawFlg = true;
-		}
-
-		if (!info.m_drawFlg) { continue; }
-
-		//ほかの部屋も描画する
-		if (info.m_LoomNum == m_NOTLoom) { continue; }
-		for (auto& info2 : m_posList)
-		{
-			if (info2.m_LoomNum == info.m_LoomNum)
+			if (info.m_LoomNum != m_NOTLoom)
 			{
-				info2.m_drawFlg = true;
+				revealedRooms.insert(info.m_LoomNum);
 			}
 		}
-
-		if (info.m_LoomNum == m_StairsMineMapInfo.m_LoomNum)
+	}
+	// 新たに視界に入った部屋がある場合のみ、1回だけ全走査してその部屋のタイルを有効化
+	if (!revealedRooms.empty())
+	{
+		for (auto& info : m_posList)
+		{
+			if (revealedRooms.count(info.m_LoomNum))
+			{
+				info.m_drawFlg = true;
+			}
+		}
+		if (revealedRooms.count(m_StairsMineMapInfo.m_LoomNum))
 		{
 			m_StairsMineMapInfo.m_drawFlg = true;
 			m_isStairsMine = true;

@@ -263,6 +263,32 @@ void PlayerBase::PostUpdate()
 	{
 		m_IsDetectedByEnemy = false;
 	}
+
+
+	{
+		auto effect = m_wpHeelEffect.lock();
+		if (effect && effect->IsPlaying())
+		{
+			effect->SetPos(m_pos);
+		}
+	}
+
+
+	if (m_isAttackBoostActive)
+	{
+		Math::Vector3 pos = m_pos + Math::Vector3{ 0, 0.5f, 0 };
+
+		auto effect = m_wpAttackBoostEffect.lock();
+		if (!effect || !effect->IsPlaying())
+		{
+			// 1周終わったら自分で再生し直す（毎回新しいオブジェクトを受け取る）
+			m_wpAttackBoostEffect = KdEffekseerManager::GetInstance().Play(
+				"AttackBoost/AttackBoost.efkefc", pos, 1.0f, 1.0f, false);
+			effect = m_wpAttackBoostEffect.lock();
+		}
+
+		if (effect) { effect->SetPos(pos); }
+	}
 }
 
 void PlayerBase::GenerateDepthMapFromLight()
@@ -389,6 +415,12 @@ void PlayerBase::HPHeal(int _Heal)
 	{
 		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
 		spHPBar->SetHPBarTexPercent(percent);
+	}
+
+
+	if (_Heal > 0)
+	{
+		m_wpHeelEffect = KdEffekseerManager::GetInstance().Play("Heel/HealEffect.efkefc", m_pos, 1.0f, 1.0f, false);
 	}
 }
 
@@ -873,11 +905,13 @@ void PlayerBase::MoveNowSpeedDecision()
 
 void PlayerBase::JumpAndGravity()
 {
+
+
+
 	//スタンならorふっとばし or 回避中 なら　移動できない
 	if (m_hitStunFlg || m_isKnockbackFlg || m_evasionAnimeFlg || m_isDead)
 	{
-		m_pos.y -= m_Gravity;
-		m_Gravity += m_gravityPower;
+		ApplyGravity();
 		return;
 	}
 
@@ -892,7 +926,7 @@ void PlayerBase::JumpAndGravity()
 	{
 		if (m_jumpFlg)
 		{
-			m_jumpPower = 1;
+			m_jumpPower = 60;
 			m_Gravity = -m_jumpPower;
 			m_jumpFlg = false;
 
@@ -912,8 +946,7 @@ void PlayerBase::JumpAndGravity()
 	//////////////////////////////////////////////////////////////
 	// 重力処理
 	//キャラクターには常に重力がかかる
-	m_pos.y -= m_Gravity;
-	m_Gravity += m_gravityPower;
+	ApplyGravity();
 
 	//////////////////////////////////////////////////////////////
 }
@@ -1165,4 +1198,26 @@ void PlayerBase::StopSound()
 	// チャージ中に開いた場合はチャージ状態も解除
 	m_chargeAttacFlg = false;
 	m_chargeAttackCount = 0;
+}
+
+void PlayerBase::PlayAttackBoostEffect()
+{
+	m_isAttackBoostActive = true;
+
+	auto effect = m_wpAttackBoostEffect.lock();
+	if (effect && effect->IsPlaying()) { return; }   // 再生中ならそのまま
+
+	m_wpAttackBoostEffect = KdEffekseerManager::GetInstance().Play(
+		"AttackBoost/AttackBoost.efkefc", m_pos + Math::Vector3{ 0, 0.5f, 0 }, 1.0f, 1.0f, false);
+}
+
+void PlayerBase::StopAttackBoostEffect()
+{
+	m_isAttackBoostActive = false;
+
+	if (auto effect = m_wpAttackBoostEffect.lock())
+	{
+		effect->StopEffect();   // 中で SetLoop(false) も呼ばれる
+	}
+	m_wpAttackBoostEffect.reset();
 }

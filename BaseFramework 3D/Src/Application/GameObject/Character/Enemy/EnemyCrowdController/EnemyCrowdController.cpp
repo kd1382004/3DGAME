@@ -23,7 +23,7 @@ Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* enemy)
 	Math::Vector3 force = { 0,0,0 };
 	float avoidDist = 0.8f;
 
-	auto& enemies = enemy->GetEnemyManager()->GetEnemyList();
+	auto& enemies = enemy->GetEnemyManager()->GetEnemyUpdateList();
 
 	for (auto& other : enemies)
 	{
@@ -50,7 +50,7 @@ Math::Vector3 EnemyCrowdController::CalcSeparation(EnemyBase* enemy)
 	Math::Vector3 force = { 0,0,0 };
 	float radius = 2.0f;
 
-	auto& enemies = enemy->GetEnemyManager()->GetEnemyList();
+	auto& enemies = enemy->GetEnemyManager()->GetEnemyUpdateList();
 
 	for (auto& other : enemies)
 	{
