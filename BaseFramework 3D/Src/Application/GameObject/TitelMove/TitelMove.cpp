@@ -1,6 +1,8 @@
 ﻿#include "TitelMove.h"
 #include "../../GameObject/Terrains/Map/MapManager.h"
 
+#include"../Camera/CameraBase.h"
+
 TitelMove::TitelMove()
 {
 
@@ -163,11 +165,30 @@ void TitelMove::Update()
 		}
 	}
 
+	auto spcamera = m_wpCamera.lock();
+	bool isFacing = false;
+	if (spcamera)
+	{
+		const Math::Vector3& moveVec = m_moveVec;
+		// 移動ベクトルがある時のみ回転（停止時は直前の向きをキープ）
+		if (moveVec.LengthSquared() > 0.0001f)
+		{
+			// XZ平面の進行方向からYaw角度(度数法)を算出
+			float targetYaw = DirectX::XMConvertToDegrees(std::atan2(moveVec.x, moveVec.z));
+			// 第2引数で最大回転速度（度/秒）を指定して回転
+			isFacing = spcamera->RotateTowardsY(targetYaw, 60.0f);
+		}
+	}
+
+
 	//--------------------------------------
 	// 移動
 	//--------------------------------------
-	m_pos += m_moveVec * m_speed * dt;
+	if (isFacing)
+	{
+		m_pos += m_moveVec * m_speed * dt;
 
+	}
 	SetPos(m_pos);
 }
 

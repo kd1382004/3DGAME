@@ -109,10 +109,15 @@ void Giant::Update()
 		}
 		return;
 	}
-
-	////重力
-	//m_pos.y -= m_Gravity;
-	//m_Gravity += m_gravityPower;
+	else
+	{
+		if (m_playerChaseFlg && !m_attackFlg)
+		{
+			m_moveVec = m_playerPos - m_pos;
+			m_moveVec.y = 0;
+			m_moveVec.Normalize();
+		}
+	}
 
 	//プレイヤー追跡
 	if (m_playerChaseFlg)
@@ -248,6 +253,10 @@ void Giant::AttackMode()
 				m_giantAttackMode = GiantAttackMode::LeftPunchAttack;
 			}
 
+
+			m_giantAttackMode = GiantAttackMode::JumpSlamAttack;
+			m_moveVec = m_playerPos - m_pos;
+			m_moveVec.Normalize();
 		}
 
 		switch (m_giantAttackMode)
@@ -274,6 +283,10 @@ void Giant::AttackMode()
 				m_spCrying3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 				m_spCrying3DSE->Play(false);
 			}
+
+
+			m_JumpSlam_StartEfkefcFlg = true;
+			m_JumpSlam_EndEfkefcFlg = true;
 			break;
 		default:
 			break;
@@ -399,8 +412,6 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 	float p = m_spAnimetor->GetAnimeProgress();
 	if (p == 1)
 	{
-
-
 		m_JumpSlamAttackMode = JumpSlamAttackMode_Idle;
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.IdleAnime), true);
 		m_attackJumpSlamIdleNow = m_attackJumpSlamIdleMax;
@@ -414,6 +425,24 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 		if (p < 0.3)
 		{
 			m_attackJumpSlamTargetPos = m_playerPos;
+		}
+
+		if (m_JumpSlam_StartEfkefcFlg && p >= 0.14)
+		{
+			m_JumpSlam_StartEfkefcFlg = false;
+			KdEffekseerManager::GetInstance().Play("AttackJumpSlam/Start/JumpSlam_Start.efkefc", m_pos, 2.0f, 1.0f, false);
+		}
+
+
+
+		if (m_JumpSlam_EndEfkefcFlg && p >= 0.4)
+		{
+			m_JumpSlam_EndEfkefcFlg = false;
+			auto efe= KdEffekseerManager::GetInstance().Play("AttackJumpSlam/End/JumpSlam_End.efkefc", m_pos, 2.0f, 1.0f, false);
+			int i = efe.lock()->GetHandle();
+			KdEffekseerManager::GetInstance().SetRotation(i, Math::Vector3(0, 1, 0), DirectX::XMConvertToRadians(m_angle));
+
+
 		}
 
 		spAttackJumpSlam->SetRadiusDrawFlg(true);
@@ -431,6 +460,8 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 					m_spDon3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 					m_spDon3DSE->Play(false);
 				}
+
+				
 			}
 			else
 			{
@@ -461,6 +492,8 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 
 
 				spAttackJumpSlam->SetRadiusDrawFlg(false);
+
+
 
 			}
 		}

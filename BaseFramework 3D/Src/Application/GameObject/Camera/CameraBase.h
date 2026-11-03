@@ -8,6 +8,7 @@ public:
 
 	void Init()				override;
 	void Update()				override;
+	void PostUpdate()			override;
 	void PreDraw()			override;
 
 	void SetTarget(const std::shared_ptr<KdGameObject>& target);
@@ -57,18 +58,16 @@ public:
 	}
 
 	DirectX::BoundingFrustum GetBoundingFrustum()
-	{
-		DirectX::BoundingFrustum worldFrustum;
-
+	{	
 		// プロジェクション行列からフラスタムを作成
 		DirectX::BoundingFrustum localFrustum;
 		DirectX::BoundingFrustum::CreateFromMatrix(localFrustum, m_spCamera->GetProjMatrix());
 
 		// View の逆行列でワールド空間へ
 		DirectX::XMMATRIX invView = DirectX::XMMatrixInverse(nullptr, m_spCamera->GetCameraViewMatrix());
-		localFrustum.Transform(worldFrustum, invView);
-
-		return worldFrustum;
+		localFrustum.Transform(m_worldFrustum, invView);
+		
+		return m_worldFrustum;
 	}
 
 	//回避成功したら呼ぶ
@@ -77,9 +76,13 @@ public:
 
 	// 目標のYaw角度(度数法)に向けて制限付きで回転させる
 	// maxSpeedDegPerSec ... 1秒あたりの最大回転角度
-	void RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec);
+	//向き切ったかあ銅貨を返す
+	bool RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec);
 
 protected:
+
+
+	DirectX::BoundingFrustum m_worldFrustum;
 
 	//回避成功
 	float m_evasionCamTime = 0.0f;

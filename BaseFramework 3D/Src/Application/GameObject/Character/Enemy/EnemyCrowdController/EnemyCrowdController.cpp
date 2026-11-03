@@ -20,24 +20,53 @@ void EnemyCrowdController::Update(EnemyBase* enemy, float dt)
 
 Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* enemy)
 {
-	Math::Vector3 force = { 0,0,0 };
-	float avoidDist = 0.8f;
+	Math::Vector3 force = Math::Vector3::Zero;
+	if (!enemy) return force;
 
-	auto& enemies = enemy->GetEnemyManager()->GetEnemyUpdateList();
+	auto spManager = enemy->GetEnemyManager();
+	if (!spManager) return force;
 
-	for (auto& other : enemies)
+	const float avoidDist = 0.8f;
+	const float avoidDistSq = avoidDist * avoidDist;
+	const float maxForce = 1.0f;   // 押し出しの上限
+
+	const Math::Vector3 myPos = enemy->GetPos();
+
+	for (auto& other : spManager->GetEnemyUpdateList())
 	{
-		if (other.get() == enemy) continue;
+		if (!other || other.get() == enemy) continue;
+		// if (other->IsDead()) continue;   // 死亡判定がある場合
 
-		Math::Vector3 diff = enemy->GetPos() - other->GetPos();
-		diff.y = 0;
+		Math::Vector3 diff = myPos - other->GetPos();
+		diff.y = 0.0f;
 
-		float dist = diff.Length();
-		if (dist < avoidDist && dist > 0.001f)
+		float distSq = diff.LengthSquared();
+		if (distSq >= avoidDistSq) continue;   // 遠い敵はここで除外（平方根なし）
+
+		float dist = std::sqrt(distSq);
+
+		Math::Vector3 dir;
+		if (dist > 0.001f)
 		{
-			diff.Normalize();
-			force += diff * (avoidDist - dist);
+			dir = diff / dist;
 		}
+		else
+		{
+			// 完全に重なっている → アドレスの大小で方向を決めてお互い逆に押す
+			dir = (enemy < other.get()) ? Math::Vector3(1, 0, 0) : Math::Vector3(-1, 0, 0);
+			dist = 0.0f;
+		}
+
+		// 近いほど強く押す（0〜1）
+		float strength = (avoidDist - dist) / avoidDist;
+		force += dir * strength;
+	}
+
+	// 押し出しすぎ防止
+	if (force.LengthSquared() > maxForce * maxForce)
+	{
+		force.Normalize();
+		force *= maxForce;
 	}
 
 	return force;

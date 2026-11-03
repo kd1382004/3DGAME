@@ -282,65 +282,73 @@ float4 main(VSOutput In) : SV_Target0
 
 				if (g_SpotLights[i].IsBright)
 				{
-					if (g_SL_ShadowEnable.x != 0)
+
+					//if (IsBrightTrue)
 					{
-						// ピクセルのワールド座標をスポットライトの深度空間へ変換
-						float4 slPos = mul(float4(In.wPos, 1), g_SL_mLightVP);
-						slPos.xyz /= slPos.w;
-						// 照射範囲内かチェック (NDC空間: x, y は -1～1、z は 0～1)
-						if (abs(slPos.x) <= 1.0 && abs(slPos.y) <= 1.0 && slPos.z >= 0.0 && slPos.z <= 1.0)
+						if (g_SL_ShadowEnable.x != 0)
 						{
-							float2 uv = slPos.xy * float2(1, -1) * 0.5 + 0.5;
-							float currentZ = slPos.z - 0.0005; // アクネ対策バイアス
+						// ピクセルのワールド座標をスポットライトの深度空間へ変換
+							float4 slPos = mul(float4(In.wPos, 1), g_SL_mLightVP);
+							slPos.xyz /= slPos.w;
+						// 照射範囲内かチェック (NDC空間: x, y は -1～1、z は 0～1)
+							if (abs(slPos.x) <= 1.0 && abs(slPos.y) <= 1.0 && slPos.z >= 0.0 && slPos.z <= 1.0)
+							{
+								float2 uv = slPos.xy * float2(1, -1) * 0.5 + 0.5;
+								float currentZ = slPos.z - 0.0005; // アクネ対策バイアス
 
 							// テクスチャサイズ取得
-							float w, h;
-							g_spotShadowMap.GetDimensions(w, h);
-							float tw = 1.0 / w;
-							float th = 1.0 / h;
+								float w, h;
+								g_spotShadowMap.GetDimensions(w, h);
+								float tw = 1.0 / w;
+								float th = 1.0 / h;
 
 							// 3x3 PCF によるソフトシャドウ（R32_FLOATカラーテクスチャから深度をサンプリングして比較）
-							spotShadow = 0.0;
-							for (int sy = -1; sy <= 1; sy++)
-							{
-								for (int sx = -1; sx <= 1; sx++)
+								spotShadow = 0.0;
+								for (int sy = -1; sy <= 1; sy++)
 								{
-									float mapDepth = g_spotShadowMap.SampleLevel(g_ss, uv + float2(sx * tw, sy * th), 0).r;
-									spotShadow += (currentZ <= mapDepth) ? 1.0 : 0.0;
+									for (int sx = -1; sx <= 1; sx++)
+									{
+										float mapDepth = g_spotShadowMap.SampleLevel(g_ss, uv + float2(sx * tw, sy * th), 0).r;
+										spotShadow += (currentZ <= mapDepth) ? 1.0 : 0.0;
+									}
 								}
+								spotShadow *= 0.111111;
 							}
-							spotShadow *= 0.111111;
-						}
-						else
-						{
+							else
+							{
 							// ライトの後方(z < 0)は影にする
-							spotShadow = (slPos.z < 0.0) ? 0.0 : 1.0;
+								spotShadow = (slPos.z < 0.0) ? 0.0 : 1.0;
+							}
 						}
-					}
 
 		
 			
 					// 1. 距離による減衰
-					float distAtte = 1.0 - saturate(dist / g_SpotLights[i].Radius);
-					distAtte *= distAtte;
+						float distAtte = 1.0 - saturate(dist / g_SpotLights[i].Radius);
+						distAtte *= distAtte;
 					// 2. 角度による減衰
-					float angleAtte = saturate((cosAngle - g_SpotLights[i].CosAngle) / (1.0 - g_SpotLights[i].CosAngle));
+						float angleAtte = saturate((cosAngle - g_SpotLights[i].CosAngle) / (1.0 - g_SpotLights[i].CosAngle));
 					// ★最終減衰率に spotShadow を乗算！（壁の裏は 0 になり光が消える）
-					float totalAtte = distAtte * angleAtte * spotShadow;
+						float totalAtte = distAtte * angleAtte * spotShadow;
 					// --- Diffuse (拡散光) ---
-					float3 L = -lightDir;
-					float lightDiffuse = saturate(dot(L, wN));
-					lightDiffuse *= totalAtte;
-					outColor += (g_SpotLights[i].Color * lightDiffuse) * baseDiffuse * baseColor.a;
+						float3 L = -lightDir;
+						float lightDiffuse = saturate(dot(L, wN));
+						lightDiffuse *= totalAtte;
+						outColor += (g_SpotLights[i].Color * lightDiffuse) * baseDiffuse * baseColor.a;
 					// --- Specular (反射光) ---
-					float spec = BlinnPhong(-lightDir, vCam, wN, specPower);
-					spec *= totalAtte;
-					outColor += (g_SpotLights[i].Color * spec) * baseSpecular * baseColor.a * 0.5;
-					totalBrightness += totalAtte * g_SpotLights[i].IsBright;
+						float spec = BlinnPhong(-lightDir, vCam, wN, specPower);
+						spec *= totalAtte;
+						outColor += (g_SpotLights[i].Color * spec) * baseSpecular * baseColor.a * 0.5;
+						totalBrightness += totalAtte * g_SpotLights[i].IsBright;
+					}
+						
 				}
 				else
 				{
-					outColor += g_SpotLights[i].Color * spotShadow;
+					//if (IsBrightFalse)
+					{
+						outColor += g_SpotLights[i].Color * spotShadow;
+					}
 				}
 			}
 		}

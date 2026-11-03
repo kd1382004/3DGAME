@@ -60,5 +60,5 @@ void SmashAttack::SetAttackStatus()
 	//スタン時間
 	m_hitStunTime = 0.2;
 
-	m_boxSiz = { 1,2,1 };
+	m_boxSiz = { 1,2,2 };
 }

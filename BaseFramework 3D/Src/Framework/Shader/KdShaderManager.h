@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "StandardShader/KdStandardShader.h"
 #include "PostProcessShader/KdPostProcessShader.h"
@@ -24,8 +24,10 @@ struct SpotLight
 {
 	Math::Vector3 Color;
 	float         Radius = 0.0f;
+	
 	Math::Vector3 Pos;
 	float         CosAngle = 0.0f; // cos(RADIAN)
+	
 	Math::Vector3 Dir;
 	int           IsBright = 1;
 };

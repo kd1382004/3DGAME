@@ -328,7 +328,7 @@ void PlayerInventoryUI::Update()
 	static bool flg = true;
 	if (GetAsyncKeyState('1') & 0x8000)
 	{
-		if (!flg)
+		//if (!flg)
 		{
 			std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
 			if (spPlayer)

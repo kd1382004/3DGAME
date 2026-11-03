@@ -419,6 +419,9 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		_spUIManager->AddUIObj(spAttackGage);
 		SetAttackGagePercent(1);
 	}
+
+
+	HPPosPostUpdate();
 }
 
 void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)

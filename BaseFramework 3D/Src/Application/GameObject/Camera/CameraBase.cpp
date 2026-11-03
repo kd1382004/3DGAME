@@ -20,6 +20,11 @@ void CameraBase::Update()
 	}
 }
 
+void CameraBase::PostUpdate()
+{
+
+}
+
 void CameraBase::PreDraw()
 {
 	if (!m_spCamera) { return; }
@@ -193,20 +198,39 @@ void CameraBase::UpdateRotateByMouse()
 
 
 
-void CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
+bool CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
 {
+	bool isRotateFinished = false;
+
+
 	// 目標角度と現在角度の差分
 	float diff = targetYawDeg - m_DegAng.y;
+
+	// 許容誤差（度数法）
+	float toleranceDeg = 0.1f; 
+
 	// -180度 〜 +180度の範囲に正規化（最短ルートで旋回）
 	while (diff > 180.0f)  diff -= 360.0f;
 	while (diff < -180.0f) diff += 360.0f;
-	// 1フレームあたりの最大回転量（制限）
+
+	// 1フレームあたりの最大回転量
 	float maxStep = maxSpeedDegPerSec * DeltaTime::Instance().GetGameDeltaTime();
-	// 回転量を制限
-	float step = std::clamp(diff, -maxStep, maxStep);
-	// 反映
-	m_DegAng.y += step;
-	// 角度を 0 〜 360 度の範囲内に保つ
+
+	// 残りが許容範囲内、または今フレームで届く → ぴったり合わせて完了
+	if (std::abs(diff) <= std::max(maxStep, toleranceDeg))
+	{
+		m_DegAng.y += diff;   // 目標にスナップ（誤差を残さない）
+		isRotateFinished = true;
+	}
+	else
+	{
+		m_DegAng.y += (diff > 0.0f) ? maxStep : -maxStep;
+		isRotateFinished = false;
+	}
+
+	// 0 〜 360度に収める
 	if (m_DegAng.y >= 360.0f) m_DegAng.y -= 360.0f;
 	if (m_DegAng.y < 0.0f)    m_DegAng.y += 360.0f;
+
+	return isRotateFinished;
 }

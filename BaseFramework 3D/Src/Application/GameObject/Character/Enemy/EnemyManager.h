@@ -55,6 +55,8 @@ public:
 	void SetEnemyManager(std::shared_ptr<EnemyManager>_spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
 
 	void SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager);
+
+	void SetVisionFlg(bool _flg);
 protected:
 
 	std::weak_ptr<HitDamage>m_wpHitDamage;

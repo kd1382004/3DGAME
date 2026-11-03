@@ -92,7 +92,26 @@ void PlayerBase::Init()
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape("Player", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeDamage);
+
+		// 歩きのポーズでノード行列を計算してから読む（基本姿勢だと腕を広げた形のため）
+		m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes());
+		m_spCharaModel->CalcNodeMatrices();
+
+		auto addSphere = [&](std::string_view nodeName, UINT type)
+			{
+				const KdModelWork::Node* node = m_spCharaModel->FindNode(nodeName);
+				if (!node) { return; }
+				const Math::Matrix& m = node->m_worldTransform;
+				// エンプティの位置 = 球の中心、エンプティのスケール = 半径
+				m_pCollider->RegisterCollisionShape(nodeName, m.Translation(), m.Right().Length(), type);
+			};
+
+		const UINT bodyType = KdCollider::TypeBump | KdCollider::TypeDamage;
+		addSphere("Col_Bump", KdCollider::TypeBump);
+		addSphere("Col_Legs", bodyType);
+		addSphere("Col_Waist", bodyType);
+		addSphere("Col_Chest", bodyType);
+		addSphere("Col_Head", bodyType);
 	}
 
 	if (!m_spPlayerBuffManager)
@@ -288,6 +307,30 @@ void PlayerBase::PostUpdate()
 		}
 
 		if (effect) { effect->SetPos(pos); }
+	}
+
+	if (m_isDashActive&&m_groundHit)
+	{
+		Math::Vector3 pos = m_pos;
+
+		auto effect = m_wpDashEffect.lock();
+		if (!effect || !effect->IsPlaying())
+		{
+			// 1周終わったら自分で再生し直す（毎回新しいオブジェクトを受け取る）
+			m_wpDashEffect = KdEffekseerManager::GetInstance().Play(
+				"Dash/Dash.efkefc", pos, 1.0f, 1.0f, false);
+			effect = m_wpDashEffect.lock();
+		}
+
+		if (effect) { effect->SetPos(pos); }
+	}
+	else
+	{
+		auto effect = m_wpDashEffect.lock();
+		if (effect && effect->IsPlaying())
+		{
+			effect->StopEffect();
+		}
 	}
 }
 
@@ -809,6 +852,12 @@ void PlayerBase::Move()
 			{
 				m_spWalkSE->Stop();
 			}
+
+			m_isDashActive = true;
+		}
+		else
+		{
+			m_isDashActive = false;
 		}
 
 
@@ -842,6 +891,8 @@ void PlayerBase::Move()
 		{
 			m_spDashSE->Stop();
 		}
+
+		m_isDashActive = false;
 	}
 	//////////////////////////////////////////////////////////////
 }

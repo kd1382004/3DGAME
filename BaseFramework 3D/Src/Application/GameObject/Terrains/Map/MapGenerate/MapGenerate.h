@@ -196,8 +196,10 @@ private:
 	std::vector<std::pair<RoomInfo, RoomInfo>> GetRoomConnectionPairs(const std::vector<RoomInfo>& _roomInfo);
 
 	//通路の座標リストを返す
-	std::vector<Math::Vector3>  GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B, const std::vector<std::vector<FloorInfo>>& map);
+	std::vector<Math::Vector3> GenerateCorridorPath(const RoomInfo& _A, const RoomInfo& _B,const std::vector<std::vector<FloorInfo>>& map, bool _stopAtExisting = true);
 
+	// 全部屋が連結になるまで通路を追加する
+	void ConnectAllRegions(std::vector<std::vector<FloorInfo>>& map);
 
 
 	int FindRoot(std::vector<int>& _parent, int _x);
@@ -278,6 +280,10 @@ private:
 
 
 	std::weak_ptr<CameraBase> m_wpCamera;
+
+	//最低限の部屋の数
+	//プレイヤースポーン部屋,階段部屋,その他の3つが最低限必要な数
+	static const int m_mineLoomNum = 3;
 };
 
 

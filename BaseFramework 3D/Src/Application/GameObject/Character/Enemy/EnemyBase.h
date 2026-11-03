@@ -67,6 +67,8 @@ public:
 		m_moveVec = _vec;
 		m_moveVec.Normalize();
 	}
+
+	void SetVisionFlg(bool _flg) { m_isVisionFlg = _flg; }
 protected:
 
 	// レベルおよび基準ステータス
@@ -184,6 +186,10 @@ protected:
 
 
 	void SetAttackGagePercent(float _percent);
+
+
+	bool m_isVisionFlg=false;
+
 private:
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;

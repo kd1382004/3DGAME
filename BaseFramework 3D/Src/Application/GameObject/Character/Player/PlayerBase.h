@@ -396,4 +396,7 @@ protected:
 	std::weak_ptr<KdEffekseerObject> m_wpHeelEffect;
 	std::weak_ptr<KdEffekseerObject> m_wpAttackBoostEffect;
 	bool m_isAttackBoostActive = false;
+
+	std::weak_ptr<KdEffekseerObject> m_wpDashEffect;
+	bool m_isDashActive = false;
 };

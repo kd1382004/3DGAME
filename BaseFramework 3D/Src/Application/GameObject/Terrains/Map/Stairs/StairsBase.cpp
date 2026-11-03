@@ -35,13 +35,19 @@ void StairsBase::Init()
 	}
 
 
+	// 画面内に映っている時：一時停止解除（再生）
+	DirectX::SimpleMath::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
+
 	m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
 		"Stairs/Stairs.efkefc",
-		{},
+		worldEffectPos,
 		1.0f,
 		1.0f,
 		true // ループ再生
 	);
+
+	auto spEffect = m_wpAuraEffect.lock();
+	spEffect->SetLoop(false);
 
 	m_effectLocalPos.z += 5;
 

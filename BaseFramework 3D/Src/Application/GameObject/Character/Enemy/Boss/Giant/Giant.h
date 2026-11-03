@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"../../EnemyBase.h"
 
 class GameScene;
@@ -162,4 +162,8 @@ private:
 	std::shared_ptr<KdSoundInstance3D> m_spPunch3DSE;
 	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
 	std::shared_ptr<KdSoundInstance3D> m_spDon3DSE;
+
+
+	bool m_JumpSlam_EndEfkefcFlg = false;
+	bool m_JumpSlam_StartEfkefcFlg = false;
 };

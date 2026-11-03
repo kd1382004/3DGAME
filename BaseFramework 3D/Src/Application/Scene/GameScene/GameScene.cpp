@@ -568,4 +568,6 @@ void GameScene::GenerateMap()
 	{
 		m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
 	}
+
+	m_spEnemyManager->SetVisionFlg(true);
 }

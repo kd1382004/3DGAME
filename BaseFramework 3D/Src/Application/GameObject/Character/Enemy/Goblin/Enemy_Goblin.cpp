@@ -24,7 +24,7 @@ void Goblin::Init()
 		if (!m_pCollider)
 		{
 			m_pCollider = std::make_unique<KdCollider>();
-			m_pCollider->RegisterCollisionShape("Goblin", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion| KdCollider::TypeDamage);
+			m_pCollider->RegisterCollisionShape("Goblin", m_spCharaModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion | KdCollider::TypeDamage);
 		}
 
 		//if (!m_pDebugWire)
@@ -74,9 +74,7 @@ void Goblin::Init()
 
 void Goblin::Update()
 {
-	EnemyAmbush::Update();
 
-	Attack();
 
 	if (m_isDead)
 	{
@@ -95,6 +93,17 @@ void Goblin::Update()
 	}
 
 
+	if (m_playerChaseFlg && !m_attackFlg)
+	{
+		m_moveVec = m_playerPos - m_pos;
+		m_moveVec.y = 0;
+		m_moveVec.Normalize();
+	}
+
+	EnemyAmbush::Update();
+
+	Attack();
+
 	if (m_AnimeChangeFlg)
 	{
 		ChangeAnime();
@@ -108,7 +117,7 @@ void Goblin::PreUpdate()
 	EnemyBase::PreUpdate();
 	HPPosPostUpdate();
 
-	if (!m_playerChaseFlg)
+	if (!m_playerChaseFlg && m_isVisionFlg)
 	{
 		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 		if (!spCamera) { return; }
@@ -135,7 +144,7 @@ void Goblin::PreUpdate()
 			);
 		}
 	}
-	
+
 }
 
 void Goblin::Release()
@@ -239,8 +248,11 @@ void Goblin::Attack()
 		{
 			//腕の座標を攻撃に渡す
 			auto* handNode = m_spCharaModel->FindNode("thumb_2_L");
-			Math::Vector3 handPos = handNode->m_worldTransform.Translation() + m_pos;
-			spAttack->SetPos(handPos);
+			if (handNode)
+			{
+				Math::Matrix handMat = handNode->m_worldTransform * m_mWorld;
+				spAttack->SetPos(handMat.Translation());
+			}
 			spAttack->SetKnockbackDir(m_mWorld.Backward());
 
 			if (m_spCrying3DSE && m_spCrying3DSE->IsPlaying())
@@ -295,7 +307,6 @@ void Goblin::AttacksSlammingDown()
 
 				m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Attck;
 				m_AnimeChangeFlg = true;
-
 			}
 		}
 	}
@@ -343,7 +354,7 @@ void Goblin::UpdateFootstepSE()
 		if (m_spDash3DSE)
 		{
 			m_spDash3DSE->SetPos(m_pos);
-			m_spDash3DSE->SetVolume(seVol*0.3);
+			m_spDash3DSE->SetVolume(seVol * 0.3);
 			if (!m_spDash3DSE->IsPlaying())
 			{
 				m_spDash3DSE->Play();

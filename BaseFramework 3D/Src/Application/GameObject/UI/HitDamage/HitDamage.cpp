@@ -13,7 +13,7 @@ void HitDamage::PreUpdate()
 
 	while (it != m_hitDamageList.end())
 	{
-		if (it->m_alpha <= 0.0f)	// IsExpired() ・・・ 無効ならtrue
+		if (it->m_alpha <= 0.0f)
 		{
 			// 無効なオブジェクトをリストから削除
 			it = m_hitDamageList.erase(it);

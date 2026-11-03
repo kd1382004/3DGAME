@@ -16,7 +16,7 @@ public:
 
 
 	void SetChunkNum(Math::Vector2 _chunk) { m_chunkNum = _chunk; }
-	Math::Vector2 GetChunkNum() { return m_chunkNum; }
+	const Math::Vector2 GetChunkNum() { return m_chunkNum; }
 
 	//チャンク内にいるか
 	virtual void SetInHaunk(bool _flg) {};

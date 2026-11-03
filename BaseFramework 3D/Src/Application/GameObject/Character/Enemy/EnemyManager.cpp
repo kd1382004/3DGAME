@@ -205,6 +205,14 @@ void EnemyManager::SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager)
 	}
 }
 
+void EnemyManager::SetVisionFlg(bool _flg)
+{
+	for (const auto& enemy : m_enemyList)
+	{
+		enemy->SetVisionFlg(_flg);
+	}
+}
+
 void EnemyManager::SetEnemyListPlayer()
 {
 	for (const auto& enemy : m_enemyList)

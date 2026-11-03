@@ -98,6 +98,9 @@ void TitleScene::Init()
 	spUIManager->AddUIObj(spVOLUI);
 	/////////////////////////////////////////
 	m_spTitelMove->SetMapManager(m_spMapManager);
+	m_spTitelMove->SetCamera(m_spCamera);
+
+
 	m_spCamera->SetTarget(m_spTitelMove);
 	m_spMapManager->SetCamera(m_spCamera);
 	m_spMapManager->SetMapObjManager(m_spMapObjManager);
@@ -114,8 +117,8 @@ void TitleScene::Init()
 
 
 	//
-	Math::Vector2 siz = { 30,30 };
-	m_spMapManager->GenerateMap(siz, 3, MapType_Grassland);
+	Math::Vector2 siz = { 50,50 };
+	m_spMapManager->GenerateMap(siz, 20, MapType_Grassland);
 
 	m_spCamera->SetPos(m_spMapManager->GetPlayerSpawnPos());
 	m_spTitelMove->SetPos(m_spMapManager->GetPlayerSpawnPos());
@@ -201,21 +204,6 @@ void TitleScene::Event()
 	{
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
 	}
-
-
-	if (m_spCamera && m_spTitelMove)
-	{
-		const Math::Vector3& moveVec = m_spTitelMove->GetMoveVec();
-		// 移動ベクトルがある時のみ回転（停止時は直前の向きをキープ）
-		if (moveVec.LengthSquared() > 0.0001f)
-		{
-			// XZ平面の進行方向からYaw角度(度数法)を算出
-			float targetYaw = DirectX::XMConvertToDegrees(std::atan2(moveVec.x, moveVec.z));
-			// 第2引数で最大回転速度（度/秒）を指定して回転
-			m_spCamera->RotateTowardsY(targetYaw, 60.0f);
-		}
-	}
-
 
 	m_spMapManager->SetPlayerChanke(m_spTitelMove->GetPos());
 
