@@ -23,6 +23,7 @@
 
 //武器
 #include"../../GameObject/Weapon/Dagger/Dagger.h"
+#include"../../GameObject/Weapon/Sword/Sword.h"
 
 //敵
 #include"../../GameObject/Character/Enemy/EnemyManager.h"
@@ -270,6 +271,7 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spPlayer = std::make_shared<PlayerBase>();
 	m_spPlayer->Init();
+	m_spPlayer->SetPlayerWeaponInfo(SceneManager::Instance().GetPlayerWeaponInfo());
 	m_objList.push_back(m_spPlayer);
 
 	m_spCharacterStatus.push_back(m_spPlayer);
@@ -278,7 +280,21 @@ void GameScene::Init()
 	//武器
 	/////////////////////////////////////////
 	
-	m_spWeapon = std::make_shared<Dagger>();
+	switch (SceneManager::Instance().GetPlayerWeaponInfo())
+	{
+	case PlayerWeaponInfo_Dagger:
+		m_spWeapon = std::make_shared<Dagger>();
+		break;
+	case PlayerWeaponInfo_Sword:
+		m_spWeapon = std::make_shared<Sword>();
+		break;
+	case PlayerWeaponInfoSize:
+		break;
+	default:
+		break;
+	}
+
+
 	m_spWeapon->Init();
 	
 	

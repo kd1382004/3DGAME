@@ -1,8 +1,5 @@
 ﻿#pragma once
 #include"../CharacterBase.h"
-
-
-
 class CameraBase;
 class GameScene;
 
@@ -187,6 +184,8 @@ public:
 	void PlayAttackBoostEffect();
 	void StopAttackBoostEffect();
 
+	void SetPlayerWeaponInfo(int info);
+
 protected:
 
 	//LV
@@ -291,7 +290,16 @@ protected:
 		std::string WalkAnime = "Walk";
 		std::string RunAnime = "Run";
 		std::string PickUpAnime = "PickUp";
-		std::string SwordAttackAnime = "Dagger_Attack";
+		
+		std::string AttackAnime = "";
+
+		//ダガーの攻撃アニメーション
+		std::string DaggerAttackAnime = "Dagger_Attack";
+
+		//剣の攻撃アニメーション
+		std::string SwordAttackAnime = "Sword_Swing";
+		
+		
 		std::string PunchAttackAnime = "Punch";
 		std::string EvasionAnime = "Roll";
 		std::string DeathAnime = "Death";

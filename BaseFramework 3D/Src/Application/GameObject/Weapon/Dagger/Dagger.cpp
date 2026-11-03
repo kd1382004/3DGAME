@@ -92,19 +92,30 @@ void Dagger::Update()
 	// ----------------------------------------------------
 	// m_hitBoxExtents に連動したローカル OBB の自動計算
 	// ----------------------------------------------------
-	float moveDist = (currTipPos - m_prevTipPos).Length(); // 1フレームでの移動量
-	float extentX = m_hitBoxExtents.x;   // 横幅の半分
-	float extentY = m_hitBoxExtents.y;   // 高さ(刃の長さ)の半分
-	float extentZ = m_hitBoxExtents.z;   // 厚みの半分
+	// 前フレームの判定箱と今の判定箱を両方覆う OBB を、今の剣のローカル空間で作る
+	Math::Vector3 minPos = m_hitBoxLocalOffset - m_hitBoxExtents;
+	Math::Vector3 maxPos = m_hitBoxLocalOffset + m_hitBoxExtents;
 
-	// 移動量(moveDist)の半分を進行方向に伸ばしてすり抜けを防止
-	float extendedExtentY = extentY + moveDist * 0.5f;
-	float extendedCenterY = m_hitBoxLocalOffset.y - moveDist * 0.5f;
+	const Math::Matrix prevWorld = m_localMat * m_prevWeponParentMat;
+	const Math::Matrix prevToCurr = prevWorld * m_mWorld.Invert();
+
+	for (int i = 0; i < 8; ++i)
+	{
+		const Math::Vector3 corner(
+			m_hitBoxLocalOffset.x + ((i & 1) ? m_hitBoxExtents.x : -m_hitBoxExtents.x),
+			m_hitBoxLocalOffset.y + ((i & 2) ? m_hitBoxExtents.y : -m_hitBoxExtents.y),
+			m_hitBoxLocalOffset.z + ((i & 4) ? m_hitBoxExtents.z : -m_hitBoxExtents.z));
+
+		const Math::Vector3 p = Math::Vector3::Transform(corner, prevToCurr);
+		minPos = Math::Vector3::Min(minPos, p);
+		maxPos = Math::Vector3::Max(maxPos, p);
+	}
+
 	DirectX::BoundingOrientedBox localOBB(
-		Math::Vector3(m_hitBoxLocalOffset.x, extendedCenterY, m_hitBoxLocalOffset.z),
-		Math::Vector3(extentX, extendedExtentY, extentZ),
-		DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)
-	);
+		(minPos + maxPos) * 0.5f,
+		(maxPos - minPos) * 0.5f,
+		DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+
 	// ★ワールド行列をかけて進行方向に傾いた OBB に変換！
 	DirectX::BoundingOrientedBox sweptOBB;
 	localOBB.Transform(sweptOBB, m_mWorld);
@@ -190,34 +201,34 @@ void Dagger::DrawLit()
 
 void Dagger::ChargAttackPlay()
 {
-	if (m_ChargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv > 0)
+	if (m_ChargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv > 0)
 	{
 		m_chargeAttackMaxdamage = m_characterAttackPower + (m_baseWeaponStatus.attackPower * (m_ChargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2);
 
 		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack;
 
-		for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv; i++)
+		for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv; i++)
 		{
 			spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
 			spDagger_ChargeAttack->Init();
 
-			float maxDistanceM = m_maxDistanceM * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_maxDistanceM].Lv * 0.3) * 10;
-			float chargeAttackSpeed = m_chargeAttackSpeed * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_speed].Lv * 0.3);
+			float maxDistanceM = m_maxDistanceM * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].Lv * 0.3) * 10;
+			float chargeAttackSpeed = m_chargeAttackSpeed * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].Lv * 0.3);
 
-			int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_hitNum].Lv * 1);
+			int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].Lv * 1);
 
 
 
 			float spread = 30.0f; // 角度の広がり
 			float t;
-			if (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv - 1 == 0)
+			if (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv - 1 == 0)
 			{
 				t = 0;
 				spread = 0;
 			}
 			else
 			{
-				t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv - 1); // 0～1
+				t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv - 1); // 0～1
 			}
 
 			float ang = m_attackAngle - spread * 0.5f + spread * t;

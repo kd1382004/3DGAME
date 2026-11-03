@@ -352,6 +352,9 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy\Golem\Attack\SmashAttack">
       <UniqueIdentifier>{81956c0b-4852-4b29-b07f-78d484769652}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Weapon\Sword">
+      <UniqueIdentifier>{6da2c36d-01b7-41b9-b62e-54caf9fcd6b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -807,6 +810,9 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Golem\Attack\SmashAttack\SmashAttack.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Golem\Attack\SmashAttack</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\Sword\Sword.h">
+      <Filter>Src\Application\GameObject\Weapon\Sword</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1225,6 +1231,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Golem\Attack\SmashAttack\SmashAttack.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Golem\Attack\SmashAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\Sword\Sword.cpp">
+      <Filter>Src\Application\GameObject\Weapon\Sword</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

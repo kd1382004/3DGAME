@@ -1,4 +1,5 @@
 ﻿#include "PotionTexInfo.h"
+#include"../../../Scene/SceneManager.h"
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetPotionIcon(int _ID)
 {
@@ -153,11 +154,26 @@ void PotionTexInfo::Load()
 			std::string iconPath;
 			std::string explanationPath;
 			std::string namePath;
+			std::string PlayerWeapon;
 			if (tex.ID >= 4)
 			{
-				iconPath = m_weaponsStrengtheningPath + "/Dagger/" + tex.m_name + m_Icom;
-				explanationPath = m_weaponsStrengtheningPath + "/Dagger/" + tex.m_name + m_Explanation;
-				namePath = m_weaponsStrengtheningPath + "/Dagger/" + tex.m_name + m_Name;
+				switch (SceneManager::Instance().GetPlayerWeaponInfo())
+				{
+				case PlayerWeaponInfo::PlayerWeaponInfo_Dagger:
+					PlayerWeapon = "/Dagger/";
+					break;
+				case PlayerWeaponInfo::PlayerWeaponInfo_Sword:
+					PlayerWeapon = "/Sword/";
+					break;
+
+				default:
+					break;
+				}
+
+
+				iconPath = m_weaponsStrengtheningPath + PlayerWeapon + tex.m_name + m_Icom;
+				explanationPath = m_weaponsStrengtheningPath + PlayerWeapon + tex.m_name + m_Explanation;
+				namePath = m_weaponsStrengtheningPath + PlayerWeapon + tex.m_name + m_Name;
 			}
 			else
 			{

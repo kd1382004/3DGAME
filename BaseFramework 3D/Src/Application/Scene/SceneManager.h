@@ -25,6 +25,16 @@ struct GameResult
 	bool playerDead = false;
 };
 
+
+//プレイヤーの武器情報
+enum PlayerWeaponInfo
+{
+	PlayerWeaponInfo_Dagger,
+	PlayerWeaponInfo_Sword,
+	PlayerWeaponInfoSize
+};
+
+
 class BaseScene;
 
 class SceneManager
@@ -72,6 +82,9 @@ public:
 
 	//初期に戻す
 	void UnFogAmbient();
+
+
+	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_PlayerWeaponInfo; }
 private:
 
 	// マネージャーの初期化
@@ -116,6 +129,9 @@ private:
 	void FogAmbientJsonLode();
 
 	std::string m_FogAmbientJsonFilePath = "Asset/Data/ObjeData/FogAmbient/FogAmbientJsonSave.json";
+
+
+	PlayerWeaponInfo m_PlayerWeaponInfo = PlayerWeaponInfo::PlayerWeaponInfo_Sword;
 
 private:
 

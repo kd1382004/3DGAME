@@ -4,6 +4,9 @@
 #include"../../../Scene/GameScene/GameScene.h"
 #include"Action/NextFloorAction/NextFloorAction.h"
 
+#include"../../../Scene/SceneManager.h"
+
+
 //UI
 #include"../../UI/UIManager.h"
 #include"../../UI/HPBar/HPBar.h"
@@ -576,7 +579,7 @@ void PlayerBase::WeaponUpdate()
 	{
 		m_nowPlayerAnimeMode = PlayerBase::SwordAttackAnime;
 		m_normalAttackWaitNow = 0;
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.SwordAttackAnime), false);
+		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.AttackAnime), false);
 
 		m_chargeAttacFlg = true;
 		m_staminaRegenFlg = false;
@@ -1058,7 +1061,7 @@ void PlayerBase::PlayerAnimeModeUpdate()
 			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.PickUpAnime), false);
 			break;
 		case PlayerBase::SwordAttackAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.SwordAttackAnime), false);
+			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.AttackAnime), false);
 			break;
 		case PlayerBase::PunchAttackAnime:
 			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.PunchAttackAnime), false);
@@ -1271,4 +1274,23 @@ void PlayerBase::StopAttackBoostEffect()
 		effect->StopEffect();   // 中で SetLoop(false) も呼ばれる
 	}
 	m_wpAttackBoostEffect.reset();
+}
+
+void PlayerBase::SetPlayerWeaponInfo(int info)
+{
+	{
+		switch (info)
+		{
+		case PlayerWeaponInfo::PlayerWeaponInfo_Dagger:
+			m_playerAnimeName.AttackAnime = m_playerAnimeName.DaggerAttackAnime;
+			break;
+		case PlayerWeaponInfo::PlayerWeaponInfo_Sword:
+			m_playerAnimeName.AttackAnime = m_playerAnimeName.SwordAttackAnime;
+			break;
+
+		default:
+			break;
+		}
+		m_playerAnimeName.AttackAnime;
+	}
 }

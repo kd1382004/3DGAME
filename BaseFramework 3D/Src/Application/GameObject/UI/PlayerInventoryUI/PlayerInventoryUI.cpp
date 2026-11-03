@@ -195,7 +195,7 @@ void PlayerInventoryUI::Init()
 
 	////////////////////////////////////////////////////////////////////////////
 	//武器強化用
-	Math::Vector2 weaponsStrengtheningBasePos = { m_back1Tex2DPos.x,-80 };
+	Math::Vector2 weaponsStrengtheningBasePos = { m_back1Tex2DPos.x,-200 };
 	float weaponsStrengtheningOffset = 150.0f;
 	float vecL = 150.0f;
 
@@ -244,22 +244,29 @@ void PlayerInventoryUI::Init()
 
 		m_weaponsStrengtheningInfo[i].Lv = 0;
 
+		float addY = 100;
+
 		switch (i)
 		{
 		case PlayerInventoryUI::WeaponsStrengthening_Attck:
 			pos.x -= weaponsStrengtheningOffset * 2;
+			pos.y += addY;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Stamina:
 			pos.x -= weaponsStrengtheningOffset;
+			pos.y += addY;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ChargeTime:
 			pos.x += weaponsStrengtheningOffset * 2;
+			pos.y += addY;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Characteristic:
 			pos.x = m_back1Tex2DPos.x;
+			pos.y += addY;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_DefenseIgnore:
 			pos.x += weaponsStrengtheningOffset;
+			pos.y += addY;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Characteristic1:
 			rad = DirectX::XMConvertToRadians(45.0f);
@@ -277,8 +284,6 @@ void PlayerInventoryUI::Init()
 			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y + cos(rad) * vecL;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Icon:
-			pos.x = m_back1Tex2DPos.x;
-			pos.y -= 120;
 			m_weaponsStrengtheningInfo[i].Lv = 1;
 			break;
 		case PlayerInventoryUI::WeaponsStrengtheningSiz:
@@ -303,7 +308,23 @@ void PlayerInventoryUI::Init()
 			case PlayerInventoryUI::WeaponsStrengthening_Characteristic2:
 			case PlayerInventoryUI::WeaponsStrengthening_Characteristic3:
 			case PlayerInventoryUI::WeaponsStrengthening_Icon:
-				filePath += "/Dagger";
+
+
+
+				switch (SceneManager::Instance().GetPlayerWeaponInfo())
+				{
+				case PlayerWeaponInfo::PlayerWeaponInfo_Dagger:
+					filePath += "/Dagger";
+					break;
+				case PlayerWeaponInfo::PlayerWeaponInfo_Sword:
+					filePath += "/Sword";
+					break;
+
+				default:
+					break;
+				}
+
+				
 				break;
 			default:
 				break;
