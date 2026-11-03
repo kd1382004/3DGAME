@@ -1489,6 +1489,13 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 			{
 				placeTorch = true;
 			}
+
+
+			//周りになかったら置く
+			if (IsSetTorch(_x, _y, map, 3))
+			{
+				placeTorch = true;
+			}
 		}
 		else
 		{
@@ -1504,7 +1511,7 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 			}
 
 			//周りになかったら置く
-			if (IsSetTorch(_x, _y, map, 4))
+			if (IsSetTorch(_x, _y, map, 2))
 			{
 				placeTorch = true;
 			}

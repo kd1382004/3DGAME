@@ -64,7 +64,7 @@ void Torch::Init()
 
 	m_effectLocalColoer = { 20,8,0 };
 
-	m_radius = 30;
+	m_radius = 25;
 }
 
 void Torch::PostUpdate()
@@ -76,12 +76,22 @@ void Torch::PostUpdate()
 	if (!spCamera) { return; }
 	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
 
-	if (CheckInScreen(spCamera->GetBoundingFrustum(), worldEffectPos, m_radius))
+
+	m_flickerTime += DeltaTime::Instance().GetGameDeltaTime() * m_flickerSpeed;
+
+	// 周期の違う波を重ねて、規則的に見えないようにする
+	float wave = std::sin(m_flickerTime * 7.0f) * 0.6f
+		+ std::sin(m_flickerTime * 13.0f + 1.3f) * 0.3f
+		+ std::sin(m_flickerTime * 23.0f + 2.7f) * 0.1f; // -1～1の範囲
+
+	float radius = m_radius * (1.0f + wave * m_flickerAmount);
+
+	if (CheckInScreen(spCamera->GetBoundingFrustum(), worldEffectPos, radius))
 	{
 		// 画面内に映っている時：一時停止解除（再生）
 		KdShaderManager::Instance().WorkAmbientController().AddPointLight(
 			m_effectLocalColoer,								//色
-			m_radius,										//半径	
+			radius,										//半径	
 			worldEffectPos		//座標
 		);
 	}

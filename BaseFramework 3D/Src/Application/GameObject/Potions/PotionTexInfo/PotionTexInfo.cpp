@@ -150,9 +150,24 @@ void PotionTexInfo::Load()
 			std::shared_ptr<KdTexture>explanation = std::make_shared<KdTexture>();
 			std::shared_ptr<KdTexture>name = std::make_shared<KdTexture>();
 
-			std::string iconPath = m_weaponsStrengtheningPath + tex.m_name + m_Icom;
-			std::string explanationPath = m_weaponsStrengtheningPath + tex.m_name + m_Explanation;
-			std::string namePath = m_weaponsStrengtheningPath + tex.m_name + m_Name;
+			std::string iconPath;
+			std::string explanationPath;
+			std::string namePath;
+			if (tex.ID >= 4)
+			{
+				iconPath = m_weaponsStrengtheningPath + "/Dagger/" + tex.m_name + m_Icom;
+				explanationPath = m_weaponsStrengtheningPath + "/Dagger/" + tex.m_name + m_Explanation;
+				namePath = m_weaponsStrengtheningPath + "/Dagger/" + tex.m_name + m_Name;
+			}
+			else
+			{
+				iconPath = m_weaponsStrengtheningPath + tex.m_name + m_Icom;
+				explanationPath = m_weaponsStrengtheningPath + tex.m_name + m_Explanation;
+				namePath = m_weaponsStrengtheningPath + tex.m_name + m_Name;
+			}
+
+
+
 
 			icon->Load(iconPath);
 			explanation->Load(explanationPath);

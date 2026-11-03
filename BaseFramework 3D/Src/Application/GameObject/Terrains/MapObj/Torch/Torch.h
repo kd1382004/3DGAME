@@ -2,7 +2,7 @@
 
 #include"../MapObjBase.h"
 
-class Torch:public MapObjBase
+class Torch :public MapObjBase
 {
 public:
 	Torch() {};
@@ -31,6 +31,7 @@ private:
 	std::weak_ptr<CameraBase>m_wpCamera;
 
 
+
 	Math::Vector3 m_pos;
 
 	std::shared_ptr<KdModelWork>m_spTorchModel;
@@ -46,6 +47,10 @@ private:
 	Math::Vector3 m_effectLocalPos;
 	Math::Vector3 m_effectLocalColoer;
 	float m_radius;
+
+	float m_flickerTime = 0.0f;
+	float m_flickerAmount = 0.1f; // 揺れ幅（半径に対する割合）
+	float m_flickerSpeed =0.3;   // 揺れの速さの倍率
 
 	//音
 	std::shared_ptr<KdSoundInstance3D> m_spFireSE;

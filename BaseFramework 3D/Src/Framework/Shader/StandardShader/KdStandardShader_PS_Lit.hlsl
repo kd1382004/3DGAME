@@ -222,6 +222,7 @@ float4 main(VSOutput In) : SV_Target0
 		// 点光の判定以内
 		if (dist < g_PointLights[i].Radius)
 		{
+			
 			// 半径をもとに、距離の比率を求める
 			float atte = 1.0 - saturate(dist / g_PointLights[i].Radius);
 			
@@ -230,7 +231,7 @@ float4 main(VSOutput In) : SV_Target0
 			
 			// 逆２乗の法則
 			atte *= atte;
-			
+
 			// Diffuse(拡散光)
 			{
 				// 光の方向と法線の方向との角度さが光の強さになる

@@ -18,19 +18,23 @@
 		},
 		{
 			"id": 4,
-			"name": "WeaponStrengthening_ShockWave"
+			"name": "WeaponsStrengthening_Characteristic"
 		},
 		{
 			"id": 5,
-			"name": "WeaponStrengthening_ShockWave_maxDistanceM"
+			"name": "WeaponsStrengthening_Characteristic1"
 		},
 		{
 			"id": 6,
-			"name": "WeaponStrengthening_ShockWave_speed"
+			"name": "WeaponsStrengthening_Characteristic2"
 		},
 		{
 			"id": 7,
-			"name": "WeaponStrengthening_ShockWave_hitNum"
+			"name": "WeaponsStrengthening_Characteristic3"
+		},
+		{
+			"id": 8,
+			"name": "Icon"
 		}
 	]
 }

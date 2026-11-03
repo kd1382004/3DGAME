@@ -176,6 +176,7 @@ private:
 	float m_selectAddTotal =0;
 	float m_selectAddTotalMax =50;
 
+	std::shared_ptr<KdTexture>m_LvMaxButtonTex;
 
 	bool m_PreconditionNodeFlg = false;
 
@@ -239,17 +240,20 @@ private:
 		//防御無視
 		WeaponsStrengthening_DefenseIgnore,
 
-		//衝撃波攻撃(これはLV1がマックスでLv1になったらこれ以下の強化を許す)
-		WeaponsStrengthening_ShockWave,
+		//武器特有(Lv1になったら他の特有の強化を許す)
+		WeaponsStrengthening_Characteristic,
 
-		//衝撃波の飛距離
-		WeaponsStrengthening_ShockWave_maxDistanceM,
+		//武器特有1
+		WeaponsStrengthening_Characteristic1,
 
-		//衝撃波の速度
-		WeaponsStrengthening_ShockWave_speed,
+		//武器特有2
+		WeaponsStrengthening_Characteristic2,
 
-		//衝撃波の貫通力(何体まで当たっていいか)
-		WeaponsStrengthening_ShockWave_hitNum,
+		//武器特有3
+		WeaponsStrengthening_Characteristic3,
+
+		//武器アイコン
+		WeaponsStrengthening_Icon,
 
 		WeaponsStrengtheningSiz
 	};

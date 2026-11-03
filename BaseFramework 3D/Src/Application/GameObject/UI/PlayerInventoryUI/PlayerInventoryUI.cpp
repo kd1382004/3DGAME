@@ -195,11 +195,9 @@ void PlayerInventoryUI::Init()
 
 	////////////////////////////////////////////////////////////////////////////
 	//武器強化用
-	Math::Vector2 weaponsStrengtheningBasePos = { m_back1Tex2DPos.x,-150 };
+	Math::Vector2 weaponsStrengtheningBasePos = { m_back1Tex2DPos.x,-80 };
 	float weaponsStrengtheningOffset = 150.0f;
-	float vecL = 200.0f;
-
-
+	float vecL = 150.0f;
 
 	if (!m_weaponsStrengtheningButtonTex)
 	{
@@ -218,6 +216,11 @@ void PlayerInventoryUI::Init()
 		m_selectTex2DPos = m_UseTex2DPos;
 		m_selectTex = std::make_shared<KdTexture>();
 		m_selectTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/select.png");
+	}
+	if (!m_LvMaxButtonTex)
+	{
+		m_LvMaxButtonTex = std::make_shared<KdTexture>();
+		m_LvMaxButtonTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/Max.png");
 	}
 
 	if (!m_LVTex)
@@ -239,6 +242,8 @@ void PlayerInventoryUI::Init()
 	{
 		Math::Vector2 pos = weaponsStrengtheningBasePos;
 
+		m_weaponsStrengtheningInfo[i].Lv = 0;
+
 		switch (i)
 		{
 		case PlayerInventoryUI::WeaponsStrengthening_Attck:
@@ -250,26 +255,31 @@ void PlayerInventoryUI::Init()
 		case PlayerInventoryUI::WeaponsStrengthening_ChargeTime:
 			pos.x += weaponsStrengtheningOffset * 2;
 			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic:
 			pos.x = m_back1Tex2DPos.x;
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_DefenseIgnore:
 			pos.x += weaponsStrengtheningOffset;
 			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic1:
 			rad = DirectX::XMConvertToRadians(45.0f);
-			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + sin(rad) * vecL;
-			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + cos(rad) * vecL;
+			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x + sin(rad) * vecL;
+			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y + cos(rad) * vecL;
 			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_speed:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic2:
 			rad = DirectX::XMConvertToRadians(0.0f);
-			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + sin(rad) * vecL;
-			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + cos(rad) * vecL;
+			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x + sin(rad) * vecL;
+			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y + cos(rad) * vecL;
 			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_hitNum:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic3:
 			rad = DirectX::XMConvertToRadians(-45.0f);
-			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x + sin(rad) * vecL;
-			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y + cos(rad) * vecL;
+			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x + sin(rad) * vecL;
+			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y + cos(rad) * vecL;
+			break;
+		case PlayerInventoryUI::WeaponsStrengthening_Icon:
+			pos.x = m_back1Tex2DPos.x;
+			pos.y -= 120;
+			m_weaponsStrengtheningInfo[i].Lv = 1;
 			break;
 		case PlayerInventoryUI::WeaponsStrengtheningSiz:
 			break;
@@ -277,15 +287,29 @@ void PlayerInventoryUI::Init()
 			break;
 		}
 
-		m_weaponsStrengtheningInfo[i].Lv = 0;
 		m_weaponsStrengtheningInfo[i].ID = i;
 		m_weaponsStrengtheningInfo[i].iconPos = pos;
 		m_weaponsStrengtheningInfo[i].iconSiz = m_selectWeaponsStrengtheningIconSiz;
 		m_weaponsStrengtheningInfo[i].nextLvNum = 0;
+
 		if (!m_weaponsStrengtheningInfo[i].iconTex)
 		{
 			m_weaponsStrengtheningInfo[i].iconTex = std::make_shared<KdTexture>();
-			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/WeponStrengtheningIcon";
+			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon";
+			switch (i)
+			{
+			case PlayerInventoryUI::WeaponsStrengthening_Characteristic:
+			case PlayerInventoryUI::WeaponsStrengthening_Characteristic1:
+			case PlayerInventoryUI::WeaponsStrengthening_Characteristic2:
+			case PlayerInventoryUI::WeaponsStrengthening_Characteristic3:
+			case PlayerInventoryUI::WeaponsStrengthening_Icon:
+				filePath += "/Dagger";
+				break;
+			default:
+				break;
+			}
+
+			filePath += "/WeponStrengtheningIcon";
 			filePath += std::to_string(i) + ".png";
 			m_weaponsStrengtheningInfo[i].iconTex->Load(filePath);
 		}
@@ -654,33 +678,38 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 		switch (i)
 		{
 		case PlayerInventoryUI::WeaponsStrengthening_Attck:
-			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Stamina:
-			break;
 		case PlayerInventoryUI::WeaponsStrengthening_ChargeTime:
-			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave:
-			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic:
+		case PlayerInventoryUI::WeaponsStrengthening_DefenseIgnore:
+
 			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
 			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
 
-			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x;
-			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y;
+			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].iconPos.x;
+			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].iconPos.y;
+
 			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_speed:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic1:
 			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
 			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
 
-			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x;
-			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y;
+			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x;
+			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y;
 			break;
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_hitNum:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic2:
 			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
 			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
 
-			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.x;
-			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].iconPos.y;
+			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x;
+			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y;
+			break;
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic3:
+			x1 = m_weaponsStrengtheningInfo[i].iconPos.x;
+			y1 = m_weaponsStrengtheningInfo[i].iconPos.y;
+
+			x2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x;
+			y2 = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y;
 			break;
 		case PlayerInventoryUI::WeaponsStrengtheningSiz:
 			break;
@@ -699,11 +728,11 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 
 		switch (i)
 		{
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_speed:
-		case PlayerInventoryUI::WeaponsStrengthening_ShockWave_hitNum:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic1:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic2:
+		case PlayerInventoryUI::WeaponsStrengthening_Characteristic3:
 
-			if (m_weaponsStrengtheningInfo[WeponStrengtheningID::WeaponsStrengthening_ShockWave].Lv == 0)
+			if (m_weaponsStrengtheningInfo[WeponStrengtheningID::WeaponsStrengthening_Characteristic].Lv == 0)
 			{
 				m_weaponsStrengtheningInfo[i].strengtheningFlg = false;
 				iconCol = { 0.5,0.5,0.5,1 };
@@ -722,7 +751,7 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 		// 強化が可能なら光らす
 
 
-			// 時間経過による点滅（パルス）アニメーション
+		// 時間経過による点滅（パルス）アニメーション
 		m_weaponsStrengtheningInfo[i].timer += 0.01f;
 
 		float pulse = (sinf(m_weaponsStrengtheningInfo[i].timer) + 1.0f) * 0.5f;
@@ -763,51 +792,60 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x, m_weaponsStrengtheningInfo[i].iconSiz.y, nullptr, &iconCol);
 
 	}
-
-
-	if (m_weaponsStrengtheningIconInfo.m_IconTex)
+	if (m_selectWeaponsStrengtheningID != PlayerInventoryUI::WeaponsStrengthening_Icon)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningIconInfo.m_IconTex, m_weaponsStrengtheningIconInfo.m_2DPos.x, m_weaponsStrengtheningIconInfo.m_2DPos.y, 60, 60);
-
+		if (m_weaponsStrengtheningIconInfo.m_IconTex)
 		{
-			//現在の持ってるアイテムの数
-			Math::Vector2 pos = m_weaponsStrengtheningIconInfo.m_2DPos;
-			pos.y -= 45;
-			pos.x -= 5;
-
-			Math::Color color = kWhiteColor;
-			if (m_weaponsStrengtheningIconInfo.m_num < m_selectWeaponsStrengtheningnextLVNum)
 			{
-				color = kRedColor;
+				KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningIconInfo.m_IconTex, m_weaponsStrengtheningIconInfo.m_2DPos.x, m_weaponsStrengtheningIconInfo.m_2DPos.y, 60, 60);
+				{
+					//現在の持ってるアイテムの数
+					Math::Vector2 pos = m_weaponsStrengtheningIconInfo.m_2DPos;
+					pos.y -= 45;
+					pos.x -= 5;
+
+					Math::Color color = kWhiteColor;
+					if (m_weaponsStrengtheningIconInfo.m_num < m_selectWeaponsStrengtheningnextLVNum)
+					{
+						color = kRedColor;
+					}
+					NumDraw::GetInstance().Drow(m_weaponsStrengtheningIconInfo.m_num, Aligned::RAligned, pos, color, 1.5);
+				}
+				{
+					//レヴェルアップに必要なアイテムの数
+					Math::Vector2 pos = m_weaponsStrengtheningIconInfo.m_2DPos;
+					pos.y -= 50;
+					pos.x += 5;
+					NumDraw::GetInstance().Drow(m_selectWeaponsStrengtheningnextLVNum, Aligned::LAligned, pos, kWhiteColor, 1.5);
+				}
 			}
-			NumDraw::GetInstance().Drow(m_weaponsStrengtheningIconInfo.m_num, Aligned::RAligned, pos, color, 1.5);
 		}
+
+
+
+		//強化ボタン
+		if (m_weaponsStrengtheningButtonTex && !m_PreconditionNodeFlg)
 		{
-			//レヴェルアップに必要なアイテムの数
-			Math::Vector2 pos = m_weaponsStrengtheningIconInfo.m_2DPos;
-			pos.y -= 50;
-			pos.x += 5;
-			NumDraw::GetInstance().Drow(m_selectWeaponsStrengtheningnextLVNum, Aligned::LAligned, pos, kWhiteColor, 1.5);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningButtonTex, m_weaponsStrengtheningButtonTex2DPos.x, m_weaponsStrengtheningButtonTex2DPos.y);
+		}
+
+		//前提ノード
+		if (m_PreconditionNodeTex && m_PreconditionNodeFlg)
+		{
+
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_PreconditionNodeTex, m_weaponsStrengtheningButtonTex2DPos.x, m_weaponsStrengtheningButtonTex2DPos.y);
+
 		}
 	}
-
-
-	//強化ボタン
-	if (m_weaponsStrengtheningButtonTex && !m_PreconditionNodeFlg)
+	else
 	{
-
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningButtonTex, m_weaponsStrengtheningButtonTex2DPos.x, m_weaponsStrengtheningButtonTex2DPos.y);
+		//レベルマックス
+		if (m_LvMaxButtonTex)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_LvMaxButtonTex, m_weaponsStrengtheningButtonTex2DPos.x, m_weaponsStrengtheningButtonTex2DPos.y);
+		}
 
 	}
-
-	//前提ノード
-	if (m_PreconditionNodeTex && m_PreconditionNodeFlg)
-	{
-
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_PreconditionNodeTex, m_weaponsStrengtheningButtonTex2DPos.x, m_weaponsStrengtheningButtonTex2DPos.y);
-
-	}
-
 	//LV
 	if (m_LVTex)
 	{
@@ -1135,12 +1173,12 @@ void PlayerInventoryUI::WeaponsStrengtheningInfoInit()
 			m_weaponsStrengtheningInfo[i].nextLvNum = spWeapon->GetWeaponsStrengtheningNextLvNum(i);
 		}
 	}
-	m_selectExplanationTex = m_weaponsStrengtheningInfo[0].m_ExplanationTex;
-	m_selectNameTex = m_weaponsStrengtheningInfo[0].m_NameTex;
-	m_num = m_weaponsStrengtheningInfo[0].Lv;
-	m_selectWeaponsStrengtheningnextLVNum = m_weaponsStrengtheningInfo[0].nextLvNum;
-	m_selectWeaponsStrengtheningID = 0;
-	m_weaponsStrengtheningInfo[0].m_hit = true;
+	m_selectExplanationTex = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].m_ExplanationTex;
+	m_selectNameTex = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].m_NameTex;
+	m_num = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].Lv;
+	m_selectWeaponsStrengtheningnextLVNum = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].nextLvNum;
+	m_selectWeaponsStrengtheningID = WeaponsStrengthening_Icon;
+	m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].m_hit = true;
 }
 
 void PlayerInventoryUI::WeaponsStrengtheningTexInfo()
@@ -1182,6 +1220,12 @@ void PlayerInventoryUI::WeaponsStrengtheningTexInfo()
 	{
 		for (auto& weapon : m_weaponsStrengtheningInfo)
 		{
+
+			if (weapon.ID == PlayerInventoryUI::WeaponsStrengthening_Icon)
+			{
+				continue;
+			}
+
 			weapon.Lv = spWeapon->GetWeaponsStrengtheningLv(weapon.ID);
 			weapon.nextLvNum = spWeapon->GetWeaponsStrengtheningNextLvNum(weapon.ID);
 			weapon.strengtheningFlg = spWeapon->IsWeaponsStrengtheningPossible(weapon.ID);
@@ -1243,16 +1287,19 @@ void PlayerInventoryUI::WeaponsStrengtheningButtonHit()
 	//前提ノード確認
 	switch (m_selectWeaponsStrengtheningID)
 	{
-	case PlayerInventoryUI::WeaponsStrengthening_ShockWave_maxDistanceM:
-	case PlayerInventoryUI::WeaponsStrengthening_ShockWave_speed:
-	case PlayerInventoryUI::WeaponsStrengthening_ShockWave_hitNum:
+	case PlayerInventoryUI::WeaponsStrengthening_Characteristic1:
+	case PlayerInventoryUI::WeaponsStrengthening_Characteristic2:
+	case PlayerInventoryUI::WeaponsStrengthening_Characteristic3:
 
-		if (m_weaponsStrengtheningInfo[WeponStrengtheningID::WeaponsStrengthening_ShockWave].Lv == 0)
+		if (m_weaponsStrengtheningInfo[WeponStrengtheningID::WeaponsStrengthening_Characteristic].Lv == 0)
 		{
 			//解放されていなければ強化できない
 			m_PreconditionNodeFlg = true;
 			return;
 		}
+		break;
+	case PlayerInventoryUI::WeaponsStrengthening_Icon:
+		return;
 		break;
 	}
 	m_PreconditionNodeFlg = false;
