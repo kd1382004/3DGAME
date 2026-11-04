@@ -78,15 +78,21 @@ void SceneManager::ImGUI()
 		ImGui::InputFloat(U8("m_FOGdensity"), &m_FOGdensity, 0.01f, 1.0f, "%.2f");
 		ImGui::Checkbox(U8("Fog"), &m_fogFlg);
 
-		if (ImGui::Button(U8("hozonn")))
+		if (ImGui::Button(U8("変更")))
+		{
+			KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
+			KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+		}
+
+
+		if (ImGui::Button(U8("保存")))
 		{
 			FogAmbientJsonSave();
 		}
 
 		ImGui::TreePop();
 	}
-	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+
 
 	//FOGImGUI
 	if (ImGui::TreeNode(U8("ambient")))
@@ -97,14 +103,19 @@ void SceneManager::ImGUI()
 		ImGui::InputFloat(U8("W"), &m_ambient.w, 0.01f, 1.0f, "%.3f");
 		ImGui::TreePop();
 
-		if (ImGui::Button(U8("hozonn")))
+		if (ImGui::Button(U8("変更")))
+		{
+			KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+		}
+
+		if (ImGui::Button(U8("保存")))
 		{
 			FogAmbientJsonSave();
 		}
 
 	}
 
-	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+
 
 }
 

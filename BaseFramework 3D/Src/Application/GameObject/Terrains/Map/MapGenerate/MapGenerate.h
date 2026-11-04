@@ -136,6 +136,8 @@ public:
 
 private:
 
+	void MapCheck(std::vector<std::vector<FloorInfo>>& map);
+
 
 	//部屋IDの初期値
 	static const int m_ionitialRoomID = 1;

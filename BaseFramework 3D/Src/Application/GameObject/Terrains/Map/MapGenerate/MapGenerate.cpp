@@ -416,6 +416,8 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	//Slopeを設置
 	SlopeCheck(&map);
 
+	//作り切れたかチェック
+	MapCheck(map);
 
 	/////////////////////////////////////////////////////
 	//プレイヤーのスポーン部屋を決める
@@ -995,6 +997,73 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	}
 
 	return mapDate;
+}
+
+void MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& map)
+{
+	bool flg = false;
+
+	for (int i = 0; i < map.size(); i++)
+	{
+		for (int j = 0; j < map[i].size(); j++)
+		{
+			if (map[i][j].m_tileType == TileType::None) { continue; }
+
+			// 下のマス
+			if (i + 1 < map.size() && j < map[i + 1].size()
+				&& map[i + 1][j].m_tileType != TileType::None)
+			{
+				int gap = map[i][j].m_heightLevel - map[i + 1][j].m_heightLevel;
+				if (abs(gap) > 0)
+				{
+					if (map[i][j].m_tileType != TileType::Slopee && map[i + 1][j].m_tileType != TileType::Slopee)
+					{
+						flg = true;
+					}
+
+					if (abs(gap) > 1)
+					{
+						flg = true;
+					}
+				}
+			}
+
+			// 右のマス
+			if (j + 1 < map[i].size()
+				&& map[i][j + 1].m_tileType != TileType::None)
+			{
+				int gap = map[i][j].m_heightLevel - map[i][j + 1].m_heightLevel;
+				if (abs(gap) > 0)
+				{
+					if (map[i][j].m_tileType != TileType::Slopee && map[i][j + 1].m_tileType != TileType::Slopee)
+					{
+						flg = true;
+					}
+
+					if (abs(gap) > 1)
+					{
+						flg = true;
+					}
+				}
+			}
+
+			if (flg)
+			{
+				break;
+			}
+		}
+
+		if (flg)
+		{
+			break;
+		}
+	}
+
+	if (flg)
+	{
+		//作り直し
+		int a = 0;
+	}
 }
 
 

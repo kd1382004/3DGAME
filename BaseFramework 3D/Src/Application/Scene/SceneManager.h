@@ -86,6 +86,12 @@ public:
 
 	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_PlayerWeaponInfo; }
 	void SetPlayerWeaponInfo(PlayerWeaponInfo _playerWeaponInfo) { m_PlayerWeaponInfo = _playerWeaponInfo; }
+
+
+
+	void SetFogEnable(bool _fogFlg) { m_fogFlg = _fogFlg; };
+	void SetAmbient(const Math::Vector4& _ambient) { m_ambient = _ambient; };
+
 private:
 
 	// マネージャーの初期化

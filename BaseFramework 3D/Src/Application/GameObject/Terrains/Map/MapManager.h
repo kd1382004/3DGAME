@@ -118,7 +118,7 @@ public:
 	bool GetChunksUpdate(Math::Vector2 _chunkNum);
 	bool GetChunksDraw(Math::Vector2 _chunkNum);
 
-	bool GetIsChunkChanged(){return m_isChunkChanged;}
+	bool GetIsChunkChanged() { return m_isChunkChanged; }
 
 	std::vector<std::shared_ptr<MapBase>> GetUpdateChankes() { return m_updateChankes; }
 
@@ -126,8 +126,8 @@ public:
 	///////////////////////////////////////
 	//マップ上のランダムな座標を返す
 	Math::Vector3 GetRandomPos();
-	
-	
+
+
 	Math::Vector3 GetNextWarpGatePos() { return m_NextWarpGatePos; }
 	Math::Vector3 GetEscapeWarpGatePos() { return m_EscapeWarpGatePos; }
 
@@ -188,9 +188,9 @@ private:
 	//更新処理するチャンク
 	std::vector<std::shared_ptr<MapBase>>m_updateChankes;
 	std::vector<std::shared_ptr<MapBase>>m_darawChankes;
-	
+
 	//チャンクのXYを保存
-	Math::Vector2 m_chankeNum = {-999,-999};
+	Math::Vector2 m_chankeNum = { -999,-999 };
 
 	bool m_isChunkChanged = false;
 
@@ -212,12 +212,12 @@ private:
 
 	//更新チャンク
 	//縦横に+-xyずつ
-	Math::Vector2 m_updateChunkRadius = {1,1};
+	Math::Vector2 m_updateChunkRadius = { 1,1 };
 
 
 	//描画チャンク
 	//縦横に更新チャンクに対して+-xyずつ
-	Math::Vector2  m_drawChunkRadius = { 1, 1};
+	Math::Vector2  m_drawChunkRadius = { 1, 1 };
 
 	//チャンクを囲むボックス
 	Math::Vector3 m_boxPos;

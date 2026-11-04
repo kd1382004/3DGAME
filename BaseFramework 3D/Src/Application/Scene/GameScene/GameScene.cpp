@@ -162,9 +162,10 @@ void GameScene::Event()
 
 	if (GetAsyncKeyState('3') & 0x8000)
 	{
+		GenerateMap();
 		if (!REFLG)
 		{
-			GenerateMap();
+			
 			REFLG = true;
 		}
 	}
@@ -766,24 +767,38 @@ void GameScene::GenerateMap()
 	}
 	else
 	{
-		//ボス戦用マップ生成
-		mapSizeX = 7;
-		mapSizeY = 7;
-		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
-		m_spUIManager->SetMinimapRevealAll(true);
-
-
 
 		if (m_spBossBGM)
 		{
-			m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
-			m_spBossBGM->Play();
+			m_spBossBGM->Stop();
 		}
 
-		if (m_spGameBGM)
+		if (m_spGameBGM && !m_spGameBGM->IsPlaying())
 		{
-			m_spGameBGM->Stop();
+			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.4);
+			m_spGameBGM->Play();
 		}
+
+		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
+
+		////ボス戦用マップ生成
+		//mapSizeX = 7;
+		//mapSizeY = 7;
+		//m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
+		//m_spUIManager->SetMinimapRevealAll(true);
+
+
+
+		//if (m_spBossBGM)
+		//{
+		//	m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
+		//	m_spBossBGM->Play();
+		//}
+
+		//if (m_spGameBGM)
+		//{
+		//	m_spGameBGM->Stop();
+		//}
 	}
 
 
