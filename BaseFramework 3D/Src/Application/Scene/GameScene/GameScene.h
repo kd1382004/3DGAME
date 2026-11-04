@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include"../BaseScene/BaseScene.h"
 #include"../SceneManager.h"
@@ -14,6 +14,14 @@ class WarpGateManager;
 class MapObjManager;
 class TPSCamera;
 class UIManager;
+
+
+struct Inventory;
+
+enum WeponStrengtheningID;
+
+struct WeaponsStrengtheningInfo;
+
 
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
 {
@@ -81,7 +89,7 @@ private:
 	//ゲーム結果
 	int m_killEnemy = 0;
 	int m_killBoss = 0;
-	float m_playtime=0;
+	float m_playtime = 0;
 	bool m_playerDefeatFlg = false;
 
 	std::vector<DisplayFloorInfo>m_DisplayFloorInfo;
@@ -90,4 +98,54 @@ private:
 
 	std::shared_ptr<KdSoundInstance> m_spGameBGM;
 	std::shared_ptr<KdSoundInstance> m_spBossBGM;
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//データセーブ
+
+	///////////////////////////////////////
+	//Inventoryの情報
+	//_isSave...セーブするか(true)・リセットするか(false)
+	void SaveInventoryData(bool _isSave, const std::vector<Inventory>& inventoryPotionsList, const std::vector<Inventory>& inventoryWeaponsList);
+
+	//ロード
+	void LoadInventoryData();
+	std::vector<Inventory> ReadInventoryList(const nlohmann::json& _data, const std::string& _key);
+
+	//パス
+	const std::string m_InventoryFilePath = "Asset/Data/PlayerData/PlayerInventoryData.json";
+
+	///////////////////////////////////////
+
+	///////////////////////////////////////
+	//武器の強化情報の保存
+	//_isSave...セーブするか(true)・リセットするか(false)
+	void SaveWeaponStrengtheningData(bool _isSave);
+
+	//ロード
+	void LoadWeaponStrengtheningData();
+	std::vector <WeaponsStrengtheningInfo> ReadWeaponStrengtheningList(const nlohmann::json& _data, const std::string& _key);
+
+	//パス
+	const std::string m_WeaponStrengtheningFilePath = "Asset/Data/PlayerData/PlayerWeaponStrengtheningData.json";
+
+
+	std::string GetWeaponKey(int _weaponType)
+	{
+		switch (_weaponType)
+		{
+		case PlayerWeaponInfo_Dagger: return "dagger";
+		case PlayerWeaponInfo_Sword:  return "sword";
+		default:                      return "";
+		}
+	}
+	///////////////////////////////////////
+	
+	///////////////////////////////////////
+	//プレイヤーのステータスの保存
+		//パス
+	const std::string m_PlayerStatusFilePath = "Asset/Data/PlayerData/PlayerStatusData.json";
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 };

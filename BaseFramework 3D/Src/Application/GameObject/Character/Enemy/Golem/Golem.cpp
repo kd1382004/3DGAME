@@ -9,7 +9,7 @@ void Golem::Init()
 {
 	EnemyAmbush::Init();
 	wanderRadius = 50;
-	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Golem/Status/Status.json";
+	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Golem/Status/Status.json";
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();

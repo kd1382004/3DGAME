@@ -3,6 +3,58 @@
 class CharacterBase;
 class MapBase;
 
+
+enum WeponStrengtheningID
+{
+	//攻撃力
+	WeaponsStrengthening_Attck,
+
+	//スタミナ
+	WeaponsStrengthening_Stamina,
+
+	//Chargeタイム
+	WeaponsStrengthening_ChargeTime,
+
+	//防御無視
+	WeaponsStrengthening_DefenseIgnore,
+
+	//武器特有(Lv1になったら他の特有の強化を許す)
+	WeaponsStrengthening_Characteristic,
+
+	//武器特有1
+	WeaponsStrengthening_Characteristic1,
+
+	//武器特有2
+	WeaponsStrengthening_Characteristic2,
+
+	//武器特有3
+	WeaponsStrengthening_Characteristic3,
+
+	WeaponsStrengtheningSiz
+};
+
+// WeponStrengtheningIDと同じ順番にする
+const char* const kStrengtheningKeys[WeaponsStrengtheningSiz] =
+{
+	"attack",          // WeaponsStrengthening_Attck
+	"stamina",         // WeaponsStrengthening_Stamina
+	"chargeTime",      // WeaponsStrengthening_ChargeTime
+	"defenseIgnore",   // WeaponsStrengthening_DefenseIgnore
+	"characteristic",  // WeaponsStrengthening_Characteristic
+	"characteristic1", // WeaponsStrengthening_Characteristic1
+	"characteristic2", // WeaponsStrengthening_Characteristic2
+	"characteristic3"  // WeaponsStrengthening_Characteristic3
+};
+
+struct WeaponsStrengtheningInfo
+{
+	int Lv = 0;
+	int LvMax = 0;
+	int nextLvNum = 1;
+	int strengtheningItemNum = 0;
+	bool strengtheningFlg = false;
+};
+
 class WeaponBase :public KdGameObject
 {
 public:
@@ -140,6 +192,40 @@ public:
 	
 		return m_addCargeTime * powf(1.05f, lv);;
 	}
+
+
+	const WeaponsStrengtheningInfo& GetWeaponsStrengtheningInfo(int id)
+	{
+		if (id < 0 || id >= WeaponsStrengtheningSiz) { return m_weaponsStrengtheningInfo[0]; }
+		return m_weaponsStrengtheningInfo[id];
+	}
+
+	void SetWeaponsStrengtheningInfo(std::vector<WeaponsStrengtheningInfo> weaponsStrengtheningInfo)
+	{
+
+		for(int i=0; i<WeaponsStrengtheningSiz; ++i)
+		{
+			if (i < weaponsStrengtheningInfo.size())
+			{
+				m_weaponsStrengtheningInfo[i] = weaponsStrengtheningInfo[i];
+			}
+			else
+			{
+				m_weaponsStrengtheningInfo[i] = WeaponsStrengtheningInfo();
+			}
+		}
+	}
+
+	const std::vector<WeaponsStrengtheningInfo> GetWeaponsStrengtheningInfoList()
+	{
+		std::vector<WeaponsStrengtheningInfo> list;
+		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+		{
+			list.push_back(m_weaponsStrengtheningInfo[i]);
+		}
+
+		return list;
+	}
 protected:
 
 	//1秒当りにたまるCharge時間
@@ -231,44 +317,6 @@ protected:
 
 	//最大ダメージ
 	float m_chargeAttackMaxdamage = 100;
-
-	enum WeponStrengtheningID
-	{
-		//攻撃力
-		WeaponsStrengthening_Attck,
-
-		//スタミナ
-		WeaponsStrengthening_Stamina,
-
-		//Chargeタイム
-		WeaponsStrengthening_ChargeTime,
-
-		//防御無視
-		WeaponsStrengthening_DefenseIgnore,
-
-		//武器特有(Lv1になったら他の特有の強化を許す)
-		WeaponsStrengthening_Characteristic,
-
-		//武器特有1
-		WeaponsStrengthening_Characteristic1,
-
-		//武器特有2
-		WeaponsStrengthening_Characteristic2,
-
-		//武器特有3
-		WeaponsStrengthening_Characteristic3,
-
-		WeaponsStrengtheningSiz
-	};
-
-	struct WeaponsStrengtheningInfo
-	{
-		int Lv = 0;
-		int LvMax = 0;
-		int nextLvNum = 1;
-		int strengtheningItemNum = 0;
-		bool strengtheningFlg = false;
-	};
 
 	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
 

@@ -994,7 +994,7 @@ void PlayerInventoryUI::PlayerStatusPreDraw()
 				num = spPlayer->NowDefense();
 				break;
 			case PlayerStatusInfo_Speed:
-				num = spPlayer->GetWalkSpeed();
+				num = spPlayer->GetBaseSpeed();
 				break;
 			default:
 				break;

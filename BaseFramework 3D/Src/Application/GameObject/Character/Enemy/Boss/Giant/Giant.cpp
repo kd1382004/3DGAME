@@ -12,7 +12,7 @@
 #include"../../../../Terrains/Map/MapManager.h"
 void Giant::Init()
 {
-	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Boss/Giant/Status/Status.json";
+	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Boss/Giant/Status/Status.json";
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();

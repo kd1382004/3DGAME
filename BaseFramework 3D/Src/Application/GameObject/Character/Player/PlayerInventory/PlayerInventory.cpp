@@ -111,3 +111,22 @@ int PlayerInventory::GetWeaponsStrengtheningInventoryNum(int _WeaponsStrengtheni
 	if (_WeaponsStrengtheningType < 0 || _WeaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return 0; }
 	return m_weaponsStrengtheningInventory[_WeaponsStrengtheningType].m_num;
 }
+
+void PlayerInventory::SetPotionsInventoryList(const std::vector<Inventory>& _potions)
+{
+	for (auto potions : _potions)
+	{
+		if (potions.m_ID < 0 || potions.m_ID >= m_potionsInventory.size()) { continue; }
+		m_potionsInventory[potions.m_ID].m_num = potions.m_num;
+	}
+}
+
+void PlayerInventory::SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>&_weapons)
+{
+	for (auto weapons : _weapons)
+	{
+		if (weapons.m_ID < 0 || weapons.m_ID >= m_weaponsStrengtheningInventory.size()) { continue; }
+		m_weaponsStrengtheningInventory[weapons.m_ID].m_num = weapons.m_num;
+	}
+}
+

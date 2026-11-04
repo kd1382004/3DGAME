@@ -59,8 +59,8 @@ public:
 	std::shared_ptr<EnemyManager> GetEnemyManager() { return m_wpEnemyManager.lock(); }
 
 	// レベル設定・取得
-	virtual void SetLV(int _lv);
-	int GetLV() const { return m_LV; }
+	virtual void SetLV(int _lv)override;
+	int GetLV() const { return  m_status.LV; }
 
 	void SetMoveVec(Math::Vector3 _vec)
 	{
@@ -72,7 +72,6 @@ public:
 protected:
 
 	// レベルおよび基準ステータス
-	int m_LV = 1;
 	Status m_baseStatus;
 	virtual void ApplyLevelStatus();
 

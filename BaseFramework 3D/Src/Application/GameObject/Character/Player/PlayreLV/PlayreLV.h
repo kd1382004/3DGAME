@@ -12,13 +12,15 @@ public:
 	//....手に入れた経験値料
 	//...プレイヤーのポインター
 	void AddExp(int _gainedExp, PlayerBase* player);
+
+
+	//次のレベルまでの経験値を計算する
+	void CalcNextLevelExp(int _LV);
 private:
 
 	//次のレベルまでの経験値
 	int m_nextLVExperiencePoints = 10;
 
-	//次のレベルまでの経験値を計算する
-	void CalcNextLevelExp(int _LV);
 
 
 	//現在経験値

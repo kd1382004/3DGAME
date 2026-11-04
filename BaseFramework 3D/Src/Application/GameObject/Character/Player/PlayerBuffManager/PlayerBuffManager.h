@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class PlayerBase;
 
@@ -43,6 +43,9 @@ public:
 	void AddStatusBuff(StatusBuff _statusBuff);
 
 	std::list<StatusBuff> GetStatusBuff() { return m_statusBuffList; }
+
+
+	void ClearAllBuffs();
 private:
 
 	std::weak_ptr<PlayerBase>m_wpPlayer;

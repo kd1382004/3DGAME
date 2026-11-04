@@ -39,20 +39,60 @@
 
 #include"PlayerAccessory/PlayerAccessory.h"
 
+const std::vector<Inventory>& PlayerBase::GetPotionsInventoryList()
+{
+	if (m_spPlayerInventory)
+	{
+		return m_spPlayerInventory->GetPotionsInventoryList();
+	}
+
+	return std::vector<Inventory>();
+}
+
+const std::vector<Inventory>& PlayerBase::GetWeaponsStrengtheningInventoryList()
+{
+	if (m_spPlayerInventory)
+	{
+		return m_spPlayerInventory->GetWeaponsStrengtheningInventoryList();
+	}
+
+	return std::vector<Inventory>();
+}
+
+void PlayerBase::SetPotionsInventoryList(const std::vector<Inventory>& _potions)
+{
+	if (m_spPlayerInventory)
+	{
+		m_spPlayerInventory->SetPotionsInventoryList(_potions);
+	}
+}
+
+void PlayerBase::SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons)
+{
+	if (m_spPlayerInventory)
+	{
+		m_spPlayerInventory->SetWeaponsStrengtheningInventoryList(_weapons);
+	}
+}
+
+void PlayerBase::ClearAllBuffs()
+{
+	if (m_spPlayerBuffManager)
+	{
+		m_spPlayerBuffManager->ClearAllBuffs();
+	}
+}
+
 void PlayerBase::Init()
 {
 	m_keyConfigFilePath = "Asset/Data/KeyConfig/KeyConfig.json";
-	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Praeyr/Status/Status.json";
+	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Praeyr/Status/Status.json";
 
 	m_statusEditorName = "player";
 
 	LoadKeyConfig(m_keyConfigFilePath);
-
-	LoadCharaStatus(m_charaStatusFilePath);
-
 	SaveKeyConfig(m_keyConfigFilePath);
 
-	SaveCharaStatus(m_charaStatusFilePath);
 
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveRight);
 	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveLeft);
@@ -100,21 +140,9 @@ void PlayerBase::Init()
 		m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes());
 		m_spCharaModel->CalcNodeMatrices();
 
-		auto addSphere = [&](std::string_view nodeName, UINT type)
-			{
-				const KdModelWork::Node* node = m_spCharaModel->FindNode(nodeName);
-				if (!node) { return; }
-				const Math::Matrix& m = node->m_worldTransform;
-				// エンプティの位置 = 球の中心、エンプティのスケール = 半径
-				m_pCollider->RegisterCollisionShape(nodeName, m.Translation(), m.Right().Length(), type);
-			};
-
-		const UINT bodyType = KdCollider::TypeBump | KdCollider::TypeDamage;
-		addSphere("Col_Bump", KdCollider::TypeBump);
-		addSphere("Col_Legs", bodyType);
-		addSphere("Col_Waist", bodyType);
-		addSphere("Col_Chest", bodyType);
-		addSphere("Col_Head", bodyType);
+		// エンプティの位置 = 球の中心、エンプティのスケール = 半径
+		const UINT bodyType = KdCollider::Type::TypeBump | KdCollider::Type::TypeDamage;
+		m_pCollider->RegisterCollisionShape("Player", m_spCharaModel, bodyType);
 	}
 
 	if (!m_spPlayerBuffManager)
@@ -312,7 +340,7 @@ void PlayerBase::PostUpdate()
 		if (effect) { effect->SetPos(pos); }
 	}
 
-	if (m_isDashActive&&m_groundHit)
+	if (m_isDashActive && m_groundHit)
 	{
 		Math::Vector3 pos = m_pos;
 
@@ -384,6 +412,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		spHPBar->SetSiz(2);
 		spHPBar->Set2DPos({ 0,-260 });
 		spHPBar->SetDrawFlg(true);
+		spHPBar->SetLV(m_status.LV);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
@@ -497,12 +526,17 @@ void PlayerBase::SetDead()
 
 void PlayerBase::SetLV(int _LV)
 {
-	m_LV = _LV;
+	m_status.LV = _LV;
 
 	m_status.attck.baseAttckPowe += 5;
 	m_status.defense.baseDefensePowe += 5;
 	m_status.defense.nowDefense = m_status.defense.baseDefensePowe;
 	AddMaxHP(10, true);
+
+	if(m_spPlayreLV)
+	{
+		m_spPlayreLV->CalcNextLevelExp(_LV);
+	}
 }
 
 void PlayerBase::AddExp(int _gainedExp)

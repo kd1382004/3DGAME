@@ -111,3 +111,14 @@ void PlayerBuffManager::AddStatusBuff(StatusBuff _statusBuff)
 	}
 
 }
+
+void PlayerBuffManager::ClearAllBuffs()
+{
+	auto it = m_statusBuffList.begin();
+
+	while (it != m_statusBuffList.end())
+	{
+		BuffFinish(*it);
+		it = m_statusBuffList.erase(it);
+	}
+}

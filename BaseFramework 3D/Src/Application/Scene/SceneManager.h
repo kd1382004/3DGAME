@@ -85,6 +85,7 @@ public:
 
 
 	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_PlayerWeaponInfo; }
+	void SetPlayerWeaponInfo(PlayerWeaponInfo _playerWeaponInfo) { m_PlayerWeaponInfo = _playerWeaponInfo; }
 private:
 
 	// マネージャーの初期化

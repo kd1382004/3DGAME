@@ -96,6 +96,8 @@ public:
 	float GetNowSpeed() { return m_status.moveSpeed.nowSpeed; }
 
 
+	virtual void SetLV(int _lv) {};
+
 	//HPバー
 	std::shared_ptr<HPBar> GetHPBar() { return m_wpHPBar.lock(); }
 
@@ -107,6 +109,9 @@ public:
 
 
 	bool GetIsDead() { return m_isDead; }
+
+	//DefaultStatusが入ってるファイルパスを返す
+	std::string GetCharaDefaultStatusFilePath() { return m_charaDefaultStatusFilePath; }
 private:
 	// 衝突判定とそれに伴う座標の更新
 	void CollisionUpdate();
@@ -141,8 +146,8 @@ protected:
 	///////////////////////////////////////////
 	//キャラステータス
 
-	//キャラステータスが入ってるファイル名
-	std::string m_charaStatusFilePath;
+	//キャラのデフォルトステータスが入ってるファイル名
+	std::string m_charaDefaultStatusFilePath;
 
 	struct StatusHP
 	{
@@ -208,6 +213,10 @@ protected:
 
 		//スピード
 		StatusMoveSpeed moveSpeed;
+
+
+		//LV
+		int LV;
 	};
 
 	//ステータス

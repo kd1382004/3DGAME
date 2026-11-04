@@ -35,12 +35,25 @@ public:
 	void AddWeaponsStrengtheningInventory(int _WeaponsStrengtheningType);
 
 	//武器強化素材が使われたとき
-	void UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType,int _num);
+	void UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType, int _num);
 
 	//武器強化素材の数を取得
 	int GetWeaponsStrengtheningInventoryNum(int _WeaponsStrengtheningType);
 
 	void SetItemGetUIController(std::shared_ptr<ItemGetUIController>_ItemGetUIController) { m_wpItemGetUIController = _ItemGetUIController; }
+
+
+	//ポーションのインベントリリストを取得
+	const std::vector<Inventory>& GetPotionsInventoryList() { return m_potionsInventory; }
+
+	//武器強化素材のインベントリリストを取得
+	const std::vector<Inventory>& GetWeaponsStrengtheningInventoryList() { return m_weaponsStrengtheningInventory; }
+
+
+	//ポーションのインベントリリストを設定
+	void SetPotionsInventoryList(const std::vector<Inventory>& _potions);
+	//武器強化素材のインベントリリストを設定
+	void SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons);
 private:
 
 	//各番号のポーションがどれだけあるか

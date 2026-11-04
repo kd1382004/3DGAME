@@ -1,16 +1,23 @@
 {
-    "HP": {
-        "baseHP": 100.0
-    },
-    "attck": {
-        "baseAttckPowe": 10.0
-    },
-    "defense": {
-        "baseDefensePowe": 10.0
-    },
-    "moveSpeed": {
-        "baseSpeed": 10.0,
-        "runMovePowe": 5.0,
-        "walkMovePowe": 0.0
-    }
+	"HP": {
+		"baseHP": 100.0,
+		"maxHP": 100.0,
+		"nowHP": 100.0
+	},
+	"LV": {
+		"LV": 1
+	},
+	"attck": {
+		"addAttack": 0.0,
+		"baseAttckPowe": 10.0
+	},
+	"defense": {
+		"addDefense": 0.0,
+		"baseDefensePowe": 10.0
+	},
+	"moveSpeed": {
+		"baseSpeed": 10.0,
+		"runMovePowe": 5.0,
+		"walkMovePowe": 3.0
+	}
 }

@@ -2,6 +2,7 @@
 //プレイヤー
 #include"../../GameObject/Character/Player/PlayerBase.h"
 #include"../../GameObject/Character/Player/PlayerBuffManager/PlayerBuffManager.h"
+#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"
 
 #include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
 #include"../../Info/MouseInfo/MouseInfo.h"
@@ -91,6 +92,25 @@ void GameScene::SetGameResult()
 	if (m_spPlayer)
 	{
 		gameResult.playerDead = m_spPlayer->GetIsDead();
+
+
+		bool saveFlg = !gameResult.playerDead;
+		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList());
+		SaveWeaponStrengtheningData(saveFlg);
+
+		//プレイヤーのステータス状況を保存
+		m_spPlayer->ClearAllBuffs();
+		if (saveFlg)
+		{
+			m_spPlayer->SavePlayerStatus(m_PlayerStatusFilePath);
+		}
+		else
+		{
+			//プレイヤーのステータス状況をリセット
+			m_spPlayer->LoadPlayerStatus(m_spPlayer->GetCharaDefaultStatusFilePath());
+			m_spPlayer->SavePlayerStatus(m_PlayerStatusFilePath);
+		}
+
 	}
 
 	SceneManager::Instance().SetGameResult(gameResult);
@@ -242,6 +262,203 @@ void GameScene::Event()
 	}
 }
 
+void GameScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _inventoryPotionsList, const std::vector<Inventory>& _inventoryWeaponsList)
+{
+	nlohmann::json data;
+
+	// アイテムが0個のときも、nullではなく [] として保存する
+	data["potions"] = nlohmann::json::array();
+	data["weaponStrengtheningMaterials"] = nlohmann::json::array();
+
+	for (const Inventory& potion : _inventoryPotionsList)
+	{
+		int num = 0;
+		if (_isSave)
+		{
+			num = potion.m_num;
+		}
+
+		data["potions"].push_back({
+			{"id", potion.m_ID},
+			{"num", num},
+			{"name", potion.m_name}
+			});
+	}
+
+	for (const Inventory& weapon : _inventoryWeaponsList)
+	{
+		int num = 0;
+		if (_isSave)
+		{
+			num = weapon.m_num;
+		}
+
+		data["weaponStrengtheningMaterials"].push_back({
+			{"id", weapon.m_ID},
+			{"num", num},
+			{"name", weapon.m_name}
+			});
+	}
+
+	std::ofstream file(m_InventoryFilePath);
+	if (!file) return; // 必要に応じてエラー処理を追加
+
+	file << data.dump(4);
+
+}
+
+void GameScene::LoadInventoryData()
+{
+	std::ifstream file(m_InventoryFilePath);
+	if (!file) return; // 初回起動などでファイルがない場合は何もしない
+
+
+	nlohmann::json data = nlohmann::json::parse(file);
+
+	std::vector<Inventory> potions = ReadInventoryList(data, "potions");
+	std::vector<Inventory> materials = ReadInventoryList(data, "weaponStrengtheningMaterials");
+
+	m_spPlayer->SetPotionsInventoryList(potions);
+	m_spPlayer->SetWeaponsStrengtheningInventoryList(materials);
+}
+
+std::vector<Inventory> GameScene::ReadInventoryList(const nlohmann::json& _data, const std::string& _key)
+{
+	std::vector<Inventory> list;
+
+	if (!_data.contains(_key) || !_data[_key].is_array())
+	{
+		return list;
+	}
+
+	for (const nlohmann::json& itemData : _data[_key])
+	{
+		Inventory item;
+		item.m_ID = itemData.value("id", 0);
+		item.m_num = itemData.value("num", 0);
+		item.m_name = itemData.value("name", std::string{});
+		list.push_back(item);
+	}
+
+	return list;
+}
+
+void GameScene::SaveWeaponStrengtheningData(bool _isSave)
+{
+	// 他の武器のデータを残すために1度開く（ファイルがなくても続行する）
+	nlohmann::json oldData = nlohmann::json::object();
+	{
+		std::ifstream oldFile(m_WeaponStrengtheningFilePath);
+		if (oldFile)
+		{
+			oldData = nlohmann::json::parse(oldFile, nullptr, false);
+			if (!oldData.is_object())
+			{
+				oldData = nlohmann::json::object();
+			}
+		}
+	}
+
+	nlohmann::json data = nlohmann::json::object();
+	const int currentWeapon = SceneManager::Instance().GetPlayerWeaponInfo();
+
+	// 武器ごとのループ
+	for (int weapon = 0; weapon < PlayerWeaponInfo::PlayerWeaponInfoSize; ++weapon)
+	{
+		const std::string key = GetWeaponKey(static_cast<PlayerWeaponInfo>(weapon));
+
+		std::vector<WeaponsStrengtheningInfo> infoList;
+
+		if (_isSave)
+		{
+			if (weapon == currentWeapon && m_spWeapon)
+			{
+				infoList = m_spWeapon->GetWeaponsStrengtheningInfoList();
+			}
+			else
+			{
+				infoList = ReadWeaponStrengtheningList(oldData, key);
+			}
+		}
+
+		// falseのときや保存データがないときは、初期値で全項目を作る
+		infoList.resize(WeaponsStrengtheningSiz);
+
+		// 強化項目ごとのループ
+		nlohmann::json weaponData = nlohmann::json::object();
+		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+		{
+			const WeaponsStrengtheningInfo& item = infoList[i];
+
+			weaponData[kStrengtheningKeys[i]] = {
+				{"Lv", item.Lv},
+				{"nextLvNum", item.nextLvNum},
+				{"strengtheningItemNum", item.strengtheningItemNum},
+				{"strengtheningFlg", item.strengtheningFlg}
+			};
+		}
+
+		data[key] = weaponData;
+	}
+
+	// ファイルに書き込む
+	std::ofstream file(m_WeaponStrengtheningFilePath);
+	if (!file) return; // 必要に応じてエラー処理を追加
+
+	file << data.dump(4);
+}
+void GameScene::LoadWeaponStrengtheningData()
+{
+	if (!m_spWeapon) { return; }
+
+	std::ifstream file(m_WeaponStrengtheningFilePath);
+	if (!file) return; // 初回起動などでファイルがない場合は何もしない
+	nlohmann::json data = nlohmann::json::parse(file);
+
+	std::string _key = GetWeaponKey(SceneManager::Instance().GetPlayerWeaponInfo());
+
+	std::vector<WeaponsStrengtheningInfo> weaponStrengtheningList = ReadWeaponStrengtheningList(data, _key);
+	m_spWeapon->SetWeaponsStrengtheningInfo(weaponStrengtheningList);
+}
+
+std::vector<WeaponsStrengtheningInfo> GameScene::ReadWeaponStrengtheningList(const nlohmann::json& _data, const std::string& _key)
+{
+	std::vector<WeaponsStrengtheningInfo> list;
+
+	if (!_data.contains(_key) || !_data[_key].is_object())
+	{
+		return list;
+	}
+
+	const nlohmann::json& weaponData = _data[_key];
+
+	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+	{
+		WeaponsStrengtheningInfo item;
+
+		// 保存データがない項目は初期値のまま追加し、番号がずれないようにする
+		if (weaponData.contains(kStrengtheningKeys[i]) && weaponData[kStrengtheningKeys[i]].is_object())
+		{
+			const nlohmann::json& itemData = weaponData[kStrengtheningKeys[i]];
+
+			item.Lv = itemData.value("Lv", 0);
+			item.nextLvNum = itemData.value("nextLvNum", 1);
+			item.strengtheningItemNum = itemData.value("strengtheningItemNum", 0);
+			item.strengtheningFlg = itemData.value("strengtheningFlg", false);
+		}
+
+		list.push_back(item);
+	}
+
+	return list;
+}
+
+
+
+
+
+
+
 void GameScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
@@ -272,14 +489,17 @@ void GameScene::Init()
 	m_spPlayer = std::make_shared<PlayerBase>();
 	m_spPlayer->Init();
 	m_spPlayer->SetPlayerWeaponInfo(SceneManager::Instance().GetPlayerWeaponInfo());
+	m_spPlayer->LoadPlayerStatus(m_PlayerStatusFilePath);
 	m_objList.push_back(m_spPlayer);
+
+	LoadInventoryData();
 
 	m_spCharacterStatus.push_back(m_spPlayer);
 
 	/////////////////////////////////////////
 	//武器
 	/////////////////////////////////////////
-	
+
 	switch (SceneManager::Instance().GetPlayerWeaponInfo())
 	{
 	case PlayerWeaponInfo_Dagger:
@@ -296,8 +516,8 @@ void GameScene::Init()
 
 
 	m_spWeapon->Init();
-	
-	
+	LoadWeaponStrengtheningData();
+
 	m_objList.push_back(m_spWeapon);
 
 	/////////////////////////////////////////
@@ -391,7 +611,7 @@ void GameScene::Init()
 	std::shared_ptr<KdTexture>spTex = std::make_shared<KdTexture>();
 	spTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/Potion.png");
 	spUIBase2->SetTex(spTex);
-	spUIBase2->Set2DPos({580, 320});
+	spUIBase2->Set2DPos({ 580, 320 });
 	spUIBase2->SetDrawKey(VK_TAB);
 	spUIBase2->SetDrawKeyPos(DrawKeyPos_Bot);
 	spUIBase2->SetDrawFlg(true);
@@ -502,7 +722,7 @@ void GameScene::GenerateMap()
 	float growth = 1.01f;
 
 
-	
+
 	m_mapGenerateDisplayFloor = m_displayFloor;
 
 	if (m_displayFloor > m_mapGenerateDisplayFloorMax)

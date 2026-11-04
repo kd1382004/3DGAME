@@ -62,10 +62,27 @@ struct ActionKeyConfig
 	int interact = 'E';
 };
 
+struct Inventory;
 
 class PlayerBase :public CharacterBase
 {
 public:
+
+	//ポーションのインベントリリストを取得
+	const std::vector<Inventory>& GetPotionsInventoryList();
+	//武器強化素材のインベントリリストを取得
+	const std::vector<Inventory>& GetWeaponsStrengtheningInventoryList();
+
+	//ポーションのインベントリリストを設定
+	void SetPotionsInventoryList(const std::vector<Inventory>& _potions);
+	//武器強化素材のインベントリリストを設定
+	void SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons);
+
+	void SavePlayerStatus(std::string _filePath) { SaveCharaStatus(_filePath); }
+	void LoadPlayerStatus(std::string _filePath) { LoadCharaStatus(_filePath); }
+
+
+	void ClearAllBuffs();
 
 	PlayerBase() {};
 	~PlayerBase() {};
@@ -131,8 +148,8 @@ public:
 
 	void SetDead()override;
 
-	int GetLV() { return m_LV; }
-	void SetLV(int _LV);
+	int GetLV() { return m_status.LV; }
+	void SetLV(int _LV)override;
 
 	//_gainedExp...経験値量
 	void AddExp(int _gainedExp);
@@ -173,6 +190,7 @@ public:
 
 
 	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
+	float GetBaseSpeed() { return m_status.moveSpeed.baseSpeed; }
 
 	std::weak_ptr<WeaponBase> GetWeapon() { return m_wpWepon; }
 
@@ -187,9 +205,6 @@ public:
 	void SetPlayerWeaponInfo(int info);
 
 protected:
-
-	//LV
-	int m_LV = 1;
 
 	std::shared_ptr<PlayreLV>m_spPlayreLV;
 
@@ -290,7 +305,7 @@ protected:
 		std::string WalkAnime = "Walk";
 		std::string RunAnime = "Run";
 		std::string PickUpAnime = "PickUp";
-		
+
 		std::string AttackAnime = "";
 
 		//ダガーの攻撃アニメーション
@@ -298,8 +313,8 @@ protected:
 
 		//剣の攻撃アニメーション
 		std::string SwordAttackAnime = "Sword_Swing";
-		
-		
+
+
 		std::string PunchAttackAnime = "Punch";
 		std::string EvasionAnime = "Roll";
 		std::string DeathAnime = "Death";

@@ -96,7 +96,7 @@ void CharacterBase::ImGUI()
 
 		if (ImGui::Button(U8("保存")))
 		{
-			SaveCharaStatus(m_charaStatusFilePath);
+			SaveCharaStatus(m_charaDefaultStatusFilePath);
 		}
 	}
 
@@ -365,25 +365,46 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 			return def;
 		};
 
+	/////////////////////
+	
 	// HP
+	//基礎
 	status.HP.baseHP = getFloat(data["HP"], "baseHP");
+	//最大
+	status.HP.maxHP = getFloat(data["HP"], "maxHP", status.HP.baseHP);
+	//現体力
+	status.HP.nowHP = getFloat(data["HP"], "nowHP", status.HP.maxHP);
 
+	/////////////////////
+
+
+	/////////////////////
 	// 攻撃力
+	//基礎
 	status.attck.baseAttckPowe = getFloat(data["attck"], "baseAttckPowe");
 
+	//増加攻撃力
+	status.attck.addAttack = getFloat(data["attck"], "addAttack");
+	/////////////////////
+
+	/////////////////////
 	// 防御力
 	status.defense.baseDefensePowe = getFloat(data["defense"], "baseDefensePowe");
+
+	//増加防御力
+	status.defense.addDefense = getFloat(data["defense"], "addDefense");
+	/////////////////////
+
 
 	// 移動速度
 	status.moveSpeed.baseSpeed = getFloat(data["moveSpeed"], "baseSpeed");
 	status.moveSpeed.walkMovePowe = getFloat(data["moveSpeed"], "walkMovePowe");
 	status.moveSpeed.runMovePowe = getFloat(data["moveSpeed"], "runMovePowe");
 
-	m_status = status;
+	//LV
+	status.LV = getFloat(data["LV"], "LV");
 
-	// HP
-	m_status.HP.maxHP = m_status.HP.baseHP;
-	m_status.HP.nowHP = m_status.HP.maxHP;
+	m_status = status;
 
 	// 攻撃力
 	m_status.attck.nowAttck = m_status.attck.baseAttckPowe;
@@ -393,6 +414,8 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 
 	// 移動速度
 	m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed;
+
+	m_status.LV = std::max(1, m_status.LV);
 }
 
 void CharacterBase::AngeleUpdate()
@@ -616,15 +639,33 @@ void CharacterBase::SaveCharaStatus(std::string _filePath)
 {
 	nlohmann::json data;
 
+	// HP
 	data["HP"]["baseHP"] = m_status.HP.baseHP;
-	data["attck"]["baseAttckPowe"] = m_status.attck.baseAttckPowe;
-	data["defense"]["baseDefensePowe"] = m_status.defense.baseDefensePowe;
+	data["HP"]["maxHP"] = m_status.HP.maxHP;
+	data["HP"]["nowHP"] = m_status.HP.nowHP;
 
+	// 攻撃力
+	data["attck"]["baseAttckPowe"] = m_status.attck.baseAttckPowe;
+	data["attck"]["addAttack"] = m_status.attck.addAttack;
+
+	// 防御力
+	data["defense"]["baseDefensePowe"] = m_status.defense.baseDefensePowe;
+	data["defense"]["addDefense"] = m_status.defense.addDefense;
+
+	// 移動速度
 	data["moveSpeed"]["baseSpeed"] = m_status.moveSpeed.baseSpeed;
 	data["moveSpeed"]["walkMovePowe"] = m_status.moveSpeed.walkMovePowe;
 	data["moveSpeed"]["runMovePowe"] = m_status.moveSpeed.runMovePowe;
 
-	std::ofstream ofs(_filePath);
-	ofs << data.dump(4);
+	//LV
+	data["LV"]["LV"] = m_status.LV;
 
+	std::ofstream ofs(_filePath);
+	if (!ofs.is_open())
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] ステータスファイルの保存に失敗しました : %s\n"), _filePath.c_str());
+		return;
+	}
+
+	ofs << data.dump(4);
 }

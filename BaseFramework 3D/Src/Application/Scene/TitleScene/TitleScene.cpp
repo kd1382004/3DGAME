@@ -185,10 +185,37 @@ TitleScene::~TitleScene()
 
 void TitleScene::ImGUi()
 {
-	if (m_spTitleSceneEditor)
+	if (ImGui::Begin(U8("TitleSceneEditor"), nullptr, ImGuiWindowFlags_MenuBar))
 	{
-		m_spTitleSceneEditor->ImGui();
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu(U8("メニュー")))
+			{
+				if (ImGui::MenuItem(U8("TitleSceneEditorを閉じる")))
+				{
+					DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
+				}
+
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
 	}
+
+	if (ImGui::Button(U8("武器をダガーに")))
+	{
+		SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo::PlayerWeaponInfo_Dagger);
+	}
+
+	if (ImGui::Button(U8("武器を剣に")))
+	{
+		SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo::PlayerWeaponInfo_Sword);
+	}
+
+
+
+
+	ImGui::End();
+
 }
 
 void TitleScene::Event()

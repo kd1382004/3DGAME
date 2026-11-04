@@ -27,7 +27,7 @@ void EnemyBase::Init()
 
 
 
-	LoadCharaStatus(m_charaStatusFilePath);
+	LoadCharaStatus(m_charaDefaultStatusFilePath);
 	m_baseStatus = m_status;
 
 	if (!m_spCharaModel) { return; }
@@ -372,24 +372,24 @@ void EnemyBase::SetLV(int _lv)
 
 	_lv += KdRandom::GetInt(-1, 1);
 
-	m_LV = std::max(1, _lv);
+	m_status.LV = std::max(1, _lv);
 	ApplyLevelStatus();
 	auto spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
-		spHPBar->SetLV(m_LV);
+		spHPBar->SetLV(m_status.LV);
 		spHPBar->SetHPBarTexPercent(m_status.HP.nowHP / m_status.HP.maxHP);
 	}
 }
 
 void EnemyBase::ApplyLevelStatus()
 {
-	if (m_LV <= 1) { return; }
+	if (m_status.LV <= 1) { return; }
 
 	// 階層（LV）ごとにステータスを強化
-	float hpScale = 1.0f + (m_LV - 1) * 0.20f;
-	float attackScale = 1.0f + (m_LV - 1) * 0.1f;
-	float defenseAdd = static_cast<float>(m_LV - 1) * 0.3f;
+	float hpScale = 1.0f + (m_status.LV - 1) * 0.20f;
+	float attackScale = 1.0f + (m_status.LV - 1) * 0.1f;
+	float defenseAdd = static_cast<float>(m_status.LV - 1) * 0.3f;
 
 	m_status.HP.maxHP = std::round(m_baseStatus.HP.baseHP * hpScale);
 	m_status.HP.nowHP = m_status.HP.maxHP;
@@ -407,7 +407,7 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	{
 		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
 		spHPBar->Init();
-		spHPBar->SetLV(m_LV);
+		spHPBar->SetLV(m_status.LV);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 

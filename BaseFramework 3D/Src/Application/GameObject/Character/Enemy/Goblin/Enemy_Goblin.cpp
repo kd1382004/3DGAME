@@ -10,7 +10,7 @@ void Goblin::Init()
 {
 	EnemyAmbush::Init();
 	wanderRadius = 20;
-	m_charaStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Goblin/Status/Status.json";
+	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Goblin/Status/Status.json";
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
