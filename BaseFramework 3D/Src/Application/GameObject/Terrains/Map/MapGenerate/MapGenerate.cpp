@@ -417,7 +417,13 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	SlopeCheck(&map);
 
 	//作り切れたかチェック
-	MapCheck(map);
+	if (!MapCheck(map))
+	{
+		// 異常がある場合、再度生成
+		return Generate(_mapSiz, roomNum, tileSiz, _type, ret, _playerSpawnPos, _basePos);
+	}
+	//異常がないから続く
+
 
 	/////////////////////////////////////////////////////
 	//プレイヤーのスポーン部屋を決める
@@ -999,10 +1005,8 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	return mapDate;
 }
 
-void MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& map)
+bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& map)
 {
-	bool flg = false;
-
 	for (int i = 0; i < map.size(); i++)
 	{
 		for (int j = 0; j < map[i].size(); j++)
@@ -1018,12 +1022,12 @@ void MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& map)
 				{
 					if (map[i][j].m_tileType != TileType::Slopee && map[i + 1][j].m_tileType != TileType::Slopee)
 					{
-						flg = true;
+						return false;
 					}
 
 					if (abs(gap) > 1)
 					{
-						flg = true;
+						return false;
 					}
 				}
 			}
@@ -1037,33 +1041,20 @@ void MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& map)
 				{
 					if (map[i][j].m_tileType != TileType::Slopee && map[i][j + 1].m_tileType != TileType::Slopee)
 					{
-						flg = true;
+						return false;
 					}
 
 					if (abs(gap) > 1)
 					{
-						flg = true;
+						return false;
 					}
 				}
 			}
-
-			if (flg)
-			{
-				break;
-			}
-		}
-
-		if (flg)
-		{
-			break;
 		}
 	}
 
-	if (flg)
-	{
-		//作り直し
-		int a = 0;
-	}
+	//異常なし
+	return true;
 }
 
 

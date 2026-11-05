@@ -162,10 +162,10 @@ void GameScene::Event()
 
 	if (GetAsyncKeyState('3') & 0x8000)
 	{
-		GenerateMap();
+		
 		if (!REFLG)
 		{
-			
+			GenerateMap();
 			REFLG = true;
 		}
 	}
@@ -173,6 +173,23 @@ void GameScene::Event()
 	{
 		REFLG = false;
 	}
+
+	if (GetAsyncKeyState('5') & 0x8000)
+	{
+		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
+	}
+
+	if (GetAsyncKeyState('6') & 0x8000)
+	{
+		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
+	}
+
+
+	if (GetAsyncKeyState('7') & 0x8000)
+	{
+		ChangeResultScene();
+	}
+
 	//////////////////////////////////////////
 
 	///////////////////////////////////////////////////
@@ -250,17 +267,6 @@ void GameScene::Event()
 
 	m_DisplayFloorInfo[m_displayFloor].playTimeSc += dt;
 	m_DisplayFloorInfo[0].playTimeSc += dt;
-
-
-	if (GetAsyncKeyState('5') & 0x8000)
-	{
-		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
-	}
-
-	if (GetAsyncKeyState('6') & 0x8000)
-	{
-		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
-	}
 }
 
 void GameScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _inventoryPotionsList, const std::vector<Inventory>& _inventoryWeaponsList)
@@ -767,38 +773,22 @@ void GameScene::GenerateMap()
 	}
 	else
 	{
+		//ボス戦用マップ生成
+		mapSizeX = 7;
+		mapSizeY = 7;
+		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
+		m_spUIManager->SetMinimapRevealAll(true);
 
 		if (m_spBossBGM)
 		{
-			m_spBossBGM->Stop();
+			m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
+			m_spBossBGM->Play();
 		}
 
-		if (m_spGameBGM && !m_spGameBGM->IsPlaying())
+		if (m_spGameBGM)
 		{
-			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.4);
-			m_spGameBGM->Play();
+			m_spGameBGM->Stop();
 		}
-
-		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
-
-		////ボス戦用マップ生成
-		//mapSizeX = 7;
-		//mapSizeY = 7;
-		//m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
-		//m_spUIManager->SetMinimapRevealAll(true);
-
-
-
-		//if (m_spBossBGM)
-		//{
-		//	m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
-		//	m_spBossBGM->Play();
-		//}
-
-		//if (m_spGameBGM)
-		//{
-		//	m_spGameBGM->Stop();
-		//}
 	}
 
 

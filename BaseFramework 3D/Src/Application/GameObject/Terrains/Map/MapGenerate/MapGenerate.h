@@ -136,7 +136,11 @@ public:
 
 private:
 
-	void MapCheck(std::vector<std::vector<FloorInfo>>& map);
+
+	//マップに異常がないかどうか
+	//true...異常なし
+	//false...異常あり
+	bool MapCheck(std::vector<std::vector<FloorInfo>>& map);
 
 
 	//部屋IDの初期値
