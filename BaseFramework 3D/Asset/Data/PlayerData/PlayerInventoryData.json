@@ -8,7 +8,7 @@
         {
             "id": 1,
             "name": "AttackBaseUPPotion",
-            "num": 59
+            "num": 60
         },
         {
             "id": 2,
@@ -28,7 +28,7 @@
         {
             "id": 5,
             "name": "StaminaRegenBoostPotion",
-            "num": 74
+            "num": 75
         },
         {
             "id": 6,
@@ -55,12 +55,12 @@
         {
             "id": 3,
             "name": "WeaponsStrengthening_DefenseIgnore",
-            "num": 74
+            "num": 75
         },
         {
             "id": 4,
             "name": "WeaponsStrengthening_Characteristic",
-            "num": 74
+            "num": 75
         },
         {
             "id": 5,

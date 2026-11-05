@@ -355,6 +355,12 @@
     <Filter Include="Src\Application\GameObject\Weapon\Sword">
       <UniqueIdentifier>{6da2c36d-01b7-41b9-b62e-54caf9fcd6b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score">
+      <UniqueIdentifier>{cf89e570-b772-4264-9e1e-718cf900b685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory">
+      <UniqueIdentifier>{f8e0359a-87cb-44cd-868c-2434cac0e68d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -813,6 +819,15 @@
     <ClInclude Include="Src\Application\GameObject\Weapon\Sword\Sword.h">
       <Filter>Src\Application\GameObject\Weapon\Sword</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score\ResultDisplay_Score.h">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplayBase.h">
+      <Filter>Src\Application\GameObject\UI\ResultUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.h">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1234,6 +1249,15 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Weapon\Sword\Sword.cpp">
       <Filter>Src\Application\GameObject\Weapon\Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score\ResultDisplay_Score.cpp">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplayBase.cpp">
+      <Filter>Src\Application\GameObject\UI\ResultUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.cpp">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
