@@ -1,4 +1,9 @@
 ﻿#pragma once
+struct Inventory;
+
+enum WeponStrengtheningID;
+
+struct WeaponsStrengtheningInfo;
 
 class BaseScene
 {
@@ -48,4 +53,52 @@ protected :
 
 
 	bool m_poseFlg=false;
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//データセーブ
+
+	///////////////////////////////////////
+	//Inventoryの情報
+	//_isSave...セーブするか(true)・リセットするか(false)
+	void SaveInventoryData(bool _isSave, const std::vector<Inventory>& inventoryPotionsList, const std::vector<Inventory>& inventoryWeaponsList, std::string _filePath);
+
+	//ロード
+	std::vector<std::vector<Inventory>> LoadInventoryData();
+	std::vector<Inventory> ReadInventoryList(const nlohmann::json& _data, const std::string& _key);
+
+	//パス
+	const std::string m_InventoryFilePath = "Asset/Data/PlayerData/PlayerInventoryData.json";
+	const std::string m_InventoryGameResultFilePath = "Asset/Data/GameResult/PlayerInventoryData.json";
+
+	///////////////////////////////////////
+
+	///////////////////////////////////////
+	//武器の強化情報の保存
+	//_isSave...セーブするか(true)・リセットするか(false)
+	void SaveWeaponStrengtheningData(bool _isSave, std::string _filePath, std::vector<WeaponsStrengtheningInfo> weaponStrengtheningList);
+
+	//ロード
+	std::vector<WeaponsStrengtheningInfo> LoadWeaponStrengtheningData();
+	std::vector <WeaponsStrengtheningInfo> ReadWeaponStrengtheningList(const nlohmann::json& _data, const std::string& _key);
+
+	//パス
+	const std::string m_WeaponStrengtheningFilePath = "Asset/Data/PlayerData/PlayerWeaponStrengtheningData.json";
+	const std::string m_WeaponStrengtheningGameResultFilePath = "Asset/Data/GameResult/PlayerWeaponStrengtheningData.json";
+
+
+	std::string GetWeaponKey(int _weaponType);
+
+	///////////////////////////////////////
+
+	///////////////////////////////////////
+	//プレイヤーのステータスの保存
+	//パス
+	const std::string m_PlayerStatusFilePath = "Asset/Data/PlayerData/PlayerStatusData.json";
+	const std::string m_PlayerStatusGameResultFilePath = "Asset/Data/GameResult/PlayerStatusData.json";
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 };

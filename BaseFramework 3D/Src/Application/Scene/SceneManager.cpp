@@ -123,7 +123,6 @@ void SceneManager::ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtP
 {
 	if (!_spRtPack) { return; }
 	_spRtPack->ClearTexture();
-
 	m_rtChanger.ChangeRenderTarget(*_spRtPack);
 }
 

@@ -147,6 +147,15 @@ void Torch::DrawLit()
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTorchModel, m_mWorld);
 }
 
+void Torch::GenerateDepthMapFromLight()
+{
+	if (!m_spTorchModel) { return; }
+	if (!m_isInView) { return; }
+
+
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTorchModel, m_mWorld);
+}
+
 void Torch::SetPos(const Math::Vector3& pos)
 {
 	m_pos = pos;

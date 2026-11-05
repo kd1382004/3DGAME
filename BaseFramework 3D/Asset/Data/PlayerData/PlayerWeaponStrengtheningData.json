@@ -51,52 +51,52 @@
     },
     "sword": {
         "attack": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "Lv": 25,
+            "nextLvNum": 26,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 5
         },
         "characteristic": {
             "Lv": 0,
             "nextLvNum": 1,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 75
+            "strengtheningItemNum": 333
         },
         "characteristic1": {
             "Lv": 0,
             "nextLvNum": 1,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "strengtheningItemNum": 330
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 1,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "strengtheningItemNum": 330
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 1,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "strengtheningItemNum": 330
         },
         "chargeTime": {
-            "Lv": 0,
-            "nextLvNum": 1,
+            "Lv": 20,
+            "nextLvNum": 21,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 74
+            "strengtheningItemNum": 122
         },
         "defenseIgnore": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 75
+            "Lv": 25,
+            "nextLvNum": 26,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 12
         },
         "stamina": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 76
+            "Lv": 25,
+            "nextLvNum": 26,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 10
         }
     }
 }

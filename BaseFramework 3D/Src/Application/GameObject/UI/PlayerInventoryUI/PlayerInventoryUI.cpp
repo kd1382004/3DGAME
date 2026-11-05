@@ -944,9 +944,6 @@ void PlayerInventoryUI::PlayerStatusPreDraw()
 		// 1. メインシーン用のカメラ設定を退避
 		const auto prevCameraCB = KdShaderManager::Instance().GetCameraCB();
 
-		KdShaderManager::Instance().WorkAmbientController().SetFogEnable(false, false);
-		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight({ 0,0,0,0 });
-
 		// 3. プレイヤーの中心(注視点)とカメラ行列を計算
 		Math::Vector3 targetPos = spPlayer->GetPos() + Math::Vector3(0.0f, m_statusCamHeightOffset, 0.0f);
 		Math::Matrix localPos = Math::Matrix::CreateTranslation(0.0f, 0.0f, -m_statusCamDistance);

@@ -29,7 +29,26 @@ private:
 	std::shared_ptr<KdTexture>m_ResultBackTex;
 
 	std::shared_ptr<ResultDisplay_Score>m_ResultDisplay_Score;
-	std::shared_ptr<ResultDisplayBase>m_ResultDisplayBase;
 
+	std::vector<std::shared_ptr<ResultDisplayBase>>m_ResultDisplayList;
+	int m_CurrentDisplayIndex = 0;
+
+
+
+	std::shared_ptr<KdTexture>m_ArrowTex;
+	Math::Vector2 m_ArrowLPos;
+	Math::Vector2 m_ArrowRPos;
+	Math::Vector2 m_ArrowSiz;
+
+	bool m_ArrowRHiFlg = false;
+	bool m_ArrowLHiFlg = false;
+
+	float m_AroowHitScale = 1.1;
+
+	float m_AroowAlpha = 1;
+	float m_AddAroowAlpha = 1;
+
+	void ArrowUpdate();
+	void ArrowDrawSprite();
 
 };

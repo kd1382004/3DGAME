@@ -14,7 +14,7 @@ public:
 	void PostUpdate()override;
 	void PreDraw();
 	void DrawLit();
-
+	void GenerateDepthMapFromLight()override;
 	void SetPos(const Math::Vector3& pos)override;
 
 	void SetRotation(Math::Matrix _rMat);

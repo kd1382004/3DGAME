@@ -39,7 +39,6 @@ private:
 	std::shared_ptr<KdTexture>m_TimeColonTex;
 	std::shared_ptr<KdTexture>m_TreasureChestsNumTex;
 
-
 	std::shared_ptr<KdTexture>m_ArrowTex;
 
 	Math::Vector2 m_OverallResultPos;

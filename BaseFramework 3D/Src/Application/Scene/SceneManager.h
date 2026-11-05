@@ -89,8 +89,17 @@ public:
 
 
 
-	void SetFogEnable(bool _fogFlg) { m_fogFlg = _fogFlg; };
-	void SetAmbient(const Math::Vector4& _ambient) { m_ambient = _ambient; };
+	void SetFogEnable(bool _fogFlg)
+	{
+		m_fogFlg = _fogFlg;
+		KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
+		KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+	};
+	void SetAmbient(const Math::Vector4& _ambient) 
+	{
+		m_ambient = _ambient;
+		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+	};
 
 private:
 
