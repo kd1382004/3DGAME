@@ -19,7 +19,6 @@ class PlayerAccessory;
 //UI
 class UIManager;
 class UIMap_Player;
-class StaminaGage;
 class SkillGage;
 
 //武器
@@ -77,9 +76,6 @@ public:
 	void SetPotionsInventoryList(const std::vector<Inventory>& _potions);
 	//武器強化素材のインベントリリストを設定
 	void SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons);
-
-	void SavePlayerStatus(std::string _filePath) { SaveCharaStatus(_filePath); }
-	void LoadPlayerStatus(std::string _filePath) { LoadCharaStatus(_filePath); }
 
 
 	void ClearAllBuffs();
@@ -163,34 +159,6 @@ public:
 
 
 	void SetAccessoryManager(std::shared_ptr<AccessoryManager>_spAccessoryManager)override;
-
-	float GetMaxMP() { return m_staminaMax; }
-	float GetStaminaMax() { return m_staminaMax; }
-	float GetStaminaNow() { return m_staminaNow; }
-	float GetStaminaRegen() { return m_staminaRegenPerSec + m_staminaRegenBuff; }
-
-	// スタミナ即座に回復
-	void StaminaHeal(float _amount);
-
-
-	// スタミナ回復量アップ（永続）
-	void BoostStaminaRegenBase(float _amount)
-	{
-		m_staminaRegenPerSec += _amount;
-	}
-
-	// スタミナ回復量アップ（時間制限バフ）
-	void AddStaminaRegenBuff(float _amount)
-	{
-		m_staminaRegenBuff += _amount;
-	}
-
-	// スタミナ量増加（最大スタミナ永続増加）
-	void AddMaxStamina(float _boost);
-
-
-	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
-	float GetBaseSpeed() { return m_status.moveSpeed.baseSpeed; }
 
 	std::weak_ptr<WeaponBase> GetWeapon() { return m_wpWepon; }
 
@@ -343,32 +311,9 @@ protected:
 	////////////////////////////////////////
 	//UI
 	std::weak_ptr<UIMap_Player>m_wpUIMap_Player;
-	std::weak_ptr<StaminaGage>m_wpStaminaGage;
 	std::weak_ptr<SkillGage>m_wpSkillGage;
 
-	////////////////////////////////////////
-	//スタミナ
-	float m_staminaMax = 100;
-	float m_staminaNow = m_staminaMax;
 
-	//dashでの減少量(1秒あたり)
-	float m_dashStaminaDrainPerSec = 10;
-
-	//自然回復速度(1秒あたり)
-	float m_staminaRegenPerSec = 1;
-
-	//バフによる回復速度増加量(1秒あたり)
-	float m_staminaRegenBuff = 0;
-
-
-	bool m_staminaRegenFlg = false;
-
-	//スタミナ減少
-	// _amount...実際に減らす量
-	//戻り値 ... _amount分減少できたかどうか
-	bool ConsumeStamina(float _amount);
-
-	void StaminaManager();
 
 	///////////////////////////////////
 	//回避

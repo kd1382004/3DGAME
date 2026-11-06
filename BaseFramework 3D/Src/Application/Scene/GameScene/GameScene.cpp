@@ -104,25 +104,20 @@ void GameScene::SetGameResult()
 		//ゲームResultに保存
 		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_InventoryGameResultFilePath);
 		SaveWeaponStrengtheningData(true, m_WeaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
-
 		//プレイヤーのステータス状況を保存
 		m_spPlayer->ClearAllBuffs();
+		m_spPlayer->SaveCharaStatus(m_PlayerStatusGameResultFilePath);
 		if (saveFlg)
 		{
 			//セーブデータに保存
-			m_spPlayer->SavePlayerStatus(m_PlayerStatusFilePath);
-			m_spPlayer->SavePlayerStatus(m_PlayerStatusGameResultFilePath);
+			m_spPlayer->SaveCharaStatus(m_PlayerStatusFilePath);
 		}
 		else
 		{
-			//ゲームResultに保存
-			m_spPlayer->SavePlayerStatus(m_PlayerStatusGameResultFilePath);
-
-
 			//セーブデータに保存
 			//プレイヤーのステータス状況をリセット
-			m_spPlayer->LoadPlayerStatus(m_spPlayer->GetCharaDefaultStatusFilePath());
-			m_spPlayer->SavePlayerStatus(m_PlayerStatusFilePath);
+			m_spPlayer->LoadCharaStatus(m_spPlayer->GetCharaDefaultStatusFilePath());
+			m_spPlayer->SaveCharaStatus(m_PlayerStatusFilePath);
 		}
 
 	}
@@ -314,7 +309,7 @@ void GameScene::Init()
 	m_spPlayer = std::make_shared<PlayerBase>();
 	m_spPlayer->Init();
 	m_spPlayer->SetPlayerWeaponInfo(SceneManager::Instance().GetPlayerWeaponInfo());
-	m_spPlayer->LoadPlayerStatus(m_PlayerStatusFilePath);
+	m_spPlayer->LoadCharaStatus(m_PlayerStatusFilePath);
 	m_objList.push_back(m_spPlayer);
 
 

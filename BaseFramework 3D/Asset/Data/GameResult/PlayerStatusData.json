@@ -19,5 +19,12 @@
         "baseSpeed": 10.0,
         "runMovePowe": 5.0,
         "walkMovePowe": 3.0
+    },
+    "stamina": {
+        "dashStaminaDrainPerSec": 10.0,
+        "staminaMax": 100.0,
+        "staminaNow": 100.0,
+        "staminaRegenBuff": 0.0,
+        "staminaRegenPerSec": 1.0
     }
 }

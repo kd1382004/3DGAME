@@ -361,6 +361,9 @@
     <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory">
       <UniqueIdentifier>{f8e0359a-87cb-44cd-868c-2434cac0e68d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus">
+      <UniqueIdentifier>{3e959922-c3f8-43e5-9860-3180f56e0e88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -828,6 +831,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.h">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.h">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1258,6 +1264,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.cpp">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.cpp">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

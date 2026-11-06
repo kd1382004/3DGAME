@@ -1,11 +1,14 @@
-#pragma once
+﻿#pragma once
 
 enum PotionsType
 {
+	//即座に回復
 	PotionsType_InstantHeal = 0,
 
+	//攻撃力Baseがアップ
 	PotionsType_AttackBaseUP,
 
+	//攻撃力が一時的にアップ
 	PotionsType_AttackBoostPotion,
 
 	// スタミナ即座に回復

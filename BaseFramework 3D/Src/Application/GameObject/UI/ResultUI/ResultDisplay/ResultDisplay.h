@@ -5,6 +5,7 @@
 class ResultDisplay_Score;
 class ResultDisplayBase;
 class ResultDisplay_PotionInventory;
+class ResultDisplay_PlayerStatus;
 
 struct Inventory;
 
@@ -28,10 +29,13 @@ public:
 
 
 	void SetPlayerInventoryList(std::vector<std::vector<Inventory>> _playerInventoryList);
+
+	void SetPlayerStatusGameResultFilePath(std::string _path);
 private:
 	std::shared_ptr<KdTexture>m_ResultBackTex;
 
 	std::shared_ptr<ResultDisplay_Score>m_ResultDisplay_Score;
+	std::shared_ptr<ResultDisplay_PlayerStatus>m_ResultDisplay_PlayerStatus;
 
 	std::shared_ptr<ResultDisplay_PotionInventory>m_ResultDisplay_PotionInventory;
 

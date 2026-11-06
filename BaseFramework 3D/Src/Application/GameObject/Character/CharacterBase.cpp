@@ -6,6 +6,7 @@
 #include"../UI/HPBar/HPBar.h"
 #include"../UI/UIManager.h"
 #include"../UI/HitDamage/HitDamage.h"
+#include"../UI/StaminaGage/StaminaGage.h"
 void CharacterBase::Init()
 {
 
@@ -401,6 +402,19 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 	status.moveSpeed.walkMovePowe = getFloat(data["moveSpeed"], "walkMovePowe");
 	status.moveSpeed.runMovePowe = getFloat(data["moveSpeed"], "runMovePowe");
 
+	// スタミナ
+	//最大
+	status.stamina.staminaMax = getFloat(data["stamina"], "staminaMax");
+	//現スタミナ（無ければ最大値）
+	status.stamina.staminaNow = getFloat(data["stamina"], "staminaNow", status.stamina.staminaMax);
+	//ダッシュ時の消費量(毎秒)
+	status.stamina.dashStaminaDrainPerSec = getFloat(data["stamina"], "dashStaminaDrainPerSec");
+	//回復量(毎秒)
+	status.stamina.staminaRegenPerSec = getFloat(data["stamina"], "staminaRegenPerSec");
+	//回復バフ
+	status.stamina.staminaRegenBuff = getFloat(data["stamina"], "staminaRegenBuff");
+
+
 	//LV
 	status.LV = getFloat(data["LV"], "LV");
 
@@ -657,6 +671,14 @@ void CharacterBase::SaveCharaStatus(std::string _filePath)
 	data["moveSpeed"]["walkMovePowe"] = m_status.moveSpeed.walkMovePowe;
 	data["moveSpeed"]["runMovePowe"] = m_status.moveSpeed.runMovePowe;
 
+
+	// スタミナ
+	data["stamina"]["staminaMax"] = m_status.stamina.staminaMax;
+	data["stamina"]["staminaNow"] = m_status.stamina.staminaMax;
+	data["stamina"]["dashStaminaDrainPerSec"] = m_status.stamina.dashStaminaDrainPerSec;
+	data["stamina"]["staminaRegenPerSec"] = m_status.stamina.staminaRegenPerSec;
+	data["stamina"]["staminaRegenBuff"] = m_status.stamina.staminaRegenBuff;
+
 	//LV
 	data["LV"]["LV"] = m_status.LV;
 
@@ -668,4 +690,64 @@ void CharacterBase::SaveCharaStatus(std::string _filePath)
 	}
 
 	ofs << data.dump(4);
+}
+
+
+void CharacterBase::AddMaxStamina(float _boost)
+{
+	m_status.stamina.staminaMax += _boost;
+
+	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
+	if (spStaminaGage)
+	{
+		spStaminaGage->SetStaminaBarTexPercent(m_status.stamina.staminaNow / m_status.stamina.staminaMax);
+	}
+}
+
+
+bool CharacterBase::ConsumeStamina(float _amount)
+{
+
+	m_status.stamina.staminaRegenFlg = false;
+
+	//今のスタミナが減少量未満なら減らせない
+	if (m_status.stamina.staminaNow < _amount) { return false; }
+
+
+	m_status.stamina.staminaNow = std::max(0.0f, m_status.stamina.staminaNow - _amount);
+	return true;
+}
+
+void CharacterBase::StaminaManager()
+{
+
+	if (m_status.stamina.staminaRegenFlg)
+	{
+		float totalRegen = m_status.stamina.staminaRegenPerSec + m_status.stamina.staminaRegenBuff;
+		m_status.stamina.staminaNow += totalRegen * DeltaTime::Instance().GetGameDeltaTime();
+
+		if (m_status.stamina.staminaNow < 0.0f) { m_status.stamina.staminaNow = 0.0f; }
+
+		if (m_status.stamina.staminaNow > m_status.stamina.staminaMax) { m_status.stamina.staminaNow = m_status.stamina.staminaMax; }
+	}
+
+
+
+	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
+	if (spStaminaGage)
+	{
+		spStaminaGage->SetStaminaBarTexPercent(m_status.stamina.staminaNow / m_status.stamina.staminaMax);
+	}
+}
+
+void CharacterBase::StaminaHeal(float _amount)
+{
+	m_status.stamina.staminaNow = std::min(m_status.stamina.staminaMax, m_status.stamina.staminaNow + _amount);
+	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
+	if (spStaminaGage)
+	{
+		spStaminaGage->SetStaminaBarTexPercent(m_status.stamina.staminaNow / m_status.stamina.staminaMax);
+	}
+
+
 }

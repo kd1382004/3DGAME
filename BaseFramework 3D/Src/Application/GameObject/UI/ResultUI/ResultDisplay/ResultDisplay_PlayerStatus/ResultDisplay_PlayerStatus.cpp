@@ -1,155 +1,230 @@
-﻿#include "ResultDisplay_PotionInventory.h"
-#include"../../../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"
-#include"../../../../Potions/PotionTexInfo/PotionTexInfo.h"
+﻿#include "ResultDisplay_PlayerStatus.h"
 #include"../../../../../Info/NumDraw/NumDraw.h"
-void ResultDisplay_PotionInventory::Init()
+#include"../../../../../Scene/SceneManager.h"
+#include"../../../../Character/CharacterBase.h"
+
+void ResultDisplay_PlayerStatus::Init()
 {
-	m_iconDimensions = { 40,40 };
+	Math::Vector2 iconBasePos = { -170, 80 };
+	Math::Vector2 nameBasePos = { iconBasePos.x + 70,iconBasePos.y };
+	Math::Vector2 numBasePos = { nameBasePos.x + 370, iconBasePos.y };
 
-	if (!m_potionSelectTex)
+	for (int i = 0; i < PlayerStatusInfoSiz; i++)
 	{
-		m_potionSelectTex = std::make_shared<KdTexture>();
-		m_potionSelectTex->Load("Asset/Textures/GameUI/Item/Potion/PotionSelect.png");
-	}
-	if (!m_potionTitleTex)
-	{
-		m_potionTitleTex = std::make_shared<KdTexture>();
-		m_potionTitleTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_PotionInventory/PotionTiyel.png");
-		m_potionTitleTexPos = { 0,250 };
-	
-	}
-	if (!m_potionBackTex)
-	{
-		m_potionBackTex = std::make_shared<KdTexture>();
-		m_potionBackTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_PotionInventory/BagBackTex2.png");
-		m_potionBackTexPos = { 200,-70 };
-	
-	}
-}
+		m_playerStatusInfo[i].num = 0;
+		m_playerStatusInfo[i].numPos = numBasePos;
 
-void ResultDisplay_PotionInventory::Update()
-{
-	IconHit();
-}
+		m_playerStatusInfo[i].numPos.y -= i * 70;
 
-void ResultDisplay_PotionInventory::PreDraw()
-{}
-
-void ResultDisplay_PotionInventory::DrawSprite()
-{
-	if (m_potionTitleTex)
-	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionTitleTex, m_potionTitleTexPos.x, m_potionTitleTexPos.y);
-	}
-	if (m_potionBackTex)
-	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionBackTex, m_potionBackTexPos.x, m_potionBackTexPos.y);
-	
-		Math::Vector2 pos = { -150,m_potionBackTexPos.y };
-		Math::Vector2 siz = { 180,(float)m_potionBackTex->GetHeight() / 2 };
-		Math::Color col = { 0.8,0.8,0.8,1 };
-		KdShaderManager::Instance().m_spriteShader.DrawBox(pos.x, pos.y, siz.x, siz.y, &col);
-	}
+		m_playerStatusInfo[i].namePos = nameBasePos;
+		m_playerStatusInfo[i].namePos.y = m_playerStatusInfo[i].numPos.y;
 
 
+		m_playerStatusInfo[i].iconPos = iconBasePos;
+		m_playerStatusInfo[i].iconPos.y = m_playerStatusInfo[i].numPos.y;
 
-	for (const auto& tex : m_itemIconInfo)
-	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_IconTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
-
-		if (tex.m_ItemID == m_selectPotionID && m_potionSelectTex)
+		if (!m_playerStatusInfo[i].nameTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_ExplanationTex, 200, -110);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_NameTex, 200, 85);
-			NumDraw::GetInstance().Drow(tex.m_num, RAligned, { 300,15 }, kWhiteColor, 4);
+			m_playerStatusInfo[i].nameTex = std::make_shared<KdTexture>();
+
+			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/PlayerStatusName";
+			filePath += std::to_string(i) + ".png";
+			m_playerStatusInfo[i].nameTex->Load(filePath);
+		}
+
+		if (!m_playerStatusInfo[i].iconTex)
+		{
+			m_playerStatusInfo[i].iconTex = std::make_shared<KdTexture>();
+
+			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/PlayerStatusIcon";
+			filePath += std::to_string(i) + ".png";
+			m_playerStatusInfo[i].iconTex->Load(filePath);
 		}
 
 	}
-}
 
-void ResultDisplay_PotionInventory::PotionInfoInit()
-{
-
-}
-void ResultDisplay_PotionInventory::AddPotionTexInfo(std::vector<Inventory> _potions)
-{
-	m_itemIconInfo.clear();
-
-	int i = 0;
-	int j = 0;
-	Math::Vector2 m_iconBase2DPos = { -300, 90 }; // 初期位置
-	float m_iconSpacing = 10;
-
-	for (const Inventory& potion : _potions)
+	if (!m_playerStatusInfoBackTex)
 	{
-		if (potion.m_num > 0)
-		{
-			ItemIconInfo itemIconInfo;
-			itemIconInfo.m_ItemID = potion.m_ID;
-
-			if (i > 7)
-			{
-				j++;
-				i = 0;
-			}
-
-			float x = m_iconBase2DPos.x + i * m_iconDimensions.w + i * m_iconSpacing;
-			float y = m_iconBase2DPos.y - j * m_iconDimensions.h - j * m_iconSpacing;
-			itemIconInfo.m_2DPos = { x,y };
-			itemIconInfo.m_num = potion.m_num;
-			itemIconInfo.m_name = potion.m_name;
-
-			std::shared_ptr<PotionTexInfo>_spPotionTexInfo = std::make_shared<PotionTexInfo>();
-			if (_spPotionTexInfo)
-			{
-				itemIconInfo.m_IconTex = _spPotionTexInfo->GetPotionIcon(itemIconInfo.m_ItemID);
-				itemIconInfo.m_ExplanationTex = _spPotionTexInfo->GetPotionExplanation(itemIconInfo.m_ItemID);
-				itemIconInfo.m_NameTex = _spPotionTexInfo->GetPotionName(itemIconInfo.m_ItemID);
-			}
-
-			m_itemIconInfo.push_back(itemIconInfo);
-			i++;
-		}
+		m_playerStatusInfoBackTex = std::make_shared<KdTexture>();
+		m_playerStatusInfoBackTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/back.png");
 	}
 
-	if (m_itemIconInfo.size() > 0)
+	if (!m_spRtTargetPack)
 	{
-		m_selectPotionID = m_itemIconInfo[0].m_ItemID;
+		m_spRtTargetPack = std::make_shared<KdRenderTargetPack>();
+		m_spRtTargetPack->CreateRenderTarget(1280, 720, true);
+	}
+
+	if (!m_spStatusCamera)
+	{
+		m_spStatusCamera = std::make_shared<KdCamera>();
+		m_spStatusCamera->SetProjectionMatrix(45.0f, 2000.0f, 0.01f, 1280.0f / 720.0f);
+	}
+
+
+	if (!m_spPlayerModel)
+	{
+		m_spPlayerModel = std::make_shared<KdModelWork>();
+		m_spPlayerModel->SetModelData("Asset/Models/Character/Player/Rogue.gltf");
+
+		//アニメータの準備
+		m_spAnimetor = std::make_shared<KdAnimator>();
+		m_spAnimetor->SetAnimation(m_spPlayerModel->GetAnimation("Idle"), true);
+	}
+
+
+	if (!m_statusTitleTex)
+	{
+		m_statusTitleTex = std::make_shared<KdTexture>();
+		m_statusTitleTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_PlayerStatus/StatusTex.png");
+		m_statusTitleTexPos = { 0,250 };
+
 	}
 }
 
-void ResultDisplay_PotionInventory::IconHit()
+void ResultDisplay_PlayerStatus::Update()
 {
-	POINT mousePos = MouseInfo::Instance().m_windowPos;
-
-	for (auto& potion : m_itemIconInfo)
+	if (m_spPlayerModel)
 	{
-		float Left = potion.m_2DPos.x - m_iconDimensions.w / 2;
-		float Right = potion.m_2DPos.x + m_iconDimensions.w / 2;
-		float Top = potion.m_2DPos.y + m_iconDimensions.h / 2;
-		float Bot = potion.m_2DPos.y - m_iconDimensions.h / 2;
+		m_spAnimetor->AdvanceTime(m_spPlayerModel->WorkNodes(), 100);
+		m_spPlayerModel->CalcNodeMatrices();
+	}
 
 
-		if (mousePos.x >= Left && mousePos.x <= Right &&
-			mousePos.y >= Bot && mousePos.y <= Top)
+
+
+	m_statusCamAngleY += m_statusCamRotateSpeed * DeltaTime::Instance().GetRealDeltaTime();
+	if (m_statusCamAngleY >= 360.0f)
+	{
+		m_statusCamAngleY -= 360.0f;
+	}
+}
+
+void ResultDisplay_PlayerStatus::PreDraw()
+{
+	if (!m_spRtTargetPack) { return; }
+	// レンダーターゲットを切り替え
+	SceneManager::Instance().ChangeRendertarget(m_spRtTargetPack);
+	// 背景を完全透明(アルファ0)にクリアしたい場合 (UIの上にキャラだけ重ねる場合におすすめ)
+	m_spRtTargetPack->ClearTexture(Math::Color(0.0f, 0.0f, 0.0f, 0.0f));
+	// 1. メインシーン用のカメラ設定を退避
+	const auto prevCameraCB = KdShaderManager::Instance().GetCameraCB();
+
+	// 3. プレイヤーの中心(注視点)とカメラ行列を計算
+	Math::Vector3 targetPos = Math::Vector3(0.0f, m_statusCamHeightOffset, 0.0f);
+	Math::Matrix localPos = Math::Matrix::CreateTranslation(0.0f, 0.0f, -m_statusCamDistance);
+	Math::Matrix rotX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(m_statusCamPitch));
+	Math::Matrix rotY = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_statusCamAngleY));
+	Math::Matrix trans = Math::Matrix::CreateTranslation(targetPos);
+	// カメラのワールド行列: (距離分後ろへ移動) * (ピッチ回転) * (Y軸回転) * (注視点へ移動)
+	Math::Matrix camWorld = localPos * rotX * rotY * trans;
+	// 4. ステータス用カメラをシェーダーに適用
+	KdShaderManager::Instance().WriteCBCamera(camWorld, m_spStatusCamera->GetProjMatrix());
+	// 5. 3Dシェーダーのパスを開始してプレイヤーを描画
+	KdShaderManager::Instance().m_StandardShader.BeginLit();
+
+	//描画
+	if (m_spPlayerModel)
+	{
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spPlayerModel, m_mWorld,{2,2,2,2});
+	}
+
+
+	KdShaderManager::Instance().m_StandardShader.EndLit();
+	// レンダーターゲットを戻す
+	SceneManager::Instance().UndoRenderTarget();
+	// 6. メインカメラの定数バッファを復元 (メイン画面描画への影響を防止)
+	KdShaderManager::Instance().WriteCBCamera(prevCameraCB.mView.Invert(), prevCameraCB.mProj);
+
+	SceneManager::Instance().UnFogAmbient();
+
+}
+
+void ResultDisplay_PlayerStatus::DrawSprite()
+{
+	if (m_statusTitleTex)
+	{
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_statusTitleTex, m_statusTitleTexPos.x, m_statusTitleTexPos.y);
+	}
+
+
+	if (!m_spRtTargetPack) { return; }
+
+	float scal = 0.25;
+	Math::Vector2 siz = { 1280 * scal ,720 * scal };
+
+	Math::Vector2 pos = {-250,0};
+
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, siz.x, siz.y);
+
+	//ステータス描画
+	Math::Vector2 pivo = { 0,0.5 };
+	for (int i = 0; i < PlayerStatusInfoSiz; i++)
+	{
+		Math::Color color;
+		Math::Vector2 backPos = m_playerStatusInfo[i].namePos;
+		Math::Vector2 backSiz = { 400,60 };
+		Math::Vector2 pivo = { 0,0.5 };
+		if (i % 2 == 0)
 		{
-			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-			potion.m_hit = true;
-			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
-			{
-				m_selectPotionID = potion.m_ItemID;
-			}
+			color = { 1,1,1,0.3f };
 		}
 		else
 		{
-			potion.m_hit = false;
+			color = { 0.5,0.5,0.5,0.3f };
+		}
+
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfoBackTex, backPos.x, backPos.y, backSiz.x, backSiz.y, nullptr, &color, pivo);
+
+
+
+		if (m_playerStatusInfo[i].nameTex)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].nameTex, m_playerStatusInfo[i].namePos.x, m_playerStatusInfo[i].namePos.y, nullptr, nullptr, pivo);
+		}
+		NumDraw::GetInstance().Drow(m_playerStatusInfo[i].num, RAligned, m_playerStatusInfo[i].numPos, kWhiteColor, 4, true);
+
+		if (m_playerStatusInfo[i].iconTex)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].iconTex, m_playerStatusInfo[i].iconPos.x, m_playerStatusInfo[i].iconPos.y, nullptr, nullptr, pivo);
 		}
 	}
-
-
 }
 
+void ResultDisplay_PlayerStatus::SetPlayerStatusGameResultFilePath(std::string _path)
+{
+	std::shared_ptr<CharacterBase>spCharacterBase = std::make_shared<CharacterBase>();
+	spCharacterBase->Init();
+	spCharacterBase->LoadCharaStatus(_path);
+	if (spCharacterBase)
+	{
+		for (int i = 0; i < PlayerStatusInfoSiz; i++)
+		{
+			int num = 0;
 
+			switch (i)
+			{
+
+			case PlayerStatusInfo_HP:
+				num = spCharacterBase->GetMaxHP();
+				break;
+			case PlayerStatusInfo_MP:
+				num = spCharacterBase->GetMaxMP();
+				break;
+			case PlayerStatusInfo_AttackPower:
+				num = spCharacterBase->NowAttack();
+				break;
+			case PlayerStatusInfo_DefensePower:
+				num = spCharacterBase->NowDefense();
+				break;
+			case PlayerStatusInfo_Speed:
+				num = spCharacterBase->GetBaseSpeed();
+				break;
+			default:
+				break;
+			}
+
+			m_playerStatusInfo[i].num = num;
+		}
+	}
+}

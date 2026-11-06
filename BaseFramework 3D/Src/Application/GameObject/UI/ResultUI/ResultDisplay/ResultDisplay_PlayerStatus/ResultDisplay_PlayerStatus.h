@@ -1,15 +1,11 @@
 ﻿#pragma once
 #include"../ResultDisplayBase.h"
 
-
-class PotionTexInfo;
-struct Inventory;
-
-class ResultDisplay_PotionInventory :public ResultDisplayBase
+class ResultDisplay_PlayerStatus :public ResultDisplayBase
 {
 public:
-	ResultDisplay_PotionInventory() {}
-	~ResultDisplay_PotionInventory() {}
+	ResultDisplay_PlayerStatus() {}
+	~ResultDisplay_PlayerStatus() {}
 
 
 	void Init();
@@ -19,46 +15,57 @@ public:
 	void PreDraw();
 	void DrawSprite();
 
+	void SetPlayerStatusGameResultFilePath(std::string _path);
 
-	//あるものを入れてく関数
-	void AddPotionTexInfo(std::vector<Inventory>_potions);
-private:
-	void PotionInfoInit();
+private:		 
+	//プレイヤーステータス
+	std::shared_ptr<KdRenderTargetPack> m_spRtTargetPack;
 
-	//アイコンとマウスが当たってるか
-	void IconHit();
+	std::shared_ptr<KdCamera> m_spStatusCamera;
+	float m_statusCamAngleY = 0.0f;   // Y軸回転角度 (度)
+	float m_statusCamDistance = 4.0f;   // プレイヤーからの距離 (お好みに合わせて調整)
+	float m_statusCamPitch = 8.0f;   // 少し見下ろす角度 (度)
+	float m_statusCamHeightOffset = 2;   // プレイヤーの注視点(胸・腰の高さ)
+	float m_statusCamRotateSpeed = 45.0f;  // 回転速度 (度/秒: 45度なら約8秒で1周)
 
-	struct ItemIconInfo
+	struct PlayerStatusInfo
 	{
-		int m_ItemID;
-		Math::Vector2 m_2DPos;	
-		int m_num;
-		bool m_hit = false;
+		//HPや攻撃力などの数値
+		int num;
 
-		std::string m_name;
-		std::shared_ptr<KdTexture>m_IconTex;
-		std::shared_ptr<KdTexture>m_ExplanationTex;
-		std::shared_ptr<KdTexture> m_NameTex;
+		//数値の位置
+		Math::Vector2 numPos;
+
+		//数値の名前
+		std::shared_ptr<KdTexture>nameTex;
+
+		//数値の名前の位置
+		Math::Vector2 namePos;
+
+		//アイコン
+		std::shared_ptr<KdTexture>iconTex;
+
+		//アイコンの位置
+		Math::Vector2 iconPos;
 	};
 
+	enum PlayerStatusInfoID
+	{
+		PlayerStatusInfo_HP,
+		PlayerStatusInfo_MP,
+		PlayerStatusInfo_AttackPower,
+		PlayerStatusInfo_DefensePower,
+		PlayerStatusInfo_Speed,
+		PlayerStatusInfoSiz
+	};
 
-	std::vector<ItemIconInfo> m_itemIconInfo;
-	struct { int w; int h; } m_iconDimensions;
+	PlayerStatusInfo m_playerStatusInfo[PlayerStatusInfoSiz];
 
-	//選ばれてるポーションのID
-	int m_selectPotionID;
+	std::shared_ptr<KdTexture>m_playerStatusInfoBackTex;
 
-	int m_num = 0;
+	std::shared_ptr<KdModelWork> m_spPlayerModel = nullptr;
+	std::shared_ptr<KdAnimator>	m_spAnimetor = nullptr;
 
-	//ポーションselect
-	std::shared_ptr<KdTexture>m_potionSelectTex;
-
-
-	std::shared_ptr<KdTexture>m_potionTitleTex;
-	Math::Vector2 m_potionTitleTexPos;
-
-
-	std::shared_ptr<KdTexture>m_potionBackTex;
-	Math::Vector2 m_potionBackTexPos;
-
+	std::shared_ptr<KdTexture>m_statusTitleTex;
+	Math::Vector2 m_statusTitleTexPos;
 };

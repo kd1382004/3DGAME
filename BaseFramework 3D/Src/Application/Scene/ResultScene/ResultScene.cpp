@@ -47,7 +47,7 @@ void ResultScene::Init()
 	spResultDisplay->Set2DPos({ 0,200 });
 	spResultDisplay->SetDisplayFloorInfo(gameResult.displayFloorInfo);
 	spResultDisplay->SetPlayerInventoryList(LoadInventoryData(m_InventoryGameResultFilePath));
-	
+	spResultDisplay->SetPlayerStatusGameResultFilePath(m_PlayerStatusGameResultFilePath);
 	spUIManager->AddUIObj(spResultDisplay);
 
 

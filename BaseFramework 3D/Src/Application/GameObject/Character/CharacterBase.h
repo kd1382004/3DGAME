@@ -5,6 +5,99 @@ class UIManager;
 class HPBar;
 class HitDamage;
 class AccessoryManager;
+class StaminaGage;
+
+
+struct StatusHP
+{
+	//基礎体力
+	float baseHP = 0;
+
+	//最大体力
+	float maxHP = 0;
+
+	//現在体力
+	float nowHP = 0;
+};
+
+struct StatusAttck
+{
+	//基礎攻撃力
+	float baseAttckPowe = 0;
+
+	//現在攻撃力
+	float nowAttck = 0;
+
+	//増加攻撃力(期間限定の攻撃力アップの数値などを入れる)
+	float addAttack = 0;
+};
+
+struct StatusDefense
+{
+	//基礎防御力
+	float baseDefensePowe = 0;
+
+	//現在防御力
+	float nowDefense = 0;
+
+	//増加防御力(期間限定の防御力アップの数値などを入れる)
+	float addDefense = 0;
+};
+
+struct StatusMoveSpeed
+{
+	//基礎速度
+	float baseSpeed = 0;
+
+	//歩き速度(基礎速度に足す値)
+	float walkMovePowe = 0;
+
+	//ダッシュ速度(基礎速度に足す値)
+	float runMovePowe = 0;
+
+	//現在の速度
+	float nowSpeed = 0;
+};
+
+struct Stamina
+{
+	//スタミナ
+	float staminaMax = 100;
+	float staminaNow = staminaMax;
+
+	//dashでの減少量(1秒あたり)
+	float dashStaminaDrainPerSec = 10;
+
+	//自然回復速度(1秒あたり)
+	float staminaRegenPerSec = 1;
+
+	//バフによる回復速度増加量(1秒あたり)
+	float staminaRegenBuff = 0;
+
+
+	bool staminaRegenFlg = false;
+};
+
+struct Status
+{
+	//体力
+	StatusHP HP;
+
+	// 攻撃力
+	StatusAttck attck;
+
+	//防御力
+	StatusDefense defense;
+
+	//スピード
+	StatusMoveSpeed moveSpeed;
+
+
+	Stamina stamina;
+
+	//LV
+	int LV;
+};
 
 class CharacterBase : public KdGameObject
 {
@@ -21,6 +114,10 @@ public:
 
 	void ImGUI()override;
 
+
+	//_filePath ... ファイルパスを書く
+	void LoadCharaStatus(std::string _filePath);
+	void SaveCharaStatus(std::string _filePath);
 
 	void SetPos(const Math::Vector3& pos)override
 	{
@@ -95,6 +192,37 @@ public:
 
 	float GetNowSpeed() { return m_status.moveSpeed.nowSpeed; }
 
+	float GetWalkSpeed() { return m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe; }
+	float GetBaseSpeed() { return m_status.moveSpeed.baseSpeed; }
+
+	///////////////////////////////////
+	// スタミナ即座に回復
+	void StaminaHeal(float _amount);
+
+
+	// スタミナ回復量アップ（永続）
+	void BoostStaminaRegenBase(float _amount)
+	{
+		m_status.stamina.staminaRegenPerSec += _amount;
+	}
+
+	// スタミナ回復量アップ（時間制限バフ）
+	void AddStaminaRegenBuff(float _amount)
+	{
+		m_status.stamina.staminaRegenBuff += _amount;
+	}
+
+	// スタミナ量増加（最大スタミナ永続増加）
+	void AddMaxStamina(float _boost);
+
+
+
+	float GetMaxMP() { return m_status.stamina.staminaMax; }
+	float GetStaminaMax() { return m_status.stamina.staminaMax; }
+	float GetStaminaNow() { return m_status.stamina.staminaNow; }
+	float GetStaminaRegen() { return m_status.stamina.staminaRegenPerSec + m_status.stamina.staminaRegenBuff; }
+
+	///////////////////////////////////
 
 	virtual void SetLV(int _lv) {};
 
@@ -149,82 +277,16 @@ protected:
 	//キャラのデフォルトステータスが入ってるファイル名
 	std::string m_charaDefaultStatusFilePath;
 
-	struct StatusHP
-	{
-		//基礎体力
-		float baseHP = 0;
+	//スタミナ減少
+	// _amount...実際に減らす量
+	//戻り値 ... _amount分減少できたかどうか
+	bool ConsumeStamina(float _amount);
 
-		//最大体力
-		float maxHP = 0;
-
-		//現在体力
-		float nowHP = 0;
-	};
-
-	struct StatusAttck
-	{
-		//基礎攻撃力
-		float baseAttckPowe = 0;
-
-		//現在攻撃力
-		float nowAttck = 0;
-
-		//増加攻撃力(期間限定の攻撃力アップの数値などを入れる)
-		float addAttack = 0;
-	};
-
-	struct StatusDefense
-	{
-		//基礎防御力
-		float baseDefensePowe = 0;
-
-		//現在防御力
-		float nowDefense = 0;
-
-		//増加防御力(期間限定の防御力アップの数値などを入れる)
-		float addDefense = 0;
-	};
-
-	struct StatusMoveSpeed
-	{
-		//基礎速度
-		float baseSpeed = 0;
-
-		//歩き速度(基礎速度に足す値)
-		float walkMovePowe = 0;
-
-		//ダッシュ速度(基礎速度に足す値)
-		float runMovePowe = 0;
-
-		//現在の速度
-		float nowSpeed = 0;
-	};
-
-	struct Status
-	{
-		//体力
-		StatusHP HP;
-
-		// 攻撃力
-		StatusAttck attck;
-
-		//防御力
-		StatusDefense defense;
-
-		//スピード
-		StatusMoveSpeed moveSpeed;
-
-
-		//LV
-		int LV;
-	};
+	void StaminaManager();
+	std::weak_ptr<StaminaGage>m_wpStaminaGage;
 
 	//ステータス
 	Status m_status;
-
-	//_filePath ... ファイルパスを書く
-	void LoadCharaStatus(std::string _filePath);
-	void SaveCharaStatus(std::string _filePath);
 	///////////////////////////////////////////
 
 	///////////////////////////////////////////

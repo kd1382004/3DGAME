@@ -340,6 +340,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplayBase.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score\ResultDisplay_Score.h" />
     <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h" />
@@ -489,6 +490,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplayBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score\ResultDisplay_Score.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp" />

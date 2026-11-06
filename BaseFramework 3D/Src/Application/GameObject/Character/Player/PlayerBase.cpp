@@ -208,7 +208,7 @@ void PlayerBase::PreUpdate()
 
 	m_IsDetectedByEnemyNum = 0;
 
-	m_staminaRegenFlg = true;
+	m_status.stamina.staminaRegenFlg = true;
 
 
 	//デバック
@@ -533,7 +533,7 @@ void PlayerBase::SetLV(int _LV)
 	m_status.defense.nowDefense = m_status.defense.baseDefensePowe;
 	AddMaxHP(10, true);
 
-	if(m_spPlayreLV)
+	if (m_spPlayreLV)
 	{
 		m_spPlayreLV->CalcNextLevelExp(_LV);
 	}
@@ -570,18 +570,6 @@ void PlayerBase::SetAccessoryManager(std::shared_ptr<AccessoryManager> _spAccess
 	m_spPlayerAccessory->SetFlashlight(spFlashlight);
 }
 
-void PlayerBase::StaminaHeal(float _amount)
-{
-	m_staminaNow = std::min(m_staminaMax, m_staminaNow + _amount);
-	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
-	if (spStaminaGage)
-	{
-		spStaminaGage->SetStaminaBarTexPercent(m_staminaNow / m_staminaMax);
-	}
-
-
-}
-
 void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManager)
 {
 
@@ -616,7 +604,7 @@ void PlayerBase::WeaponUpdate()
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.AttackAnime), false);
 
 		m_chargeAttacFlg = true;
-		m_staminaRegenFlg = false;
+		m_status.stamina.staminaRegenFlg = false;
 		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
 		if (spWeapon)
 		{
@@ -949,7 +937,7 @@ void PlayerBase::MoveNowSpeedDecision()
 		{
 			if (m_IsDetectedByEnemy)
 			{
-				if (ConsumeStamina(m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
+				if (ConsumeStamina(m_status.stamina.dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
 				{
 					m_moveMode = MoveRun;
 				}
@@ -1153,42 +1141,6 @@ void PlayerBase::PlayerAnimeModeUpdate()
 
 }
 
-bool PlayerBase::ConsumeStamina(float _amount)
-{
-
-	m_staminaRegenFlg = false;
-
-	//今のスタミナが減少量未満なら減らせない
-	if (m_staminaNow < _amount) { return false; }
-
-
-	m_staminaNow = std::max(0.0f, m_staminaNow - _amount);
-	return true;
-}
-
-void PlayerBase::StaminaManager()
-{
-
-	if (m_staminaRegenFlg)
-	{
-		float totalRegen = m_staminaRegenPerSec + m_staminaRegenBuff;
-		m_staminaNow += totalRegen * DeltaTime::Instance().GetGameDeltaTime();
-
-		if (m_staminaNow < 0.0f) { m_staminaNow = 0.0f; }
-
-		if (m_staminaNow > m_staminaMax) { m_staminaNow = m_staminaMax; }
-	}
-
-
-
-	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
-	if (spStaminaGage)
-	{
-		spStaminaGage->SetStaminaBarTexPercent(m_staminaNow / m_staminaMax);
-	}
-
-}
-
 void PlayerBase::EvasionUpdate()
 {
 
@@ -1258,16 +1210,7 @@ void PlayerBase::EvasionUpdate()
 
 }
 
-void PlayerBase::AddMaxStamina(float _boost)
-{
-	m_staminaMax += _boost;
 
-	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
-	if (spStaminaGage)
-	{
-		spStaminaGage->SetStaminaBarTexPercent(m_staminaNow / m_staminaMax);
-	}
-}
 
 void PlayerBase::StopSound()
 {

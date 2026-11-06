@@ -3,6 +3,8 @@
 #include"ResultDisplayBase.h"
 #include"ResultDisplay_Score/ResultDisplay_Score.h"
 #include"ResultDisplay_PotionInventory/ResultDisplay_PotionInventory.h"
+#include"ResultDisplay_PlayerStatus/ResultDisplay_PlayerStatus.h"
+
 
 #include"../../../../Info/MouseInfo/MouseInfo.h"
 #include"../../../../Info/KeyInfo/KeyInfo.h"
@@ -36,9 +38,9 @@ void ResultDisplay::Init()
 	m_ResultDisplay_PotionInventory->Init();
 	m_ResultDisplayList.push_back(m_ResultDisplay_PotionInventory);
 
-	auto a = std::make_shared<ResultDisplay_PotionInventory>();
-	a->Init();
-	m_ResultDisplayList.push_back(a);
+	m_ResultDisplay_PlayerStatus = std::make_shared<ResultDisplay_PlayerStatus>();
+	m_ResultDisplay_PlayerStatus->Init();
+	m_ResultDisplayList.push_back(m_ResultDisplay_PlayerStatus);
 }
 
 void ResultDisplay::Update()
@@ -95,6 +97,14 @@ void ResultDisplay::SetPlayerInventoryList(std::vector<std::vector<Inventory>> _
 		m_ResultDisplay_PotionInventory->AddPotionTexInfo(_playerInventoryList[0]);
 	}
 
+}
+
+void ResultDisplay::SetPlayerStatusGameResultFilePath(std::string _path)
+{
+	if (m_ResultDisplay_PlayerStatus)
+	{
+		m_ResultDisplay_PlayerStatus->SetPlayerStatusGameResultFilePath(_path);
+	}
 }
 
 void ResultDisplay::ArrowUpdate()
