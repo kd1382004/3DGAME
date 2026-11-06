@@ -43,17 +43,18 @@ void ResultDisplay_PotionInventory::DrawSprite()
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionTitleTex, m_potionTitleTexPos.x, m_potionTitleTexPos.y);
 	}
+
+
 	if (m_potionBackTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionBackTex, m_potionBackTexPos.x, m_potionBackTexPos.y);
-	
-		Math::Vector2 pos = { -150,m_potionBackTexPos.y };
-		Math::Vector2 siz = { 180,(float)m_potionBackTex->GetHeight() / 2 };
-		Math::Color col = { 0.8,0.8,0.8,1 };
-		KdShaderManager::Instance().m_spriteShader.DrawBox(pos.x, pos.y, siz.x, siz.y, &col);
 	}
 
 
+	Math::Vector2 pos = { -150,m_potionBackTexPos.y };
+	Math::Vector2 siz = { 180,(float)m_potionBackTex->GetHeight() / 2 };
+	Math::Color col = { 0.8,0.8,0.8,1 };
+	KdShaderManager::Instance().m_spriteShader.DrawBox(pos.x, pos.y, siz.x, siz.y, &col);
 
 	for (const auto& tex : m_itemIconInfo)
 	{
@@ -90,7 +91,7 @@ void ResultDisplay_PotionInventory::AddPotionTexInfo(std::vector<Inventory> _pot
 			ItemIconInfo itemIconInfo;
 			itemIconInfo.m_ItemID = potion.m_ID;
 
-			if (i > 7)
+			if (i > 6)
 			{
 				j++;
 				i = 0;

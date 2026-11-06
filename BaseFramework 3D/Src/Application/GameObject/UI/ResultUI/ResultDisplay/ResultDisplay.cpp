@@ -4,7 +4,7 @@
 #include"ResultDisplay_Score/ResultDisplay_Score.h"
 #include"ResultDisplay_PotionInventory/ResultDisplay_PotionInventory.h"
 #include"ResultDisplay_PlayerStatus/ResultDisplay_PlayerStatus.h"
-
+#include"ResultDisplay_WeponInventory/ResultDisplay_WeponInventory.h"
 
 #include"../../../../Info/MouseInfo/MouseInfo.h"
 #include"../../../../Info/KeyInfo/KeyInfo.h"
@@ -37,6 +37,10 @@ void ResultDisplay::Init()
 	m_ResultDisplay_PotionInventory = std::make_shared<ResultDisplay_PotionInventory>();
 	m_ResultDisplay_PotionInventory->Init();
 	m_ResultDisplayList.push_back(m_ResultDisplay_PotionInventory);
+
+	m_ResultDisplay_WeponInventory = std::make_shared<ResultDisplay_WeponInventory>();
+	m_ResultDisplay_WeponInventory->Init();
+	m_ResultDisplayList.push_back(m_ResultDisplay_WeponInventory);
 
 	m_ResultDisplay_PlayerStatus = std::make_shared<ResultDisplay_PlayerStatus>();
 	m_ResultDisplay_PlayerStatus->Init();
@@ -95,6 +99,10 @@ void ResultDisplay::SetPlayerInventoryList(std::vector<std::vector<Inventory>> _
 	if (m_ResultDisplay_PotionInventory)
 	{
 		m_ResultDisplay_PotionInventory->AddPotionTexInfo(_playerInventoryList[0]);
+	}
+	if (m_ResultDisplay_WeponInventory)
+	{
+		m_ResultDisplay_WeponInventory->WeaponsStrengtheningInfoInit(_playerInventoryList[1]);
 	}
 
 }

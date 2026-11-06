@@ -343,6 +343,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score\ResultDisplay_Score.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory\ResultDisplay_WeponInventory.h" />
     <ClInclude Include="Src\Application\GameObject\UI\SkillGage\SkillGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\UI2\UIBase2.h" />
@@ -493,6 +494,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PotionInventory\ResultDisplay_PotionInventory.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_Score\ResultDisplay_Score.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory\ResultDisplay_WeponInventory.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\SkillGage\SkillGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\StaminaGage\StaminaGage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\UI2\UIBase2.cpp" />

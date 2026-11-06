@@ -364,6 +364,9 @@
     <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus">
       <UniqueIdentifier>{3e959922-c3f8-43e5-9860-3180f56e0e88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory">
+      <UniqueIdentifier>{1a7a3831-027c-4f16-b130-04a9169a603a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -834,6 +837,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.h">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory\ResultDisplay_WeponInventory.h">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1267,6 +1273,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.cpp">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory\ResultDisplay_WeponInventory.cpp">
+      <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
