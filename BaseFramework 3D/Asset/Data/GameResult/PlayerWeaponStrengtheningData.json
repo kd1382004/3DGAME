@@ -3,100 +3,100 @@
         "attack": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         },
         "characteristic": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         },
         "characteristic1": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         },
         "chargeTime": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         },
         "defenseIgnore": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         },
         "stamina": {
             "Lv": 0,
             "nextLvNum": 1,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 5
         }
     },
     "sword": {
         "attack": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "Lv": 2,
+            "nextLvNum": 3,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 2
         },
         "characteristic": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 75
+            "Lv": 2,
+            "nextLvNum": 3,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 2
         },
         "characteristic1": {
             "Lv": 0,
             "nextLvNum": 1,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "strengtheningItemNum": 5
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 1,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "strengtheningItemNum": 5
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 1,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 73
+            "strengtheningItemNum": 5
         },
         "chargeTime": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 74
+            "Lv": 2,
+            "nextLvNum": 3,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 2
         },
         "defenseIgnore": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 75
+            "Lv": 2,
+            "nextLvNum": 3,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 2
         },
         "stamina": {
-            "Lv": 0,
-            "nextLvNum": 1,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 76
+            "Lv": 2,
+            "nextLvNum": 3,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 2
         }
     }
 }

@@ -11,6 +11,9 @@
 
 #include"../../GameObject/Button/GameButton/GameButton.h"
 #include"../../GameObject/Button/TitleButton/TitleButton.h"
+
+
+#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"
 ResultScene::~ResultScene()
 {
 	if (m_spPlayerDeadBGM)
@@ -43,16 +46,20 @@ void ResultScene::Init()
 	spResultDisplay->Init();
 	spResultDisplay->Set2DPos({ 0,200 });
 	spResultDisplay->SetDisplayFloorInfo(gameResult.displayFloorInfo);
+	spResultDisplay->SetPlayerInventoryList(LoadInventoryData(m_InventoryGameResultFilePath));
+	
 	spUIManager->AddUIObj(spResultDisplay);
+
+
 
 	std::shared_ptr<GameButton>spGameButton = std::make_shared<GameButton>();
 	spGameButton->Init();
-	spGameButton->SetPos({ 500,-280,0 });
+	spGameButton->SetPos({ 500,-320,0 });
 	m_objList.push_back(spGameButton);
 
 	std::shared_ptr<TitleButton>spTitleButton = std::make_shared<TitleButton>();
 	spTitleButton->Init();
-	spTitleButton->SetPos({ -500,-280,0 });
+	spTitleButton->SetPos({ -500,-320,0 });
 	m_objList.push_back(spTitleButton);
 
 	if (gameResult.playerDead)

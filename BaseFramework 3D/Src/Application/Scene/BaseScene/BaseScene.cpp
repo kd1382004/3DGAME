@@ -275,9 +275,9 @@ void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _i
 
 }
 
-std::vector<std::vector<Inventory>> BaseScene::LoadInventoryData()
+std::vector<std::vector<Inventory>> BaseScene::LoadInventoryData(std::string _filePath)
 {
-	std::ifstream file(m_InventoryFilePath);
+	std::ifstream file(_filePath);
 	if (!file) return { {}, {} }; // 初回起動などでファイルがない場合は空のリストを返す
 
 
@@ -369,14 +369,14 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 	}
 
 	// ファイルに書き込む
-	std::ofstream file(m_WeaponStrengtheningFilePath);
+	std::ofstream file(_filePath);
 	if (!file) return; // 必要に応じてエラー処理を追加
 
 	file << data.dump(4);
 }
-std::vector<WeaponsStrengtheningInfo> BaseScene::LoadWeaponStrengtheningData()
+std::vector<WeaponsStrengtheningInfo> BaseScene::LoadWeaponStrengtheningData(std::string _filePath)
 {
-	std::ifstream file(m_WeaponStrengtheningFilePath);
+	std::ifstream file(_filePath);
 	if (!file) return {}; // 初回起動などでファイルがない場合は何もしない
 	nlohmann::json data = nlohmann::json::parse(file);
 

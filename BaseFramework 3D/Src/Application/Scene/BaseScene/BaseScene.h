@@ -67,7 +67,7 @@ protected :
 	void SaveInventoryData(bool _isSave, const std::vector<Inventory>& inventoryPotionsList, const std::vector<Inventory>& inventoryWeaponsList, std::string _filePath);
 
 	//ロード
-	std::vector<std::vector<Inventory>> LoadInventoryData();
+	std::vector<std::vector<Inventory>> LoadInventoryData(std::string _filePath);
 	std::vector<Inventory> ReadInventoryList(const nlohmann::json& _data, const std::string& _key);
 
 	//パス
@@ -82,7 +82,7 @@ protected :
 	void SaveWeaponStrengtheningData(bool _isSave, std::string _filePath, std::vector<WeaponsStrengtheningInfo> weaponStrengtheningList);
 
 	//ロード
-	std::vector<WeaponsStrengtheningInfo> LoadWeaponStrengtheningData();
+	std::vector<WeaponsStrengtheningInfo> LoadWeaponStrengtheningData(std::string _filePath);
 	std::vector <WeaponsStrengtheningInfo> ReadWeaponStrengtheningList(const nlohmann::json& _data, const std::string& _key);
 
 	//パス

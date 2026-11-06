@@ -231,14 +231,15 @@ void ResultDisplay_Score::ArrowUpdate()
 	{
 
 		//左
-		float Left = m_ArrowLPos.x - m_ArrowSiz.x;
-		float Roght = m_ArrowLPos.x + m_ArrowSiz.x;
-		float top = m_ArrowLPos.y + m_ArrowSiz.y;
-		float bot = m_ArrowLPos.y - m_ArrowSiz.y;
+		float Left = m_ArrowLPos.x - m_ArrowSiz.x/2;
+		float Roght = m_ArrowLPos.x + m_ArrowSiz.x / 2;
+		float top = m_ArrowLPos.y + m_ArrowSiz.y / 2;
+		float bot = m_ArrowLPos.y - m_ArrowSiz.y / 2;
 
 		if (mouse.x >= Left && mouse.x <= Roght
 			&& mouse.y <= top && mouse.y >= bot)
 		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			m_ArrowLHiFlg = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
@@ -258,14 +259,15 @@ void ResultDisplay_Score::ArrowUpdate()
 	{
 
 		//migi
-		float Left = m_ArrowRPos.x - m_ArrowSiz.x;
-		float Roght = m_ArrowRPos.x + m_ArrowSiz.x;
-		float top = m_ArrowRPos.y + m_ArrowSiz.y;
-		float bot = m_ArrowRPos.y - m_ArrowSiz.y;
+		float Left = m_ArrowRPos.x - m_ArrowSiz.x / 2;
+		float Roght = m_ArrowRPos.x + m_ArrowSiz.x / 2;
+		float top = m_ArrowRPos.y + m_ArrowSiz.y / 2;
+		float bot = m_ArrowRPos.y - m_ArrowSiz.y / 2;
 
 		if (mouse.x >= Left && mouse.x <= Roght
 			&& mouse.y <= top && mouse.y >= bot)
 		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			m_ArrowRHiFlg = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{

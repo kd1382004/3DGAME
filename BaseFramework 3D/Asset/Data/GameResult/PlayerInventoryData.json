@@ -3,84 +3,84 @@
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "num": 336
+            "num": 5
         },
         {
             "id": 1,
             "name": "AttackBaseUPPotion",
-            "num": 216
+            "num": 5
         },
         {
             "id": 2,
             "name": "AttackBoostPotion",
-            "num": 339
+            "num": 5
         },
         {
             "id": 3,
             "name": "InstantStaminaHealPotion",
-            "num": 346
+            "num": 5
         },
         {
             "id": 4,
             "name": "StaminaRegenBaseUPPotion",
-            "num": 163
+            "num": 5
         },
         {
             "id": 5,
             "name": "StaminaRegenBoostPotion",
-            "num": 337
+            "num": 5
         },
         {
             "id": 6,
             "name": "StaminaMaxUPPotion",
-            "num": 244
+            "num": 5
         }
     ],
     "weaponStrengtheningMaterials": [
         {
             "id": 0,
             "name": "WeaponStrengthening_Attack",
-            "num": 7
+            "num": 2
         },
         {
             "id": 1,
             "name": "WeaponStrengthening_Stamina",
-            "num": 12
+            "num": 2
         },
         {
             "id": 2,
             "name": "WeaponStrengthening_ChargeTime",
-            "num": 122
+            "num": 2
         },
         {
             "id": 3,
             "name": "WeaponsStrengthening_DefenseIgnore",
-            "num": 17
+            "num": 2
         },
         {
             "id": 4,
             "name": "WeaponsStrengthening_Characteristic",
-            "num": 333
+            "num": 2
         },
         {
             "id": 5,
             "name": "WeaponsStrengthening_Characteristic1",
-            "num": 330
+            "num": 5
         },
         {
             "id": 6,
             "name": "WeaponsStrengthening_Characteristic2",
-            "num": 330
+            "num": 5
         },
         {
             "id": 7,
             "name": "WeaponsStrengthening_Characteristic3",
-            "num": 330
+            "num": 5
         },
         {
             "id": 8,
             "name": "Icon",
-            "num": 330
+            "num": 5
         }
     ]
 }

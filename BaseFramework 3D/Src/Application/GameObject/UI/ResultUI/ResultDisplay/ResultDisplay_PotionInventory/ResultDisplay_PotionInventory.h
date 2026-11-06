@@ -3,7 +3,7 @@
 
 
 class PotionTexInfo;
-class Inventory;
+struct Inventory;
 
 class ResultDisplay_PotionInventory :public ResultDisplayBase
 {
@@ -21,12 +21,8 @@ public:
 
 
 	//あるものを入れてく関数
-	void AddPotionTexInfo(const std::vector<Inventory>& _potions);
+	void AddPotionTexInfo(std::vector<Inventory>_potions);
 private:
-
-	//ポーション系
-	std::weak_ptr<PotionTexInfo>m_wpPotionTexInfo;
-
 	void PotionInfoInit();
 
 	//アイコンとマウスが当たってるか
@@ -56,5 +52,13 @@ private:
 
 	//ポーションselect
 	std::shared_ptr<KdTexture>m_potionSelectTex;
+
+
+	std::shared_ptr<KdTexture>m_potionTitleTex;
+	Math::Vector2 m_potionTitleTexPos;
+
+
+	std::shared_ptr<KdTexture>m_potionBackTex;
+	Math::Vector2 m_potionBackTexPos;
 
 };

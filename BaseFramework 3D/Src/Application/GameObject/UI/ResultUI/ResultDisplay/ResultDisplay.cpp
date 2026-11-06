@@ -6,6 +6,8 @@
 
 #include"../../../../Info/MouseInfo/MouseInfo.h"
 #include"../../../../Info/KeyInfo/KeyInfo.h"
+
+#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
 void ResultDisplay::Init()
 {
 
@@ -30,9 +32,13 @@ void ResultDisplay::Init()
 
 
 
-	auto spResultDisplay_PotionInventory = std::make_shared<ResultDisplay_PotionInventory>();
-	spResultDisplay_PotionInventory->Init();
-	m_ResultDisplayList.push_back(spResultDisplay_PotionInventory);
+	m_ResultDisplay_PotionInventory = std::make_shared<ResultDisplay_PotionInventory>();
+	m_ResultDisplay_PotionInventory->Init();
+	m_ResultDisplayList.push_back(m_ResultDisplay_PotionInventory);
+
+	auto a = std::make_shared<ResultDisplay_PotionInventory>();
+	a->Init();
+	m_ResultDisplayList.push_back(a);
 }
 
 void ResultDisplay::Update()
@@ -58,6 +64,11 @@ void ResultDisplay::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_ResultBackTex, 0, 0, nullptr, &col);
 	}
 
+
+	KdShaderManager::Instance().m_spriteShader.DrawBox(0,0,500,300,&kBlackColor);
+
+
+
 	ArrowDrawSprite();
 
 	if (m_CurrentDisplayIndex < 0 || m_CurrentDisplayIndex >= m_ResultDisplayList.size()) { return; }
@@ -72,6 +83,18 @@ void ResultDisplay::SetPath(std::string path)
 void ResultDisplay::SetDisplayFloorInfo(std::vector<DisplayFloorInfo> _displayFloorInfo)
 {
 	m_ResultDisplay_Score->SetDisplayFloorInfo(_displayFloorInfo);
+}
+
+void ResultDisplay::SetPlayerInventoryList(std::vector<std::vector<Inventory>> _playerInventoryList)
+{
+	m_playerInventoryList = _playerInventoryList;
+
+
+	if (m_ResultDisplay_PotionInventory)
+	{
+		m_ResultDisplay_PotionInventory->AddPotionTexInfo(_playerInventoryList[0]);
+	}
+
 }
 
 void ResultDisplay::ArrowUpdate()
@@ -99,14 +122,15 @@ void ResultDisplay::ArrowUpdate()
 	{
 
 		//左
-		float Left = m_ArrowLPos.x - m_ArrowSiz.x;
-		float Roght = m_ArrowLPos.x + m_ArrowSiz.x;
-		float top = m_ArrowLPos.y + m_ArrowSiz.y;
-		float bot = m_ArrowLPos.y - m_ArrowSiz.y;
+		float Left = m_ArrowLPos.x - m_ArrowSiz.x / 2;
+		float Roght = m_ArrowLPos.x + m_ArrowSiz.x / 2;
+		float top = m_ArrowLPos.y + m_ArrowSiz.y / 2;
+		float bot = m_ArrowLPos.y - m_ArrowSiz.y / 2;
 
 		if (mouse.x >= Left && mouse.x <= Roght
 			&& mouse.y <= top && mouse.y >= bot)
 		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			m_ArrowLHiFlg = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
@@ -126,14 +150,15 @@ void ResultDisplay::ArrowUpdate()
 	{
 
 		//migi
-		float Left = m_ArrowRPos.x - m_ArrowSiz.x;
-		float Roght = m_ArrowRPos.x + m_ArrowSiz.x;
-		float top = m_ArrowRPos.y + m_ArrowSiz.y;
-		float bot = m_ArrowRPos.y - m_ArrowSiz.y;
+		float Left = m_ArrowRPos.x - m_ArrowSiz.x / 2;
+		float Roght = m_ArrowRPos.x + m_ArrowSiz.x / 2;
+		float top = m_ArrowRPos.y + m_ArrowSiz.y / 2;
+		float bot = m_ArrowRPos.y - m_ArrowSiz.y / 2;
 
 		if (mouse.x >= Left && mouse.x <= Roght
 			&& mouse.y <= top && mouse.y >= bot)
 		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			m_ArrowRHiFlg = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{

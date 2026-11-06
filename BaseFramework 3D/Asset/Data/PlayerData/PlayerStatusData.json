@@ -1,19 +1,19 @@
 {
     "HP": {
         "baseHP": 100.0,
-        "maxHP": 150.0,
-        "nowHP": 150.0
+        "maxHP": 100.0,
+        "nowHP": 100.0
     },
     "LV": {
-        "LV": 5
+        "LV": 1
     },
     "attck": {
         "addAttack": 0.0,
-        "baseAttckPowe": 1215.0
+        "baseAttckPowe": 10.0
     },
     "defense": {
         "addDefense": 0.0,
-        "baseDefensePowe": 35.0
+        "baseDefensePowe": 10.0
     },
     "moveSpeed": {
         "baseSpeed": 10.0,

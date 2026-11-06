@@ -318,7 +318,7 @@ void GameScene::Init()
 	m_objList.push_back(m_spPlayer);
 
 
-	std::vector<std::vector<Inventory>> inventoryData = LoadInventoryData();;
+	std::vector<std::vector<Inventory>> inventoryData = LoadInventoryData(m_InventoryFilePath);;
 	m_spPlayer->SetPotionsInventoryList(inventoryData[0]);
 	m_spPlayer->SetWeaponsStrengtheningInventoryList(inventoryData[1]);
 
@@ -344,7 +344,7 @@ void GameScene::Init()
 
 
 	m_spWeapon->Init();
-	m_spWeapon->SetWeaponsStrengtheningInfo(LoadWeaponStrengtheningData());
+	m_spWeapon->SetWeaponsStrengtheningInfo(LoadWeaponStrengtheningData(m_WeaponStrengtheningFilePath));
 	
 
 	m_objList.push_back(m_spWeapon);

@@ -4,6 +4,9 @@
 #include"../../../../Scene/SceneManager.h"
 class ResultDisplay_Score;
 class ResultDisplayBase;
+class ResultDisplay_PotionInventory;
+
+struct Inventory;
 
 class ResultDisplay :public UIBase
 {
@@ -24,11 +27,13 @@ public:
 	void SetDisplayFloorInfo(std::vector<DisplayFloorInfo>_displayFloorInfo);
 
 
-
+	void SetPlayerInventoryList(std::vector<std::vector<Inventory>> _playerInventoryList);
 private:
 	std::shared_ptr<KdTexture>m_ResultBackTex;
 
 	std::shared_ptr<ResultDisplay_Score>m_ResultDisplay_Score;
+
+	std::shared_ptr<ResultDisplay_PotionInventory>m_ResultDisplay_PotionInventory;
 
 	std::vector<std::shared_ptr<ResultDisplayBase>>m_ResultDisplayList;
 	int m_CurrentDisplayIndex = 0;
@@ -51,4 +56,6 @@ private:
 	void ArrowUpdate();
 	void ArrowDrawSprite();
 
+
+	std::vector<std::vector<Inventory>> m_playerInventoryList;
 };
