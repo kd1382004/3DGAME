@@ -24,7 +24,7 @@ void Sword::Init()
 		baseLocalPos = guard.Translation();
 
 		// 切っ先の頂点
-		const float tipEnd = tipLocalPos.y ;
+		const float tipEnd = tipLocalPos.y;
 		m_hitBoxLocalOffset = { 0.0f, (baseLocalPos.y + tipEnd) * 0.5f, 0.0f };
 		m_hitBoxExtents = { 0.26f, (tipEnd - baseLocalPos.y) * 0.5f, 0.07f };
 	}
@@ -140,7 +140,7 @@ void Sword::Update()
 		std::list<KdCollider::CollisionResult> results;
 		if (spGameObj->Intersects(box, &results))
 		{
-			m_defenseIgnore =1.0f - std::pow(0.85f,m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
+			m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
 
 
 			m_hitCharactersList.push_back(spGameObj);
@@ -184,7 +184,7 @@ void Sword::Update()
 	m_prevBasePos = currBasePos;
 	m_prevWeponParentMat = m_weponParentMat;
 	// トレイルポイント追加
-	if (m_tPoly)
+	if (m_tPoly && m_tPolyFlg)
 	{
 		Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
 		m_tPoly->AddPoint(mat);
@@ -195,7 +195,7 @@ void Sword::DrawLit()
 {
 	if (!m_spWeaponModel) { return; }
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWeaponModel, m_mWorld);
-	if (m_attackFlg)
+	if (m_attackFlg && m_tPolyFlg)
 	{
 		if (m_tPoly)
 		{

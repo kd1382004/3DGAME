@@ -37,9 +37,6 @@ private:
 	bool IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara);
 
 
-	//トレイルポリゴン (軌跡) ポリゴン
-	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
-
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV0Effect;
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV1Effect;
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV2Effect;

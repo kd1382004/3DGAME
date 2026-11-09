@@ -228,6 +228,8 @@ public:
 	}
 protected:
 
+
+
 	//1秒当りにたまるCharge時間
 	float m_addCargeTime = 1;
 
@@ -322,6 +324,11 @@ protected:
 
 	//防御無視の値
 	float m_defenseIgnore = 0;
+
+
+	//トレイルポリゴン (軌跡) ポリゴン
+	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
+	bool m_tPolyFlg = false;
 
 };
 

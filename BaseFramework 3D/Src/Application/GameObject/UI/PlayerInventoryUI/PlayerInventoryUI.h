@@ -163,13 +163,14 @@ private:
 	//武器強化ボタンとのあたり判定
 	void WeaponsStrengtheningButtonHit();
 
+	std::shared_ptr<KdTexture>m_PreconditionNodeExplanationTex;
+	std::shared_ptr<KdTexture>m_PreconditionNodeNameTex;
 	std::shared_ptr<KdTexture>m_PreconditionNodeTex;
+	std::shared_ptr<KdTexture>m_PreconditionNodeIconTex;
 	std::shared_ptr<KdTexture>m_weaponsStrengtheningButtonTex;
-	std::shared_ptr<KdTexture>m_selectTex;
 	std::shared_ptr<KdTexture>m_LVTex;
 	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
 	Math::Vector2 m_LVTex2DPos;
-	Math::Vector2 m_selectTex2DPos;
 	float m_selectAdd = 0.1;
 	float m_selectDefoAdd = 0.1;
 	float m_selectAddNum = 0.05;
@@ -224,6 +225,13 @@ private:
 		float timer = 0.0f;
 
 		std::shared_ptr<KdTexture> m_NameTex;
+
+
+		//選ばれてるかどうか
+		bool ChooseFlg = false;
+
+		//前提ノードID
+		int PreconditionNodeID;
 	};
 
 	enum WeponStrengtheningID
@@ -267,6 +275,9 @@ private:
 
 	//次のLVにするために必要な強化アイテムの数
 	int m_selectWeaponsStrengtheningnextLVNum = 0;
+
+	//IDのみ選ばれてそれ以外は選ばれてないに
+	void WeaponChooseFlg(int _ID);
 
 	//////////////////////////////////////////////////
 	//プレイヤーステータス

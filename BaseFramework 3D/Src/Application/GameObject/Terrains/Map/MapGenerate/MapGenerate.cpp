@@ -513,12 +513,23 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				if (map[y][x].m_tileType == TileType::Floor)
 				{
 					mapA->SetGroundType(GroundType::Floor);
+
+					ret->push_back(mapA);
+
+					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
+
+					m_chunks[cy][cx].push_back(mapA);
 				}
 				else if (map[y][x].m_tileType == TileType::Room)
 				{
 					mapA->SetGroundType(GroundType::Room);
 					rID = roomIDVector[y][x];
 					mapA->SerRoomID(rID);
+
+
+					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
+					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
 
 					//プレイヤースポーン位置を保存
 					if (rID == playerSpwanRoomID)
@@ -540,8 +551,8 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 						room.m_roomType = static_cast<int>(roomTypeList[rID]);
 						room.m_xy = { (float)x,(float)y };
 						room.m_Installation = false;
-
-
+						room.m_chunk = { (float)cx,(float)cy };
+						room.spMap = mapA;
 
 
 
@@ -573,7 +584,10 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 					}
 
+					ret->push_back(mapA);
 
+					//部屋のチャンクは後で入れる
+					//m_chunks[cy][cx].push_back(mapA);
 
 				}
 
@@ -600,16 +614,6 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
 					m_chunks[cy][cx].push_back(spSlope);
 
-
-				}
-				else
-				{
-					ret->push_back(mapA);
-
-					int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
-					int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
-
-					m_chunks[cy][cx].push_back(mapA);
 
 				}
 
@@ -726,6 +730,31 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 			}
 			/////////////////////////////////////////////////////
+		}
+	}
+
+
+	// 1つでもチャンクに同じ部屋の床が入っていたら、部屋の床全てをそのチャンクに入れる
+	for (const auto& room : m_roomInfoList)
+	{
+		// この部屋の床がまたがっているチャンクを重複なしで集める
+		std::vector<Math::Vector2> roomChunks;
+		for (const auto& floor : room)
+		{
+			if (std::find(roomChunks.begin(), roomChunks.end(), floor.m_chunk) == roomChunks.end())
+			{
+				roomChunks.push_back(floor.m_chunk);
+			}
+		}
+
+		// 集めた各チャンクに、部屋の床を全部登録する
+		for (const auto& chunk : roomChunks)
+		{
+			auto& dst = m_chunks[static_cast<int>(chunk.y)][static_cast<int>(chunk.x)];
+			for (const auto& floor : room)
+			{
+				dst.push_back(floor.spMap);
+			}
 		}
 	}
 
@@ -964,14 +993,19 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 
 					Math::Vector3 wallPos = { xPos + dir.offset.x, 0, zPos + dir.offset.z };
 
+					int startH = map[y][x].m_heightLevel;
+					bool torchFlg = true;
 					for (int i = map[y][x].m_heightLevel; i <= m_heightLevelMax; i++)
 					{
 
+						if (i != startH)
+						{
+							torchFlg = false;
+						}
 
 						int cx = std::min(chunkW - 1, x / CHUNK_SIZE);
 						int cy = std::min(chunkH - 1, y / CHUNK_SIZE);
-
-						std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) });
+						std::shared_ptr<MapBase>wall = CreateWallOrStairs(wallPos, dir.rotY, false, ret, 0, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) },&torchFlg);
 
 						m_chunks[cy][cx].push_back(wall);
 
@@ -1490,7 +1524,7 @@ bool MapGenerate::IsNeedWall(int nx, int ny, const std::vector<std::vector<Floor
 	return false;
 }
 
-std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, Math::Vector2 chunkNum, bool* _flg)
+std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, Math::Vector2 chunkNum, bool* _torchFlg)
 {
 	if (_isStairs)
 	{
@@ -1525,13 +1559,13 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 
 
 
-		if (_flg == nullptr)
+		if (_torchFlg == nullptr)
 		{
 			return wall;
 		}
 
 
-		if (!*_flg)
+		if (!*_torchFlg)
 		{
 			return wall;
 		}
@@ -1588,7 +1622,7 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 			map[_y][_x].m_setTorchFlg = true;
 		}
 
-		*_flg = !placeTorch;
+		*_torchFlg = !placeTorch;
 
 		return wall;
 	}

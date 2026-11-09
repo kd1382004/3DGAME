@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"../WeaponBase.h"
 
 class Dagger :public WeaponBase
@@ -35,10 +35,6 @@ private:
 	Math::Matrix  m_prevWeponParentMat = Math::Matrix::Identity; // 追加：前フレーム行列
 	bool m_isFirstFrame = true;
 	bool IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara);
-
-
-	//トレイルポリゴン (軌跡) ポリゴン
-	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
 
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV0Effect;
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV1Effect;

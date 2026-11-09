@@ -22,6 +22,8 @@ public:
 	//武器
 	void WeaponsStrengtheningInfoInit(std::vector<Inventory> _weaponsStrengtheningInventory);
 
+
+	void SetSpWeaponBase(std::shared_ptr<WeaponBase>spWeapon) { m_spWeapon = spWeapon; }
 private:		 
 
 	std::shared_ptr<WeaponBase>m_spWeapon;

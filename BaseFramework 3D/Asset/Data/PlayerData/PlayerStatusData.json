@@ -17,7 +17,7 @@
     },
     "moveSpeed": {
         "baseSpeed": 10.0,
-        "runMovePowe": 5.0,
+        "runMovePowe": 13.0,
         "walkMovePowe": 3.0
     },
     "stamina": {

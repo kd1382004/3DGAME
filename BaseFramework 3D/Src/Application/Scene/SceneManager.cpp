@@ -106,6 +106,8 @@ void SceneManager::ImGUI()
 		if (ImGui::Button(U8("変更")))
 		{
 			KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+
+			m_defaultSmbient = m_ambient;
 		}
 
 		if (ImGui::Button(U8("保存")))
@@ -221,7 +223,7 @@ void SceneManager::FogAmbientJsonSave()
 	data["Fog"]["Density"] = m_FOGdensity;
 
 	// Ambient
-	data["Ambient"]["Color"] = { m_ambient.x, m_ambient.y, m_ambient.z, m_ambient.w };
+	data["Ambient"]["Color"] = { m_defaultSmbient.x, m_defaultSmbient.y, m_defaultSmbient.z, m_defaultSmbient.w };
 
 	std::ofstream ofs(m_FogAmbientJsonFilePath);
 	ofs << data.dump(4);
@@ -296,7 +298,8 @@ void SceneManager::FogAmbientJsonLode()
 	{
 		auto amb = data["Ambient"];
 		Math::Vector4 col = getArray(amb, "Color", 4);
-		m_ambient = col;
+		m_defaultSmbient = col;
+		m_ambient = m_defaultSmbient;
 	}
 
 	//距離フォグの設定

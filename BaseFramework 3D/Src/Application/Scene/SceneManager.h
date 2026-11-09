@@ -95,12 +95,21 @@ public:
 		KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
 		KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
 	};
+
+	//値を変えてアンビエントを変更
 	void SetAmbient(const Math::Vector4& _ambient) 
 	{
 		m_ambient = _ambient;
 		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 	};
 
+
+	//このゲームにおけるDデフォルトのアンビエントの値に変更
+	void SetDefaultAmbient()
+	{
+		m_ambient = m_defaultSmbient;
+		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+	};
 private:
 
 	// マネージャーの初期化
@@ -140,6 +149,7 @@ private:
 
 	//アンビエント
 	Math::Vector4 m_ambient = { 1,1,1,1 };
+	Math::Vector4 m_defaultSmbient = { 1,1,1,1 };
 
 	void FogAmbientJsonSave();
 	void FogAmbientJsonLode();

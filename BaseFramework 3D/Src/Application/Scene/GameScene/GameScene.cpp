@@ -587,6 +587,9 @@ void GameScene::GenerateMap()
 		}
 
 		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
+
+		//SceneManager::Instance().SetFogEnable(true);
+		SceneManager::Instance().SetDefaultAmbient();
 	}
 	else
 	{
@@ -606,6 +609,9 @@ void GameScene::GenerateMap()
 		{
 			m_spGameBGM->Stop();
 		}
+
+		//SceneManager::Instance().SetFogEnable(false);
+		SceneManager::Instance().SetAmbient({ 1,1,1,1 });
 	}
 
 

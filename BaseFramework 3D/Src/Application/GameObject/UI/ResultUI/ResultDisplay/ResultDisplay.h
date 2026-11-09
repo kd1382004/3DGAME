@@ -7,6 +7,7 @@ class ResultDisplayBase;
 class ResultDisplay_PotionInventory;
 class ResultDisplay_PlayerStatus;
 class ResultDisplay_WeponInventory;
+class WeaponBase;
 
 struct Inventory;
 
@@ -32,9 +33,13 @@ public:
 	void SetPlayerInventoryList(std::vector<std::vector<Inventory>> _playerInventoryList);
 
 	void SetPlayerStatusGameResultFilePath(std::string _path);
+
+	void SetSpWeaponBase(std::shared_ptr<WeaponBase> spWeaponBase);
+
+
+	void SetPlayerDead(bool _flg);
 private:
 	std::shared_ptr<KdTexture>m_ResultBackTex;
-
 	std::shared_ptr<ResultDisplay_Score>m_ResultDisplay_Score;
 	std::shared_ptr<ResultDisplay_PlayerStatus>m_ResultDisplay_PlayerStatus;
 	std::shared_ptr<ResultDisplay_WeponInventory>m_ResultDisplay_WeponInventory;
@@ -64,4 +69,9 @@ private:
 
 
 	std::vector<std::vector<Inventory>> m_playerInventoryList;
+
+	bool m_playerDead = false;
+
+	std::shared_ptr<KdTexture>m_lostTex;
+	Math::Vector2 m_lostTexPos;
 };

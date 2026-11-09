@@ -178,7 +178,7 @@ void Dagger::Update()
 	m_prevBasePos = currBasePos;
 	m_prevWeponParentMat = m_weponParentMat;
 	// トレイルポイント追加
-	if (m_tPoly)
+	if (m_tPoly && m_tPolyFlg)
 	{
 		Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
 		m_tPoly->AddPoint(mat);
@@ -191,7 +191,7 @@ void Dagger::DrawLit()
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWeaponModel, m_mWorld);
 	if (m_attackFlg)
 	{
-		if (m_tPoly)
+		if (m_tPoly && m_tPolyFlg)
 		{
 			KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_tPoly);
 		}

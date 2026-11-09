@@ -14,6 +14,9 @@
 
 
 #include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"
+
+
+#include"../../GameObject/Weapon/WeaponBase.h"
 ResultScene::~ResultScene()
 {
 	if (m_spPlayerDeadBGM)
@@ -42,12 +45,18 @@ void ResultScene::Init()
 	std::shared_ptr<ResultDisplay>spResultDisplay = std::make_shared<ResultDisplay>();
 
 
+	std::shared_ptr<WeaponBase>spWeaponBase = std::make_shared<WeaponBase>();
+	spWeaponBase->Init();
+	spWeaponBase->SetWeaponsStrengtheningInfo(LoadWeaponStrengtheningData(m_WeaponStrengtheningGameResultFilePath));
+
 	spResultDisplay = std::make_shared<ResultDisplay>();
 	spResultDisplay->Init();
+	spResultDisplay->SetSpWeaponBase(spWeaponBase);
 	spResultDisplay->Set2DPos({ 0,200 });
 	spResultDisplay->SetDisplayFloorInfo(gameResult.displayFloorInfo);
 	spResultDisplay->SetPlayerInventoryList(LoadInventoryData(m_InventoryGameResultFilePath));
 	spResultDisplay->SetPlayerStatusGameResultFilePath(m_PlayerStatusGameResultFilePath);
+	spResultDisplay->SetPlayerDead(gameResult.playerDead);
 	spUIManager->AddUIObj(spResultDisplay);
 
 

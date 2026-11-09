@@ -8,7 +8,9 @@ void ItemGetUIController::Init()
 	{
 		m_backTex = std::make_shared<KdTexture>();
 		m_backTex->Load("Asset/Textures/GameUI/Item/ItemGetUI/ItemGetUI.png");
-		m_basePos = { -500,-50 };
+		m_basePos = {-640,-50 };
+
+		m_basePos.x += m_backTex->GetWidth() / 2;
 
 		float recY = m_backTex->GetHeight();
 		m_IconWH = { recY,recY };

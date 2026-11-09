@@ -46,6 +46,8 @@ private:
 	//空いてるかどうか
 	bool m_IsOpen = false;
 
+	//空き切ったかどうか
+	bool m_open = false;
 
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;

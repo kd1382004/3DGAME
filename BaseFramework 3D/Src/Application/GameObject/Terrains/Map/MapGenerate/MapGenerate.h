@@ -86,6 +86,13 @@ struct RoomI
 
 	//この床に何か置いたか
 	bool m_Installation = false;
+
+
+	//チャンク番号
+	Math::Vector2 m_chunk;
+
+
+	std::shared_ptr<MapBase> spMap;
 };
 
 
@@ -216,7 +223,7 @@ private:
 	bool IsNeedWall(int nx, int ny, const std::vector<std::vector<FloorInfo>>& map, int _heightLevel, int x, int y);
 
 	// 壁または階段オブジェクトを生成してリストに追加する
-	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, Math::Vector2 chunkNum, bool* _flg = nullptr);
+	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& pos, float rotYDegree, bool isStairs, std::list<std::shared_ptr<MapBase>>* ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& map, Math::Vector2 chunkNum, bool* _torchFlg = nullptr);
 
 
 	std::vector<Math::Vector3>m_enemySpawnList;

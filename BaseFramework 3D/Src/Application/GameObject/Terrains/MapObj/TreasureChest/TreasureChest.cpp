@@ -109,6 +109,11 @@ void TreasureChest::Init()
 
 void TreasureChest::Update()
 {
+	if (m_open)
+	{
+		return;
+	}
+
 
 	if (m_IsOpen)
 	{
@@ -116,7 +121,6 @@ void TreasureChest::Update()
 		m_treasureChestModel->CalcNodeMatrices();
 		if (m_treasureChestAnimetor->IsAnimationEnd())
 		{
-			m_isExpired = true;
 			auto spUIMap_TreasureChest = m_wpUIMap_TreasureChest.lock();
 			if (spUIMap_TreasureChest)
 			{
@@ -128,6 +132,7 @@ void TreasureChest::Update()
 			{
 				spGameScene->AddTreasureChestsNum();
 			}
+			m_open = true;
 		}
 		return;
 	}
@@ -212,6 +217,11 @@ void TreasureChest::Update()
 
 void TreasureChest::PostUpdate()
 {
+	if (m_open)
+	{
+		return;
+	}
+
 	//if (!m_isInView) { return; }
 	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
 		{ 20,20,20 },								//色

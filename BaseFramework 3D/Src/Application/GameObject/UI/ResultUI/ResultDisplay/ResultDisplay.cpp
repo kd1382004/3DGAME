@@ -79,6 +79,20 @@ void ResultDisplay::DrawSprite()
 
 	if (m_CurrentDisplayIndex < 0 || m_CurrentDisplayIndex >= m_ResultDisplayList.size()) { return; }
 	m_ResultDisplayList[m_CurrentDisplayIndex]->DrawSprite();
+
+
+	if (m_CurrentDisplayIndex > 0)
+	{
+		if (m_playerDead)
+		{
+			if (m_lostTex)
+			{
+				Math::Color col = { 1,0,0,1 };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(m_lostTex, m_lostTexPos.x, m_lostTexPos.y, nullptr,&col,{0.5,1},315);
+			}
+		}
+	}
+	
 }
 
 void ResultDisplay::SetPath(std::string path)
@@ -112,6 +126,30 @@ void ResultDisplay::SetPlayerStatusGameResultFilePath(std::string _path)
 	if (m_ResultDisplay_PlayerStatus)
 	{
 		m_ResultDisplay_PlayerStatus->SetPlayerStatusGameResultFilePath(_path);
+	}
+}
+
+void ResultDisplay::SetSpWeaponBase(std::shared_ptr<WeaponBase> spWeaponBase)
+{
+	if (m_ResultDisplay_WeponInventory)
+	{
+		m_ResultDisplay_WeponInventory->SetSpWeaponBase(spWeaponBase);
+	}
+}
+
+void ResultDisplay::SetPlayerDead(bool _flg)
+{
+	m_playerDead = _flg;
+
+	if (m_playerDead)
+	{
+		if (!m_lostTex)
+		{
+			m_lostTex = std::make_shared<KdTexture>();
+			m_lostTex->Load("Asset/Textures/GameUI/Result/Lost.png");
+
+			m_lostTexPos = { 500, 300 };
+		}
 	}
 }
 

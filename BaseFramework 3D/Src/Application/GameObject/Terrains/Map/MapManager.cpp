@@ -51,6 +51,15 @@ void MapManager::DrawLit()
 
 	if (m_spBoxModel)
 	{
+		auto spPlayer = m_wpPlayerBase.lock();
+		if (spPlayer)
+		{
+			Math::Vector3 pos = spPlayer->GetPos();
+			m_boxPos.x = pos.x;
+			m_boxPos.z = pos.z;
+		}
+
+
 		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_boxPos);
 		Math::Matrix sMat = Math::Matrix::CreateScale(m_boxSiz / 2);
 
@@ -534,16 +543,16 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	m_darawChankes.assign(uniqueDarweSet.begin(), uniqueDarweSet.end());
 
 	int drawMinChunkX =
-		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x);
+		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
 
 	int drawMaxChunkX =
-		cx + ((int)m_updateChunkRadius.x + m_drawChunkRadius.x);
+		cx + ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
 
 	int drawMinChunkY =
-		cy - ((int)m_updateChunkRadius.y + m_drawChunkRadius.y);
+		cy - ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
 
 	int drawMaxChunkY =
-		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y);
+		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
 
 	// ワールド座標に変換
 	float worldMinX = drawMinChunkX * CHUNK_SIZE * m_mapTileSiz;
