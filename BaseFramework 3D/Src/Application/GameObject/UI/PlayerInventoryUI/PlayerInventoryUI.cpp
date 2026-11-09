@@ -312,7 +312,6 @@ void PlayerInventoryUI::Init()
 			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Characteristic);
 			break;
 		case PlayerInventoryUI::WeaponsStrengthening_Icon:
-			m_weaponsStrengtheningInfo[i].Lv = 1;
 			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Icon);
 			break;
 		case PlayerInventoryUI::WeaponsStrengtheningSiz:
@@ -1198,6 +1197,7 @@ void PlayerInventoryUI::WeaponsStrengtheningInfoInit()
 			std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
 			if (!spWeapon) { return; }
 			m_weaponsStrengtheningInfo[i].nextLvNum = spWeapon->GetWeaponsStrengtheningNextLvNum(i);
+			m_weaponsStrengtheningInfo[i].Lv = spWeapon->GetWeaponsStrengtheningLv(i);
 		}
 	}
 	m_selectExplanationTex = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].m_ExplanationTex;

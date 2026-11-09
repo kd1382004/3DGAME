@@ -355,7 +355,12 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 		nlohmann::json weaponData = nlohmann::json::object();
 		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
 		{
-			const WeaponsStrengtheningInfo& item = infoList[i];
+			WeaponsStrengtheningInfo item = infoList[i];
+
+			if (i == WeaponsStrengthening_Body)
+			{
+				item.Lv = 1;
+			}
 
 			weaponData[kStrengtheningKeys[i]] = {
 				{"Lv", item.Lv},

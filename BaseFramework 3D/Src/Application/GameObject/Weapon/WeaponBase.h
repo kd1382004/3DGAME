@@ -30,20 +30,24 @@ enum WeponStrengtheningID
 	//武器特有3
 	WeaponsStrengthening_Characteristic3,
 
+	//武器本体
+	WeaponsStrengthening_Body,
+
 	WeaponsStrengtheningSiz
 };
 
 // WeponStrengtheningIDと同じ順番にする
 const char* const kStrengtheningKeys[WeaponsStrengtheningSiz] =
 {
-	"attack",          // WeaponsStrengthening_Attck
-	"stamina",         // WeaponsStrengthening_Stamina
-	"chargeTime",      // WeaponsStrengthening_ChargeTime
-	"defenseIgnore",   // WeaponsStrengthening_DefenseIgnore
-	"characteristic",  // WeaponsStrengthening_Characteristic
-	"characteristic1", // WeaponsStrengthening_Characteristic1
-	"characteristic2", // WeaponsStrengthening_Characteristic2
-	"characteristic3"  // WeaponsStrengthening_Characteristic3
+	"attack",               // WeaponsStrengthening_Attck
+	"stamina",              // WeaponsStrengthening_Stamina
+	"chargeTime",           // WeaponsStrengthening_ChargeTime
+	"defenseIgnore",        // WeaponsStrengthening_DefenseIgnore
+	"characteristic",       // WeaponsStrengthening_Characteristic
+	"characteristic1",      // WeaponsStrengthening_Characteristic1
+	"characteristic2",      // WeaponsStrengthening_Characteristic2
+	"characteristic3",      // WeaponsStrengthening_Characteristic3
+	"body"  // WeaponsStrengthening_Body
 };
 
 struct WeaponsStrengtheningInfo

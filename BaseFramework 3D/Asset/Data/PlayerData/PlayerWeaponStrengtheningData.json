@@ -6,6 +6,12 @@
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
+        "body": {
+            "Lv": 1,
+            "nextLvNum": 1,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 0
+        },
         "characteristic": {
             "Lv": 0,
             "nextLvNum": 1,
@@ -52,6 +58,12 @@
     "sword": {
         "attack": {
             "Lv": 0,
+            "nextLvNum": 1,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 0
+        },
+        "body": {
+            "Lv": 1,
             "nextLvNum": 1,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0

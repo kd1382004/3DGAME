@@ -26,16 +26,29 @@ void ResultDisplay_WeponInventory::Init()
 	float weaponsStrengtheningOffset = 75.0f;
 	float vecL = 75.0f;
 
-	if (!m_selectTex)
+	m_weaponsStrengtheningButtonTex2DPos = { m_WeaponsStrengtheningTexPos.x, -210 };
+
+	if (!m_PreconditionNodeTex)
 	{
-		m_selectTex2DPos = {};
-		m_selectTex = std::make_shared<KdTexture>();
-		m_selectTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/select.png");
+		m_PreconditionNodeTex = std::make_shared<KdTexture>();
+		m_PreconditionNodeTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/Not.png");
 	}
-	if (!m_LvMaxButtonTex)
+
+	if (!m_PreconditionNodeIconTex)
 	{
-		m_LvMaxButtonTex = std::make_shared<KdTexture>();
-		m_LvMaxButtonTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/Max.png");
+		m_PreconditionNodeIconTex = std::make_shared<KdTexture>();
+		m_PreconditionNodeIconTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/NotIcon.png");
+	}
+
+	if (!m_PreconditionNodeExplanationTex)
+	{
+		m_PreconditionNodeExplanationTex = std::make_shared<KdTexture>();
+		m_PreconditionNodeExplanationTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/NotSelectExplanationBase.png");
+	}
+	if (!m_PreconditionNodeNameTex)
+	{
+		m_PreconditionNodeNameTex = std::make_shared<KdTexture>();
+		m_PreconditionNodeNameTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/NotSelectNameBase.png");
 	}
 
 	if (!m_LVTex)
@@ -64,40 +77,49 @@ void ResultDisplay_WeponInventory::Init()
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_Attck:
 			pos.x -= weaponsStrengtheningOffset * 2;
 			pos.y += addY;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Icon);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_Stamina:
 			pos.x -= weaponsStrengtheningOffset;
 			pos.y += addY;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Icon);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_ChargeTime:
 			pos.x += weaponsStrengtheningOffset * 2;
 			pos.y += addY;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Icon);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_Characteristic:
 			pos.x = weaponsStrengtheningBasePos.x;
 			pos.y += addY;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Icon);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_DefenseIgnore:
 			pos.x += weaponsStrengtheningOffset;
 			pos.y += addY;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Icon);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_Characteristic1:
 			rad = DirectX::XMConvertToRadians(45.0f);
 			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x + sin(rad) * vecL;
 			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y + cos(rad) * vecL;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Characteristic);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_Characteristic2:
 			rad = DirectX::XMConvertToRadians(0.0f);
 			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x + sin(rad) * vecL;
 			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y + cos(rad) * vecL;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Characteristic);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_Characteristic3:
 			rad = DirectX::XMConvertToRadians(-45.0f);
 			pos.x = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.x + sin(rad) * vecL;
 			pos.y = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].iconPos.y + cos(rad) * vecL;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Characteristic);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengthening_Icon:
 			m_weaponsStrengtheningInfo[i].Lv = 1;
+			m_weaponsStrengtheningInfo[i].PreconditionNodeID = static_cast<int>(WeaponsStrengthening_Icon);
 			break;
 		case ResultDisplay_WeponInventory::WeaponsStrengtheningSiz:
 			break;
@@ -153,37 +175,6 @@ void ResultDisplay_WeponInventory::Init()
 void ResultDisplay_WeponInventory::Update()
 {
 	WeaponsStrengtheningIconHit();
-
-
-
-	//serrekuto
-	m_selectTex2DPos = m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].iconPos;
-	m_selectTex2DPos.y += m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].iconSiz.y / 2;
-
-	m_selectTex2DPos.y += m_selectAdd;
-	m_selectAddTotal += abs(m_selectAdd);
-
-	if (m_selectAdd > 0)
-	{
-		m_selectAdd += m_selectAddNum;
-	}
-	else
-	{
-		m_selectAdd -= m_selectAddNum;
-	}
-
-	if (m_selectAddTotal >= m_selectAddTotalMax)
-	{
-		m_selectAddTotal = 0;
-		if (m_selectAdd > 0)
-		{
-			m_selectAdd = -m_selectDefoAdd;
-		}
-		else
-		{
-			m_selectAdd = m_selectDefoAdd;
-		}
-	}
 }
 
 void ResultDisplay_WeponInventory::PreDraw()
@@ -258,9 +249,14 @@ void ResultDisplay_WeponInventory::DrawSprite()
 	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
 	{
 		if (!m_weaponsStrengtheningInfo[i].iconTex) { continue; }
+		bool PreconditionNodeIconFlg = false;
 
 		Math::Color iconCol = { 1,1,1,1 };
-
+		float choseSizUp = 1;
+		if (m_weaponsStrengtheningInfo[i].ChooseFlg)
+		{
+			choseSizUp = 1.3;
+		}
 		switch (i)
 		{
 		case WeponStrengtheningID::WeaponsStrengthening_Characteristic1:
@@ -271,6 +267,7 @@ void ResultDisplay_WeponInventory::DrawSprite()
 			{
 				m_weaponsStrengtheningInfo[i].strengtheningFlg = false;
 				iconCol = { 0.5,0.5,0.5,1 };
+				PreconditionNodeIconFlg = true;
 			}
 			break;
 		}
@@ -309,8 +306,8 @@ void ResultDisplay_WeponInventory::DrawSprite()
 				m_weaponsStrengtheningInfo[i].iconTex,
 				m_weaponsStrengtheningInfo[i].iconPos.x,
 				m_weaponsStrengtheningInfo[i].iconPos.y,
-				m_weaponsStrengtheningInfo[i].iconSiz.x * scale,
-				m_weaponsStrengtheningInfo[i].iconSiz.y * scale,
+				m_weaponsStrengtheningInfo[i].iconSiz.x * scale* choseSizUp,
+				m_weaponsStrengtheningInfo[i].iconSiz.y * scale* choseSizUp,
 				nullptr,
 				&auraColor
 			);
@@ -324,13 +321,18 @@ void ResultDisplay_WeponInventory::DrawSprite()
 		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
 
 		// 通常のアイコン描画
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x, m_weaponsStrengtheningInfo[i].iconSiz.y, nullptr, &iconCol);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x* choseSizUp, m_weaponsStrengtheningInfo[i].iconSiz.y* choseSizUp, nullptr, &iconCol);
+
+		if (m_PreconditionNodeIconTex && PreconditionNodeIconFlg)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_PreconditionNodeIconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x* choseSizUp, m_weaponsStrengtheningInfo[i].iconSiz.y* choseSizUp, nullptr, &iconCol);
+		}
 
 	}
 
 	if (m_selectWeaponsStrengtheningID != WeponStrengtheningID::WeaponsStrengthening_Icon)
 	{
-		if (m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_IconTex)
+		if (m_selectWeaponsStrengtheningID < m_weaponsStrengtheningIconInfoList.size() && m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_IconTex)
 		{
 			{
 				KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_IconTex, m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_2DPos.x, m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_2DPos.y, 60, 60);
@@ -357,18 +359,24 @@ void ResultDisplay_WeponInventory::DrawSprite()
 			}
 		}
 	}
+	
 
-	//説明
-	if (m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_ExplanationTex)
+	Math::Vector2 itemInfoPos = { m_WeaponsStrengtheningTexPos.x, -170 };
+	if (m_selectWeaponsStrengtheningID < m_weaponsStrengtheningIconInfoList.size())
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_ExplanationTex, m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_2DPos.x, m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_2DPos.y + 68);
+		itemInfoPos = m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_2DPos;
 	}
 
+	//説明
+	if (m_selectExplanationTex)
+	{
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_selectExplanationTex, itemInfoPos.x, itemInfoPos.y + 68);
+	}
 
 	//武器の名前
-	if (m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].m_NameTex)
+	if (m_selectNameTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].m_NameTex, m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_2DPos.x, m_weaponsStrengtheningIconInfoList[m_selectWeaponsStrengtheningID].m_2DPos.y +257);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_selectNameTex, itemInfoPos.x, itemInfoPos.y + 257);
 	}
 
 	//LV
@@ -383,12 +391,6 @@ void ResultDisplay_WeponInventory::DrawSprite()
 		pos.x += 200;
 		NumDraw::GetInstance().Drow(num, Aligned::RAligned, pos, kWhiteColor, 4);
 	}
-	if (m_selectTex)
-	{
-		Math::Vector2 pivo = { 0.5,0 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_selectTex, m_selectTex2DPos.x, m_selectTex2DPos.y, nullptr, nullptr, pivo);
-	}
-
 }
 
 void ResultDisplay_WeponInventory::WeaponsStrengtheningInfoInit(std::vector<Inventory> _weaponsStrengtheningInventory)
@@ -415,6 +417,10 @@ void ResultDisplay_WeponInventory::WeaponsStrengtheningInfoInit(std::vector<Inve
 	m_selectWeaponsStrengtheningnextLVNum = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].nextLvNum;
 	m_selectWeaponsStrengtheningID = WeaponsStrengthening_Icon;
 	m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].m_hit = true;
+
+	m_selectExplanationTex = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].m_ExplanationTex;
+	m_selectNameTex = m_weaponsStrengtheningInfo[WeaponsStrengthening_Icon].m_NameTex;
+	m_PreconditionNodeFlg = false;
 
 
 	Math::Vector2 m_iconBase2DPos = { m_WeaponsStrengtheningTexPos.x,-170 }; // 初期位置
@@ -446,6 +452,8 @@ void ResultDisplay_WeponInventory::WeaponsStrengtheningInfoInit(std::vector<Inve
 			m_weaponsStrengtheningInfo[i].strengtheningFlg = false;
 		}
 	}
+
+	WeaponChooseFlg(WeaponsStrengthening_Icon);
 }
 
 void ResultDisplay_WeponInventory::WeaponsStrengtheningIconHit()
@@ -469,11 +477,41 @@ void ResultDisplay_WeponInventory::WeaponsStrengtheningIconHit()
 			{
 				m_selectWeaponsStrengtheningID = weapon.ID;
 				m_selectWeaponsStrengtheningnextLVNum = m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].nextLvNum;
+
+				int ID = weapon.PreconditionNodeID;
+
+				WeaponChooseFlg(weapon.ID);
+
+				if (m_weaponsStrengtheningInfo[ID].Lv > 0)
+				{
+					m_selectNameTex = weapon.m_NameTex;
+					m_selectExplanationTex = weapon.m_ExplanationTex;
+					m_PreconditionNodeFlg = false;
+				}
+				else
+				{
+					m_selectNameTex = m_PreconditionNodeNameTex;
+					m_selectExplanationTex = m_PreconditionNodeExplanationTex;
+					m_PreconditionNodeFlg = true;
+				}
 			}
 		}
 		else
 		{
 			weapon.m_hit = false;
+		}
+	}
+}
+
+void ResultDisplay_WeponInventory::WeaponChooseFlg(int _ID)
+{
+	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	{
+		m_weaponsStrengtheningInfo[i].ChooseFlg = false;
+
+		if (i == m_selectWeaponsStrengtheningID)
+		{
+			m_weaponsStrengtheningInfo[i].ChooseFlg = true;
 		}
 	}
 }

@@ -47,6 +47,16 @@ private:
 	//アイコンとの当り判定
 	void WeaponsStrengtheningIconHit();
 
+	std::shared_ptr<KdTexture>m_PreconditionNodeExplanationTex;
+	std::shared_ptr<KdTexture>m_PreconditionNodeNameTex;
+	std::shared_ptr<KdTexture>m_PreconditionNodeTex;
+	std::shared_ptr<KdTexture>m_PreconditionNodeIconTex;
+
+	std::shared_ptr<KdTexture>m_selectExplanationTex;
+	std::shared_ptr<KdTexture>m_selectNameTex;
+
+	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
+
 	std::shared_ptr<KdTexture>m_selectTex;
 	std::shared_ptr<KdTexture>m_LVTex;
 	Math::Vector2 m_LVTex2DPos;
@@ -105,6 +115,11 @@ private:
 		float timer = 0.0f;
 
 		std::shared_ptr<KdTexture> m_NameTex;
+
+		//前提ノードID
+		int PreconditionNodeID = 0;
+
+		bool ChooseFlg;
 	};
 
 	enum WeponStrengtheningID
@@ -154,4 +169,5 @@ private:
 	std::shared_ptr<KdTexture>m_WeaponsStrengtheningBackTex;
 	Math::Vector2 m_WeaponsStrengtheningTexPos;
 
+	void WeaponChooseFlg(int _ID);
 };
