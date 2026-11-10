@@ -39,47 +39,12 @@
     "weaponStrengtheningMaterials": [
         {
             "id": 0,
-            "name": "WeaponStrengthening_Attack",
+            "name": "WeaponStrengthening_Crystal1",
             "num": 0
         },
         {
             "id": 1,
-            "name": "WeaponStrengthening_Stamina",
-            "num": 0
-        },
-        {
-            "id": 2,
-            "name": "WeaponStrengthening_ChargeTime",
-            "num": 0
-        },
-        {
-            "id": 3,
-            "name": "WeaponsStrengthening_DefenseIgnore",
-            "num": 0
-        },
-        {
-            "id": 4,
-            "name": "WeaponsStrengthening_Characteristic",
-            "num": 0
-        },
-        {
-            "id": 5,
-            "name": "WeaponsStrengthening_Characteristic1",
-            "num": 0
-        },
-        {
-            "id": 6,
-            "name": "WeaponsStrengthening_Characteristic2",
-            "num": 0
-        },
-        {
-            "id": 7,
-            "name": "WeaponsStrengthening_Characteristic3",
-            "num": 0
-        },
-        {
-            "id": 8,
-            "name": "Icon",
+            "name": "WeaponStrengthening_Crystal2",
             "num": 0
         }
     ]

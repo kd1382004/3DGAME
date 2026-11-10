@@ -363,6 +363,7 @@
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Sword\Sword.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\WeaponBase.h" />
+    <ClInclude Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor\WeaponStrengtheningEditor.h" />
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h" />
     <ClInclude Include="Src\Application\Info\DeltaTime\DeltaTime.h" />
     <ClInclude Include="Src\Application\Info\FadeDraw\FadeDraw.h" />
@@ -514,6 +515,7 @@
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\Sword\Sword.cpp" />
     <ClCompile Include="Src\Application\GameObject\Weapon\WeaponBase.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor\WeaponStrengtheningEditor.cpp" />
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp" />
     <ClCompile Include="Src\Application\Info\FadeDraw\FadeDraw.cpp" />
     <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp" />

@@ -366,7 +366,8 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 				{"Lv", item.Lv},
 				{"nextLvNum", item.nextLvNum},
 				{"strengtheningItemNum", item.strengtheningItemNum},
-				{"strengtheningFlg", item.strengtheningFlg}
+				{"strengtheningFlg", item.strengtheningFlg},
+				{ "MyNodeID", item.MyNodeID}
 			};
 		}
 
@@ -411,10 +412,16 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::ReadWeaponStrengtheningList(con
 		{
 			const nlohmann::json& itemData = weaponData[kStrengtheningKeys[i]];
 
-			item.Lv = itemData.value("Lv", 0);
-			item.nextLvNum = itemData.value("nextLvNum", 1);
-			item.strengtheningItemNum = itemData.value("strengtheningItemNum", 0);
-			item.strengtheningFlg = itemData.value("strengtheningFlg", false);
+			item.MyNodeID = itemData.value("MyNodeID", item.MyNodeID);
+			item.Lv = itemData.value("Lv", item.Lv);
+			item.nextLvNum = itemData.value("nextLvNum", item.nextLvNum);
+			item.strengtheningItemNum = itemData.value("strengtheningItemNum", item.strengtheningItemNum);
+			item.strengtheningFlg = itemData.value("strengtheningFlg", item.strengtheningFlg);
+			item.LvMax = itemData.value("LvMax", item.LvMax);
+			item.strengtheningItem_ID = itemData.value("strengtheningItem_ID", item.strengtheningItem_ID);
+			item.InitialNextLvNum = itemData.value("InitialNextLvNum", item.InitialNextLvNum);
+			item.GrowthRate = itemData.value("GrowthRate", item.GrowthRate);
+			item.PreconditionNodeID = itemData.value("PreconditionNodeID", item.PreconditionNodeID);
 		}
 
 		list.push_back(item);

@@ -15,6 +15,9 @@ class MapObjManager;
 class TPSCamera;
 class UIManager;
 
+
+class WeaponStrengtheningEditor;
+
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
 {
 public:
@@ -90,4 +93,9 @@ private:
 
 	std::shared_ptr<KdSoundInstance> m_spGameBGM;
 	std::shared_ptr<KdSoundInstance> m_spBossBGM;
+
+
+	//武器用のImGUI
+	// メンバに持つ
+	std::shared_ptr<WeaponStrengtheningEditor> m_upWSEditor;
 };

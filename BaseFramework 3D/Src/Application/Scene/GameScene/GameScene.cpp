@@ -42,6 +42,10 @@
 //アクセサリー
 #include"../../GameObject/Accessory/AccessoryManager.h"
 
+
+//ImGui
+#include"../../GameObject/Weapon/WeaponStrengtheningEditor/WeaponStrengtheningEditor.h"
+
 GameScene::~GameScene()
 {
 	if (m_spBossBGM)
@@ -74,6 +78,11 @@ void GameScene::ImGUi()
 		}
 		ImGui::TreePop();
 	}
+
+	//武器のMasterデータ
+	// ImGui の更新処理の中で毎フレーム呼ぶ
+	m_upWSEditor->Draw();
+
 }
 
 void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos)
@@ -339,7 +348,30 @@ void GameScene::Init()
 
 
 	m_spWeapon->Init();
-	m_spWeapon->SetWeaponsStrengtheningInfo(LoadWeaponStrengtheningData(m_WeaponStrengtheningFilePath));
+	std::vector<WeaponsStrengtheningInfo> WSsaveData = LoadWeaponStrengtheningData(m_WeaponStrengtheningFilePath);   // セーブデータ
+	std::vector<WeaponsStrengtheningInfo> WSmsData = LoadWeaponStrengtheningData(m_WeaponStrengtheningMSDateFilePath); // マスタ
+
+	// マスタを土台にする
+	std::vector<WeaponsStrengtheningInfo> WSnowData = WSmsData;
+
+	for (size_t i = 0; i < WSnowData.size(); ++i)
+	{
+		WeaponsStrengtheningInfo& now = WSnowData[i];
+
+		// セーブにある分だけ進行状況を上書き（マスタで武器が増えてもOK）
+		if (i < WSsaveData.size())
+		{
+			const WeaponsStrengtheningInfo& save = WSsaveData[i];
+			now.Lv = save.Lv;
+			now.strengtheningItemNum = save.strengtheningItemNum;
+			now.strengtheningFlg = save.strengtheningFlg;
+		}
+
+		// レベルが最大を超えないようにする（LvMaxを下げた場合の対策）
+		if (now.Lv > now.LvMax) now.Lv = now.LvMax;
+	}
+
+	m_spWeapon->SetWeaponsStrengtheningInfo(WSnowData);
 	
 
 	m_objList.push_back(m_spWeapon);
@@ -527,6 +559,14 @@ void GameScene::Init()
 
 	//マップ生成
 	GenerateMap();
+
+
+
+
+	//ImGUI用
+	// 初期化
+	m_upWSEditor = std::make_shared<WeaponStrengtheningEditor>(m_WeaponStrengtheningMSDateFilePath);
+
 }
 
 //マップ生成

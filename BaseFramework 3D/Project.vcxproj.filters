@@ -367,6 +367,9 @@
     <Filter Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory">
       <UniqueIdentifier>{1a7a3831-027c-4f16-b130-04a9169a603a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor">
+      <UniqueIdentifier>{4a7597c7-d1e1-4e86-916b-d8935a2f21eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -840,6 +843,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory\ResultDisplay_WeponInventory.h">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor\WeaponStrengtheningEditor.h">
+      <Filter>Src\Application\GameObject\Weapon\WeaponStrengtheningEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1276,6 +1282,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory\ResultDisplay_WeponInventory.cpp">
       <Filter>Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_WeponInventory</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor\WeaponStrengtheningEditor.cpp">
+      <Filter>Src\Application\GameObject\Weapon\WeaponStrengtheningEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

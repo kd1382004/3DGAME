@@ -1,0 +1,65 @@
+{
+	"attack": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"body": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"characteristic": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"characteristic1": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"characteristic2": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"characteristic3": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"chargeTime": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"defenseIgnore": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	},
+	"stamina": {
+		"LvMax": 5,
+		"strengtheningItem_ID": 0,
+		"InitialNextLvNum": 3,
+		"GrowthRate": 1.25,
+		"PreconditionNodeID": 0
+	}
+}

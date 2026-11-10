@@ -88,6 +88,7 @@ protected :
 	//パス
 	const std::string m_WeaponStrengtheningFilePath = "Asset/Data/PlayerData/PlayerWeaponStrengtheningData.json";
 	const std::string m_WeaponStrengtheningGameResultFilePath = "Asset/Data/GameResult/PlayerWeaponStrengtheningData.json";
+	const std::string m_WeaponStrengtheningMSDateFilePath = "Asset/Data/ObjeData/Weapon/MsWeaponsStrengtheningInfo.json";
 
 
 	std::string GetWeaponKey(int _weaponType);

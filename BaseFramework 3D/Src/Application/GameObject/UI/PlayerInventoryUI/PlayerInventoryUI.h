@@ -193,6 +193,8 @@ private:
 		//次のLVにするために必要な強化アイテムの数
 		int nextLvNum;
 
+		bool LvMaxFlg=false;
+
 		//強化が可能かどうか
 		bool strengtheningFlg = false;
 
@@ -232,8 +234,16 @@ private:
 		//選ばれてるかどうか
 		bool ChooseFlg = false;
 
+		//自分のノードID
+		int MyNodeID;
+
 		//前提ノードID
 		int PreconditionNodeID;
+
+		//前提ノードIDの配列番号
+		int PreconditionNodeID_index;
+
+
 	};
 
 	enum WeponStrengtheningID
