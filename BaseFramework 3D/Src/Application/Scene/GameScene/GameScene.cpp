@@ -45,6 +45,7 @@
 
 //ImGui
 #include"../../GameObject/Weapon/WeaponStrengtheningEditor/WeaponStrengtheningEditor.h"
+#include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestTableEditor/TreasureChestTableEditor.h"
 
 GameScene::~GameScene()
 {
@@ -79,10 +80,26 @@ void GameScene::ImGUi()
 		ImGui::TreePop();
 	}
 
+
 	//武器のMasterデータ
 	// ImGui の更新処理の中で毎フレーム呼ぶ
-	m_upWSEditor->Draw();
+	if (ImGui::TreeNode(U8("エディター")))
+	{
+		for (EditorEntry& editor : m_editors)
+		{
+			ImGui::Checkbox(editor.name, &editor.open);
+		}
+		ImGui::TreePop();
+	}
 
+	//開いているエディターだけ描画（×で閉じると open が false になる）
+	for (EditorEntry& editor : m_editors)
+	{
+		if (editor.open && editor.draw)
+		{
+			editor.draw(&editor.open);
+		}
+	}
 }
 
 void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos)
@@ -348,30 +365,8 @@ void GameScene::Init()
 
 
 	m_spWeapon->Init();
-	std::vector<WeaponsStrengtheningInfo> WSsaveData = LoadWeaponStrengtheningData(m_WeaponStrengtheningFilePath);   // セーブデータ
-	std::vector<WeaponsStrengtheningInfo> WSmsData = LoadWeaponStrengtheningData(m_WeaponStrengtheningMSDateFilePath); // マスタ
-
-	// マスタを土台にする
-	std::vector<WeaponsStrengtheningInfo> WSnowData = WSmsData;
-
-	for (size_t i = 0; i < WSnowData.size(); ++i)
-	{
-		WeaponsStrengtheningInfo& now = WSnowData[i];
-
-		// セーブにある分だけ進行状況を上書き（マスタで武器が増えてもOK）
-		if (i < WSsaveData.size())
-		{
-			const WeaponsStrengtheningInfo& save = WSsaveData[i];
-			now.Lv = save.Lv;
-			now.strengtheningItemNum = save.strengtheningItemNum;
-			now.strengtheningFlg = save.strengtheningFlg;
-		}
-
-		// レベルが最大を超えないようにする（LvMaxを下げた場合の対策）
-		if (now.Lv > now.LvMax) now.Lv = now.LvMax;
-	}
-
-	m_spWeapon->SetWeaponsStrengtheningInfo(WSnowData);
+	// マスタを土台にセーブの進行状況を重ねる
+	m_spWeapon->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_WeaponStrengtheningFilePath));
 	
 
 	m_objList.push_back(m_spWeapon);
@@ -564,8 +559,13 @@ void GameScene::Init()
 
 
 	//ImGUI用
-	// 初期化
 	m_upWSEditor = std::make_shared<WeaponStrengtheningEditor>(m_WeaponStrengtheningMSDateFilePath);
+	m_upTCTableEditor = std::make_shared<TreasureChestTableEditor>();
+
+	// エディターを一覧に登録する
+	m_editors.clear();
+	m_editors.push_back({ U8("武器強化"), false, [this](bool* _open) { m_upWSEditor->Draw(_open); } });
+	m_editors.push_back({ U8("宝箱のドロップテーブル"), false, [this](bool* _open) { m_upTCTableEditor->Draw(_open); } });
 
 }
 

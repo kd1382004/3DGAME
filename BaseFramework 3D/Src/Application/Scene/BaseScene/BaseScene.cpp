@@ -366,8 +366,7 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 				{"Lv", item.Lv},
 				{"nextLvNum", item.nextLvNum},
 				{"strengtheningItemNum", item.strengtheningItemNum},
-				{"strengtheningFlg", item.strengtheningFlg},
-				{ "MyNodeID", item.MyNodeID}
+				{"strengtheningFlg", item.strengtheningFlg}
 			};
 		}
 
@@ -406,6 +405,7 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::ReadWeaponStrengtheningList(con
 	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
 	{
 		WeaponsStrengtheningInfo item;
+		item.MyNodeID = i; // MyNodeID がないデータは種類の番号にしておく
 
 		// 保存データがない項目は初期値のまま追加し、番号がずれないようにする
 		if (weaponData.contains(kStrengtheningKeys[i]) && weaponData[kStrengtheningKeys[i]].is_object())
@@ -428,6 +428,33 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::ReadWeaponStrengtheningList(con
 	}
 
 	return list;
+}
+
+std::vector<WeaponsStrengtheningInfo> BaseScene::LoadMergedWeaponStrengtheningData(const std::string& _saveFilePath)
+{
+	const std::vector<WeaponsStrengtheningInfo> save = LoadWeaponStrengtheningData(_saveFilePath);   // セーブデータ
+	std::vector<WeaponsStrengtheningInfo> now = LoadWeaponStrengtheningData(m_WeaponStrengtheningMSDateFilePath); // マスタを土台にする
+
+	for (size_t i = 0; i < now.size(); ++i)
+	{
+		WeaponsStrengtheningInfo& n = now[i];
+
+		// セーブにある分だけ進行状況を上書き（マスタで項目が増えてもOK）
+		if (i < save.size())
+		{
+			n.Lv = save[i].Lv;
+			n.strengtheningItemNum = save[i].strengtheningItemNum;
+			n.strengtheningFlg = save[i].strengtheningFlg;
+		}
+
+		// レベルが最大を超えないようにする（LvMaxを下げた場合の対策）
+		if (n.Lv > n.LvMax) { n.Lv = n.LvMax; }
+
+		// 次のレベルに必要な数はマスタの式で計算し直す
+		n.nextLvNum = static_cast<int>(std::ceil(n.InitialNextLvNum * std::pow(n.GrowthRate, n.Lv)));
+	}
+
+	return now;
 }
 
 std::string BaseScene::GetWeaponKey(int _weaponType)

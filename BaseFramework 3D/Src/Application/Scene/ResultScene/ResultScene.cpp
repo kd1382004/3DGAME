@@ -47,7 +47,8 @@ void ResultScene::Init()
 
 	std::shared_ptr<WeaponBase>spWeaponBase = std::make_shared<WeaponBase>();
 	spWeaponBase->Init();
-	spWeaponBase->SetWeaponsStrengtheningInfo(LoadWeaponStrengtheningData(m_WeaponStrengtheningGameResultFilePath));
+	// セーブだけではLvMaxや前提ノードがないので、マスタと重ねてから渡す
+	spWeaponBase->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_WeaponStrengtheningGameResultFilePath));
 
 	spResultDisplay = std::make_shared<ResultDisplay>();
 	spResultDisplay->Init();

@@ -77,11 +77,11 @@ struct WeaponsStrengtheningInfo
 	//強化が可能か
 	bool strengtheningFlg = false;
 
-	//自分のノードID
+	//自分のノードID（前提ノードからの参照用。自由に決めてよい）
 	int MyNodeID = 0;
 
-	//前提ノード
-	int PreconditionNodeID = 0;
+	//前提ノードのMyNodeID（-1 = 前提なし）
+	int PreconditionNodeID = -1;
 };
 
 class WeaponBase :public KdGameObject
@@ -158,130 +158,89 @@ public:
 
 
 
-	//武器の情報
-	//武器の強化ができたかどうか
-	bool AddWeaponsStrengtheningInfo(int id, int lv = 1)
+	//////////////////////////////////////////////////////////////
+	// 武器強化
+	// 配列 m_weaponsStrengtheningInfo は常に「index = 種類(WeponStrengtheningID)」
+	// MyNodeID は前提ノードの参照にだけ使う（自由に変更してよい）
+	//////////////////////////////////////////////////////////////
+
+	//種類が範囲内か
+	bool IsValidType(int _type) const { return _type >= 0 && _type < WeaponsStrengtheningSiz; }
+
+	// MyNodeID から配列index（=種類）を探す。見つからなければ -1
+	int FindIndexByNodeID(int _nodeID) const
 	{
-		
-		int index = 0;
-
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
 		{
-			if (m_weaponsStrengtheningInfo[i].MyNodeID == id)
-			{
-				index = i;
-				break;
-			}
+			if (m_weaponsStrengtheningInfo[i].MyNodeID == _nodeID) { return i; }
 		}
+		return -1;
+	}
 
-		if (!m_weaponsStrengtheningInfo[index].strengtheningFlg) { return false; }
+	// 前提ノードが解放済みか（前提なし(-1)なら true）
+	bool IsPreconditionCleared(int _type) const
+	{
+		if (!IsValidType(_type)) { return false; }
 
-		if (m_weaponsStrengtheningInfo[index].Lv >= m_weaponsStrengtheningInfo[index].LvMax)
-		{
-			return false;
-		}
+		const int pre = m_weaponsStrengtheningInfo[_type].PreconditionNodeID;
+		if (pre < 0) { return true; }
 
-		m_weaponsStrengtheningInfo[index].Lv += lv;
-		m_weaponsStrengtheningInfo[index].strengtheningItemNum -= m_weaponsStrengtheningInfo[index].nextLvNum;
-		m_weaponsStrengtheningInfo[index].nextLvNum++;
-		GetRequiredItemNum(index);
+		const int preIndex = FindIndexByNodeID(pre);
+		if (preIndex < 0) { return false; } // 参照先がない＝データのミス
 
+		return m_weaponsStrengtheningInfo[preIndex].Lv > 0;
+	}
 
+	//武器の強化ができたかどうか
+	bool AddWeaponsStrengtheningInfo(int _type, int _lv = 1)
+	{
+		if (!IsWeaponsStrengtheningPossible(_type)) { return false; }
+
+		WeaponsStrengtheningInfo& info = m_weaponsStrengtheningInfo[_type];
+		info.Lv += _lv;
+		info.strengtheningItemNum -= info.nextLvNum;
+		GetRequiredItemNum(_type);
 
 		return true;
 	}
 
-	int GetWeaponsStrengtheningLv(int id)
+	int GetWeaponsStrengtheningLv(int _type) const
 	{
-		int index = 0;
-
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
-		{
-			if (m_weaponsStrengtheningInfo[i].MyNodeID == id)
-			{
-				index = i;
-				break;
-			}
-		}
-		return m_weaponsStrengtheningInfo[index].Lv;
+		if (!IsValidType(_type)) { return 0; }
+		return m_weaponsStrengtheningInfo[_type].Lv;
 	}
 
-	int GetWeaponsStrengtheningNextLvNum(int id)
+	int GetWeaponsStrengtheningNextLvNum(int _type) const
 	{
-		int index = 0;
-
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
-		{
-			if (m_weaponsStrengtheningInfo[i].MyNodeID == id)
-			{
-				index = i;
-				break;
-			}
-		}
-		return m_weaponsStrengtheningInfo[index].nextLvNum;
+		if (!IsValidType(_type)) { return 0; }
+		return m_weaponsStrengtheningInfo[_type].nextLvNum;
 	}
 
-	bool IsWeaponsStrengtheningPossible(int id)
+	// 強化できるか（前提ノード・最大レベル・アイテム数をまとめて判定）
+	bool IsWeaponsStrengtheningPossible(int _type)
 	{
-		int index = 0;
+		if (!IsValidType(_type)) { return false; }
 
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
-		{
-			if (m_weaponsStrengtheningInfo[i].MyNodeID == id)
-			{
-				index = i;
-				break;
-			}
-		}
-		if (m_weaponsStrengtheningInfo[index].strengtheningItemNum >= m_weaponsStrengtheningInfo[index].nextLvNum)
-		{
-			m_weaponsStrengtheningInfo[index].strengtheningFlg = true;
-		}
-		else
-		{
-			m_weaponsStrengtheningInfo[index].strengtheningFlg = false;
-		}
+		WeaponsStrengtheningInfo& info = m_weaponsStrengtheningInfo[_type];
+		info.strengtheningFlg =
+			IsPreconditionCleared(_type) &&
+			info.Lv < info.LvMax &&
+			info.strengtheningItemNum >= info.nextLvNum;
 
-		return m_weaponsStrengtheningInfo[index].strengtheningFlg;
+		return info.strengtheningFlg;
 	}
 
-
-	bool GetWeaponsStrengtheningLVMaxFlg(int id)
+	bool GetWeaponsStrengtheningLVMaxFlg(int _type) const
 	{
-
-		int index = 0;
-
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
-		{
-			if (m_weaponsStrengtheningInfo[i].MyNodeID == id)
-			{
-				index = i;
-				break;
-			}
-		}
-
-		if (m_weaponsStrengtheningInfo[index].Lv == m_weaponsStrengtheningInfo[index].LvMax)
-		{
-			return true;
-		}
-
-		return false;
+		if (!IsValidType(_type)) { return false; }
+		return m_weaponsStrengtheningInfo[_type].Lv >= m_weaponsStrengtheningInfo[_type].LvMax;
 	}
 
-	void SetWeaponsStrengtheningNum(int id, int strengtheningItemNum)
+	void SetWeaponsStrengtheningNum(int _type, int _strengtheningItemNum)
 	{
-		int index = 0;
-
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
-		{
-			if (m_weaponsStrengtheningInfo[i].MyNodeID == id)
-			{
-				index = i;
-				break;
-			}
-		}
-		m_weaponsStrengtheningInfo[index].strengtheningItemNum = strengtheningItemNum;
-		IsWeaponsStrengtheningPossible(index);
+		if (!IsValidType(_type)) { return; }
+		m_weaponsStrengtheningInfo[_type].strengtheningItemNum = _strengtheningItemNum;
+		IsWeaponsStrengtheningPossible(_type);
 	}
 
 	float GetChargeAttackMaxCost()
@@ -302,24 +261,15 @@ public:
 	}
 
 
-	const WeaponsStrengtheningInfo& GetWeaponsStrengtheningInfo(int id)
+	const WeaponsStrengtheningInfo& GetWeaponsStrengtheningInfo(int _type) const
 	{
-		int index = 0;
-
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
-		{
-			if (m_weaponsStrengtheningInfo[i].MyNodeID == id)
-			{
-				index = i;
-				break;
-			}
-		}
-		return m_weaponsStrengtheningInfo[index];
+		if (!IsValidType(_type)) { return m_weaponsStrengtheningInfo[0]; }
+		return m_weaponsStrengtheningInfo[_type];
 	}
 
+	// 種類の順（kStrengtheningKeys の順）で受け取る。並べ替えはしない
 	void SetWeaponsStrengtheningInfo(std::vector<WeaponsStrengtheningInfo> weaponsStrengtheningInfo)
 	{
-
 		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
 		{
 			if (i < weaponsStrengtheningInfo.size())
@@ -331,14 +281,6 @@ public:
 				m_weaponsStrengtheningInfo[i] = WeaponsStrengtheningInfo();
 			}
 		}
-
-
-		// MyNodeID の小さい順に並べ替える
-		std::sort(std::begin(m_weaponsStrengtheningInfo), std::end(m_weaponsStrengtheningInfo),
-			[](const WeaponsStrengtheningInfo& a, const WeaponsStrengtheningInfo& b)
-			{
-				return a.MyNodeID < b.MyNodeID;
-			});
 	}
 
 	const std::vector<WeaponsStrengtheningInfo> GetWeaponsStrengtheningInfoList()
@@ -352,19 +294,6 @@ public:
 		return list;
 	}
 
-	//自分のノードIDを全て返す
-	const std::vector<int>& GetAllNodeID()
-	{
-		std::vector<int>returnList;
-
-		for (auto& weapon : m_weaponsStrengtheningInfo)
-		{
-			returnList.push_back(weapon.MyNodeID);
-		}
-
-
-		return returnList;
-	}
 
 
 protected:

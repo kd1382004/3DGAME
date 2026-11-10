@@ -80,9 +80,7 @@ void KdDebugGUI::GuiProcess()
 	//=====================================================
 
 //	KdDebugGUI::Instance().AddLog("TestLog\n");
-
-
-		SceneManager::Instance().ImGUI();
+	SceneManager::Instance().ImGUI();
 
 
 	//===========================================================

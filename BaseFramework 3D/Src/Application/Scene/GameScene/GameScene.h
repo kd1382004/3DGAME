@@ -17,6 +17,8 @@ class UIManager;
 
 
 class WeaponStrengtheningEditor;
+class TreasureChestTableEditor;
+
 
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
 {
@@ -98,4 +100,17 @@ private:
 	//武器用のImGUI
 	// メンバに持つ
 	std::shared_ptr<WeaponStrengtheningEditor> m_upWSEditor;
+
+	//宝箱のドロップテーブル用のImGUI
+	std::shared_ptr<TreasureChestTableEditor> m_upTCTableEditor;
+
+
+
+	struct EditorEntry
+	{
+		const char* name = "";              // チェックボックスの表示名
+		bool open = false;                   // 開いているか
+		std::function<void(bool*)> draw;     // 描画処理
+	};
+	std::vector<EditorEntry> m_editors;
 };

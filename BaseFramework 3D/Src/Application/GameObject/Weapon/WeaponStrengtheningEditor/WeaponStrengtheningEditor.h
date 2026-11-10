@@ -23,6 +23,9 @@ private:
 	// 各レベルで必要な個数と合計を表示
 	void DrawPreview(const nlohmann::json& _item);
 
+	// MyNodeID / PreconditionNodeID の検証。問題があればメッセージを返す（空なら OK）
+	std::vector<std::string> Validate(const nlohmann::json& _weapon) const;
+
 private:
 	std::string    m_filePath;
 	nlohmann::json m_data;

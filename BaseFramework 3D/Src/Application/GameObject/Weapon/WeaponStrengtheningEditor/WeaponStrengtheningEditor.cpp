@@ -1,4 +1,6 @@
 ﻿#include"WeaponStrengtheningEditor.h"
+#include"../WeaponBase.h" // kStrengtheningKeys / WeaponsStrengtheningSiz
+#include<map>
 
 WeaponStrengtheningEditor::WeaponStrengtheningEditor(const std::string& _filePath)
 	: m_filePath(_filePath)
@@ -82,6 +84,17 @@ bool WeaponStrengtheningEditor::Load()
 
 bool WeaponStrengtheningEditor::Save()
 {
+	// エラーが1件でもあれば保存しない
+	for (auto& [weaponKey, weapon] : m_data.items())
+	{
+		if (!weapon.is_object()) { continue; }
+		if (!Validate(weapon).empty())
+		{
+			m_message = U8("保存失敗: ") + weaponKey + U8(" にエラーがあります");
+			return false;
+		}
+	}
+
 	std::ofstream file(m_filePath);
 	if (!file)
 	{
@@ -109,22 +122,24 @@ void WeaponStrengtheningEditor::DrawWeapon(nlohmann::json& _weapon)
 	ImGui::TableSetupColumn(U8("初期必要数"));
 	ImGui::TableSetupColumn(U8("増加率"));
 	ImGui::TableSetupColumn(U8("前提ノード"));
-	ImGui::TableSetupColumn(U8("必要数 (Lv0→1, 1→2, ...)"));
+	ImGui::TableSetupColumn(U8("合計必要数"));
 	ImGui::TableHeadersRow();
 
-	int rowIndex = 0; // MyNodeID がない項目に入れる初期値（表示順の番号）
-	for (auto& [itemKey, item] : _weapon.items())
+	// nlohmann::json はキーをアルファベット順に並べるので、ゲームと同じ kStrengtheningKeys の順で回す
+	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
 	{
-		if (!item.is_object()) continue;
+		const char* itemKey = kStrengtheningKeys[i];
+		if (!_weapon.contains(itemKey) || !_weapon[itemKey].is_object()) { continue; }
+		nlohmann::json& item = _weapon[itemKey];
 
-		ImGui::PushID(itemKey.c_str());
+		ImGui::PushID(itemKey);
 		ImGui::TableNextRow();
 
-		ImGui::TableNextColumn(); ImGui::TextUnformatted(itemKey.c_str());
-		// MyNodeID がまだないデータには表示順の番号を入れておく
+		ImGui::TableNextColumn(); ImGui::TextUnformatted(itemKey);
+		// MyNodeID がまだないデータには種類の番号を入れておく
 		if (!item.contains("MyNodeID"))
 		{
-			item["MyNodeID"] = rowIndex;
+			item["MyNodeID"] = i;
 			m_dirty = true;
 		}
 		ImGui::TableNextColumn(); EditInt(item, "MyNodeID", 0, 999);
@@ -136,10 +151,20 @@ void WeaponStrengtheningEditor::DrawWeapon(nlohmann::json& _weapon)
 		ImGui::TableNextColumn(); DrawPreview(item);
 
 		ImGui::PopID();
-		++rowIndex;
 	}
 
 	ImGui::EndTable();
+
+	// 検証結果
+	const std::vector<std::string> errors = Validate(_weapon);
+	if (errors.empty())
+	{
+		ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), U8("前提ノード: OK（-1 = 前提なし）"));
+	}
+	for (const std::string& e : errors)
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "%s", e.c_str());
+	}
 }
 
 void WeaponStrengtheningEditor::EditInt(nlohmann::json& _obj, const char* _key, int _min, int _max)
@@ -179,9 +204,68 @@ void WeaponStrengtheningEditor::DrawPreview(const nlohmann::json& _item)
 		const int num = static_cast<int>(std::ceil(initial * std::pow(rate, lv)));
 		total += num;
 		if (!text.empty()) text += ", ";
-		text += std::to_string(num);
 	}
 	text += U8("  (計 ") + std::to_string(total) + ")";
 
 	ImGui::TextUnformatted(text.c_str());
+}
+
+std::vector<std::string> WeaponStrengtheningEditor::Validate(const nlohmann::json& _weapon) const
+{
+	std::vector<std::string> errors;
+	std::map<int, std::string> idToKey; // MyNodeID → キー名
+	std::map<int, int>         idToPre; // MyNodeID → PreconditionNodeID
+
+	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+	{
+		const char* key = kStrengtheningKeys[i];
+		if (!_weapon.contains(key) || !_weapon[key].is_object())
+		{
+			errors.push_back(std::string(key) + U8(": 項目がありません"));
+			continue;
+		}
+
+		const int id = _weapon[key].value("MyNodeID", -1);
+		const int pre = _weapon[key].value("PreconditionNodeID", -1);
+
+		auto [it, ok] = idToKey.emplace(id, key);
+		if (!ok)
+		{
+			errors.push_back(U8("MyNodeIDが重複: ") + std::to_string(id) + " (" + it->second + " / " + key + ")");
+			continue;
+		}
+		if (pre == id)
+		{
+			errors.push_back(std::string(key) + U8(": 自分自身を前提にしています（根元は -1）"));
+		}
+		idToPre[id] = pre;
+	}
+
+	for (const auto& [id, pre] : idToPre)
+	{
+		if (pre < 0 || pre == id) { continue; }
+
+		if (!idToKey.count(pre))
+		{
+			errors.push_back(idToKey[id] + U8(": 前提ID ") + std::to_string(pre) + U8(" が存在しません"));
+			continue;
+		}
+
+		// 前提をたどって、ノード数を超えても根元(-1)に着かなければ循環
+		int cur = id;
+		int step = 0;
+		while (cur >= 0 && step <= WeaponsStrengtheningSiz)
+		{
+			auto p = idToPre.find(cur);
+			if (p == idToPre.end() || p->second == cur) { cur = -1; break; }
+			cur = p->second;
+			++step;
+		}
+		if (cur >= 0)
+		{
+			errors.push_back(idToKey[id] + U8(": 前提ノードが循環しています"));
+		}
+	}
+
+	return errors;
 }

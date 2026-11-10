@@ -1,31 +1,31 @@
 {
 	"dagger": {
 		"attack": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 5,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
 			"LvMax": 99,
-			"MyNodeID": 0,
-			"PreconditionNodeID": 1,
+			"MyNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		},
 		"body": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 1,
 			"LvMax": 1,
-			"MyNodeID": 1,
-			"PreconditionNodeID": 1,
+			"MyNodeID": 0,
+			"PreconditionNodeID": -1,
 			"strengtheningItem_ID": 0
 		},
 		"characteristic": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 5,
 			"LvMax": 3,
 			"MyNodeID": 2,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 1
 		},
 		"characteristic1": {
-			"GrowthRate": 1.25,
+			"GrowthRate": 1.1,
 			"InitialNextLvNum": 3,
 			"LvMax": 99,
 			"MyNodeID": 3,
@@ -33,7 +33,7 @@
 			"strengtheningItem_ID": 1
 		},
 		"characteristic2": {
-			"GrowthRate": 1.25,
+			"GrowthRate": 1.1,
 			"InitialNextLvNum": 3,
 			"LvMax": 99,
 			"MyNodeID": 4,
@@ -41,7 +41,7 @@
 			"strengtheningItem_ID": 1
 		},
 		"characteristic3": {
-			"GrowthRate": 1.25,
+			"GrowthRate": 1.1,
 			"InitialNextLvNum": 3,
 			"LvMax": 99,
 			"MyNodeID": 5,
@@ -49,101 +49,101 @@
 			"strengtheningItem_ID": 1
 		},
 		"chargeTime": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
 			"LvMax": 99,
 			"MyNodeID": 6,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		},
 		"defenseIgnore": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
 			"LvMax": 99,
 			"MyNodeID": 7,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		},
 		"stamina": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
 			"LvMax": 99,
 			"MyNodeID": 8,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		}
 	},
 	"sword": {
 		"attack": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
-			"LvMax": 1,
-			"MyNodeID": 0,
-			"PreconditionNodeID": 1,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
+			"LvMax": 99,
+			"MyNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		},
 		"body": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 1,
 			"LvMax": 1,
-			"MyNodeID": 1,
-			"PreconditionNodeID": 1,
+			"MyNodeID": 0,
+			"PreconditionNodeID": -1,
 			"strengtheningItem_ID": 0
 		},
 		"characteristic": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 1,
-			"LvMax": 2,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 5,
+			"LvMax": 3,
 			"MyNodeID": 2,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 1
 		},
 		"characteristic1": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
-			"LvMax": 3,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 5,
+			"LvMax": 99,
 			"MyNodeID": 3,
 			"PreconditionNodeID": 2,
 			"strengtheningItem_ID": 1
 		},
 		"characteristic2": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
-			"LvMax": 4,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 5,
+			"LvMax": 99,
 			"MyNodeID": 4,
 			"PreconditionNodeID": 2,
 			"strengtheningItem_ID": 1
 		},
 		"characteristic3": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
-			"LvMax": 5,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 5,
+			"LvMax": 99,
 			"MyNodeID": 5,
 			"PreconditionNodeID": 2,
 			"strengtheningItem_ID": 1
 		},
 		"chargeTime": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
-			"LvMax": 6,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
+			"LvMax": 99,
 			"MyNodeID": 6,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		},
 		"defenseIgnore": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
-			"LvMax": 7,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
+			"LvMax": 99,
 			"MyNodeID": 7,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		},
 		"stamina": {
-			"GrowthRate": 1.25,
-			"InitialNextLvNum": 3,
-			"LvMax": 8,
+			"GrowthRate": 1.1,
+			"InitialNextLvNum": 2,
+			"LvMax": 99,
 			"MyNodeID": 8,
-			"PreconditionNodeID": 1,
+			"PreconditionNodeID": 0,
 			"strengtheningItem_ID": 0
 		}
 	}

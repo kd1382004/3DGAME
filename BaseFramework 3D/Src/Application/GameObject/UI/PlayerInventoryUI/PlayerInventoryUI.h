@@ -153,6 +153,7 @@ private:
 	//武器
 
 	void WeaponsStrengtheningInfoInit();
+	void WeaponsStrengtheningInfoInitPos();
 
 	//あるものを入れてく関数
 	void WeaponsStrengtheningTexInfo();
@@ -185,8 +186,6 @@ private:
 	{
 		//現LV
 		int Lv;
-
-		int ID;
 
 		int strengtheningItem_ID = 0;
 
@@ -235,13 +234,13 @@ private:
 		bool ChooseFlg = false;
 
 		//自分のノードID
-		int MyNodeID;
+		int MyNodeID = 0;
 
-		//前提ノードID
-		int PreconditionNodeID;
+		//前提ノードのMyNodeID（-1 = 前提なし）
+		int PreconditionNodeID = -1;
 
-		//前提ノードIDの配列番号
-		int PreconditionNodeID_index;
+		//前提ノードの配列番号（-1 = 前提なし）
+		int PreconditionNodeID_index = -1;
 
 
 	};
@@ -278,7 +277,8 @@ private:
 		WeaponsStrengtheningSiz
 	};
 
-	int m_selectWeaponsStrengtheningID;
+	//選択中の強化の配列番号（= 種類）
+	int m_selectIndex = 0;
 	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;
 
 	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
@@ -289,7 +289,7 @@ private:
 	int m_selectWeaponsStrengtheningnextLVNum = 0;
 
 	//IDのみ選ばれてそれ以外は選ばれてないに
-	void WeaponChooseFlg(int _ID);
+	void WeaponChooseFlg(int _index);
 
 	//////////////////////////////////////////////////
 	//プレイヤーステータス

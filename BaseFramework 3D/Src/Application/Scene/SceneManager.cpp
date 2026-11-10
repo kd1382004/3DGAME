@@ -8,12 +8,18 @@
 #include "GameScene/GameScene.h"
 #include "ResultScene/ResultScene.h"
 
+#include"../Info/DebugInfo/DebugInfo.h"
 void SceneManager::PreUpdate()
 {
 	// シーン切替
 	if (m_currentSceneType != m_nextSceneType)
 	{
 		ChangeScene(m_nextSceneType);
+	}
+
+	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
+	{
+		return;
 	}
 
 	m_currentScene->PreUpdate();
@@ -24,11 +30,28 @@ void SceneManager::Update()
 	MouseInfo::Instance().Update();
 	KeyInfo::Instance().UpdateKey();
 
+
+	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
+	{
+		MouseInfo::Instance().SetMouseFreeFlg(true);
+		ShowCursor(true);
+		return;
+	}
+	else
+	{
+		ShowCursor(false);
+	}
+
 	m_currentScene->Update();
 }
 
 void SceneManager::PostUpdate()
 {
+	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
+	{
+		return;
+	}
+
 	m_currentScene->PostUpdate();
 }
 
@@ -67,8 +90,6 @@ void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _obj)
 
 void SceneManager::ImGUI()
 {
-	m_currentScene->ImGUi();
-
 	//FOGImGUI
 	if (ImGui::TreeNode(U8("FOG")))
 	{
@@ -117,8 +138,13 @@ void SceneManager::ImGUI()
 
 	}
 
+	m_currentScene->ImGUi();
 
 
+	if (ImGui::Button(U8("ImGuiを閉じる")))
+	{
+		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
+	}
 }
 
 void SceneManager::ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack)

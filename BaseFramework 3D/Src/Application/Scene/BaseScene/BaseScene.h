@@ -85,6 +85,9 @@ protected :
 	std::vector<WeaponsStrengtheningInfo> LoadWeaponStrengtheningData(std::string _filePath);
 	std::vector <WeaponsStrengtheningInfo> ReadWeaponStrengtheningList(const nlohmann::json& _data, const std::string& _key);
 
+	//マスタ（MsWeaponsStrengtheningInfo.json）を土台に、セーブの進行状況を重ねて返す
+	std::vector<WeaponsStrengtheningInfo> LoadMergedWeaponStrengtheningData(const std::string& _saveFilePath);
+
 	//パス
 	const std::string m_WeaponStrengtheningFilePath = "Asset/Data/PlayerData/PlayerWeaponStrengtheningData.json";
 	const std::string m_WeaponStrengtheningGameResultFilePath = "Asset/Data/GameResult/PlayerWeaponStrengtheningData.json";

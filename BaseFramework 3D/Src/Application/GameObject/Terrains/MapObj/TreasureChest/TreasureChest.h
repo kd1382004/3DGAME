@@ -28,7 +28,7 @@ public:
 
 	void SetLootTableManager(std::shared_ptr<LootTableManager> _spLootTableManager) { m_wpLootTableManager = _spLootTableManager; };
 
-	void SetTreasureChestLv(int lv) { m_TreasureChestLv = lv; }
+	void SetTreasureChestTableNum(int Num) { m_TreasureChestTableNum = Num; }
 
 	//UIBase2に入れるテクスチャ
 	void SetUITex(std::shared_ptr<KdTexture>_tex) { m_uiTex = _tex; }
@@ -55,7 +55,7 @@ private:
 	bool m_isInView = false;
 
 	//宝箱の中身
-	int m_TreasureChestLv = 2;
+	int m_TreasureChestTableNum = 2;
 
 
 	std::string m_TreasureChestGetItnLootpath = "slot";

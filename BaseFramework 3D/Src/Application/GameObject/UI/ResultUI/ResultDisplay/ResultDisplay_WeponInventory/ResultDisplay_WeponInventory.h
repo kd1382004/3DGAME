@@ -116,8 +116,11 @@ private:
 
 		std::shared_ptr<KdTexture> m_NameTex;
 
-		//前提ノードID
-		int PreconditionNodeID = 0;
+		//前提ノードのMyNodeID（-1 = 前提なし）
+		int PreconditionNodeID = -1;
+
+		//前提ノードの配列番号（-1 = 前提なし）
+		int PreconditionNodeID_index = -1;
 
 		bool ChooseFlg;
 	};
@@ -170,4 +173,7 @@ private:
 	Math::Vector2 m_WeaponsStrengtheningTexPos;
 
 	void WeaponChooseFlg(int _ID);
+
+	//選択中の強化に使うアイテムが m_weaponsStrengtheningIconInfoList の何番目か（なければ -1）
+	int FindSelectItemIconIndex() const;
 };

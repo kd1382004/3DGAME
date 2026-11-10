@@ -926,14 +926,17 @@ void PlayerBase::MoveNowSpeedDecision()
 {
 	if (m_chargeAttacFlg)
 	{
-		m_moveMode = MoveWalk;
-
-		m_status.moveSpeed.nowSpeed = (m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe) * 0.1;
+		m_moveMode = MoveStop;
 	}
 	else
 	{
 		//移動モードの切り替え
-		if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash))
+		if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash,true))
+		{
+			m_IsDash = !m_IsDash;
+		}
+
+		if (m_IsDash)
 		{
 			if (m_IsDetectedByEnemy)
 			{
@@ -944,6 +947,7 @@ void PlayerBase::MoveNowSpeedDecision()
 				else
 				{
 					m_moveMode = MoveWalk;
+					m_IsDash = false;
 				}
 
 			}
@@ -958,25 +962,27 @@ void PlayerBase::MoveNowSpeedDecision()
 		}
 
 
-		switch (m_moveMode)
-		{
-		case PlayerBase::MoveWalk:
-			m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
-			m_nowPlayerAnimeMode = PlayerBase::WalkAnime;
-			break;
-		case PlayerBase::MoveRun:
-			m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
-			m_nowPlayerAnimeMode = PlayerBase::RunAnime;
-			break;
-		default:
-			break;
-		}
+		
 	}
 
 
-
-
-
+	switch (m_moveMode)
+	{
+	case PlayerBase::MoveWalk:
+		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
+		m_nowPlayerAnimeMode = PlayerBase::WalkAnime;
+		break;
+	case PlayerBase::MoveRun:
+		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
+		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
+		break;
+	case PlayerBase::MoveStop:
+		m_status.moveSpeed.nowSpeed = 0;
+		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
+		break;
+	default:
+		break;
+	}
 }
 
 void PlayerBase::JumpAndGravity()

@@ -367,4 +367,7 @@ protected:
 
 	std::weak_ptr<KdEffekseerObject> m_wpDashEffect;
 	bool m_isDashActive = false;
+
+	//ダッシュできる時はするかどうか
+	bool m_IsDash = false;
 };

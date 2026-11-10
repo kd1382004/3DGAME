@@ -1,281 +1,128 @@
 {
-	"rank_weights": {
-		"common": 1.0,
-		"uncommon": 0.5,
-		"rare": 0.2,
-		"epic": 0.05,
-		"legendary": 0.01
-	},
-
-	"slots": {
+	"tables": {
 		"slot0": {
-			"type0": [
+			"dropMax": 2,
+			"dropMin": 1,
+			"items": [
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 15.38
+				},
 				{
 					"id": 0,
 					"name": "InstantHealPotion",
-					"rank": "common",
-					"type": 0
-				},
-				{
-					"id": 1,
-					"name": "AttackBaseUPPotion",
-					"rank": "epic",
-					"type": 0
+					"type": 0,
+					"weight": 23.08
 				},
 				{
 					"id": 2,
 					"name": "AttackBoostPotion",
-					"rank": "common",
-					"type": 0
+					"type": 0,
+					"weight": 30.77
 				},
 				{
 					"id": 3,
 					"name": "InstantStaminaHealPotion",
-					"rank": "common",
-					"type": 0
-				},
-				{
-					"id": 4,
-					"name": "StaminaRegenBaseUPPotion",
-					"rank": "rare",
-					"type": 0
-				},
-				{
-					"id": 5,
-					"name": "StaminaRegenBoostPotion",
-					"rank": "uncommon",
-					"type": 0
-				},
-				{
-					"id": 6,
-					"name": "StaminaMaxUPPotion",
-					"rank": "rare",
-					"type": 0
-				}
-			],
-			"type1": [
-				{
-					"id": 0,
-					"name": "WeaponsStrengthening_Attck",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 1,
-					"name": "WeaponsStrengthening_Stamina",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 2,
-					"name": "WeaponsStrengthening_ChargeTime",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 3,
-					"name": "WeaponsStrengthening_DefenseIgnore",
-					"rank": "legendary",
-					"type": 1
-				},
-				{
-					"id": 4,
-					"name": "WeaponsStrengthening_ShockWave",
-					"rank": "legendary",
-					"type": 1
+					"type": 0,
+					"weight": 30.77
 				}
 			]
 		},
-
 		"slot1": {
-			"type0": [
+			"dropMax": 3,
+			"dropMin": 1,
+			"items": [
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 14.12
+				},
 				{
 					"id": 0,
 					"name": "InstantHealPotion",
-					"rank": "common",
-					"type": 0
-				},
-				{
-					"id": 1,
-					"name": "AttackBaseUPPotion",
-					"rank": "epic",
-					"type": 0
+					"type": 0,
+					"weight": 16.69
 				},
 				{
 					"id": 2,
 					"name": "AttackBoostPotion",
-					"rank": "common",
-					"type": 0
+					"type": 0,
+					"weight": 22.24
 				},
 				{
 					"id": 3,
 					"name": "InstantStaminaHealPotion",
-					"rank": "common",
-					"type": 0
+					"type": 0,
+					"weight": 22.24
 				},
 				{
-					"id": 4,
-					"name": "StaminaRegenBaseUPPotion",
-					"rank": "rare",
-					"type": 0
-				},
-				{
-					"id": 5,
-					"name": "StaminaRegenBoostPotion",
-					"rank": "uncommon",
-					"type": 0
+					"id": 1,
+					"name": "AttackBaseUPPotion",
+					"type": 0,
+					"weight": 7.23
 				},
 				{
 					"id": 6,
 					"name": "StaminaMaxUPPotion",
-					"rank": "rare",
-					"type": 0
-				}
-			],
-			"type1": [
-				{
-					"id": 0,
-					"name": "WeaponsStrengthening_Attck",
-					"rank": "rare",
-					"type": 1
+					"type": 0,
+					"weight": 14.82
 				},
 				{
 					"id": 1,
-					"name": "WeaponsStrengthening_Stamina",
-					"rank": "rare",
-					"type": 1
-				},
-				{
-					"id": 2,
-					"name": "WeaponsStrengthening_ChargeTime",
-					"rank": "rare",
-					"type": 1
-				},
-				{
-					"id": 3,
-					"name": "WeaponsStrengthening_DefenseIgnore",
-					"rank": "legendary",
-					"type": 1
-				},
-				{
-					"id": 4,
-					"name": "WeaponsStrengthening_ShockWave",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 5,
-					"name": "WeaponsStrengthening_ShockWave_maxDistanceM",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 6,
-					"name": "WeaponsStrengthening_ShockWave_speed",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 7,
-					"name": "WeaponsStrengthening_ShockWave_hitNum",
-					"rank": "epic",
-					"type": 1
+					"name": "WeaponStrengthening_Crystal2",
+					"type": 1,
+					"weight": 8.16
 				}
 			]
 		},
 		"slot2": {
-			"type0": [
+			"dropMax": 5,
+			"dropMin": 3,
+			"items": [
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 19.62
+				},
 				{
 					"id": 0,
 					"name": "InstantHealPotion",
-					"rank": "common",
-					"type": 0
-				},
-				{
-					"id": 1,
-					"name": "AttackBaseUPPotion",
-					"rank": "rare",
-					"type": 0
+					"type": 0,
+					"weight": 16.69
 				},
 				{
 					"id": 2,
 					"name": "AttackBoostPotion",
-					"rank": "common",
-					"type": 0
+					"type": 0,
+					"weight": 22.24
 				},
 				{
 					"id": 3,
 					"name": "InstantStaminaHealPotion",
-					"rank": "common",
-					"type": 0
+					"type": 0,
+					"weight": 22.24
 				},
 				{
-					"id": 4,
-					"name": "StaminaRegenBaseUPPotion",
-					"rank": "rare",
-					"type": 0
-				},
-				{
-					"id": 5,
-					"name": "StaminaRegenBoostPotion",
-					"rank": "uncommon",
-					"type": 0
+					"id": 1,
+					"name": "AttackBaseUPPotion",
+					"type": 0,
+					"weight": 7.23
 				},
 				{
 					"id": 6,
 					"name": "StaminaMaxUPPotion",
-					"rank": "rare",
-					"type": 0
-				}
-			],
-			"type1": [
-				{
-					"id": 0,
-					"name": "WeaponsStrengthening_Attck",
-					"rank": "uncommon",
-					"type": 1
+					"type": 0,
+					"weight": 14.82
 				},
 				{
 					"id": 1,
-					"name": "WeaponsStrengthening_Stamina",
-					"rank": "uncommon",
-					"type": 1
-				},
-				{
-					"id": 2,
-					"name": "WeaponsStrengthening_ChargeTime",
-					"rank": "uncommon",
-					"type": 1
-				},
-				{
-					"id": 3,
-					"name": "WeaponsStrengthening_DefenseIgnore",
-					"rank": "common",
-					"type": 1
-				},
-				{
-					"id": 4,
-					"name": "WeaponsStrengthening_ShockWave",
-					"rank": "rare",
-					"type": 1
-				},
-				{
-					"id": 5,
-					"name": "WeaponsStrengthening_ShockWave_maxDistanceM",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 6,
-					"name": "WeaponsStrengthening_ShockWave_speed",
-					"rank": "epic",
-					"type": 1
-				},
-				{
-					"id": 7,
-					"name": "WeaponsStrengthening_ShockWave_hitNum",
-					"rank": "epic",
-					"type": 1
+					"name": "WeaponStrengthening_Crystal2",
+					"type": 1,
+					"weight": 10.16
 				}
 			]
 		}

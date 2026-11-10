@@ -322,6 +322,7 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestTableEditor\TreasureChestTableEditor.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.h" />
@@ -474,6 +475,7 @@
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\LootTableManager\LootTableManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChest.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureChestTableEditor\TreasureChestTableEditor.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\FloorBase\FloorBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Map\MapGenerate\MapGenerate.cpp" />

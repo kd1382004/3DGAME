@@ -2,63 +2,54 @@
     "dagger": {
         "attack": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "body": {
             "Lv": 1,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "characteristic": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "characteristic1": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "characteristic2": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "characteristic3": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "chargeTime": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "defenseIgnore": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
         },
         "stamina": {
             "Lv": 0,
-            "MyNodeID": 0,
             "nextLvNum": 3,
             "strengtheningFlg": false,
             "strengtheningItemNum": 0
@@ -67,66 +58,57 @@
     "sword": {
         "attack": {
             "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
+            "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 17
         },
         "body": {
             "Lv": 1,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
+            "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 17
         },
         "characteristic": {
-            "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "Lv": 2,
+            "nextLvNum": 7,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 10
         },
         "characteristic1": {
             "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "nextLvNum": 5,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 10
         },
         "characteristic2": {
-            "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "Lv": 1,
+            "nextLvNum": 6,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 10
         },
         "characteristic3": {
             "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "nextLvNum": 5,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 10
         },
         "chargeTime": {
             "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "nextLvNum": 2,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 17
         },
         "defenseIgnore": {
             "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "nextLvNum": 2,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 17
         },
         "stamina": {
             "Lv": 0,
-            "MyNodeID": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "nextLvNum": 2,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 17
         }
     }
 }

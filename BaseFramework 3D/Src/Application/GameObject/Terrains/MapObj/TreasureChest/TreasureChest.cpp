@@ -37,8 +37,8 @@ void TreasureChest::Init()
 {
 	if (m_wpLootTableManager.expired())
 	{
-		static auto spLootTableManager = std::make_shared<LootTableManager>();
-		m_wpLootTableManager = spLootTableManager;
+		// ゲーム中で共有するテーブル（エディタで保存すると読み直される）
+		m_wpLootTableManager = LootTableManager::GetShared();
 	}
 
 	if (!m_treasureChestModel)
@@ -183,9 +183,11 @@ void TreasureChest::Update()
 				if (m_spLootTableManager)
 				{
 
-					std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestLv);
+					// 使うテーブル名（slot + 宝箱のLv）
+					std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestTableNum);
 
-					int itenNun = KdRandom::GetInt(2, 4 + m_TreasureChestLv);
+					// 出る個数はテーブルの dropMin〜dropMax
+					int itenNun = m_spLootTableManager->GetRandomDropNum(path);
 					for (int i = 0; i < itenNun; i++)
 					{
 						LootItem item = m_spLootTableManager->GetRandomLoot(path);

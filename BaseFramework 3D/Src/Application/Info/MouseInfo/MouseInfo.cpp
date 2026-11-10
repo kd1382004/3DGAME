@@ -118,7 +118,6 @@ void MouseInfo::Update()
 		}
 
 	}
-	ShowCursor(false);
 
 	//************************************************
 

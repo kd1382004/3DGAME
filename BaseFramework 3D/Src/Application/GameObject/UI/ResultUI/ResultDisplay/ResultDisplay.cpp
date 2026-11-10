@@ -38,9 +38,9 @@ void ResultDisplay::Init()
 	m_ResultDisplay_PotionInventory->Init();
 	m_ResultDisplayList.push_back(m_ResultDisplay_PotionInventory);
 
-	//m_ResultDisplay_WeponInventory = std::make_shared<ResultDisplay_WeponInventory>();
-	//m_ResultDisplay_WeponInventory->Init();
-	//m_ResultDisplayList.push_back(m_ResultDisplay_WeponInventory);
+	m_ResultDisplay_WeponInventory = std::make_shared<ResultDisplay_WeponInventory>();
+	m_ResultDisplay_WeponInventory->Init();
+	m_ResultDisplayList.push_back(m_ResultDisplay_WeponInventory);
 
 	m_ResultDisplay_PlayerStatus = std::make_shared<ResultDisplay_PlayerStatus>();
 	m_ResultDisplay_PlayerStatus->Init();
