@@ -65,6 +65,9 @@ void Dagger::Init()
 			m_spHitSE->Stop();
 		}
 	}
+
+	m_animePercentPolyStart = 0.07;
+	m_animePercentPolyEnd = 0.35;
 }
 
 void Dagger::Update()
@@ -134,7 +137,7 @@ void Dagger::Update()
 		std::list<KdCollider::CollisionResult> results;
 		if (spGameObj->Intersects(box, &results))
 		{
-			m_defenseIgnore =1.0f - std::pow(0.85f,m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
+			m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
 
 
 			m_hitCharactersList.push_back(spGameObj);

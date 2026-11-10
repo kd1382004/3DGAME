@@ -13,6 +13,15 @@ void WeaponBase::Init()
 void WeaponBase::Update()
 {
 	m_mWorld = m_localMat * m_weponParentMat;
+
+	if (m_animePercentNow >= m_animePercentPolyStart)
+	{
+		m_tPolyFlg = true;
+	}
+	if (m_animePercentNow >= m_animePercentPolyEnd)
+	{
+		m_tPolyFlg = false;
+	}
 }
 
 void WeaponBase::DrawLit()

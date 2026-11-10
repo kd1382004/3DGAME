@@ -924,7 +924,7 @@ void PlayerBase::Move()
 
 void PlayerBase::MoveNowSpeedDecision()
 {
-	if (m_chargeAttacFlg)
+	if (m_chargeAttacFlg|| m_nowPlayerAnimeMode== SwordAttackAnime)
 	{
 		m_moveMode = MoveStop;
 	}
@@ -977,7 +977,7 @@ void PlayerBase::MoveNowSpeedDecision()
 		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
 		break;
 	case PlayerBase::MoveStop:
-		m_status.moveSpeed.nowSpeed = 0;
+		m_status.moveSpeed.nowSpeed = 0.00000001;
 		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
 		break;
 	default:
@@ -1133,6 +1133,12 @@ void PlayerBase::PlayerAnimeModeUpdate()
 	{
 		spWeapon->SetParentMatrix(m_weponParentMatrix);
 		spWeapon->SetParentRotation(rot);
+		switch (m_nowPlayerAnimeMode)
+		{
+		case PlayerBase::SwordAttackAnime:
+			spWeapon->SetAnimePercentNow(m_spAnimetor->GetAnimeProgress());
+		}
+	
 	}
 
 
@@ -1140,7 +1146,6 @@ void PlayerBase::PlayerAnimeModeUpdate()
 	{
 		if (m_spAnimetor->IsAnimationEnd())
 		{
-
 			m_isDeadAnime = true;
 		}
 	}

@@ -69,6 +69,9 @@ void Sword::Init()
 			m_spHitSE->Stop();
 		}
 	}
+
+	m_animePercentPolyStart = 0.33;
+	m_animePercentPolyEnd = 0.5;
 }
 
 void Sword::Update()

@@ -50,7 +50,7 @@ void UIMap_Map::DrawSprit()
 	float drawX = m_basePos.x + m_StairsMineMapInfo.m_pos.x * m_siz;
 	float drawY = m_basePos.y + m_StairsMineMapInfo.m_pos.y * m_siz;
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mapStairsTex, drawX, drawY, m_mapTexSiz.x, m_mapTexSiz.y);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mapStairsTex, drawX, drawY, m_mapTexSiz.x * 1.2, m_mapTexSiz.y * 1.2);
 }
 
 void UIMap_Map::PreDraw()

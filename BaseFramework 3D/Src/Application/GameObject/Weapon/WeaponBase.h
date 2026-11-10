@@ -294,7 +294,7 @@ public:
 		return list;
 	}
 
-
+	void SetAnimePercentNow(float _percent) { m_animePercentNow = _percent; }
 
 protected:
 
@@ -404,5 +404,10 @@ protected:
 	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
 	bool m_tPolyFlg = false;
 
+
+
+	float m_animePercentNow;
+	float m_animePercentPolyStart;
+	float m_animePercentPolyEnd;
 };
 
