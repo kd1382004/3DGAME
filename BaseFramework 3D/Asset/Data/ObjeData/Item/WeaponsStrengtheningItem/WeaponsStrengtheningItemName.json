@@ -1,0 +1,12 @@
+{
+	"inventory": [
+		{
+			"id": 0,
+			"name": "WeaponStrengthening_Crystal1"
+		},
+		{
+			"id": 1,
+			"name": "WeaponStrengthening_Crystal2"
+		}
+	]
+}

@@ -34,7 +34,7 @@ void PlayerInventory::Init()
 	{
 		std::vector<Inventory> WeaponsStrengtheningInventoryList;
 
-		std::ifstream ifs("Asset/Data/ObjeData/Item/WeaponsStrengthening/WeaponsStrengtheningName.json");
+		std::ifstream ifs("Asset/Data/ObjeData/Item/WeaponsStrengtheningItem/WeaponsStrengtheningItemName.json");
 		nlohmann::json jsonData = nlohmann::json::parse(ifs, nullptr, false);
 
 		for (auto& item : jsonData["inventory"])

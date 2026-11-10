@@ -188,6 +188,8 @@ private:
 
 		int ID;
 
+		int strengtheningItem_ID = 0;
+
 		//次のLVにするために必要な強化アイテムの数
 		int nextLvNum;
 

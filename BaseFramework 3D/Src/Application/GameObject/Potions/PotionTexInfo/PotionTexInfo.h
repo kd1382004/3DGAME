@@ -24,6 +24,7 @@ public:
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningIcon(int _ID);
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningExplanation(int _ID);
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningName(int _ID);
+	std::shared_ptr<KdTexture> GetWeaponsStrengtheningItemIcon(int _ID);
 private:
 
 	void Load();
@@ -31,8 +32,12 @@ private:
 	std::vector<Texs> m_PotionTexs;
 	std::vector<Texs> m_WeaponsStrengtheningTexs;
 
+	std::vector<Texs> m_WeaponsStrengtheningItemTexs;
+
 	std::string m_potionPath = "Asset/Textures/GameUI/Item/Potion/";
 	std::string m_weaponsStrengtheningPath = "Asset/Textures/GameUI/Item/WeaponsStrengthening/";
+	std::string m_weaponsStrengtheningItemPath = "Asset/Textures/GameUI/Item/WeaponsStrengtheningItem/";
+
 	std::string m_Icom = "/Icon.png";
 	std::string m_Explanation = "/SelectExplanationBase.png";
 	std::string m_Name = "/SelectNameBase.png";

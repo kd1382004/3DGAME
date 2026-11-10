@@ -60,7 +60,7 @@ private:
 	std::vector<Inventory>m_potionsInventory;
 
 
-	//各番号の武器強化素材がどれだけあるか
+	//武器強化素材がどれだけあるか
 	std::vector<Inventory>m_weaponsStrengtheningInventory;
 
 

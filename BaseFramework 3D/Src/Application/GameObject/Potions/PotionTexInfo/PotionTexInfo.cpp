@@ -77,6 +77,19 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningName(int _ID)
 	return nullptr;
 }
 
+std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemIcon(int _ID)
+{
+	for (auto& tex : m_WeaponsStrengtheningItemTexs)
+	{
+		if (tex.ID == _ID)
+		{
+			return tex.m_Icon;
+		}
+	}
+
+	return nullptr;
+}
+
 void PotionTexInfo::Load()
 {
 	{
@@ -192,6 +205,42 @@ void PotionTexInfo::Load()
 			tex.m_Icon = icon;
 			tex.m_Explanation = explanation;
 			tex.m_Name = name;
+		}
+	}
+
+
+	{
+		std::vector<Texs> inventoryList;
+
+		std::ifstream ifs("Asset/Data/ObjeData/Item/WeaponsStrengtheningItem/WeaponsStrengtheningItemName.json");
+		nlohmann::json jsonData = nlohmann::json::parse(ifs, nullptr, false);
+
+		for (auto& item : jsonData["inventory"])
+		{
+			Texs inv;
+			inv.ID = item["id"].get<int>();
+			inv.m_name = item["name"].get<std::string>();
+			inventoryList.push_back(inv);
+		}
+
+		// ID順にソート
+		std::sort(inventoryList.begin(), inventoryList.end(),
+			[](const Texs& a, const Texs& b)
+			{
+				return a.ID < b.ID;
+			});
+
+		m_WeaponsStrengtheningItemTexs = inventoryList;
+
+		for (auto& tex : m_WeaponsStrengtheningItemTexs)
+		{
+			std::shared_ptr<KdTexture>icon = std::make_shared<KdTexture>();
+
+			std::string iconPath;
+			iconPath = m_weaponsStrengtheningItemPath + tex.m_name + m_Icom;
+			icon->Load(iconPath);
+
+			tex.m_Icon = icon;
 		}
 	}
 }

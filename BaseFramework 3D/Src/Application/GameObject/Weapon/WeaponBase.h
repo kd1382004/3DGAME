@@ -54,6 +54,9 @@ struct WeaponsStrengtheningInfo
 {
 	int Lv = 0;
 	int LvMax = 0;
+
+	int strengtheningItem_ID;
+
 	int nextLvNum = 1;
 	int strengtheningItemNum = 0;
 	bool strengtheningFlg = false;

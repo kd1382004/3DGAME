@@ -645,7 +645,8 @@ void PlayerInventoryUI::WeaponsStrengtheningUpdate()
 	{
 		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
 		{
-			int num = spPlayer->GetPlayerInventory()->GetWeaponsStrengtheningInventoryNum(i);
+			int WeaponsStrengtheningItemID = m_weaponsStrengtheningInfo[i].strengtheningItem_ID;
+			int num = spPlayer->GetPlayerInventory()->GetWeaponsStrengtheningInventoryNum(WeaponsStrengtheningItemID);
 			spWeapon->SetWeaponsStrengtheningNum(i, num);
 		}
 
@@ -1221,7 +1222,7 @@ void PlayerInventoryUI::WeaponsStrengtheningTexInfo()
 	m_iconBase2DPos.y += 90;
 	for (Inventory weapon : spPlayerInventory->GetWeaponsStrengtheningInventory())
 	{
-		if (weapon.m_ID == m_selectWeaponsStrengtheningID)
+		if (weapon.m_ID == m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].strengtheningItem_ID)
 		{
 			ItemIconInfo itemIconInfo;
 			itemIconInfo.m_ItemID = weapon.m_ID;
@@ -1232,7 +1233,8 @@ void PlayerInventoryUI::WeaponsStrengtheningTexInfo()
 			std::shared_ptr<PotionTexInfo>_spTexInfo = m_wpPotionTexInfo.lock();
 			if (_spTexInfo)
 			{
-				itemIconInfo.m_IconTex = _spTexInfo->GetWeaponsStrengtheningIcon(itemIconInfo.m_ItemID);
+				int WeaponsStrengtheningItemID = m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].strengtheningItem_ID;
+				itemIconInfo.m_IconTex = _spTexInfo->GetWeaponsStrengtheningItemIcon(WeaponsStrengtheningItemID);
 				itemIconInfo.m_ExplanationTex = _spTexInfo->GetWeaponsStrengtheningExplanation(itemIconInfo.m_ItemID);
 			}
 
@@ -1360,7 +1362,10 @@ void PlayerInventoryUI::WeaponsStrengtheningButtonHit()
 				spWeapon->AddWeaponsStrengtheningInfo(m_selectWeaponsStrengtheningID);
 				m_num = spWeapon->GetWeaponsStrengtheningLv(m_selectWeaponsStrengtheningID);
 				m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].Lv = m_num;
-				spPlayer->GetPlayerInventory()->UseWeaponsStrengtheningInventory(m_selectWeaponsStrengtheningID, m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].nextLvNum);
+
+
+				int WeaponsStrengtheningItemID = m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].strengtheningItem_ID;
+				spPlayer->GetPlayerInventory()->UseWeaponsStrengtheningInventory(WeaponsStrengtheningItemID, m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].nextLvNum);
 				m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].nextLvNum = spWeapon->GetWeaponsStrengtheningNextLvNum(m_selectWeaponsStrengtheningID);
 				m_selectWeaponsStrengtheningnextLVNum = m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].nextLvNum;
 			}
