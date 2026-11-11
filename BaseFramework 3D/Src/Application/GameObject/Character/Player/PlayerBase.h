@@ -172,6 +172,9 @@ public:
 
 	void SetPlayerWeaponInfo(int info);
 
+
+
+	Math::Matrix GetBoneWorldMatrix(const std::string& _boneName);
 protected:
 
 	std::shared_ptr<PlayreLV>m_spPlayreLV;
@@ -370,4 +373,5 @@ protected:
 
 	//ダッシュできる時はするかどうか
 	bool m_IsDash = false;
+
 };

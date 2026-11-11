@@ -212,7 +212,7 @@ private:
 
 	//更新チャンク
 	//縦横に+-xyずつ
-	Math::Vector2 m_updateChunkRadius = { 1,1 };
+	Math::Vector2 m_updateChunkRadius = { 2,2 };
 
 
 	//描画チャンク

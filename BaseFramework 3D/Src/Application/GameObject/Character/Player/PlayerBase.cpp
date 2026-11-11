@@ -634,21 +634,19 @@ void PlayerBase::WeaponUpdate()
 			{
 				spWeapon->SetAttackFlg(true);
 				spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
-				// キャラの向きを敵の方向に補正
-				const Math::Vector3 targetPos = spWeapon->GetCloseAttackHitCharacter();
-				if (targetPos != Math::Vector3::Zero)
+
+				// キャラの向きを一番近い敵の方向に補正
+				if (auto target = spWeapon->FindAimAssistTarget(m_pos))
 				{
-					Math::Vector3 dir = targetPos - GetPos();
-					dir.y = 0.0f; // XZ平面上の方向ベクトル
+					Math::Vector3 dir = *target - GetPos();
+					dir.y = 0.0f;
 					if (dir.LengthSquared() > 0.0001f)
 					{
 						dir.Normalize();
-						m_moveVec = dir;
-
-						// XZ平面上の絶対向き(Y軸回転角度)を計算
 						float angle = DirectX::XMConvertToDegrees(std::atan2(dir.x, dir.z));
 						if (angle < 0.0f) { angle += 360.0f; }
 						m_angle = angle;
+						// m_moveVec = dir; // 移動にも反映したい場合だけ有効にする
 					}
 				}
 
@@ -1162,32 +1160,6 @@ void PlayerBase::EvasionUpdate()
 	if (m_chargeAttacFlg) { return; }
 	if (m_NowNormalAttack) { return; }
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.evasion, true))
-	{
-
-		if (!m_evasionAnimeFlg && ConsumeStamina(m_evasionCost))
-		{
-			m_evasionAnimeFlg = true;
-			m_evasionFlg = true;
-			m_nowPlayerAnimeMode = PlayerBase::RollAnime;
-
-			std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
-			if (camera)
-			{
-				m_moveVec = { 0,0,1 };
-				m_moveVec = Math::Vector3::TransformNormal(m_moveVec, camera->GetRotationYMatrix());
-				m_moveVec.y = 0;
-				m_moveVec.Normalize();
-			}
-
-			if (m_spRollSE)
-			{
-				m_spRollSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-				m_spRollSE->Play();
-			}
-		}
-	}
-
 	if (m_evasionAnimeFlg)
 	{
 		float t = m_spAnimetor->GetAnimeProgress();
@@ -1218,7 +1190,42 @@ void PlayerBase::EvasionUpdate()
 		}
 	}
 
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.evasion, true))
+	{
 
+		if (!m_evasionAnimeFlg && ConsumeStamina(m_evasionCost))
+		{
+			m_evasionAnimeFlg = true;
+			m_evasionFlg = true;
+			m_nowPlayerAnimeMode = PlayerBase::RollAnime;
+
+			std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
+			if (camera)
+			{
+				m_moveVec = { 0,0,1 };
+				m_moveVec = Math::Vector3::TransformNormal(m_moveVec, camera->GetRotationYMatrix());
+				m_moveVec.y = 0;
+				m_moveVec.Normalize();
+			}
+
+			if (m_spRollSE)
+			{
+				m_spRollSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spRollSE->Play();
+			}
+		}
+	}
+}
+
+Math::Matrix PlayerBase::GetBoneWorldMatrix(const std::string& _boneName)
+{
+	if (!m_spCharaModel) { return m_mWorld; }
+
+	auto* node = m_spCharaModel->FindNode(_boneName);
+	if (!node) { return m_mWorld; }
+
+	// ボーンの行列（モデル基準） × キャラのワールド行列
+	return node->m_worldTransform * m_mWorld;
 }
 
 

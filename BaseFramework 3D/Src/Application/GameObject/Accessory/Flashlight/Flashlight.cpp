@@ -7,9 +7,6 @@ void Flashlight::Init()
 		m_spFlashlightModel = std::make_shared<KdModelWork>();
 		m_spFlashlightModel->SetModelData("Asset/Models/Accessory/Flashlight/torch.gltf");
 	}
-
-
-	m_localMat = Math::Matrix::CreateTranslation({0.3, 0.1, 0});
 }
 
 void Flashlight::Update()
@@ -18,10 +15,20 @@ void Flashlight::Update()
 
 void Flashlight::PostUpdate()
 {
+	m_localMat =
+		Math::Matrix::CreateFromYawPitchRoll(
+			DirectX::XMConvertToRadians(m_flashlightconfig.localRot.y),
+			DirectX::XMConvertToRadians(m_flashlightconfig.localRot.x),
+			DirectX::XMConvertToRadians(m_flashlightconfig.localRot.z)) *
+		Math::Matrix::CreateTranslation(m_flashlightconfig.localPos);
+
+	// モデルは腰に完全に追従させる
 	m_mWorld = m_localMat * m_accessoryParentMat;
 
 	Math::Vector3 pos = m_mWorld.Translation();
-	Math::Vector3 dir = m_mWorld.Backward(); // 前方ベクトル
+
+	// ライトの向き：腰に追従させると歩くたびに大きく揺れるので、
+	Math::Vector3 dir = m_flashlightconfig.stableLightDir ? m_ownerMat.Backward() : m_mWorld.Backward();
 	dir.Normalize();
 
 	// スポットライトの位置

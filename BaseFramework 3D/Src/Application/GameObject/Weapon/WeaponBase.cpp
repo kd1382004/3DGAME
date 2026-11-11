@@ -30,6 +30,7 @@ void WeaponBase::DrawLit()
 
 void WeaponBase::CreateWeaponHitCollider()
 {
+
 }
 
 void WeaponBase::SetAttackFlg(bool _flg)
@@ -54,35 +55,28 @@ void WeaponBase::AddObjList(std::shared_ptr<MapBase> _obj)
 	m_objList.push_back(_obj);
 }
 
-Math::Vector3 WeaponBase::GetCloseAttackHitCharacter()
+// origin: 判定の基準位置（通常はキャラの位置）
+std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3& origin) const
 {
-	Math::Vector3 ClosePos=Math::Vector3::Zero;
+	std::optional<Math::Vector3> result;
+	float nearestDistSq = m_aimAssistRadius * m_aimAssistRadius;
 
-	float nearestDist = m_aimAssistRadius;
-
-	for (auto& wpGameObj : m_attackHitCharacterList)
+	for (const auto& wpObj : m_attackHitCharacterList) 
 	{
-		auto spGameObj = wpGameObj.lock();
-		if (!spGameObj) continue;
+		auto spObj = wpObj.lock();
+		if (!spObj || spObj->GetIsDead()) { continue; }
 
-		if (spGameObj->GetIsDead()) { continue; }
+		Math::Vector3 diff = spObj->GetPos() - origin;
+		diff.y = 0.0f; // XZ平面で判定
+		const float distSq = diff.LengthSquared();
 
-		float dist = (spGameObj->GetPos() - GetPos()).Length();
-
-		dist = abs(dist);
-
-
-		if (dist < nearestDist)
+		if (distSq < nearestDistSq)
 		{
-			nearestDist = dist;
-			ClosePos = spGameObj->GetPos();
+			nearestDistSq = distSq;
+			result = spObj->GetPos();
 		}
-
-
 	}
-
-
-	return ClosePos;
+	return result;
 }
 
 void WeaponBase::LoadWeaponStatus(const std::string& filePath)

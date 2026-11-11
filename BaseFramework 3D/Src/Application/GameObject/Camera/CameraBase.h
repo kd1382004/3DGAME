@@ -79,6 +79,8 @@ public:
 	//向き切ったかあ銅貨を返す
 	bool RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec);
 
+
+	void ClearCameraOcclusionObject() { m_cameraOcclusionObjects.clear(); }
 protected:
 
 

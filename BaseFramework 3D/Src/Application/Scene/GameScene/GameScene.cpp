@@ -10,6 +10,8 @@
 
 
 //マップ
+#include"../../GameObject/Terrains/MapObj/MapObjBase.h"
+#include"../../GameObject/Terrains/Map/MapBase.h" 
 #include"../../GameObject/Terrains/Map/MapManager.h"
 #include"../../GameObject/Terrains/MapObj/MapObjManager.h"
 
@@ -246,6 +248,19 @@ void GameScene::Event()
 			m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
 		}
 
+
+		if (m_spCamera)
+		{
+			m_spCamera->ClearCameraOcclusionObject();
+			for (auto& map : m_spMapManager->GetUpdateChankes())
+			{
+				m_spCamera->ResolveCameraOcclusionObject(map);
+			}
+			for (auto& mapObj : m_spMapObjManager->GetMapUpdateObj())
+			{
+				m_spCamera->ResolveCameraOcclusionObject(mapObj);
+			}
+		}
 	}
 
 	//あたり判定セット
@@ -628,7 +643,7 @@ void GameScene::GenerateMap()
 
 		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
 
-		//SceneManager::Instance().SetFogEnable(true);
+		SceneManager::Instance().SetFogEnable(true);
 		SceneManager::Instance().SetDefaultAmbient();
 	}
 	else
@@ -650,8 +665,8 @@ void GameScene::GenerateMap()
 			m_spGameBGM->Stop();
 		}
 
-		//SceneManager::Instance().SetFogEnable(false);
-		SceneManager::Instance().SetAmbient({ 1,1,1,1 });
+		SceneManager::Instance().SetFogEnable(false);
+		SceneManager::Instance().SetAmbient({ 0.8,0.8,0.8,0.8 });
 	}
 
 

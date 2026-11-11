@@ -447,7 +447,7 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::LoadMergedWeaponStrengtheningDa
 			n.strengtheningFlg = save[i].strengtheningFlg;
 		}
 
-		// レベルが最大を超えないようにする（LvMaxを下げた場合の対策）
+		// レベルが最大を超えないようにする
 		if (n.Lv > n.LvMax) { n.Lv = n.LvMax; }
 
 		// 次のレベルに必要な数はマスタの式で計算し直す

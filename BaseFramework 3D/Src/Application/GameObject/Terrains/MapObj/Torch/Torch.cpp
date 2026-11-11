@@ -43,7 +43,7 @@ void Torch::Init()
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape("TreasureChest", m_spTorchModel, KdCollider::TypeCameraOcclusion);
+		m_pCollider->RegisterCollisionShape("TreasureChest", m_spTorchModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion);
 	}
 
 

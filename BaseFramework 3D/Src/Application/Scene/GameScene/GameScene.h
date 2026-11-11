@@ -72,7 +72,7 @@ private:
 	//階層
 	int m_displayFloor;
 	int m_mapGenerateDisplayFloor;
-	int m_mapGenerateDisplayFloorMax = 7;
+	int m_mapGenerateDisplayFloorMax = 9;
 
 
 	//ボス戦になる倍数(割り切れたらボス戦)

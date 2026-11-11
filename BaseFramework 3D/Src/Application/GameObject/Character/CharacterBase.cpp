@@ -631,6 +631,7 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 
 		if (sphereHit)
 		{
+			maxPush.y = 0.0f; // 縦方向の押し戻しは地面の処理に任せる
 			m_pos += maxPush;
 			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0.0f, bodyHeight, 0.0f);
 			hit = true;

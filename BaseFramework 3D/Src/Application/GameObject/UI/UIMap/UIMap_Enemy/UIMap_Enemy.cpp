@@ -55,21 +55,13 @@ Math::Vector2 UIMap_EnemyManage::Change2DPos(Math::Vector3 _pos)
 void UIMap_EnemyManage::DiscoverEnemy(List* _info)
 {
 	auto spUIMap_Map = m_wpUIMap_Map.lock();
-	if (!spUIMap_Map) return;
-	//  敵のタイル番号
+	if (!spUIMap_Map) { return; }
+
 	int enemyTileX = (int)((_info->m_pos.x - m_base3DPos.x) / m_tileSiz);
 	int enemyTileY = (int)((_info->m_pos.z - m_base3DPos.z) / m_tileSiz);
 
+	const MineMapInfo* tile = spUIMap_Map->FindTile(enemyTileX, enemyTileY);
+	_info->m_drawFlg = tile ? tile->m_drawFlg : false;
 
-	const auto& tileList = spUIMap_Map->GetMineMapInfo();
-	for (const auto& tile : tileList)
-	{
-		if ((int)tile.m_tileIndex.x == enemyTileX && (int)tile.m_tileIndex.y == enemyTileY)
-		{
-			_info->m_drawFlg = tile.m_drawFlg;
-			return;
-		}
-	}
-	_info->m_drawFlg = false;
 }
 

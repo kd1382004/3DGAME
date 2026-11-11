@@ -42,6 +42,11 @@ protected:
 	//3Dモデル
 	std::shared_ptr<KdModelData>m_spWarpGate;
 
+	//魔法陣アニメーション用（パーツごとに回転させるため KdModelWork で描画する）
+	std::shared_ptr<KdModelWork>m_spWarpGateWork;
+	float m_animTime = 0.0f;
+	void UpdateMagicCircleAnime();
+
 	//座標
 	Math::Vector3 m_pos;
 

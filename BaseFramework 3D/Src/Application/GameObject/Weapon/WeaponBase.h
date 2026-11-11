@@ -110,7 +110,7 @@ public:
 	void ClearObjList() { m_objList.clear(); }
 
 	//attackHitCharacterListの中から一番近い対象の座標を返す
-	Math::Vector3 GetCloseAttackHitCharacter();
+	std::optional<Math::Vector3>FindAimAssistTarget(const Math::Vector3& origin) const;
 
 	void SetCharacterAttackPower(float _power) { m_characterAttackPower = _power; }
 

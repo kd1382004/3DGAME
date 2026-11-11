@@ -51,10 +51,10 @@ void MapManager::DrawLit()
 
 	if (m_spBoxModel)
 	{
-		auto spPlayer = m_wpPlayerBase.lock();
-		if (spPlayer)
+		auto spCamera = m_wpCamera.lock();
+		if (spCamera)
 		{
-			Math::Vector3 pos = spPlayer->GetPos();
+			Math::Vector3 pos = spCamera->GetPos();
 			m_boxPos.x = pos.x;
 			m_boxPos.z = pos.z;
 		}
@@ -62,10 +62,10 @@ void MapManager::DrawLit()
 
 		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_boxPos);
 		Math::Matrix sMat = Math::Matrix::CreateScale(m_boxSiz / 2);
+		Math::Matrix Mat = sMat * tMat;
 
-		Math::Matrix mat = sMat * tMat;
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullNone);
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spBoxModel, mat);
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spBoxModel, Mat);
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
 	}
 

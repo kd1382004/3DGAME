@@ -51,7 +51,22 @@ public:
 	// true  : 全タイルを常時表示
 	// false : プレイヤーが踏破したタイルだけ表示
 	void SetMinimapRevealAll(bool enable);
+	
+	// タイル座標から直接引く（見つからなければ nullptr）
+	const MineMapInfo* FindTile(int _x, int _y) const
+	{
+		auto it = m_tileMap.find(MakeKey(_x, _y));
+		return (it != m_tileMap.end()) ? it->second : nullptr;
+	}
+
 private:
+	static long long MakeKey(int _x, int _y)
+	{
+		return (static_cast<long long>(_x) << 32) ^ static_cast<unsigned int>(_y);
+	}
+
+	// タイル座標 → タイル（1座標に1タイル）
+	std::unordered_map<long long, MineMapInfo*> m_tileMap;
 
 	float m_siz = 1.0f;
 
@@ -80,4 +95,9 @@ private:
 
 	MineMapInfo m_StairsMineMapInfo;
 	bool m_isStairsMine = false;
+
+
+	KdRenderTargetPack m_rtPack;
+	bool m_isDirty = true;
+	void BakeTiles();
 };

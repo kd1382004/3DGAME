@@ -5,9 +5,13 @@
 
 struct FlashlightConfig
 {
-	Math::Vector3 color = {10,10,10 };  // 光の色・強度
-	float radius = 100.0f;                         // 照射距離
-	float angle = 30.0f;                           // 照射角度
+	Math::Vector3 color = { 10,10,10 };
+	float radius = 100.0f;
+	float angle = 30.0f;
+
+	Math::Vector3 localPos = { -0.35f, 0.0f, 0.0f }; // 腰からのずらし
+	Math::Vector3 localRot = { 0.0f, 180.0f, 0.0f }; // 腰からの回転（度）
+	bool stableLightDir = true; // ライトの向きはプレイヤーの正面に固定するか
 };
 
 class Flashlight :public AccessoryBase
