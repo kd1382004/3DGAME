@@ -1,7 +1,7 @@
 ﻿#include "WeaponBase.h"
 
 #include"../Character/CharacterBase.h"
-
+#include"../Character/Player/PlayerBase.h"
 
 #include"../../Scene/SceneManager.h"
 void WeaponBase::Init()
@@ -26,6 +26,7 @@ void WeaponBase::Update()
 
 void WeaponBase::DrawLit()
 {
+
 }
 
 void WeaponBase::CreateWeaponHitCollider()
@@ -35,7 +36,7 @@ void WeaponBase::CreateWeaponHitCollider()
 
 void WeaponBase::SetAttackFlg(bool _flg)
 {
-	m_attackFlg = _flg; 
+	m_attackFlg = _flg;
 
 	if (m_attackFlg)
 	{
@@ -61,7 +62,7 @@ std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3
 	std::optional<Math::Vector3> result;
 	float nearestDistSq = m_aimAssistRadius * m_aimAssistRadius;
 
-	for (const auto& wpObj : m_attackHitCharacterList) 
+	for (const auto& wpObj : m_attackHitCharacterList)
 	{
 		auto spObj = wpObj.lock();
 		if (!spObj || spObj->GetIsDead()) { continue; }

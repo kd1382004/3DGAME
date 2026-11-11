@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include"ComboStep/ComboStep.h"
+
 
 class CharacterBase;
 class MapBase;
@@ -296,6 +298,9 @@ public:
 
 	void SetAnimePercentNow(float _percent) { m_animePercentNow = _percent; }
 
+
+	std::vector<ComboStep> GetComboList() { return m_comboList; }
+
 protected:
 
 	// 現在レベル lv から lv+1 に上げるのに必要な個数
@@ -409,5 +414,8 @@ protected:
 	float m_animePercentNow;
 	float m_animePercentPolyStart;
 	float m_animePercentPolyEnd;
+
+
+	std::vector<ComboStep> m_comboList;
 };
 

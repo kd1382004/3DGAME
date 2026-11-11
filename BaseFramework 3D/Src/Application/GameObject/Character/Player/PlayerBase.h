@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include"../CharacterBase.h"
+#include"../../Weapon/ComboStep/ComboStep.h"
+
 class CameraBase;
 class GameScene;
 
@@ -96,7 +98,7 @@ public:
 	void SetNextFloorActionFlg(bool _flg) { m_nextFloorActionFlg = _flg; }
 	void SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _NextFloorGaugeUI);
 
-	void SetWepon(const std::shared_ptr<WeaponBase>& _wepon) { m_wpWepon = _wepon; }
+	void SetWepon(const std::shared_ptr<WeaponBase>& _wepon);
 
 	void SetPos(const Math::Vector3& pos)override;
 
@@ -374,4 +376,17 @@ protected:
 	//ダッシュできる時はするかどうか
 	bool m_IsDash = false;
 
+
+
+	////////////////////////////////////
+
+	std::vector<ComboStep> m_attackCombo;
+	int   m_comboStep = -1;        // -1 = コンボしていない
+	bool  m_comboReserved = false;
+	float m_animeSpeedRate = 1.0f;
+
+	void StartComboStep(int _step);
+	void ComboUpdate();
+	void AimToNearestEnemy(const std::shared_ptr<WeaponBase>& _spWeapon);
+	void CancelCombo();
 };

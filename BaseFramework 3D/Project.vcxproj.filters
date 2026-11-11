@@ -373,6 +373,9 @@
     <Filter Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor">
       <UniqueIdentifier>{4a7597c7-d1e1-4e86-916b-d8935a2f21eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Weapon\ComboStep">
+      <UniqueIdentifier>{e06a8b1f-8d34-499d-a13a-c04528ab1210}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -851,6 +854,9 @@
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor\WeaponStrengtheningEditor.h">
       <Filter>Src\Application\GameObject\Weapon\WeaponStrengtheningEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\ComboStep\ComboStep.h">
+      <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

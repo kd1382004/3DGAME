@@ -388,6 +388,13 @@ void PlayerBase::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _N
 	}
 }
 
+void PlayerBase::SetWepon(const std::shared_ptr<WeaponBase>& _wepon)
+{
+	m_wpWepon = _wepon;
+
+	m_attackCombo = _wepon->GetComboList();
+}
+
 void PlayerBase::SetPos(const Math::Vector3& pos)
 {
 	m_pos = pos;
@@ -589,6 +596,8 @@ void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManage
 
 void PlayerBase::WeaponUpdate()
 {
+
+
 	//回避中はできない
 	if (m_evasionAnimeFlg) { return; }
 	//やられたらできない
@@ -596,6 +605,9 @@ void PlayerBase::WeaponUpdate()
 
 	//攻撃力の更新
 	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
+
+
+	ComboUpdate();
 
 	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack) && m_normalAttack)
 	{
@@ -633,6 +645,7 @@ void PlayerBase::WeaponUpdate()
 			if (spWeapon)
 			{
 				spWeapon->SetAttackFlg(true);
+				StartComboStep(0);
 				spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
 
 				// キャラの向きを一番近い敵の方向に補正
@@ -657,7 +670,13 @@ void PlayerBase::WeaponUpdate()
 
 	}
 
-	if (m_nowPlayerAnimeMode != PlayerBase::SwordAttackAnime)
+
+	//クールタイム回復
+	//  ・溜め中でない
+	//  ・攻撃アニメ再生中でない
+	//  ・コンボの途中でない
+	const bool isAttacking = m_chargeAttacFlg || m_NowNormalAttack || (m_comboStep >= 0);
+	if (!isAttacking)
 	{
 		m_normalAttackWaitNow += 1 * DeltaTime::Instance().GetGameDeltaTime();
 
@@ -666,13 +685,12 @@ void PlayerBase::WeaponUpdate()
 			m_normalAttackWaitNow = m_normalAttackWaitMax;
 			m_normalAttack = true;
 		}
+	}
 
-
-		std::shared_ptr<SkillGage>spSkillGage = m_wpSkillGage.lock();
-		if (spSkillGage)
-		{
-			spSkillGage->SetGaugePercent(m_normalAttackWaitNow / m_normalAttackWaitMax);
-		}
+	std::shared_ptr<SkillGage>spSkillGage = m_wpSkillGage.lock();
+	if (spSkillGage)
+	{
+		spSkillGage->SetGaugePercent(m_normalAttackWaitNow / m_normalAttackWaitMax);
 	}
 }
 
@@ -922,14 +940,14 @@ void PlayerBase::Move()
 
 void PlayerBase::MoveNowSpeedDecision()
 {
-	if (m_chargeAttacFlg|| m_nowPlayerAnimeMode== SwordAttackAnime)
+	if (m_chargeAttacFlg || m_nowPlayerAnimeMode == SwordAttackAnime)
 	{
 		m_moveMode = MoveStop;
 	}
 	else
 	{
 		//移動モードの切り替え
-		if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash,true))
+		if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash, true))
 		{
 			m_IsDash = !m_IsDash;
 		}
@@ -960,7 +978,7 @@ void PlayerBase::MoveNowSpeedDecision()
 		}
 
 
-		
+
 	}
 
 
@@ -1105,7 +1123,7 @@ void PlayerBase::PlayerAnimeModeUpdate()
 
 
 
-	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 100);
+	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 100 * m_animeSpeedRate);
 	m_spCharaModel->CalcNodeMatrices();
 
 
@@ -1136,7 +1154,7 @@ void PlayerBase::PlayerAnimeModeUpdate()
 		case PlayerBase::SwordAttackAnime:
 			spWeapon->SetAnimePercentNow(m_spAnimetor->GetAnimeProgress());
 		}
-	
+
 	}
 
 
@@ -1159,6 +1177,18 @@ void PlayerBase::EvasionUpdate()
 	//攻撃中は無理
 	if (m_chargeAttacFlg) { return; }
 	if (m_NowNormalAttack) { return; }
+
+	// 攻撃中は、コンボのキャンセル可能な位置を過ぎるまで回避できない
+	bool cancelByEvasion = false;
+	if (m_NowNormalAttack)
+	{
+		if (m_comboStep < 0 || m_comboStep >= (int)m_attackCombo.size()) { return; }
+
+		float progress = m_spAnimetor->GetAnimeProgress();
+		if (progress < m_attackCombo[m_comboStep].evasionCancel) { return; }
+
+		cancelByEvasion = true;
+	}
 
 	if (m_evasionAnimeFlg)
 	{
@@ -1195,6 +1225,15 @@ void PlayerBase::EvasionUpdate()
 
 		if (!m_evasionAnimeFlg && ConsumeStamina(m_evasionCost))
 		{
+			if (cancelByEvasion)
+			{
+				CancelCombo();
+
+				// 攻撃アニメが終わっていなくても、すぐに回避アニメへ切り替える
+				m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.EvasionAnime), false);
+				m_oldPlayerAnimeMode = PlayerBase::RollAnime;
+			}
+
 			m_evasionAnimeFlg = true;
 			m_evasionFlg = true;
 			m_nowPlayerAnimeMode = PlayerBase::RollAnime;
@@ -1287,5 +1326,87 @@ void PlayerBase::SetPlayerWeaponInfo(int info)
 			break;
 		}
 		m_playerAnimeName.AttackAnime;
+	}
+}
+
+void PlayerBase::StartComboStep(int _step)
+{
+	if (_step < 0 || _step >= (int)m_attackCombo.size()) { return; }
+
+	const ComboStep& c = m_attackCombo[_step];
+	m_comboStep = _step;
+	m_comboReserved = false;
+
+	m_nowPlayerAnimeMode = SwordAttackAnime;
+	m_oldPlayerAnimeMode = SwordAttackAnime; // モード切替の処理でアニメを上書きされないように
+	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(c.animeName), false);
+	m_animeSpeedRate = c.speed;
+	m_NowNormalAttack = true;
+
+	if (auto spWeapon = m_wpWepon.lock())
+	{
+		//spWeapon->SetComboDamageRate(c.damageRate);
+		spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
+		AimToNearestEnemy(spWeapon);          // 段ごとに一番近い敵の方を向き直す
+		spWeapon->SetAngle(m_angle);
+		spWeapon->SetAttackFlg(true);         // 当たった敵のリストもここで空になる
+	}
+}
+
+void PlayerBase::ComboUpdate()
+{
+	if (m_comboStep < 0) { return; }
+
+	const ComboStep& c = m_attackCombo[m_comboStep];
+	float progress = m_spAnimetor->GetAnimeProgress();
+
+	// 入力の予約（押した瞬間だけ反応させる）
+	if (progress >= c.acceptStart &&
+		KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack, true))
+	{
+		m_comboReserved = true;
+	}
+
+	// キャンセルポイントを過ぎていて予約があれば、次の段へ
+	if (m_comboReserved && progress >= c.cancelPoint &&
+		m_comboStep + 1 < (int)m_attackCombo.size())
+	{
+		const ComboStep& next = m_attackCombo[m_comboStep + 1];
+
+		if (ConsumeStamina(next.staminaCost))
+		{
+			StartComboStep(m_comboStep + 1);
+			return;
+		}
+
+		// スタミナが足りない → 予約を取り消して、今の段で終わる
+		m_comboReserved = false;
+	}
+
+	// 予約がないまま最後まで再生したら終了
+	if (m_spAnimetor->IsAnimationEnd())
+	{
+		m_comboStep = -1;
+		m_animeSpeedRate = 1.0f;
+		// 攻撃フラグを下ろす処理と待機アニメへの切り替えは、
+		// 今の PlayerAnimeModeUpdate() の終了処理がそのままやってくれる
+	}
+}
+
+void PlayerBase::AimToNearestEnemy(const std::shared_ptr<WeaponBase>& _spWeapon)
+{
+
+}
+
+void PlayerBase::CancelCombo()
+{
+	m_comboStep = -1;
+	m_comboReserved = false;
+	m_animeSpeedRate = 1.0f;
+	m_NowNormalAttack = false;
+
+	if (auto spWeapon = m_wpWepon.lock())
+	{
+		spWeapon->SetAttackFlg(false);   // 当たり判定と軌跡を止める
 	}
 }

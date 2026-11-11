@@ -360,6 +360,7 @@
     <ClInclude Include="Src\Application\GameObject\WarpGate\NextStageGate\NextStageGate.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateBase.h" />
     <ClInclude Include="Src\Application\GameObject\WarpGate\WarpGateManager.h" />
+    <ClInclude Include="Src\Application\GameObject\Weapon\ComboStep\ComboStep.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\ChargeAttack\Dagger_ChargeAttack.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h" />
     <ClInclude Include="Src\Application\GameObject\Weapon\Sword\Sword.h" />

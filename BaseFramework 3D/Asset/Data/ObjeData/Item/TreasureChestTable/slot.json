@@ -38,43 +38,43 @@
 					"id": 0,
 					"name": "WeaponStrengthening_Crystal1",
 					"type": 1,
-					"weight": 14.12
+					"weight": 13.38
 				},
 				{
 					"id": 0,
 					"name": "InstantHealPotion",
 					"type": 0,
-					"weight": 16.69
+					"weight": 15.82
 				},
 				{
 					"id": 2,
 					"name": "AttackBoostPotion",
 					"type": 0,
-					"weight": 22.24
+					"weight": 21.08
 				},
 				{
 					"id": 3,
 					"name": "InstantStaminaHealPotion",
 					"type": 0,
-					"weight": 22.24
+					"weight": 21.08
 				},
 				{
 					"id": 1,
 					"name": "AttackBaseUPPotion",
 					"type": 0,
-					"weight": 7.23
+					"weight": 6.85
 				},
 				{
 					"id": 6,
 					"name": "StaminaMaxUPPotion",
 					"type": 0,
-					"weight": 14.82
+					"weight": 14.05
 				},
 				{
 					"id": 1,
 					"name": "WeaponStrengthening_Crystal2",
 					"type": 1,
-					"weight": 8.16
+					"weight": 7.73
 				}
 			]
 		},
@@ -86,43 +86,43 @@
 					"id": 0,
 					"name": "WeaponStrengthening_Crystal1",
 					"type": 1,
-					"weight": 19.62
+					"weight": 17.36
 				},
 				{
 					"id": 0,
 					"name": "InstantHealPotion",
 					"type": 0,
-					"weight": 16.69
+					"weight": 14.77
 				},
 				{
 					"id": 2,
 					"name": "AttackBoostPotion",
 					"type": 0,
-					"weight": 22.24
+					"weight": 19.68
 				},
 				{
 					"id": 3,
 					"name": "InstantStaminaHealPotion",
 					"type": 0,
-					"weight": 22.24
+					"weight": 19.68
 				},
 				{
 					"id": 1,
 					"name": "AttackBaseUPPotion",
 					"type": 0,
-					"weight": 7.23
+					"weight": 6.4
 				},
 				{
 					"id": 6,
 					"name": "StaminaMaxUPPotion",
 					"type": 0,
-					"weight": 14.82
+					"weight": 13.12
 				},
 				{
 					"id": 1,
 					"name": "WeaponStrengthening_Crystal2",
 					"type": 1,
-					"weight": 10.16
+					"weight": 8.99
 				}
 			]
 		}
