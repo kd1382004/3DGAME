@@ -8,15 +8,15 @@ void ItemGetUIController::Init()
 	{
 		m_backTex = std::make_shared<KdTexture>();
 		m_backTex->Load("Asset/Textures/GameUI/Item/ItemGetUI/ItemGetUI.png");
-		m_basePos = {-640,-50 };
+		m_basePos = { -640,-50 };
 
 		m_basePos.x += m_backTex->GetWidth() / 2;
 
 		float recY = m_backTex->GetHeight();
 		m_IconWH = { recY,recY };
 
-		float recX = m_backTex->GetWidth()/2;
-		m__backWH = { recX ,recY/2 };
+		float recX = m_backTex->GetWidth() / 2;
+		m__backWH = { recX ,recY / 2 };
 	}
 
 	if (!m_back2Tex)
@@ -69,7 +69,7 @@ void ItemGetUIController::Update()
 		item.m_iconPos.x += -m__backWH.x + m_IconWH.x;
 
 		//表示時間管理
-		item.showTime -= delt;
+		item.showTime -= 0.5 * delt;
 
 		if (item.showTime < 0)
 		{

@@ -12,7 +12,7 @@ struct GetItem
 	std::shared_ptr<KdTexture> IconTex = nullptr;
 
 	//表示時間
-	float showTime = 1;
+	float showTime = 2;
 
 	//表示が終わったか
 	bool isFinished = false;

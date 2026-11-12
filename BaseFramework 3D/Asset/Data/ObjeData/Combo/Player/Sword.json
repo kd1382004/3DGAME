@@ -1,0 +1,57 @@
+{
+	"charaModelPath": "a",
+	"steps": [
+		{
+			"acceptStart": 0.44999998807907104,
+			"animeName": "Attack2",
+			"cancelPoint": 0.75,
+			"comboIndex": 0,
+			"damageRate": 1.2000000476837158,
+			"evasionCancel": 0.550000011920929,
+			"hitEnd": 0.550000011920929,
+			"hitStart": 0.3499999940395355,
+			"hitStopTime": 0.03999999910593033,
+			"knockbackRate": 1.0,
+			"speed": 1.100000023841858,
+			"staminaCost": 10.0,
+			"stepForward": 0.4000000059604645,
+			"trailEnd": 0.6000000238418579,
+			"trailStart": 0.30000001192092896
+		},
+		{
+			"acceptStart": 0.4000000059604645,
+			"animeName": "Attack1",
+			"cancelPoint": 0.699999988079071,
+			"comboIndex": 1,
+			"damageRate": 1.0,
+			"evasionCancel": 0.5,
+			"hitEnd": 0.5,
+			"hitStart": 0.30000001192092896,
+			"hitStopTime": 0.029999999329447746,
+			"knockbackRate": 1.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.30000001192092896,
+			"trailEnd": 0.550000011920929,
+			"trailStart": 0.25
+		},
+		{
+			"acceptStart": 9.899999618530273,
+			"animeName": "Attack3",
+			"cancelPoint": 9.899999618530273,
+			"comboIndex": 2,
+			"damageRate": 1.7999999523162842,
+			"evasionCancel": 0.699999988079071,
+			"hitEnd": 0.6000000238418579,
+			"hitStart": 0.4000000059604645,
+			"hitStopTime": 0.07999999821186066,
+			"knockbackRate": 2.0,
+			"speed": 0.8999999761581421,
+			"staminaCost": 15.0,
+			"stepForward": 0.800000011920929,
+			"trailEnd": 0.6499999761581421,
+			"trailStart": 0.3499999940395355
+		}
+	],
+	"version": 1
+}

@@ -48,7 +48,7 @@
 //ImGui
 #include"../../GameObject/Weapon/WeaponStrengtheningEditor/WeaponStrengtheningEditor.h"
 #include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestTableEditor/TreasureChestTableEditor.h"
-
+#include"../../GameObject/Weapon/ComboStep/ComboStepEditor.h"
 GameScene::~GameScene()
 {
 	if (m_spBossBGM)
@@ -99,6 +99,7 @@ void GameScene::ImGUi()
 	{
 		if (editor.open && editor.draw)
 		{
+			ImGui::SetNextWindowBgAlpha(1.0f);
 			editor.draw(&editor.open);
 		}
 	}
@@ -576,11 +577,13 @@ void GameScene::Init()
 	//ImGUI用
 	m_upWSEditor = std::make_shared<WeaponStrengtheningEditor>(m_WeaponStrengtheningMSDateFilePath);
 	m_upTCTableEditor = std::make_shared<TreasureChestTableEditor>();
+	m_ComboStepEditor = std::make_shared<ComboStepEditor>();
 
 	// エディターを一覧に登録する
 	m_editors.clear();
 	m_editors.push_back({ U8("武器強化"), false, [this](bool* _open) { m_upWSEditor->Draw(_open); } });
 	m_editors.push_back({ U8("宝箱のドロップテーブル"), false, [this](bool* _open) { m_upTCTableEditor->Draw(_open); } });
+	m_editors.push_back({ U8("武器のコンボ"), false, [this](bool* _open) { m_ComboStepEditor->Draw(_open); } });
 
 }
 

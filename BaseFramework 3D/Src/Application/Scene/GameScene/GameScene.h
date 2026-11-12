@@ -18,6 +18,7 @@ class UIManager;
 
 class WeaponStrengtheningEditor;
 class TreasureChestTableEditor;
+class ComboStepEditor;
 
 
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
@@ -103,6 +104,7 @@ private:
 
 	//宝箱のドロップテーブル用のImGUI
 	std::shared_ptr<TreasureChestTableEditor> m_upTCTableEditor;
+	std::shared_ptr<ComboStepEditor> m_ComboStepEditor;
 
 
 

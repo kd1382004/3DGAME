@@ -858,6 +858,15 @@
     <ClInclude Include="Src\Application\GameObject\Weapon\ComboStep\ComboStep.h">
       <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepEditor.h">
+      <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepSaveLoad.h">
+      <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepValidator.h">
+      <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1300,6 +1309,15 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Weapon\WeaponStrengtheningEditor\WeaponStrengtheningEditor.cpp">
       <Filter>Src\Application\GameObject\Weapon\WeaponStrengtheningEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepEditor.cpp">
+      <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepSaveLoad.cpp">
+      <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepValidator.cpp">
+      <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
