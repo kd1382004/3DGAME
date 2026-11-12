@@ -154,6 +154,7 @@ public:
 
 	//MaxのHPを返す
 	int GetMaxHP() { return m_status.HP.maxHP; }
+	int GetNowHP() { return m_status.HP.nowHP; }
 
 
 

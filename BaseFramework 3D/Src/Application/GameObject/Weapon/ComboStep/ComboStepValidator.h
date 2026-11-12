@@ -13,7 +13,10 @@ class ComboStepValidator
 {
 public:
 	// 全部の検査をまとめて行い、問題の一覧を返す（問題なしなら空）
-	static std::vector<ComboStepIssue> Validate(const std::vector<ComboStep>& _steps);
+	// _animeNames を渡すと、アニメーション名がモデルにあるかも検査する（nullptr なら飛ばす）
+	static std::vector<ComboStepIssue> Validate(
+		const std::vector<ComboStep>& _steps,
+		const std::unordered_set<std::string>* _animeNames = nullptr);
 
 private:
 	//comboIndex の連番・重複
@@ -21,6 +24,10 @@ private:
 
 	//進行度の範囲や順番など
 	static void CheckTiming(const std::vector<ComboStep>& _steps, std::vector<ComboStepIssue>& _outIssues);
+
+	//アニメーション名（空・モデルにない）
+	static void CheckAnimeName(const std::vector<ComboStep>& _steps,
+		const std::unordered_set<std::string>* _animeNames, std::vector<ComboStepIssue>& _outIssues);
 
 	ComboStepValidator() {}
 };

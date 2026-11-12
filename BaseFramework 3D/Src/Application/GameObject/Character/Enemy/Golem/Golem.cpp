@@ -49,6 +49,8 @@ void Golem::Init()
 
 		m_viewAngle = 100;
 	}
+
+	m_PlayerChaseDir = 3;
 }
 
 void Golem::Update()

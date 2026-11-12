@@ -1,4 +1,4 @@
-#include "HPBar.h"
+﻿#include "HPBar.h"
 
 #include"../../../Info/NumDraw/NumDraw.h"
 
@@ -116,6 +116,15 @@ void HPBar::SetHPBarTexPercent(float _percent)
 	m_HPBarDelayTexRect = { left, top, w, height };
 	m_HPBarTexProgres = 1.0f;
 
+}
+
+void HPBar::SetHPBarTexPercentNODelayOffset(float _percent)
+{
+	float percent = std::clamp(_percent, 0.0f, 1.0f);
+
+	m_HPBarDelayTexPercent = m_HPBarTexPercent - percent;
+
+	m_HPBarTexPercent = percent;
 }
 
 void HPBar::Delete()

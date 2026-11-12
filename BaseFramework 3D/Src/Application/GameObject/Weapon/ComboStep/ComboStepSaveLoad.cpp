@@ -32,6 +32,12 @@ bool ComboStepSaveLoad::Load(const std::string& _path, ComboFileData& _outData)
 		result.charaModelPath = data["charaModelPath"].get<std::string>();
 	}
 
+	// 武器モデルのパス（なければ空のまま）
+	if (data.contains("weaponModelPath") && data["weaponModelPath"].is_string())
+	{
+		result.weaponModelPath = data["weaponModelPath"].get<std::string>();
+	}
+
 	// 段
 	for (const nlohmann::json& stepJson : data["steps"])
 	{
@@ -67,6 +73,7 @@ bool ComboStepSaveLoad::Save(const std::string& _path, const ComboFileData& _dat
 	nlohmann::json data;
 	data["version"] = 1;
 	data["charaModelPath"] = _data.charaModelPath;
+	data["weaponModelPath"] = _data.weaponModelPath;
 	data["steps"] = std::move(stepsJson);
 
 	// 3. 保存先のフォルダーがなければ作る（例：新しい持ち主の Goblin/ など）

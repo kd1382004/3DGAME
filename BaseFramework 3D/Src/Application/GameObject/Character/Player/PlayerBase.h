@@ -100,6 +100,12 @@ public:
 
 	void SetWepon(const std::shared_ptr<WeaponBase>& _wepon);
 
+	// 今使っているコンボファイルのパス
+	const std::string& GetComboFilePath() const { return m_comboFilePath; }
+
+	// コンボファイルを読み直す（エディターで保存した直後に呼ぶ）
+	void ReloadCombo();
+
 	void SetPos(const Math::Vector3& pos)override;
 
 
@@ -381,8 +387,13 @@ protected:
 	////////////////////////////////////
 
 	std::vector<ComboStep> m_attackCombo;
+
+	// コンボファイルのフォルダー（持ち主ごと）と、今使っているファイルのパス
+	std::string m_comboFolder = "Asset/Data/ObjeData/Combo/Player/";
+	std::string m_comboFilePath;
 	int   m_comboStep = -1;        // -1 = コンボしていない
 	bool  m_comboReserved = false;
+	float m_stepForwardDone = 0.0f;   // この段で踏み込んだ距離（m）
 	float m_animeSpeedRate = 1.0f;
 
 	void StartComboStep(int _step);

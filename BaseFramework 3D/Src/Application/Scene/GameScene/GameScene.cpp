@@ -140,6 +140,7 @@ void GameScene::SetGameResult()
 		{
 			//セーブデータに保存
 			m_spPlayer->SaveCharaStatus(m_PlayerStatusFilePath);
+			m_spPlayer->SaveCharaStatus(m_PlayerStatusFilePath);
 		}
 		else
 		{
@@ -578,6 +579,23 @@ void GameScene::Init()
 	m_upWSEditor = std::make_shared<WeaponStrengtheningEditor>(m_WeaponStrengtheningMSDateFilePath);
 	m_upTCTableEditor = std::make_shared<TreasureChestTableEditor>();
 	m_ComboStepEditor = std::make_shared<ComboStepEditor>();
+
+	// コンボのプレビュー用モデルをシーンに置く（専用ウィンドウに描く。描いた後はゲームのカメラに戻す）
+	m_ComboStepEditor->SetPreviewMainCamera(m_spCamera);
+	m_objList.push_back(m_ComboStepEditor->GetPreviewObject());
+
+	// エディターで保存したら、プレイヤーが使っているファイルならすぐ読み直す
+	m_ComboStepEditor->SetOnSaved([this](const std::string& _path)
+		{
+			if (!m_spPlayer) { return; }
+
+			const std::string saved = std::filesystem::path(_path).lexically_normal().generic_string();
+			const std::string using_ = std::filesystem::path(m_spPlayer->GetComboFilePath()).lexically_normal().generic_string();
+			if (saved == using_)
+			{
+				m_spPlayer->ReloadCombo();
+			}
+		});
 
 	// エディターを一覧に登録する
 	m_editors.clear();

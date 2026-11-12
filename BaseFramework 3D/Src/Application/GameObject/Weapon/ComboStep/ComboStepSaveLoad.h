@@ -4,7 +4,8 @@
 // ファイル1つ分の中身
 struct ComboFileData
 {
-	std::string            charaModelPath;   // プレビュー用のモデル（エディター専用）
+	std::string            charaModelPath;   // プレビュー用のキャラモデル（エディター専用）
+	std::string            weaponModelPath;   // プレビュー用の武器モデル（エディター専用）
 	std::vector<ComboStep> steps;
 };
 

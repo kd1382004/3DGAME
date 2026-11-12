@@ -320,7 +320,7 @@ void ResultDisplay_WeponInventory::DrawSprite()
 	//説明
 	if (m_selectExplanationTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_selectExplanationTex, itemInfoPos.x, itemInfoPos.y + 68);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_selectExplanationTex, itemInfoPos.x, itemInfoPos.y + 50);
 	}
 
 	//武器の名前

@@ -8,6 +8,7 @@
 void Dagger::Init()
 {
 	m_WeaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Dagger/BaseWeaponStatus.json";
+	m_comboFileName = "Dagger.json";   // フォルダーは持ち主（PlayerBase）が決める
 	WeaponBase::Init();
 
 	if (!m_spWeaponModel)
@@ -85,6 +86,18 @@ void Dagger::Update()
 		}
 		return;
 	}
+
+	// コンボの段の当たり判定の範囲（hitStart〜hitEnd）の外なら、判定しない
+	if (!IsInComboHitWindow())
+	{
+		m_isFirstFrame = true;   // 範囲に入ったフレームから掃引をやり直す
+		if (m_tPoly && m_tPolyFlg)
+		{
+			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
+			m_tPoly->AddPoint(mat);
+		}
+		return;
+	}
 	if (m_isFirstFrame)
 	{
 		m_prevTipPos = currTipPos;
@@ -142,19 +155,20 @@ void Dagger::Update()
 
 			m_hitCharactersList.push_back(spGameObj);
 			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower + (m_ChargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2) * 10;
+			damage *= GetComboDamageRate();   // コンボの段のダメージ倍率
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 
 			spGameObj->OnAttackHit(
 				damage,
-				m_baseWeaponStatus.knockback,
+				m_baseWeaponStatus.knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
 				dir,
 				m_baseWeaponStatus.startup,
 				false,
 				m_defenseIgnore
 			);
 
-			float hitStopTime = 0.03f;
+			float hitStopTime = GetComboHitStopTime(0.03f);   // コンボの段のヒットストップ
 			DeltaTime::Instance().HitStop(hitStopTime);
 
 			if (m_spHitSE)

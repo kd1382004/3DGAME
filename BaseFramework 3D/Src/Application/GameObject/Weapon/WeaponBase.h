@@ -298,8 +298,64 @@ public:
 
 	void SetAnimePercentNow(float _percent) { m_animePercentNow = _percent; }
 
+	//==============================
+	// コンボの段の値（PlayerBase::StartComboStep から渡される）
+	//==============================
 
-	std::vector<ComboStep> GetComboList() { return m_comboList; }
+	// 段が始まったときに呼ぶ。ダメージ・ノックバック・ヒットストップ・当たり判定と軌跡のタイミングに使う
+	void SetComboStep(const ComboStep& _step)
+	{
+		// コンボ以外の攻撃のための軌跡の値を、最初の1回だけ覚えておく
+		if (!m_hasComboStep)
+		{
+			m_defaultPolyStart = m_animePercentPolyStart;
+			m_defaultPolyEnd = m_animePercentPolyEnd;
+		}
+
+		m_hasComboStep = true;
+		m_comboStepNow = _step;
+
+		// 軌跡のタイミングを段の値にする
+		m_animePercentPolyStart = _step.trailStart;
+		m_animePercentPolyEnd = _step.trailEnd;
+		m_tPolyFlg = false;
+
+		// 前の段の進行度が残っていると、一瞬だけ判定が出るので 0 に戻す
+		m_animePercentNow = 0.0f;
+	}
+
+	// コンボが終わった・キャンセルされたときに呼ぶ（コンボ以外の攻撃は今までどおりに戻る）
+	void ClearComboStep()
+	{
+		if (!m_hasComboStep) { return; }
+
+		m_hasComboStep = false;
+		m_animePercentPolyStart = m_defaultPolyStart;
+		m_animePercentPolyEnd = m_defaultPolyEnd;
+	}
+
+	// 段の倍率（コンボ中でなければ 1 倍）
+	float GetComboDamageRate() const { return m_hasComboStep ? m_comboStepNow.damageRate : 1.0f; }
+	float GetComboKnockbackRate() const { return m_hasComboStep ? m_comboStepNow.knockbackRate : 1.0f; }
+
+	// 段のヒットストップ（コンボ中でなければ _default）
+	float GetComboHitStopTime(float _default) const { return m_hasComboStep ? m_comboStepNow.hitStopTime : _default; }
+
+	// 今、当たり判定を出してよいか（コンボ中なら hitStart〜hitEnd の間だけ。コンボ以外は今までどおり常に）
+	bool IsInComboHitWindow() const
+	{
+		if (!m_hasComboStep) { return true; }
+		return m_animePercentNow >= m_comboStepNow.hitStart && m_animePercentNow <= m_comboStepNow.hitEnd;
+	}
+
+
+	virtual const std::vector<ComboStep>& GetComboList() { return m_comboList; }
+
+	// コンボのファイル名（"Sword.json" など。フォルダーは持ち主が決める）
+	const std::string& GetComboFileName() const { return m_comboFileName; }
+
+	// _path のコンボファイルを読んで m_comboList に入れる。失敗したら false（今のコンボはそのまま）
+	bool LoadCombo(const std::string& _path);
 
 protected:
 
@@ -347,6 +403,9 @@ protected:
 
 	//武器ステータスが入ってるファイル名
 	std::string m_WeaponStatusFilePath;
+
+	//コンボのファイル名（"Sword.json" など。各武器の Init で入れる）
+	std::string m_comboFileName;
 	void LoadWeaponStatus(const std::string& filePath);
 	void SaveWeaponStatus(const std::string& filePath);
 
@@ -409,9 +468,15 @@ protected:
 	std::shared_ptr<KdTrailPolygon> m_tPoly = nullptr;
 	bool m_tPolyFlg = false;
 
+	// コンボの段（SetComboStep で入る）
+	bool      m_hasComboStep = false;
+	ComboStep m_comboStepNow;
+	float     m_defaultPolyStart = 0.0f;   // コンボ以外の攻撃の軌跡のタイミング
+	float     m_defaultPolyEnd = 0.0f;
 
 
-	float m_animePercentNow;
+
+	float m_animePercentNow = 0.0f;
 	float m_animePercentPolyStart;
 	float m_animePercentPolyEnd;
 

@@ -63,7 +63,7 @@ void ResultDisplay_PotionInventory::DrawSprite()
 		if (tex.m_ItemID == m_selectPotionID && m_potionSelectTex)
 		{
 			KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_ExplanationTex, 200, -110);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_ExplanationTex, 200, -120);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_NameTex, 200, 85);
 			NumDraw::GetInstance().Drow(tex.m_num, RAligned, { 300,15 }, kWhiteColor, 4);
 		}

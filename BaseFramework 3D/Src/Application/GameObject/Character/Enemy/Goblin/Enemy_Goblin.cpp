@@ -69,7 +69,7 @@ void Goblin::Init()
 			}
 		}
 	}
-
+	m_PlayerChaseDir = 2;
 }
 
 void Goblin::Update()

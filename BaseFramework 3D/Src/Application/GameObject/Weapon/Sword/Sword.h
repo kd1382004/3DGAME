@@ -18,6 +18,8 @@ public:
 	void SetAttackFlg(bool _flg)override;
 
 	void StopWeaponSE()override;
+
+	const std::vector<ComboStep>& GetComboList()override;
 private:
 
 	// 武器の長さ
@@ -48,4 +50,7 @@ private:
 	std::shared_ptr<KdSoundInstance> m_spDaggerSE;
 	std::shared_ptr<KdSoundInstance> m_spChargeSE;
 	std::shared_ptr<KdSoundInstance> m_spHitSE;
+
+
+	std::vector<ComboStep> m_nowLvComboList;
 };

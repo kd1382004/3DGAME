@@ -23,7 +23,12 @@ public:
 	}
 
 	//パーセント(0.0f～1.0f)
+
+	//okureteruennsyutuari
 	void SetHPBarTexPercent(float _percent);
+
+	//okureteruennsyutunasi
+	void SetHPBarTexPercentNODelayOffset(float _percent);
 
 	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
 

@@ -4,6 +4,9 @@
 #include"../Character/Player/PlayerBase.h"
 
 #include"../../Scene/SceneManager.h"
+
+#include"ComboStep/ComboStepSaveLoad.h"
+#include"ComboStep/ComboStepValidator.h"
 void WeaponBase::Init()
 {
 	LoadWeaponStatus(m_WeaponStatusFilePath);
@@ -14,6 +17,8 @@ void WeaponBase::Update()
 {
 	m_mWorld = m_localMat * m_weponParentMat;
 
+	const bool prevPolyFlg = m_tPolyFlg;
+
 	if (m_animePercentNow >= m_animePercentPolyStart)
 	{
 		m_tPolyFlg = true;
@@ -21,6 +26,13 @@ void WeaponBase::Update()
 	if (m_animePercentNow >= m_animePercentPolyEnd)
 	{
 		m_tPolyFlg = false;
+	}
+
+	// 軌跡が始まった・途切れたら、それまでの点を全部消す
+	//（前の軌跡の最後の点と、次の軌跡の最初の点がつながらないように）
+	if (prevPolyFlg != m_tPolyFlg && m_tPoly)
+	{
+		m_tPoly->ClearPoints();
 	}
 }
 
@@ -151,4 +163,24 @@ void WeaponBase::SaveWeaponStatus(const std::string& filePath)
 
 	std::ofstream ofs(filePath);
 	ofs << data.dump(4);
+}
+
+bool WeaponBase::LoadCombo(const std::string& _path)
+{
+	ComboFileData data;
+	if (!ComboStepSaveLoad::Load(_path, data))
+	{
+		// 失敗の理由は Load の中でログに出ている。今のコンボはそのまま
+		return false;
+	}
+
+	// 読み込んだ直後に検査して、問題があればログに出す（ゲームは止めない）
+	for (const ComboStepIssue& issue : ComboStepValidator::Validate(data.steps))
+	{
+		KdDebugGUI::Instance().AddLog(U8("[%s] %s : %s\n"),
+			issue.isError ? "Error" : "Warning", _path.c_str(), issue.message.c_str());
+	}
+
+	m_comboList = std::move(data.steps);
+	return true;
 }

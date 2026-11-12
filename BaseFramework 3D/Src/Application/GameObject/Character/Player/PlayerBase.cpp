@@ -392,7 +392,26 @@ void PlayerBase::SetWepon(const std::shared_ptr<WeaponBase>& _wepon)
 {
 	m_wpWepon = _wepon;
 
+	// コンボファイルのパスは「持ち主のフォルダー + 武器のファイル名」で決めて、武器に読ませる
+	m_comboFilePath = m_comboFolder + _wepon->GetComboFileName();
+	_wepon->LoadCombo(m_comboFilePath);
+
 	m_attackCombo = _wepon->GetComboList();
+}
+
+void PlayerBase::ReloadCombo()
+{
+	std::shared_ptr<WeaponBase> spWeapon = m_wpWepon.lock();
+	if (!spWeapon) { return; }
+
+	// 段の数や中身が変わるので、コンボの途中なら止めてから入れ替える
+	CancelCombo();
+
+	if (spWeapon->LoadCombo(m_comboFilePath))
+	{
+		m_attackCombo = spWeapon->GetComboList();
+		KdDebugGUI::Instance().AddLog(U8("コンボを読み直しました : %s\n"), m_comboFilePath.c_str());
+	}
 }
 
 void PlayerBase::SetPos(const Math::Vector3& pos)
@@ -420,6 +439,8 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		spHPBar->Set2DPos({ 0,-260 });
 		spHPBar->SetDrawFlg(true);
 		spHPBar->SetLV(m_status.LV);
+		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
@@ -496,7 +517,7 @@ void PlayerBase::HPHeal(int _Heal)
 	if (spHPBar)
 	{
 		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
-		spHPBar->SetHPBarTexPercent(percent);
+		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
 	}
 
 
@@ -629,7 +650,6 @@ void PlayerBase::WeaponUpdate()
 				}
 			}
 
-
 			spWeapon->SetNowChargeTime(m_chargeAttackCount);
 		}
 	}
@@ -644,9 +664,11 @@ void PlayerBase::WeaponUpdate()
 			std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
 			if (spWeapon)
 			{
+				m_attackCombo = spWeapon->GetComboList();
+
 				spWeapon->SetAttackFlg(true);
 				StartComboStep(0);
-				spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
+
 
 				// キャラの向きを一番近い敵の方向に補正
 				if (auto target = spWeapon->FindAimAssistTarget(m_pos))
@@ -1176,7 +1198,6 @@ void PlayerBase::EvasionUpdate()
 
 	//攻撃中は無理
 	if (m_chargeAttacFlg) { return; }
-	if (m_NowNormalAttack) { return; }
 
 	// 攻撃中は、コンボのキャンセル可能な位置を過ぎるまで回避できない
 	bool cancelByEvasion = false;
@@ -1336,6 +1357,7 @@ void PlayerBase::StartComboStep(int _step)
 	const ComboStep& c = m_attackCombo[_step];
 	m_comboStep = _step;
 	m_comboReserved = false;
+	m_stepForwardDone = 0.0f;
 
 	m_nowPlayerAnimeMode = SwordAttackAnime;
 	m_oldPlayerAnimeMode = SwordAttackAnime; // モード切替の処理でアニメを上書きされないように
@@ -1345,7 +1367,7 @@ void PlayerBase::StartComboStep(int _step)
 
 	if (auto spWeapon = m_wpWepon.lock())
 	{
-		//spWeapon->SetComboDamageRate(c.damageRate);
+		spWeapon->SetComboStep(c);            // ダメージ・ノックバック・ヒットストップ・判定と軌跡のタイミング
 		spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
 		AimToNearestEnemy(spWeapon);          // 段ごとに一番近い敵の方を向き直す
 		spWeapon->SetAngle(m_angle);
@@ -1355,10 +1377,32 @@ void PlayerBase::StartComboStep(int _step)
 
 void PlayerBase::ComboUpdate()
 {
-	if (m_comboStep < 0) { return; }
+	if (m_comboStep < 0 || m_comboStep >= (int)m_attackCombo.size()) { return; }
 
 	const ComboStep& c = m_attackCombo[m_comboStep];
 	float progress = m_spAnimetor->GetAnimeProgress();
+
+	// 踏み込み：段の最初から当たり判定が始まるまでに、stepForward だけ前へ進む
+	if (c.stepForward > 0.0f)
+	{
+		const float endRate = std::max(c.hitStart, 0.05f);
+		const float target = c.stepForward * std::clamp(progress / endRate, 0.0f, 1.0f);
+		const float delta = target - m_stepForwardDone;
+		if (delta > 0.0f)
+		{
+			// 向いている方向（m_angle は atan2(x, z) で作っているので、前は (sin, 0, cos)）
+			const float rad = DirectX::XMConvertToRadians(m_angle);
+			const Math::Vector3 forward = { std::sin(rad), 0.0f, std::cos(rad) };
+			const Math::Vector3 nextPos = m_pos + forward * delta;
+
+			// 壁の向こうへは進まない（回避と同じ判定）
+			if (!RaycastFromTo(nextPos))
+			{
+				m_pos = nextPos;
+			}
+			m_stepForwardDone = target;
+		}
+	}
 
 	// 入力の予約（押した瞬間だけ反応させる）
 	if (progress >= c.acceptStart &&
@@ -1388,6 +1432,10 @@ void PlayerBase::ComboUpdate()
 	{
 		m_comboStep = -1;
 		m_animeSpeedRate = 1.0f;
+		if (auto spWeapon = m_wpWepon.lock())
+		{
+			spWeapon->ClearComboStep();   // 武器の値をコンボ以外の攻撃用に戻す
+		}
 		// 攻撃フラグを下ろす処理と待機アニメへの切り替えは、
 		// 今の PlayerAnimeModeUpdate() の終了処理がそのままやってくれる
 	}
@@ -1408,5 +1456,6 @@ void PlayerBase::CancelCombo()
 	if (auto spWeapon = m_wpWepon.lock())
 	{
 		spWeapon->SetAttackFlg(false);   // 当たり判定と軌跡を止める
+		spWeapon->ClearComboStep();      // 武器の値をコンボ以外の攻撃用に戻す
 	}
 }

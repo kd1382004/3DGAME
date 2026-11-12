@@ -1,12 +1,16 @@
 ﻿#include "ComboStepValidator.h"
 
-std::vector<ComboStepIssue> ComboStepValidator::Validate(const std::vector<ComboStep>& _steps)
+std::vector<ComboStepIssue> ComboStepValidator::Validate(
+	const std::vector<ComboStep>& _steps,
+	const std::unordered_set<std::string>* _animeNames)
 {
 	std::vector<ComboStepIssue> comboStepIssue;
 
 	CheckComboIndex(_steps, comboStepIssue);
 
 	CheckTiming(_steps, comboStepIssue);
+
+	CheckAnimeName(_steps, _animeNames, comboStepIssue);
 
 	return  comboStepIssue;
 }
@@ -165,5 +169,37 @@ void ComboStepValidator::CheckTiming(const std::vector<ComboStep>& _steps, std::
 		checkRange(step.trailStart, "trailStart");
 		checkRange(step.trailEnd, "trailEnd");
 
+	}
+}
+
+void ComboStepValidator::CheckAnimeName(const std::vector<ComboStep>& _steps,
+	const std::unordered_set<std::string>* _animeNames, std::vector<ComboStepIssue>& _outIssues)
+{
+	for (int i = 0; i < static_cast<int>(_steps.size()); ++i)
+	{
+		const ComboStep& step = _steps[i];
+
+		// 問題を1件足す
+		auto add = [&](const std::string& _msg)
+			{
+				ComboStepIssue issue;
+				issue.isError = true;
+				issue.stepIndex = i;
+				issue.message = std::to_string(step.comboIndex) + U8("番: ") + _msg;
+				_outIssues.push_back(issue);
+			};
+
+		// 名前が空（一覧がなくても調べる）
+		if (step.animeName.empty())
+		{
+			add(U8("アニメーション名が空です"));
+			continue;
+		}
+
+		// モデルにない（一覧が渡されたときだけ調べる）
+		if (_animeNames && _animeNames->count(step.animeName) == 0)
+		{
+			add(U8("モデルにアニメーション ") + step.animeName + U8(" がありません"));
+		}
 	}
 }

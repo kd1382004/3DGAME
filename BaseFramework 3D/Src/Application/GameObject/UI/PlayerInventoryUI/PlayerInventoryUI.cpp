@@ -143,7 +143,7 @@ void PlayerInventoryUI::Init()
 	}
 
 
-	Math::Vector2 iconBasePos = { -170, 80 };
+	Math::Vector2 iconBasePos = { -170, 65 };
 	Math::Vector2 nameBasePos = { iconBasePos.x + 70,iconBasePos.y };
 	Math::Vector2 numBasePos = { nameBasePos.x + 370, iconBasePos.y };
 
@@ -152,7 +152,7 @@ void PlayerInventoryUI::Init()
 		m_playerStatusInfo[i].num = 0;
 		m_playerStatusInfo[i].numPos = numBasePos;
 
-		m_playerStatusInfo[i].numPos.y -= i * 70;
+		m_playerStatusInfo[i].numPos.y -= i * 65;
 
 		m_playerStatusInfo[i].namePos = nameBasePos;
 		m_playerStatusInfo[i].namePos.y = m_playerStatusInfo[i].numPos.y;
@@ -856,7 +856,7 @@ void PlayerInventoryUI::PlayerStatusDraw()
 	{
 		Math::Color color;
 		Math::Vector2 backPos = m_playerStatusInfo[i].namePos;
-		Math::Vector2 backSiz = { 400,60 };
+		Math::Vector2 backSiz = { 380,55 };
 		Math::Vector2 pivo = { 0,0.5 };
 		if (i % 2 == 0)
 		{
@@ -875,7 +875,7 @@ void PlayerInventoryUI::PlayerStatusDraw()
 		{
 			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].nameTex, m_playerStatusInfo[i].namePos.x, m_playerStatusInfo[i].namePos.y, nullptr, nullptr, pivo);
 		}
-		NumDraw::GetInstance().Drow(m_playerStatusInfo[i].num, RAligned, m_playerStatusInfo[i].numPos, kWhiteColor, 4, true);
+		NumDraw::GetInstance().Drow(m_playerStatusInfo[i].num, RAligned, m_playerStatusInfo[i].numPos, kWhiteColor, 3, true);
 
 		if (m_playerStatusInfo[i].iconTex)
 		{
@@ -934,7 +934,7 @@ void PlayerInventoryUI::PlayerStatusPreDraw()
 			{
 
 			case PlayerStatusInfo_HP:
-				num = spPlayer->GetMaxHP();
+				num = spPlayer->GetNowHP();
 				break;
 			case PlayerStatusInfo_MP:
 				num = spPlayer->GetMaxMP();
@@ -988,7 +988,7 @@ void PlayerInventoryUI::AddPotionTexInfo()
 
 	int i = 0;
 	int j = 0;
-	Math::Vector2 m_iconBase2DPos = { -475, 90 }; // 初期位置
+	Math::Vector2 m_iconBase2DPos = { -460, 80 }; // 初期位置
 	float m_iconSpacing = 10;
 	for (Inventory potion : spPlayerInventory->GetPotionsInventory())
 	{

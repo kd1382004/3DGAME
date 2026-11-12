@@ -1,0 +1,41 @@
+{
+	"charaModelPath": "Asset/Models/Character/Player/Rogue.gltf",
+	"steps": [
+		{
+			"acceptStart": 0.15000000596046448,
+			"animeName": "Dagger_Attack",
+			"cancelPoint": 0.41999998688697815,
+			"comboIndex": 0,
+			"damageRate": 1.0,
+			"evasionCancel": 0.3499999940395355,
+			"hitEnd": 0.33000001311302185,
+			"hitStart": 0.15000000596046448,
+			"hitStopTime": 0.029999999329447746,
+			"knockbackRate": 0.800000011920929,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.20000000298023224,
+			"trailEnd": 0.36000001430511475,
+			"trailStart": 0.11999999731779099
+		},
+		{
+			"acceptStart": 9.899999618530273,
+			"animeName": "Dagger_Attack_Combo2",
+			"cancelPoint": 9.899999618530273,
+			"comboIndex": 1,
+			"damageRate": 1.399999976158142,
+			"evasionCancel": 0.44999998807907104,
+			"hitEnd": 0.4000000059604645,
+			"hitStart": 0.25,
+			"hitStopTime": 0.05999999865889549,
+			"knockbackRate": 1.5,
+			"speed": 1.0,
+			"staminaCost": 1.0,
+			"stepForward": 0.30000001192092896,
+			"trailEnd": 0.41999998688697815,
+			"trailStart": 0.10000000149011612
+		}
+	],
+	"version": 1,
+	"weaponModelPath": "Asset/Models/Weapon/Dagger/Rogue_Dagger.gltf"
+}

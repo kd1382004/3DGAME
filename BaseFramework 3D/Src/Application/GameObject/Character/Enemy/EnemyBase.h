@@ -96,7 +96,7 @@ protected:
 	Math::Vector3 m_playerPos;
 
 	//
-	float m_PlayerChaseDir =5;
+	float m_PlayerChaseDir = 1;
 
 
 	///////////////////////////////////////////
@@ -187,7 +187,7 @@ protected:
 	void SetAttackGagePercent(float _percent);
 
 
-	bool m_isVisionFlg=false;
+	bool m_isVisionFlg = false;
 
 private:
 	//視錐台用のBoxInfo

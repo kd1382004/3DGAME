@@ -7,6 +7,7 @@
 void Sword::Init()
 {
 	m_WeaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Sword/BaseWeaponStatus.json";
+	m_comboFileName = "Sword.json";   // フォルダーは持ち主（PlayerBase）が決める
 	WeaponBase::Init();
 
 	if (!m_spWeaponModel)
@@ -90,6 +91,18 @@ void Sword::Update()
 		return;
 	}
 
+	// コンボの段の当たり判定の範囲（hitStart〜hitEnd）の外なら、判定しない
+	if (!IsInComboHitWindow())
+	{
+		m_isFirstFrame = true;   // 範囲に入ったフレームから掃引をやり直す
+		if (m_tPoly && m_tPolyFlg)
+		{
+			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
+			m_tPoly->AddPoint(mat);
+		}
+		return;
+	}
+
 
 	if (m_isFirstFrame)
 	{
@@ -148,19 +161,20 @@ void Sword::Update()
 
 			m_hitCharactersList.push_back(spGameObj);
 			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower + (m_ChargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2) * 10;
+			damage *= GetComboDamageRate();   // コンボの段のダメージ倍率
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 
 			spGameObj->OnAttackHit(
 				damage,
-				m_baseWeaponStatus.knockback,
+				m_baseWeaponStatus.knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
 				dir,
 				m_baseWeaponStatus.startup,
 				false,
 				m_defenseIgnore
 			);
 
-			float hitStopTime = 0.03f;
+			float hitStopTime = GetComboHitStopTime(0.03f);   // コンボの段のヒットストップ
 			DeltaTime::Instance().HitStop(hitStopTime);
 
 			if (m_spHitSE)
@@ -169,6 +183,9 @@ void Sword::Update()
 				m_spHitSE->Play();
 			}
 
+
+			//スタミナ回復
+			
 		}
 	}
 
@@ -213,41 +230,6 @@ void Sword::ChargAttackPlay()
 	if (m_ChargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv > 0)
 	{
 		m_chargeAttackMaxdamage = m_characterAttackPower + (m_baseWeaponStatus.attackPower * (m_ChargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2);
-
-		/*std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack;*/
-
-		//for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv; i++)
-		//{
-		//	spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
-		//	spDagger_ChargeAttack->Init();
-
-		//	float maxDistanceM = m_maxDistanceM * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_maxDistanceM].Lv * 0.3) * 10;
-		//	float chargeAttackSpeed = m_chargeAttackSpeed * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_speed].Lv * 0.3);
-
-		//	int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave_hitNum].Lv * 1);
-
-
-
-		//	float spread = 30.0f; // 角度の広がり
-		//	float t;
-		//	if (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv - 1 == 0)
-		//	{
-		//		t = 0;
-		//		spread = 0;
-		//	}
-		//	else
-		//	{
-		//		t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_ShockWave].Lv - 1); // 0～1
-		//	}
-
-		//	float ang = m_attackAngle - spread * 0.5f + spread * t;
-
-		//	spDagger_ChargeAttack->SetShockwaveStatus(hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), ang);
-		//	spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
-		//	spDagger_ChargeAttack->SetMapObjList(m_objList);
-		//	SceneManager::Instance().AddObject(spDagger_ChargeAttack);
-		//}
-
 
 	}
 
@@ -458,6 +440,16 @@ void Sword::StopWeaponSE()
 	{
 		spEffect2->StopEffect();
 	}
+}
+
+const std::vector<ComboStep>& Sword::GetComboList()
+{
+	constexpr int kBaseComboCount = 3;
+	const int unlocked = std::max(0, kBaseComboCount + GetWeaponsStrengtheningLv(WeaponsStrengthening_Characteristic));
+	const size_t count = std::min(m_comboList.size(), static_cast<size_t>(unlocked));
+
+	m_nowLvComboList.assign(m_comboList.begin(), m_comboList.begin() + count);
+	return m_nowLvComboList;
 }
 
 bool Sword::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)
