@@ -18,6 +18,11 @@ void ResultDisplay::Init()
 		m_ResultBackTex = std::make_shared<KdTexture>();
 		m_ResultBackTex->Load("Asset/Textures/GameUI/Result/ResultBack.png");
 	}
+	if (!m_ResultBack2Tex)
+	{
+		m_ResultBack2Tex = std::make_shared<KdTexture>();
+		m_ResultBack2Tex->Load("Asset/Textures/GameUI/Result/back.png");
+	}
 
 	if (!m_ArrowTex)
 	{
@@ -70,8 +75,10 @@ void ResultDisplay::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_ResultBackTex, 0, 0, nullptr, &col);
 	}
 
-
-	KdShaderManager::Instance().m_spriteShader.DrawBox(0,0,500,300,&kBlackColor);
+	if (m_ResultBack2Tex)
+	{
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_ResultBack2Tex, 0, 0, nullptr);
+	}
 
 
 
@@ -134,6 +141,10 @@ void ResultDisplay::SetSpWeaponBase(std::shared_ptr<WeaponBase> spWeaponBase)
 	if (m_ResultDisplay_WeponInventory)
 	{
 		m_ResultDisplay_WeponInventory->SetSpWeaponBase(spWeaponBase);
+	}
+	if (m_ResultDisplay_PlayerStatus)
+	{
+		m_ResultDisplay_PlayerStatus->SetSpWeaponBase(spWeaponBase);
 	}
 }
 

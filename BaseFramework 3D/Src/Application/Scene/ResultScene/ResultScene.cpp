@@ -17,6 +17,8 @@
 
 
 #include"../../GameObject/Weapon/WeaponBase.h"
+#include"../../GameObject/Weapon/Dagger/Dagger.h" 
+#include"../../GameObject/Weapon/Sword/Sword.h" 
 ResultScene::~ResultScene()
 {
 	if (m_spPlayerDeadBGM)
@@ -45,7 +47,19 @@ void ResultScene::Init()
 	std::shared_ptr<ResultDisplay>spResultDisplay = std::make_shared<ResultDisplay>();
 
 
-	std::shared_ptr<WeaponBase>spWeaponBase = std::make_shared<WeaponBase>();
+	std::shared_ptr<WeaponBase>spWeaponBase = nullptr;
+	switch (SceneManager::Instance().GetPlayerWeaponInfo())
+	{
+	case PlayerWeaponInfo_Dagger:
+		spWeaponBase = std::make_shared<Dagger>();
+		break;
+	case PlayerWeaponInfo_Sword:
+		spWeaponBase = std::make_shared<Sword>();
+		break;
+	default:
+		spWeaponBase = std::make_shared<WeaponBase>();
+		break;
+	}
 	spWeaponBase->Init();
 	// セーブだけではLvMaxや前提ノードがないので、マスタと重ねてから渡す
 	spWeaponBase->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_WeaponStrengtheningGameResultFilePath));

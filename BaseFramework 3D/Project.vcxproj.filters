@@ -376,6 +376,9 @@
     <Filter Include="Src\Application\GameObject\Weapon\ComboStep">
       <UniqueIdentifier>{e06a8b1f-8d34-499d-a13a-c04528ab1210}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem">
+      <UniqueIdentifier>{6cefab19-0b2f-4705-8a70-8ff39e6a0767}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -867,6 +870,9 @@
     <ClInclude Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepValidator.h">
       <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem\TreasureDropItem.h">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1318,6 +1324,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Weapon\ComboStep\ComboStepValidator.cpp">
       <Filter>Src\Application\GameObject\Weapon\ComboStep</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem\TreasureDropItem.cpp">
+      <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

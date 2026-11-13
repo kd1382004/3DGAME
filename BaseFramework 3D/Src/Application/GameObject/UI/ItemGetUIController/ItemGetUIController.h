@@ -11,6 +11,9 @@ struct GetItem
 	//アイコン画像
 	std::shared_ptr<KdTexture> IconTex = nullptr;
 
+	//名前
+	std::shared_ptr<KdTexture> nameTex = nullptr;
+
 	//表示時間
 	float showTime = 2;
 
@@ -22,6 +25,9 @@ struct GetItem
 
 	//アイコン位置
 	Math::Vector2 m_iconPos = Math::Vector2::Zero;
+
+	//名前位置
+	Math::Vector2 m_namePos = Math::Vector2::Zero;
 
 	//アルファ値
 	float alpha = 1;

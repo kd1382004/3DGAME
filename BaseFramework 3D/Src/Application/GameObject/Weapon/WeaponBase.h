@@ -131,8 +131,8 @@ public:
 	//武器のSEを停止
 	virtual void StopWeaponSE() {};
 
-
-
+	//攻撃力を返す
+	int GetAttack();
 
 	// Charge攻撃が当たっていい敵の数
 	void SetHitNum(int hitNum)

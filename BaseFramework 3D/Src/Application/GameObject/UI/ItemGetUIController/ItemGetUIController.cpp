@@ -67,6 +67,8 @@ void ItemGetUIController::Update()
 		item.m_pos.y -= i * m_IconWH.y;
 		item.m_iconPos = item.m_pos;
 		item.m_iconPos.x += -m__backWH.x + m_IconWH.x;
+		item.m_namePos = item.m_iconPos;
+		item.m_namePos.x += m_IconWH.x;
 
 		//表示時間管理
 		item.showTime -= 0.5 * delt;
@@ -98,7 +100,7 @@ void ItemGetUIController::DrawSprite()
 	}
 
 
-	for (auto item : m_getItemList)
+	for (const auto& item : m_getItemList)
 	{
 		if (!item.drawFlg) { continue; }
 
@@ -113,6 +115,15 @@ void ItemGetUIController::DrawSprite()
 
 		if (!item.IconTex) { continue; }
 		KdShaderManager::Instance().m_spriteShader.DrawTex(item.IconTex, item.m_iconPos.x, item.m_iconPos.y, m_IconWH.x, m_IconWH.y, nullptr, &color);
+
+		if (!item.nameTex) { continue; }
+		Math::Vector2 nameSiz = {};
+		Math::Vector2 nameNowSiz = { (float)item.nameTex->GetWidth() , (float)item.nameTex->GetHeight() };
+		Math::Vector2 pivo = { 0,0.5 };
+
+		float a = m_IconWH.y / nameNowSiz.y;
+		nameSiz = nameNowSiz * a;
+		KdShaderManager::Instance().m_spriteShader.DrawTex(item.nameTex, item.m_namePos.x, item.m_namePos.y, nameSiz.x, nameSiz.y, nullptr, &color, pivo);
 	}
 
 }
@@ -128,9 +139,11 @@ void ItemGetUIController::AddGetItemList(GetItem Item, ItemType type)
 	case Potion:
 
 		Item.IconTex = m_spPotionTexInfo->GetPotionIcon(Item.ID);
+		Item.nameTex = m_spPotionTexInfo->GetPotionName(Item.ID);
 		break;
 	case WeaponsStrengthening:
 		Item.IconTex = m_spPotionTexInfo->GetWeaponsStrengtheningItemIcon(Item.ID);
+		Item.nameTex = m_spPotionTexInfo->GetWeaponsStrengtheningName(Item.ID);
 		break;
 	default:
 		break;

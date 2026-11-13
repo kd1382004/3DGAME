@@ -40,6 +40,7 @@ public:
 	void SetPlayerDead(bool _flg);
 private:
 	std::shared_ptr<KdTexture>m_ResultBackTex;
+	std::shared_ptr<KdTexture>m_ResultBack2Tex;
 	std::shared_ptr<ResultDisplay_Score>m_ResultDisplay_Score;
 	std::shared_ptr<ResultDisplay_PlayerStatus>m_ResultDisplay_PlayerStatus;
 	std::shared_ptr<ResultDisplay_WeponInventory>m_ResultDisplay_WeponInventory;

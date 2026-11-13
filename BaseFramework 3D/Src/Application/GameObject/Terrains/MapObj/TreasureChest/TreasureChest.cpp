@@ -3,7 +3,7 @@
 #include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
 
 #include"../../../../Scene/GameScene/GameScene.h"
-
+#include"../../../../Scene/SceneManager.h"
 
 #include"../../../../Info/KeyInfo/KeyInfo.h"
 
@@ -15,9 +15,11 @@
 
 
 #include"LootTableManager/LootTableManager.h"
-
+#include"TreasureDropItem/TreasureDropItem.h"
 
 #include"../../../UI/UI2/UIBase2.h"
+
+
 TreasureChest::~TreasureChest()
 {
 	auto spUIMap_TreasureChest = m_wpUIMap_TreasureChest.lock();
@@ -177,41 +179,22 @@ void TreasureChest::Update()
 			{
 				m_IsOpen = true;
 				m_treasureChestAnimetor->SetAnimation(m_treasureChestModel->GetAnimation("Open"), false);
-
-
-				std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
-				if (m_spLootTableManager)
-				{
-
-					// 使うテーブル名（slot + 宝箱のLv）
-					std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestTableNum);
-
-					// 出る個数はテーブルの dropMin〜dropMax
-					int itenNun = m_spLootTableManager->GetRandomDropNum(path);
-					for (int i = 0; i < itenNun; i++)
-					{
-						LootItem item = m_spLootTableManager->GetRandomLoot(path);
-
-						switch (item.type)
-						{
-						case Potion:
-							spPlayer->GetPlayerInventory()->AddPotionsInventory(item.id);
-							break;
-						case Weapon:
-							spPlayer->GetPlayerInventory()->AddWeaponsStrengtheningInventory(item.id);
-							break;
-						default:
-							break;
-						}
-
-
-					}
-				}
-
 				if (m_spTreasureChestSE)
 				{
 					m_spTreasureChestSE->Stop();
 				}
+
+
+				std::shared_ptr<TreasureDropItem>treasureDropItem = std::make_shared<TreasureDropItem>();
+				treasureDropItem->Init();
+				std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestTableNum);
+				treasureDropItem->SetPath(path);
+				treasureDropItem->SetPlayer(spPlayer);
+				std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
+				treasureDropItem->SetLootTableManager(m_spLootTableManager);
+				treasureDropItem->SetPos(GetPos());
+
+				SceneManager::Instance().AddObject(treasureDropItem);
 			}
 		}
 	}

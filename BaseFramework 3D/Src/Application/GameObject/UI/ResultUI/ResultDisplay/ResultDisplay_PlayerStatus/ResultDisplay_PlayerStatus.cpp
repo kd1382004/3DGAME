@@ -1,7 +1,8 @@
 ﻿#include "ResultDisplay_PlayerStatus.h"
 #include"../../../../../Info/NumDraw/NumDraw.h"
 #include"../../../../../Scene/SceneManager.h"
-#include"../../../../Character/CharacterBase.h"
+#include"../../../../Character/Player/PlayerBase.h"
+#include"../../../../Weapon/WeaponBase.h"
 
 void ResultDisplay_PlayerStatus::Init()
 {
@@ -190,41 +191,53 @@ void ResultDisplay_PlayerStatus::DrawSprite()
 		}
 	}
 }
-
 void ResultDisplay_PlayerStatus::SetPlayerStatusGameResultFilePath(std::string _path)
 {
-	std::shared_ptr<CharacterBase>spCharacterBase = std::make_shared<CharacterBase>();
-	spCharacterBase->Init();
-	spCharacterBase->LoadCharaStatus(_path);
-	if (spCharacterBase)
+	m_spResultPlayer = std::make_shared<PlayerBase>();
+	m_spResultPlayer->Init();
+	m_spResultPlayer->LoadCharaStatus(_path);
+
+	RefreshStatusNum();
+}
+
+void ResultDisplay_PlayerStatus::SetSpWeaponBase(std::shared_ptr<WeaponBase> _spWeapon)
+{
+	m_spWeapon = _spWeapon;
+
+	RefreshStatusNum();
+}
+
+void ResultDisplay_PlayerStatus::RefreshStatusNum()
+{
+	//PlayerInventoryUI::PlayerStatusPreDraw と同じ計算
+	if (!m_spResultPlayer) { return; }
+	if (!m_spWeapon) { return; }
+
+	for (int i = 0; i < PlayerStatusInfoSiz; i++)
 	{
-		for (int i = 0; i < PlayerStatusInfoSiz; i++)
+		int num = 0;
+
+		switch (i)
 		{
-			int num = 0;
-
-			switch (i)
-			{
-
-			case PlayerStatusInfo_HP:
-				num = spCharacterBase->GetMaxHP();
-				break;
-			case PlayerStatusInfo_MP:
-				num = spCharacterBase->GetMaxMP();
-				break;
-			case PlayerStatusInfo_AttackPower:
-				num = spCharacterBase->NowAttack();
-				break;
-			case PlayerStatusInfo_DefensePower:
-				num = spCharacterBase->NowDefense();
-				break;
-			case PlayerStatusInfo_Speed:
-				num = spCharacterBase->GetBaseSpeed();
-				break;
-			default:
-				break;
-			}
-
-			m_playerStatusInfo[i].num = num;
+		case PlayerStatusInfo_HP:
+			num = m_spResultPlayer->GetNowHP();
+			break;
+		case PlayerStatusInfo_MP:
+			num = m_spResultPlayer->GetMaxMP();
+			break;
+		case PlayerStatusInfo_AttackPower:
+			num = m_spResultPlayer->NowAttack() + m_spWeapon->GetAttack();
+			break;
+		case PlayerStatusInfo_DefensePower:
+			num = m_spResultPlayer->NowDefense();
+			break;
+		case PlayerStatusInfo_Speed:
+			num = m_spResultPlayer->GetBaseSpeed();
+			break;
+		default:
+			break;
 		}
+
+		m_playerStatusInfo[i].num = num;
 	}
 }

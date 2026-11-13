@@ -59,6 +59,7 @@ private:
 
 
 	std::shared_ptr<KdTexture>m_potionBackTex;
+	std::shared_ptr<KdTexture>m_potionBack2Tex;
 	Math::Vector2 m_potionBackTexPos;
 
 };

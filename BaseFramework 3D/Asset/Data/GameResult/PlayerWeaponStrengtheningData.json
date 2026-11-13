@@ -3,112 +3,112 @@
         "attack": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 32
         },
         "body": {
             "Lv": 1,
             "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 32
         },
         "characteristic": {
-            "Lv": 0,
-            "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "Lv": 1,
+            "nextLvNum": 6,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 16
         },
         "characteristic1": {
-            "Lv": 0,
-            "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "Lv": 3,
+            "nextLvNum": 4,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 16
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 16
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 3,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 16
         },
         "chargeTime": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 32
         },
         "defenseIgnore": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 32
         },
         "stamina": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 32
         }
     },
     "sword": {
         "attack": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 7
         },
         "body": {
             "Lv": 1,
             "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 7
         },
         "characteristic": {
             "Lv": 0,
             "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 7
         },
         "characteristic1": {
             "Lv": 0,
             "nextLvNum": 5,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 7
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 5,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 7
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 5,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 7
         },
         "chargeTime": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 7
         },
         "defenseIgnore": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 7
         },
         "stamina": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 7
         }
     }
 }

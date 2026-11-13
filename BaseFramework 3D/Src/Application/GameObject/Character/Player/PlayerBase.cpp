@@ -561,6 +561,12 @@ void PlayerBase::SetLV(int _LV)
 	m_status.defense.nowDefense = m_status.defense.baseDefensePowe;
 	AddMaxHP(10, true);
 
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		spHPBar->SetLV(m_status.LV);
+	}
+
 	if (m_spPlayreLV)
 	{
 		m_spPlayreLV->CalcNextLevelExp(_LV);
@@ -1372,6 +1378,21 @@ void PlayerBase::StartComboStep(int _step)
 		AimToNearestEnemy(spWeapon);          // 段ごとに一番近い敵の方を向き直す
 		spWeapon->SetAngle(m_angle);
 		spWeapon->SetAttackFlg(true);         // 当たった敵のリストもここで空になる
+
+
+		// キャラの向きを一番近い敵の方向に補正
+		if (auto target = spWeapon->FindAimAssistTarget(m_pos))
+		{
+			Math::Vector3 dir = *target - GetPos();
+			dir.y = 0.0f;
+			if (dir.LengthSquared() > 0.0001f)
+			{
+				dir.Normalize();
+				float angle = DirectX::XMConvertToDegrees(std::atan2(dir.x, dir.z));
+				if (angle < 0.0f) { angle += 360.0f; }
+				m_angle = angle;
+			}
+		}
 	}
 }
 

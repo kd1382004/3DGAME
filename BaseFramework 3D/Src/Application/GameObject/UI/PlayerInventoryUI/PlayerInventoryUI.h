@@ -5,7 +5,6 @@ class PotionUseController;
 class PlayerBase;
 class PotionTexInfo;
 
-
 class PlayerInventoryUI :public UIBase
 {
 public:
@@ -164,6 +163,9 @@ private:
 	//武器強化ボタンとのあたり判定
 	void WeaponsStrengtheningButtonHit();
 
+
+
+	std::shared_ptr<KdTexture>m_LineTex;
 	std::shared_ptr<KdTexture>m_PreconditionNodeExplanationTex;
 	std::shared_ptr<KdTexture>m_PreconditionNodeNameTex;
 	std::shared_ptr<KdTexture>m_PreconditionNodeTex;

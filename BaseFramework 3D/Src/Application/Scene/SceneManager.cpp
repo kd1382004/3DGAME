@@ -34,12 +34,12 @@ void SceneManager::Update()
 	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
 	{
 		MouseInfo::Instance().SetMouseFreeFlg(true);
-		ShowCursor(true);
+		while (ShowCursor(true) < 0) {}    // カウンターが0以上になるまで上げる＝必ず表示
 		return;
 	}
 	else
 	{
-		ShowCursor(false);
+		while (ShowCursor(false) >= 0) {}  // カウンターが負になるまで下げる＝必ず非表示
 	}
 
 	m_currentScene->Update();
@@ -144,6 +144,7 @@ void SceneManager::ImGUI()
 	if (ImGui::Button(U8("ImGuiを閉じる")))
 	{
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
+		MouseInfo::Instance().SetMouseFreeFlg(false);
 	}
 }
 

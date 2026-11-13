@@ -84,6 +84,9 @@ private:
 		//強化が可能かどうか
 		bool strengtheningFlg = false;
 
+		//LVがMAXかどうか
+		bool LvMaxFlg = false;
+
 		//アイコン
 		std::shared_ptr<KdTexture>iconTex;
 
@@ -170,7 +173,13 @@ private:
 	//////////////////////////////////////////////////
 
 	std::shared_ptr<KdTexture>m_WeaponsStrengtheningBackTex;
+	std::shared_ptr<KdTexture>m_WeaponsStrengtheningBack2Tex;
 	Math::Vector2 m_WeaponsStrengtheningTexPos;
+
+	std::shared_ptr<KdTexture>m_WeaponsStrengtheninTitleTex;
+	Math::Vector2 m_WeaponsStrengtheninTitleTexPos;
+
+	std::shared_ptr<KdTexture>m_LineTex;
 
 	void WeaponChooseFlg(int _ID);
 

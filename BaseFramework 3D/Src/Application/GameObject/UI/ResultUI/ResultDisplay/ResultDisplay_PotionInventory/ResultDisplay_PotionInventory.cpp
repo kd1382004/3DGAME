@@ -18,7 +18,6 @@ void ResultDisplay_PotionInventory::Init()
 		m_potionTitleTex = std::make_shared<KdTexture>();
 		m_potionTitleTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_PotionInventory/PotionTiyel.png");
 		m_potionTitleTexPos = { 0,250 };
-	
 	}
 	if (!m_potionBackTex)
 	{
@@ -27,6 +26,14 @@ void ResultDisplay_PotionInventory::Init()
 		m_potionBackTexPos = { 200,-70 };
 	
 	}
+
+	if (!m_potionBack2Tex)
+	{
+		m_potionBack2Tex = std::make_shared<KdTexture>();
+		m_potionBack2Tex->Load("Asset/Textures/GameUI/Result/ResultDisplay_PotionInventory/back.png");
+	}
+
+
 }
 
 void ResultDisplay_PotionInventory::Update()
@@ -49,12 +56,14 @@ void ResultDisplay_PotionInventory::DrawSprite()
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionBackTex, m_potionBackTexPos.x, m_potionBackTexPos.y);
 	}
+	if (m_potionBack2Tex)
+	{
+		Math::Vector2 pos = { -150,m_potionBackTexPos.y };
+
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionBack2Tex, pos.x, pos.y);
+	}
 
 
-	Math::Vector2 pos = { -150,m_potionBackTexPos.y };
-	Math::Vector2 siz = { 180,(float)m_potionBackTex->GetHeight() / 2 };
-	Math::Color col = { 0.8,0.8,0.8,1 };
-	KdShaderManager::Instance().m_spriteShader.DrawBox(pos.x, pos.y, siz.x, siz.y, &col);
 
 	for (const auto& tex : m_itemIconInfo)
 	{
@@ -63,7 +72,7 @@ void ResultDisplay_PotionInventory::DrawSprite()
 		if (tex.m_ItemID == m_selectPotionID && m_potionSelectTex)
 		{
 			KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_ExplanationTex, 200, -120);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_ExplanationTex, 200, -95);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_NameTex, 200, 85);
 			NumDraw::GetInstance().Drow(tex.m_num, RAligned, { 300,15 }, kWhiteColor, 4);
 		}
@@ -81,7 +90,7 @@ void ResultDisplay_PotionInventory::AddPotionTexInfo(std::vector<Inventory> _pot
 
 	int i = 0;
 	int j = 0;
-	Math::Vector2 m_iconBase2DPos = { -300, 90 }; // 初期位置
+	Math::Vector2 m_iconBase2DPos = { -280, 75 }; // 初期位置
 	float m_iconSpacing = 10;
 
 	for (const Inventory& potion : _potions)
@@ -91,7 +100,7 @@ void ResultDisplay_PotionInventory::AddPotionTexInfo(std::vector<Inventory> _pot
 			ItemIconInfo itemIconInfo;
 			itemIconInfo.m_ItemID = potion.m_ID;
 
-			if (i > 6)
+			if (i > 5)
 			{
 				j++;
 				i = 0;

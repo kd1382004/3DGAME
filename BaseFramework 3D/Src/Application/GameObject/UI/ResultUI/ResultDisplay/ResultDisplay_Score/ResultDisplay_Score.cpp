@@ -77,7 +77,7 @@ void ResultDisplay_Score::Init()
 
 void ResultDisplay_Score::Update()
 {
-	ArrowUpdate();
+	//ArrowUpdate();
 }
 
 void ResultDisplay_Score::PreDraw()
@@ -99,37 +99,6 @@ void ResultDisplay_Score::DrawSprite()
 		Math::Vector2 pivo = { 0,0.5 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_HierarchyTex, m_OverallResultPos.x, m_OverallResultPos.y, nullptr, nullptr, pivo);
 		NumDraw::GetInstance().Drow(floorNum, Aligned::RAligned, m_OverallResultPos, kWhiteColor, 5, true);
-	}
-
-
-
-	if (m_ArrowTex)
-	{
-
-
-		Math::Color col = { 1,1,1,m_AroowAlpha };
-
-		Math::Vector2 Siz = m_ArrowSiz;
-		if (m_ArrowLHiFlg)
-		{
-			Siz *= m_AroowHitScale;
-		}
-
-		if (m_displayFloorInfoNum != 0)
-		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_ArrowTex, m_ArrowLPos.x, m_ArrowLPos.y, Siz.x, Siz.y, nullptr, &col);
-		}
-
-
-		Siz = m_ArrowSiz;
-		if (m_ArrowRHiFlg)
-		{
-			Siz *= m_AroowHitScale;
-		}
-		if (m_displayFloorInfoNum != m_displayFloorInfo.size() - 1)
-		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_ArrowTex, m_ArrowRPos.x, m_ArrowRPos.y, Siz.x, Siz.y, nullptr, &col, { 0.5,0.5 }, 180);
-		}
 	}
 
 

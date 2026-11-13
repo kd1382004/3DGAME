@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include"../ResultDisplayBase.h"
 
+class PlayerBase;
+class WeaponBase;
+
 class ResultDisplay_PlayerStatus :public ResultDisplayBase
 {
 public:
@@ -16,6 +19,9 @@ public:
 	void DrawSprite();
 
 	void SetPlayerStatusGameResultFilePath(std::string _path);
+
+	//ゲーム終了時の武器（攻撃力の計算に使う）
+	void SetSpWeaponBase(std::shared_ptr<WeaponBase> _spWeapon);
 
 private:		 
 	//プレイヤーステータス
@@ -65,6 +71,13 @@ private:
 
 	std::shared_ptr<KdModelWork> m_spPlayerModel = nullptr;
 	std::shared_ptr<KdAnimator>	m_spAnimetor = nullptr;
+
+	//リザルト用に読み込んだプレイヤーと、ゲーム終了時の武器
+	std::shared_ptr<PlayerBase> m_spResultPlayer = nullptr;
+	std::shared_ptr<WeaponBase> m_spWeapon = nullptr;
+
+	//インベントリ(PlayerInventoryUI)と同じ計算で数値を更新する
+	void RefreshStatusNum();
 
 	std::shared_ptr<KdTexture>m_statusTitleTex;
 	Math::Vector2 m_statusTitleTexPos;

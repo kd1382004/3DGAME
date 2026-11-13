@@ -10,7 +10,6 @@
 void WeaponBase::Init()
 {
 	LoadWeaponStatus(m_WeaponStatusFilePath);
-	SaveWeaponStatus(m_WeaponStatusFilePath);
 }
 
 void WeaponBase::Update()
@@ -90,6 +89,11 @@ std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3
 		}
 	}
 	return result;
+}
+
+int WeaponBase::GetAttack()
+{
+	return (m_baseWeaponStatus.attackPower + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2));
 }
 
 void WeaponBase::LoadWeaponStatus(const std::string& filePath)

@@ -70,7 +70,7 @@ void PlayerInventoryUI::Init()
 		m_NotselectExplanationTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/SelectExplanationBase.png");
 		m_selectExplanationTex = m_NotselectExplanationTex;
 		m_selectExplanationTexPos = m_back2Tex2DPos;
-		m_selectExplanationTexPos.y = 20;
+		m_selectExplanationTexPos.y = 50;
 	}
 
 	if (!m_UseTex)
@@ -244,6 +244,12 @@ void PlayerInventoryUI::Init()
 		pos.x -= 80;
 		m_LVTex2DPos = pos;
 
+	}
+
+	if (!m_LineTex)
+	{
+		m_LineTex = std::make_shared<KdTexture>();
+		m_LineTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/Line.png");
 	}
 
 	float rad = DirectX::XMConvertToRadians(90.0f); // 0°,90°,180°,270°
@@ -684,7 +690,63 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 		y2 = m_weaponsStrengtheningInfo[PrIndex].iconPos.y;
 
 
-		KdShaderManager::Instance().m_spriteShader.DrawLine(x1, y1, x2, y2, &kWhiteColor);
+		float dx = x2 - x1;
+		float dy = y2 - y1;
+
+		// ラジアン
+		float rad = atan2f(dy, dx);
+
+		// 度数法（-180 ～ +180）
+		float deg = rad * 180.0f / 3.14159265f;
+
+
+		Math::Vector2 pivo = { 0,0.5 };
+		Math::Vector2 siz = { 0,20 };
+		siz.x = sqrtf(dx * dx + dy * dy);
+		Math::Color col = kWhiteColor;
+		float defoScale = 0.8;
+		float scale = 1;
+
+		int PreconditionNodeID_index = m_weaponsStrengtheningInfo[i].PreconditionNodeID_index;
+
+		if (PreconditionNodeID_index < 0 || PreconditionNodeID_index >= WeaponsStrengtheningSiz)
+		{
+			break;
+		}
+
+		if (m_weaponsStrengtheningInfo[PreconditionNodeID_index].Lv == 0)
+		{
+			col = { 1,1,1,0.5 };
+			defoScale = 0.5;
+		}
+
+		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
+		if (m_LineTex)
+		{
+			// 通常の線
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_LineTex, x1, y1, siz.x, siz.y * defoScale, nullptr, &col, pivo, deg);
+
+			// Lv > 0 なら(強化されてるなら)光らせる
+			if (m_weaponsStrengtheningInfo[i].Lv > 0)
+			{
+				defoScale = 1;
+				const int   glowNum = 4;      // 重ねる枚数
+				const float glowMax = 3.0f;   // 一番外側の太さ倍率
+
+				for (int j = 1; j <= glowNum; j++)
+				{
+					float t = (float)j / glowNum;           // 0～1
+					float scale = 1.0f + t * (glowMax - 1.0f);
+					float alpha = 0.4f * (1.0f - t) + 0.05f;
+					scale *= defoScale;
+					Math::Color glowCol = { col.x, col.y, col.z, col.w * alpha };
+
+					KdShaderManager::Instance().m_spriteShader.DrawTex(m_LineTex, x1, y1, siz.x, siz.y * scale, nullptr, &glowCol, pivo, deg);
+				}
+			}
+		}
+		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
+
 	}
 
 	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
@@ -709,7 +771,6 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 			iconCol = { 0.5,0.5,0.5,1 };
 			PreconditionNodeIconFlg = true;
 		}
-
 
 		if (m_weaponsStrengtheningInfo[i].Lv == 0)
 		{
@@ -750,6 +811,7 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 				nullptr,
 				&auraColor
 			);
+
 		}
 
 
@@ -926,6 +988,9 @@ void PlayerInventoryUI::PlayerStatusPreDraw()
 
 	if (spPlayer)
 	{
+
+		std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
+		if (!spWeapon) { return; }
 		for (int i = 0; i < PlayerStatusInfoSiz; i++)
 		{
 			int num = 0;
@@ -940,7 +1005,7 @@ void PlayerInventoryUI::PlayerStatusPreDraw()
 				num = spPlayer->GetMaxMP();
 				break;
 			case PlayerStatusInfo_AttackPower:
-				num = spPlayer->NowAttack();
+				num = spPlayer->NowAttack() + spWeapon->GetAttack();
 				break;
 			case PlayerStatusInfo_DefensePower:
 				num = spPlayer->NowDefense();
