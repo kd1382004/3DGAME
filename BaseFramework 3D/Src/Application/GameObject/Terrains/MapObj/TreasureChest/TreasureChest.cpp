@@ -135,6 +135,33 @@ void TreasureChest::Update()
 				spGameScene->AddTreasureChestsNum();
 			}
 			m_open = true;
+
+		}
+
+
+
+
+		float aniemPercent = m_treasureChestAnimetor->GetAnimeProgress();
+		if (!m_dropItemIintFlg && aniemPercent >= m_dropItemInitPercent)
+		{
+			std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
+			if (spPlayer)
+			{
+
+
+				std::shared_ptr<TreasureDropItem>treasureDropItem = std::make_shared<TreasureDropItem>();
+				treasureDropItem->Init();
+				std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestTableNum);
+				treasureDropItem->SetPath(path);
+				treasureDropItem->SetPlayer(spPlayer);
+				std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
+				treasureDropItem->SetLootTableManager(m_spLootTableManager);
+				treasureDropItem->SetPos(GetPos());
+
+				SceneManager::Instance().AddObject(treasureDropItem);
+			}
+
+			m_dropItemIintFlg = true;
 		}
 		return;
 	}
@@ -159,7 +186,7 @@ void TreasureChest::Update()
 			}
 			if (spUI)
 			{
-				
+
 				Math::Vector3 set2DPos;
 
 				std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
@@ -183,18 +210,6 @@ void TreasureChest::Update()
 				{
 					m_spTreasureChestSE->Stop();
 				}
-
-
-				std::shared_ptr<TreasureDropItem>treasureDropItem = std::make_shared<TreasureDropItem>();
-				treasureDropItem->Init();
-				std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestTableNum);
-				treasureDropItem->SetPath(path);
-				treasureDropItem->SetPlayer(spPlayer);
-				std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
-				treasureDropItem->SetLootTableManager(m_spLootTableManager);
-				treasureDropItem->SetPos(GetPos());
-
-				SceneManager::Instance().AddObject(treasureDropItem);
 			}
 		}
 	}
@@ -208,11 +223,11 @@ void TreasureChest::PostUpdate()
 	}
 
 	//if (!m_isInView) { return; }
-	KdShaderManager::Instance().WorkAmbientController().AddPointLight(
-		{ 20,20,20 },								//色
-		10,										//半径	
-		GetPos() + Math::Vector3(0, 2, 0)		//座標
-	);
+	//KdShaderManager::Instance().WorkAmbientController().AddPointLight(
+	//	{ 20,20,20 },								//色
+	//	10,										//半径	
+	//	GetPos() + Math::Vector3(0, 1, 0)		//座標
+	//);
 
 	if (m_spTreasureChestSE)
 	{

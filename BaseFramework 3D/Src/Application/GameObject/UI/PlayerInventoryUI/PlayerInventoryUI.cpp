@@ -363,6 +363,13 @@ void PlayerInventoryUI::Update()
 {
 	PlayerInventoryOpen();
 
+	if (m_useEffectTimer > 0.0f)
+	{
+		m_useEffectTimer -= DeltaTime::Instance().GetRealDeltaTime();
+		if (m_useEffectTimer < 0.0f) { m_useEffectTimer = 0.0f; }
+	}
+
+
 	if (m_playerInventoryUIFlg)
 	{
 		InventoryTypeChangeUpdate();
@@ -455,10 +462,34 @@ void PlayerInventoryUI::DrawSprite()
 	if (m_back2Tex && m_nowInventoryType != PlayerInventoryUI::PlayerStatus)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_back2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y, m_back2Tex2DSiz.x, m_back2Tex2DSiz.y);
+
 		Math::Vector2 pos = m_back2Tex2DPos;
 		pos.y += 150;
 		pos.x += 85;
-		NumDraw::GetInstance().Drow(m_num, RAligned, pos, kWhiteColor, 4);
+
+		// 数字が変わるときはちょっと跳ねる(色も変わる)
+		Math::Color numColor = kWhiteColor;
+		float numScale = 4.0f;
+		if (m_useEffectTimer > 0.0f && (m_nowInventoryType == PotionInventory || m_nowInventoryType == WeponInventory))
+		{
+			float t = sinf(DirectX::XM_PI * (1.0f - m_useEffectTimer / m_useEffectTime));
+			pos.y += 10.0f * t;
+			numScale += 0.6f * t;
+
+			switch (m_nowInventoryType)
+			{
+			case PlayerInventoryUI::PotionInventory:
+				numColor = { 1.0f, 1.0f - 0.6f * t, 1.0f - 0.6f * t, 1.0f };   // 白→赤→白
+				break;
+			case PlayerInventoryUI::WeponInventory:
+				numColor = { 1.0f, 1.0f - 0.15f * t, 1.0f - 0.7f * t, 1.0f };   // 白→金→白
+				break;
+			default:
+				break;
+			}
+
+		}
+		NumDraw::GetInstance().Drow(m_num, RAligned, pos, numColor, numScale);
 
 		if (m_selectExplanationTex)
 		{
@@ -618,9 +649,7 @@ void PlayerInventoryUI::PotionUpdate()
 {
 	AddPotionTexInfo();
 
-
 	IconHit();
-
 
 	PotionIUse();
 }
@@ -659,15 +688,40 @@ void PlayerInventoryUI::PlayerStatusUpdate()
 
 void PlayerInventoryUI::PotionDraw()
 {
-	for (auto tex : m_itemIconInfo)
+	// 0→1→0 と山なりに変化する値（演出の強さ）
+	float t = 0.0f;
+	if (m_useEffectTimer > 0.0f)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_IconTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
+		t = sinf(DirectX::XM_PI * (1.0f - m_useEffectTimer / m_useEffectTime));
+	}
+
+	for (auto& tex : m_itemIconInfo)
+	{
+		float w = m_iconDimensions.w;
+		float h = m_iconDimensions.h;
+
+		bool isUseEffect = (t > 0.0f && tex.m_ItemID == m_useEffectItemID);
+		if (isUseEffect)
+		{
+			w *= 1.0f + 0.3f * t;
+			h *= 1.0f + 0.3f * t;
+		}
+
+		KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_IconTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h);
+
+		// 白く光らせる（同じアイコンを加算で重ねる）
+		if (isUseEffect)
+		{
+			Math::Color flash = { 1,1,1,t * 0.8f };
+			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_IconTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h, nullptr, &flash);
+			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
+		}
 
 		if (tex.m_ItemID == m_selectPotionID)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, m_iconDimensions.w, m_iconDimensions.h);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_potionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h);
 		}
-
 	}
 }
 
@@ -779,28 +833,28 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 
 
 
-		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
+		
 		// 強化が可能なら光らす
-
-
-		// 時間経過による点滅（パルス）アニメーション
-		m_weaponsStrengtheningInfo[i].timer += 0.01f;
-
-		float pulse = (sinf(m_weaponsStrengtheningInfo[i].timer) + 1.0f) * 0.5f;
-
-		// ★ 大きくなって小さくなるスケール
-		float scale = 1.0f + pulse * 0.25f;
-
-		// 青(0,0,1) → 白(1,1,1) → 青(0,0,1)
-		float r = pulse;
-		float g = pulse;
-		float b = 1.0f;
-
-		float alpha = 1;
-
-		Math::Color auraColor = { r, g, b, alpha };
 		if (m_weaponsStrengtheningInfo[i].strengtheningFlg && !m_weaponsStrengtheningInfo[i].LvMaxFlg)
 		{
+			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
+			// 時間経過による点滅（パルス）アニメーション
+			m_weaponsStrengtheningInfo[i].timer += 0.01f;
+
+			float pulse = (sinf(m_weaponsStrengtheningInfo[i].timer) + 1.0f) * 0.5f;
+
+			// ★ 大きくなって小さくなるスケール
+			float scale = 1.0f + pulse * 0.25f;
+
+			// 青(0,0,1) → 白(1,1,1) → 青(0,0,1)
+			float r = pulse;
+			float g = pulse;
+			float b = 1.0f;
+
+			float alpha = 1;
+
+			Math::Color auraColor = { r, g, b, alpha };
+
 			// 発光オーラ描画
 			KdShaderManager::Instance().m_spriteShader.DrawTex(
 				m_weaponsStrengtheningInfo[i].iconTex,
@@ -812,22 +866,48 @@ void PlayerInventoryUI::WeaponsStrengtheningDraw()
 				&auraColor
 			);
 
+			if (m_weaponsStrengtheningInfo[i].timer > 1)
+			{
+				m_weaponsStrengtheningInfo[i].timer -= 1;
+			}
+			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
 		}
 
 
-		if (m_weaponsStrengtheningInfo[i].timer > 1)
+
+
+
+		// 0→1→0 と山なりに変化する値
+		float t = 0.0f;
+		if (m_useEffectTimer > 0.0f)
 		{
-			m_weaponsStrengtheningInfo[i].timer -= 1;
+			t = sinf(DirectX::XM_PI * (1.0f - m_useEffectTimer / m_useEffectTime));
 		}
-		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
+		float w = m_weaponsStrengtheningInfo[i].iconSiz.x;
+		float h = m_weaponsStrengtheningInfo[i].iconSiz.y;
+		bool isUseEffect = (t > 0.0f && m_weaponsStrengtheningInfo[i].MyNodeID == m_useEffectItemID);
+		if (isUseEffect)
+		{
+			w *= 1.0f + 0.3f * t;
+			h *= 1.0f + 0.3f * t;
+		}
 
-		// 通常のアイコン描画
+		//通常アイコン
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, w * choseSizUp, h * choseSizUp, nullptr, &iconCol);
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x * choseSizUp, m_weaponsStrengtheningInfo[i].iconSiz.y * choseSizUp, nullptr, &iconCol);
 
+		//使われてたら光らす
+		if (isUseEffect)
+		{
+			Math::Color flash = { 1,1,1,t * 0.8f };
+			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_weaponsStrengtheningInfo[i].iconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, w * choseSizUp, h * choseSizUp, nullptr, &flash);
+			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
+		}
+
+		//前提ノードが解放されてなければ描画
 		if (m_PreconditionNodeIconTex && PreconditionNodeIconFlg)
 		{
-
 			KdShaderManager::Instance().m_spriteShader.DrawTex(m_PreconditionNodeIconTex, m_weaponsStrengtheningInfo[i].iconPos.x, m_weaponsStrengtheningInfo[i].iconPos.y, m_weaponsStrengtheningInfo[i].iconSiz.x * choseSizUp, m_weaponsStrengtheningInfo[i].iconSiz.y * choseSizUp, nullptr, &iconCol);
 		}
 
@@ -1185,7 +1265,8 @@ void PlayerInventoryUI::PotionIUse()
 			spPotionUseController->PotionUse(m_selectPotionID);
 			spPlayer->GetPlayerInventory()->UsePotionsInventory(m_selectPotionID);
 
-
+			m_useEffectTimer = m_useEffectTime;
+			m_useEffectItemID = m_selectPotionID;
 		}
 	}
 
@@ -1389,6 +1470,9 @@ void PlayerInventoryUI::WeaponsStrengtheningButtonHit()
 				spPlayer->GetPlayerInventory()->UseWeaponsStrengtheningInventory(WeaponsStrengtheningItemID, m_weaponsStrengtheningInfo[m_selectIndex].nextLvNum);
 				m_weaponsStrengtheningInfo[m_selectIndex].nextLvNum = spWeapon->GetWeaponsStrengtheningNextLvNum(m_selectIndex);
 				m_selectWeaponsStrengtheningnextLVNum = m_weaponsStrengtheningInfo[m_selectIndex].nextLvNum;
+
+				m_useEffectTimer = m_useEffectTime;
+				m_useEffectItemID = m_weaponsStrengtheningInfo[m_selectIndex].MyNodeID;
 			}
 		}
 	}

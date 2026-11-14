@@ -89,8 +89,27 @@ void ResultDisplay_PlayerStatus::Update()
 	{
 		m_spAnimetor->AdvanceTime(m_spPlayerModel->WorkNodes(), 100);
 		m_spPlayerModel->CalcNodeMatrices();
-	}
 
+		// 装備していた武器を右手に持たせる（PlayerBase と同じ付け方）
+		if (m_spWeapon)
+		{
+			auto* handNode = m_spPlayerModel->FindNode("Weapon.R");
+			if (handNode)
+			{
+				Math::Vector3 rot = { 0,0,70 };
+				Math::Matrix rMat = Math::Matrix::CreateFromYawPitchRoll(
+					DirectX::XMConvertToRadians(rot.y),
+					DirectX::XMConvertToRadians(rot.x),
+					DirectX::XMConvertToRadians(rot.z));
+
+				m_spWeapon->SetParentMatrix(rMat * handNode->m_worldTransform * m_mWorld);
+
+				// Sword/Dagger の Update は攻撃の当たり判定などもするので、
+				// 位置の計算だけの WeaponBase::Update を呼ぶ
+				m_spWeapon->WeaponBase::Update();
+			}
+		}
+	}
 
 
 
@@ -127,9 +146,13 @@ void ResultDisplay_PlayerStatus::PreDraw()
 	//描画
 	if (m_spPlayerModel)
 	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spPlayerModel, m_mWorld,{2,2,2,2});
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spPlayerModel, m_mWorld, { 2,2,2,2 });
 	}
 
+	if (m_spWeapon)
+	{
+		m_spWeapon->DrawLit();
+	}
 
 	KdShaderManager::Instance().m_StandardShader.EndLit();
 	// レンダーターゲットを戻す
@@ -154,7 +177,7 @@ void ResultDisplay_PlayerStatus::DrawSprite()
 	float scal = 0.25;
 	Math::Vector2 siz = { 1280 * scal ,720 * scal };
 
-	Math::Vector2 pos = {-250,0};
+	Math::Vector2 pos = { -250,0 };
 
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, siz.x, siz.y);
 

@@ -75,8 +75,6 @@ private:
 		PotionInventory,
 		WeponInventory,
 		PlayerStatus,
-
-
 		InventoryTypeSiz,
 	};
 
@@ -146,6 +144,11 @@ private:
 
 	//ポーションselect
 	std::shared_ptr<KdTexture>m_potionSelectTex;
+
+	//---------- アイテム使用時の演出 ----------
+	float m_useEffectTimer = 0.0f;          // 使ってからの経過時間（0なら演出なし）
+	const float m_useEffectTime = 0.25f;    // 演出の長さ（秒）
+	int   m_useEffectItemID = -999;         // 演出中のアイテムID
 
 
 	//////////////////////////////////////////////////

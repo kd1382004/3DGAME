@@ -69,4 +69,9 @@ private:
 
 	//音
 	std::shared_ptr<KdSoundInstance3D> m_spTreasureChestSE;
+
+
+
+	const float m_dropItemInitPercent = 0.6;
+	bool m_dropItemIintFlg = false;
 };
