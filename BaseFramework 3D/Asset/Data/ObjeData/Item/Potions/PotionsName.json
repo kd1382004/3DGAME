@@ -18,15 +18,15 @@
 		},
 		{
 			"id": 4,
-			"name": "StaminaRegenBaseUPPotion"
+			"name": "StaminaMaxUPPotion"
 		},
 		{
 			"id": 5,
-			"name": "StaminaRegenBoostPotion"
+			"name": "StaminaRegenBaseUPPotion"
 		},
 		{
 			"id": 6,
-			"name": "StaminaMaxUPPotion"
+			"name": "StaminaRegenBoostPotion"
 		}
 	]
 }

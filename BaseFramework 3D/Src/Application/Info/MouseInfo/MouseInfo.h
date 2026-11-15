@@ -52,6 +52,9 @@ public:
 
 
 	void SEMouseClickPlay();
+
+	//マウスホイール
+	int GetMouseWheelValue()const;
 private:
 
 	void Init();

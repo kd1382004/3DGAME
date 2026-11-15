@@ -340,6 +340,10 @@
     <ClInclude Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.h" />
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\InventoryUIContext.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PotionInventory\PotionInventoryUI.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\WeponInventory\WeponInventoryUI.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerStatus\PlayerStatusInventoryUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplayBase.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.h" />
@@ -498,6 +502,9 @@
     <ClCompile Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PotionInventory\PotionInventoryUI.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\WeponInventory\WeponInventoryUI.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerStatus\PlayerStatusInventoryUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplayBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ResultUI\ResultDisplay\ResultDisplay_PlayerStatus\ResultDisplay_PlayerStatus.cpp" />

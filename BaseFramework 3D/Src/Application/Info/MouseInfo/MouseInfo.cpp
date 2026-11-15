@@ -59,6 +59,11 @@ void MouseInfo::SEMouseClickPlay()
 	}
 }
 
+int MouseInfo::GetMouseWheelValue() const
+{
+	return Application::Instance().GetMouseWheelValue();
+}
+
 void MouseInfo::Init()
 {
 	// ↓ウィンドウ中央座標

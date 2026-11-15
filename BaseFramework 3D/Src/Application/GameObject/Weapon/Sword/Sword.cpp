@@ -185,7 +185,20 @@ void Sword::Update()
 
 
 			//スタミナ回復
-			
+			int Lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].Lv;
+			if (Lv > 0)
+			{
+				auto spParentChara = m_wpParentChara.lock();
+				if (spParentChara)
+				{
+					constexpr float kHealBase = 1.0f;     // Lv1のときの回復量
+					constexpr float kHealPerLv = 2.0f;    // Lvが1上がるごとに増える量
+
+					int healAmount = (int)(kHealBase + (Lv - 1) * kHealPerLv);
+					spParentChara->StaminaHeal(healAmount);
+				}
+			}
+
 		}
 	}
 
@@ -449,6 +462,33 @@ const std::vector<ComboStep>& Sword::GetComboList()
 	const size_t count = std::min(m_comboList.size(), static_cast<size_t>(unlocked));
 
 	m_nowLvComboList.assign(m_comboList.begin(), m_comboList.begin() + count);
+
+	int Lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].Lv;
+	if (Lv > 0)
+	{
+		for (size_t i = 0; i < m_nowLvComboList.size(); i++)
+		{
+			auto& step = m_nowLvComboList[i];
+
+			// 元データが足りないときは最後の段を使う
+			const auto& base = m_comboList[std::min(i, m_comboList.size() - 1)];
+
+			step.damageRate = base.damageRate;
+			step.speed = base.speed;
+			if (Lv > 0)
+			{
+				float fi = (float)i;
+				step.damageRate += (0.1f + 0.1f * Lv) * fi;
+				step.speed += (0.1f + 0.01f * Lv) * fi;
+
+				if (step.speed >= base.speed * 1.5)
+				{
+					step.speed = base.speed * 1.5;
+				}
+			}
+		}
+	}
+
 	return m_nowLvComboList;
 }
 

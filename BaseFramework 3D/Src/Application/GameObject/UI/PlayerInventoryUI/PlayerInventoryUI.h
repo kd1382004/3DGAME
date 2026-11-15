@@ -1,9 +1,15 @@
 ﻿#pragma once
 #include"../UIBase.h"
+#include"InventoryUIContext.h"
+
 class GameScene;
 class PotionUseController;
 class PlayerBase;
 class PotionTexInfo;
+
+class PotionInventoryUI;
+class WeponInventoryUI;
+class PlayerStatusInventoryUI;
 
 class PlayerInventoryUI :public UIBase
 {
@@ -22,25 +28,18 @@ public:
 	void SetGameScene(std::shared_ptr<GameScene> _spGameScene) { m_wpGameScene = _spGameScene; }
 
 
-	void SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController) { m_wpPotionUseController = _spPotionUseController; }
-	void SetPlayerBase(std::shared_ptr<PlayerBase> _spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
-	void SetPotionTexInfo(std::shared_ptr<PotionTexInfo> _spPotionTexInfo) { m_wpPotionTexInfo = _spPotionTexInfo; }
+	void SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController) { m_spContext->wpPotionUseController = _spPotionUseController; }
+	void SetPlayerBase(std::shared_ptr<PlayerBase> _spPlayerBase) { m_spContext->wpPlayer = _spPlayerBase; }
+	void SetPotionTexInfo(std::shared_ptr<PotionTexInfo> _spPotionTexInfo) { m_spContext->wpPotionTexInfo = _spPotionTexInfo; }
 private:
 
-	std::shared_ptr<KdTexture>m_selectNameTex;
-	std::shared_ptr<KdTexture>m_NotselectNameTex;
-	Math::Vector2 m_selectNameTexPos;
+	// 各タブで共有する情報（選択中の名前・説明、数字、演出、プレイヤーなど）
+	std::shared_ptr<InventoryUIContext> m_spContext = std::make_shared<InventoryUIContext>();
 
-	std::shared_ptr<KdTexture>m_selectExplanationTex;
-	std::shared_ptr<KdTexture>m_NotselectExplanationTex;
+	Math::Vector2 m_selectNameTexPos;
 	Math::Vector2 m_selectExplanationTexPos;
 
-
-
-
 	std::weak_ptr<GameScene> m_wpGameScene;
-	std::weak_ptr<PotionUseController> m_wpPotionUseController;
-	std::weak_ptr<PlayerBase> m_wpPlayerBase;
 
 	//インベントリが開いてるかどうか
 	bool m_playerInventoryUIFlg = false;
@@ -63,9 +62,6 @@ private:
 	std::shared_ptr<KdTexture>m_inventoryTypeTex;
 	Math::Vector2 m_inventoryType2DPos;
 	Math::Vector2 m_inventoryTypeSiz;
-
-	std::shared_ptr<KdTexture>m_UseTex;
-	Math::Vector2 m_UseTex2DPos;
 
 	/////////////////////////////
 	//どのインベントリを開いてるか
@@ -95,255 +91,12 @@ private:
 
 	InventoryTypeChange m_inventoryTypeChange[InventoryTypeSiz];
 
-	//各処理用
-	void PotionUpdate();
-	void WeaponsStrengtheningUpdate();
-	void PlayerStatusUpdate();
-
-	void PotionDraw();
-	void WeaponsStrengtheningDraw();
-	void PlayerStatusDraw();
-	void PlayerStatusPreDraw();
-
-	/////////////////////////////////////////
-	//ポーション系
-	std::weak_ptr<PotionTexInfo>m_wpPotionTexInfo;
-
-	void PotionInfoInit();
-
-	//あるものを入れてく関数
-	void AddPotionTexInfo();
-
-	//アイコンとマウスが当たってるか
-	void IconHit();
-
-	struct ItemIconInfo
-	{
-		int m_ItemID;
-		Math::Vector2 m_2DPos;
-		int m_num;
-		bool m_hit = false;
-
-		std::string m_name;
-		std::shared_ptr<KdTexture>m_IconTex;
-		std::shared_ptr<KdTexture>m_ExplanationTex;
-		std::shared_ptr<KdTexture> m_NameTex;
-	};
-
-
-	std::vector<ItemIconInfo> m_itemIconInfo;
-	struct { int w; int h; } m_iconDimensions;
-
-	//選ばれてるポーションのID
-	int m_selectPotionID;
-
-	//使用
-	void PotionIUse();
-
-	int m_num = 0;
-
-	//ポーションselect
-	std::shared_ptr<KdTexture>m_potionSelectTex;
-
-	//---------- アイテム使用時の演出 ----------
-	float m_useEffectTimer = 0.0f;          // 使ってからの経過時間（0なら演出なし）
-	const float m_useEffectTime = 0.25f;    // 演出の長さ（秒）
-	int   m_useEffectItemID = -999;         // 演出中のアイテムID
-
-
-	//////////////////////////////////////////////////
-	//武器
-
-	void WeaponsStrengtheningInfoInit();
-	void WeaponsStrengtheningInfoInitPos();
-
-	//あるものを入れてく関数
-	void WeaponsStrengtheningTexInfo();
-
-	//アイコンとの当り判定
-	void WeaponsStrengtheningIconHit();
-
-	//武器強化ボタンとのあたり判定
-	void WeaponsStrengtheningButtonHit();
-
-
-
-	std::shared_ptr<KdTexture>m_LineTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeExplanationTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeNameTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeIconTex;
-	std::shared_ptr<KdTexture>m_weaponsStrengtheningButtonTex;
-	std::shared_ptr<KdTexture>m_LVTex;
-	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
-	Math::Vector2 m_LVTex2DPos;
-	float m_selectAdd = 0.1;
-	float m_selectDefoAdd = 0.1;
-	float m_selectAddNum = 0.05;
-	float m_selectAddTotal =0;
-	float m_selectAddTotalMax =50;
-
-	std::shared_ptr<KdTexture>m_LvMaxButtonTex;
-
-	bool m_PreconditionNodeFlg = false;
-
-	struct WeaponsStrengtheningInfo
-	{
-		//現LV
-		int Lv;
-
-		int strengtheningItem_ID = 0;
-
-		//次のLVにするために必要な強化アイテムの数
-		int nextLvNum;
-
-		bool LvMaxFlg=false;
-
-		//強化が可能かどうか
-		bool strengtheningFlg = false;
-
-		//アイコン
-		std::shared_ptr<KdTexture>iconTex;
-
-		//アイコンの位置
-		Math::Vector2 iconPos;
-
-		//アイコンのサイズ
-		Math::Vector2 iconSiz;
-
-		//当たってるか
-		bool m_hit = false;
-
-		//説明画像
-		std::shared_ptr<KdTexture>m_ExplanationTex;
-
-
-		//強化アイテムの数
-		int num;
-
-		//強化アイテムの画像
-		std::shared_ptr<KdTexture>iconStrengtheningTex;
-
-		//強化アイテムの位置
-		Math::Vector2 iconStrengtheningPos;
-
-		//アイコンのサイズ
-		Math::Vector2 iconStrengtheningSiz;
-
-		float timer = 0.0f;
-
-		std::shared_ptr<KdTexture> m_NameTex;
-
-
-		//選ばれてるかどうか
-		bool ChooseFlg = false;
-
-		//自分のノードID
-		int MyNodeID = 0;
-
-		//前提ノードのMyNodeID（-1 = 前提なし）
-		int PreconditionNodeID = -1;
-
-		//前提ノードの配列番号（-1 = 前提なし）
-		int PreconditionNodeID_index = -1;
-
-
-	};
-
-	enum WeponStrengtheningID
-	{
-		//攻撃力
-		WeaponsStrengthening_Attck,
-
-		//スタミナ
-		WeaponsStrengthening_Stamina,
-
-		//Chargeタイム
-		WeaponsStrengthening_ChargeTime,
-
-		//防御無視
-		WeaponsStrengthening_DefenseIgnore,
-
-		//武器特有(Lv1になったら他の特有の強化を許す)
-		WeaponsStrengthening_Characteristic,
-
-		//武器特有1
-		WeaponsStrengthening_Characteristic1,
-
-		//武器特有2
-		WeaponsStrengthening_Characteristic2,
-
-		//武器特有3
-		WeaponsStrengthening_Characteristic3,
-
-		//武器アイコン
-		WeaponsStrengthening_Icon,
-
-		WeaponsStrengtheningSiz
-	};
-
-	//選択中の強化の配列番号（= 種類）
-	int m_selectIndex = 0;
-	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;
-
-	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
-
-	ItemIconInfo m_weaponsStrengtheningIconInfo;
-
-	//次のLVにするために必要な強化アイテムの数
-	int m_selectWeaponsStrengtheningnextLVNum = 0;
-
-	//IDのみ選ばれてそれ以外は選ばれてないに
-	void WeaponChooseFlg(int _index);
-
-	//////////////////////////////////////////////////
-	//プレイヤーステータス
-	std::shared_ptr<KdRenderTargetPack> m_spRtTargetPack;
-
-	std::shared_ptr<KdCamera> m_spStatusCamera;
-	float m_statusCamAngleY = 0.0f;   // Y軸回転角度 (度)
-	float m_statusCamDistance = 4.0f;   // プレイヤーからの距離 (お好みに合わせて調整)
-	float m_statusCamPitch = 8.0f;   // 少し見下ろす角度 (度)
-	float m_statusCamHeightOffset = 2;   // プレイヤーの注視点(胸・腰の高さ)
-	float m_statusCamRotateSpeed = 45.0f;  // 回転速度 (度/秒: 45度なら約8秒で1周)
-
-
-
-	struct PlayerStatusInfo
-	{
-		//HPや攻撃力などの数値
-		int num;
-
-		//数値の位置
-		Math::Vector2 numPos;
-
-		//数値の名前
-		std::shared_ptr<KdTexture>nameTex;
-
-		//数値の名前の位置
-		Math::Vector2 namePos;
-
-		//アイコン
-		std::shared_ptr<KdTexture>iconTex;
-
-		//アイコンの位置
-		Math::Vector2 iconPos;
-	};
-
-	enum PlayerStatusInfoID
-	{
-		PlayerStatusInfo_HP,
-		PlayerStatusInfo_MP,
-		PlayerStatusInfo_AttackPower,
-		PlayerStatusInfo_DefensePower,
-		PlayerStatusInfo_Speed,
-		PlayerStatusInfoSiz
-	};
-
-	PlayerStatusInfo m_playerStatusInfo[PlayerStatusInfoSiz];
-
-	std::shared_ptr<KdTexture>m_playerStatusInfoBackTex;
-
-
-
+	/////////////////////////////
+	//各タブ
+	std::shared_ptr<PotionInventoryUI>			m_spPotionInventoryUI;
+	std::shared_ptr<WeponInventoryUI>			m_spWeponInventoryUI;
+	std::shared_ptr<PlayerStatusInventoryUI>	m_spPlayerStatusInventoryUI;
+
+	// InventoryType に対応するタブ
+	InventoryTabBase* GetTab(InventoryType _type);
 };

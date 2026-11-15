@@ -357,7 +357,11 @@ public:
 	// _path のコンボファイルを読んで m_comboList に入れる。失敗したら false（今のコンボはそのまま）
 	bool LoadCombo(const std::string& _path);
 
+	void SetParentChara(std::shared_ptr<CharacterBase>_parentChara) { m_wpParentChara = _parentChara; }
+
 protected:
+
+	std::weak_ptr<CharacterBase> m_wpParentChara;
 
 	// 現在レベル lv から lv+1 に上げるのに必要な個数
 	void GetRequiredItemNum(int index)

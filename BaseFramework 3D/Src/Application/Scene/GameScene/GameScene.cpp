@@ -539,6 +539,11 @@ void GameScene::Init()
 	m_spMapObjManager->SetGameScene(self);
 
 
+	/////////////////////////////////////////
+	//武器にセット
+	/////////////////////////////////////////	
+	m_spWeapon->SetParentChara(m_spPlayer);
+
 
 	if (m_spCamera)
 	{
