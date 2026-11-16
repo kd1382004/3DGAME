@@ -81,6 +81,19 @@ public:
 
 
 	void ClearCameraOcclusionObject() { m_cameraOcclusionObjects.clear(); }
+
+
+	// カメラを揺らす
+	// _time  : 揺らす秒数（この時間でだんだん弱まって止まる）
+	// _power : 揺らす強さ（揺れ幅。目安は 0.05〜0.3 くらい）
+	void Shake(float _time, float _power);
+
+	// 追いかけている相手（プレイヤー）の位置。いなければカメラの位置
+	Math::Vector3 GetTargetPos() const
+	{
+		if (auto spTarget = m_wpTarget.lock()) { return spTarget->GetPos(); }
+		return GetPos();
+	}
 protected:
 
 
@@ -127,4 +140,19 @@ protected:
 	float m_fov = 60;
 	float m_defaultFov = 60;
 	float m_evasionFov = 80;
+
+	//---------- カメラの揺れ ----------
+	// 揺れの残り時間（秒）。0 になったら揺れていない
+	float m_shakeTimer = 0.0f;
+
+	// 揺らし始めたときの全体の時間（秒）。残り時間との割合で、だんだん弱めるのに使う
+	float m_shakeTime = 0.0f;
+
+	// 揺らす強さ（揺れ幅）
+	float m_shakePower = 0.0f;
+
+	void ShakeUpdate();
+
+	// 揺れで今ずらしている量（x：右方向、y：上方向）
+	Math::Vector3 m_shakeOffset = Math::Vector3::Zero;
 };

@@ -11,6 +11,20 @@ class AttackGage;
 
 struct Node;
 
+//////////////////////////////////////////////////////////////
+// 敵の体の質感
+// 攻撃が当たったときに出すヒットエフェクトの種類を決めるのに使う
+//   Flesh → Hit/Material/Flesh/Hit_Flesh.efkefc
+//   Stone → Hit/Material/Stone/Hit_Stone.efkefc
+//////////////////////////////////////////////////////////////
+enum class EnemyMaterial
+{
+	Flesh,		// 肉・やわらかい体（スライム、獣など）… 血しぶき系
+	Stone,		// 石・かたい体（ゴーレム、石像など）… 火花・破片系
+
+	Num			// 種類の数（配列のサイズ・範囲チェック用。質感としては使わない）
+};
+
 class EnemyBase :public CharacterBase, public std::enable_shared_from_this<EnemyBase>
 {
 public:
@@ -50,7 +64,7 @@ public:
 	// _hitStunTime ... のけぞり時間
 	//_isCritical ... クリティカルかどうか
 	//__ignoreRate ... 防御無視
-	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)override;
+	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos = nullptr)override;
 
 	Math::Vector3 GetPlayerPos() { return m_playerPos; }
 
@@ -169,6 +183,11 @@ protected:
 
 	void SetDead();
 
+	// 質感（m_material）に合わせた効果音を1回鳴らす
+	// _folder  : "Asset/Sound/SE/Hit/" など（中に Flesh.wav / Stone.wav がある）
+	// _volRate : 音量の倍率
+	void PlayMaterialSE(const std::string& _folder, float _volRate);
+
 
 	std::weak_ptr<GameScene>m_wpGameScene;
 
@@ -188,6 +207,9 @@ protected:
 
 
 	bool m_isVisionFlg = false;
+
+	//体の質感（ヒットエフェクトの種類を決める）
+	EnemyMaterial m_material = EnemyMaterial::Flesh;
 
 private:
 	//視錐台用のBoxInfo

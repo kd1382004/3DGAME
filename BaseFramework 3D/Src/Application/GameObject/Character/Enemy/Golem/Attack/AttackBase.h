@@ -13,7 +13,11 @@ public:
 
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
 
-	void SetPos(const Math::Vector3& pos)override { m_pos = pos; }
+	void SetPos(const Math::Vector3& pos)override
+	{ 
+		m_pos = pos;
+		m_mWorld.Translation(pos);
+	}
 
 
 	void FinishAttack_Slamming() { m_isExpired = true; }

@@ -71,4 +71,5 @@ private:
 	std::shared_ptr<KdSoundInstance3D> m_spWalk3DSE;
 	std::shared_ptr<KdSoundInstance3D> m_spDash3DSE;
 	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
+	std::shared_ptr<KdSoundInstance3D> m_spSlam3DSE;	// 叩きつけの音
 };

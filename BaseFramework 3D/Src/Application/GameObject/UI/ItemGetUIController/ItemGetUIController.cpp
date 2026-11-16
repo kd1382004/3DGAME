@@ -143,7 +143,7 @@ void ItemGetUIController::AddGetItemList(GetItem Item, ItemType type)
 		break;
 	case WeaponsStrengthening:
 		Item.IconTex = m_spPotionTexInfo->GetWeaponsStrengtheningItemIcon(Item.ID);
-		Item.nameTex = m_spPotionTexInfo->GetWeaponsStrengtheningName(Item.ID);
+		Item.nameTex = m_spPotionTexInfo->GetWeaponsStrengtheningItemName(Item.ID);
 		break;
 	default:
 		break;

@@ -132,6 +132,13 @@ public:
 	}
 
 	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
+	std::shared_ptr<CameraBase> GetCamera() const { return m_wpCamera.lock(); }
+
+	// カメラを揺らす（カメラが無ければ何もしない）
+	void CameraShake(float _time, float _power);
+
+	// _pos で起きた揺れ。カメラから遠いほど弱くなり、_range より遠いと揺らさない
+	void CameraShakeAt(const Math::Vector3& _pos, float _time, float _power, float _range);
 
 
 	//攻撃をくらった処理
@@ -141,7 +148,11 @@ public:
 	// _hitStunTime ... のけぞり時間
 	//_isCritical ... クリティカルかどうか
 	//__ignoreRate ... 防御無視
-	virtual void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate);
+	//_hitPos ... 当たった位置（ダメージ数字を出す場所。nullptr ならキャラの頭の上）
+	virtual void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos = nullptr);
+
+	// プレイヤーかどうか（ダメージ数字の色分けに使う）
+	virtual bool IsPlayer() const { return false; }
 
 
 	virtual void AddUIList(std::shared_ptr<UIManager>_spUIManager);

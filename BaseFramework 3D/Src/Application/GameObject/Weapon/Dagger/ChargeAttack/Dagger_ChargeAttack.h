@@ -2,6 +2,7 @@
 
 class  CharacterBase;
 class  MapBase;
+class  CameraBase;
 
 
 struct StatusShockwave
@@ -86,7 +87,13 @@ public:
 		m_MapObjList = _list;
 	}
 
+	// 当たったときに揺らすカメラ
+	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
+
 private:
+
+	// 当たったときに揺らすカメラ
+	std::weak_ptr<CameraBase> m_wpCamera;
 
 	//あたり判定をするリスト
 	std::list<std::weak_ptr<CharacterBase>>m_attackHitCharacterList;

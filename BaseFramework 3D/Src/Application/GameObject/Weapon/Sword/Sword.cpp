@@ -48,7 +48,7 @@ void Sword::Init()
 
 	if (!m_spDaggerSE)
 	{
-		m_spDaggerSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Dagger/Dagger.wav");
+		m_spDaggerSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/Sword.wav");
 		if (m_spDaggerSE)
 		{
 			m_spDaggerSE->Stop();
@@ -56,7 +56,7 @@ void Sword::Init()
 	}
 	if (!m_spChargeSE)
 	{
-		m_spChargeSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Dagger/Charge.wav");
+		m_spChargeSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/Charge.wav");
 		if (m_spChargeSE)
 		{
 			m_spChargeSE->Stop();
@@ -64,7 +64,7 @@ void Sword::Init()
 	}
 	if (!m_spHitSE)
 	{
-		m_spHitSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Dagger/Hit.wav");
+		m_spHitSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/Hit.wav");
 		if (m_spHitSE)
 		{
 			m_spHitSE->Stop();
@@ -178,17 +178,31 @@ void Sword::Update()
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 
+			// 当てる前に生きていたか（とどめの判定用）
+			const bool wasAlive = !spGameObj->GetIsDead();
+
 			spGameObj->OnAttackHit(
 				damage,
 				m_baseWeaponStatus.knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
 				dir,
 				m_baseWeaponStatus.startup,
 				false,
-				m_defenseIgnore
+				m_defenseIgnore,
+				results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
 			);
 
-			float hitStopTime = GetComboHitStopTime(0.03f);   // コンボの段のヒットストップ
+			// ヒットストップ（段・チャージ・最後の段・とどめで強弱をつける）
+			const bool isKill = wasAlive && spGameObj->GetIsDead();
+			float hitStopTime = CalcHitStopTime(m_ChargeLV, isKill);
 			DeltaTime::Instance().HitStop(hitStopTime);
+
+			// 画面を揺らす（ヒットストップが長い段・チャージ攻撃ほど強く）
+			if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
+			{
+				const float shakeTime = 0.08f + hitStopTime * 2.0f;
+				const float shakePower = hitStopTime * 1.6f + m_ChargeLV * 0.03f;
+				spParent->CameraShake(shakeTime, shakePower);
+			}
 
 			if (m_spHitSE)
 			{
@@ -196,6 +210,8 @@ void Sword::Update()
 				m_spHitSE->Play();
 			}
 
+			//エフェクト
+			KdEffekseerManager::GetInstance().Play("Hit/Weapon/Sword/Hit_Sword.efkefc", results.begin()->m_hitPos, 3.0f, 1.0f, false);
 
 			//スタミナ回復
 			int Lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].Lv;
@@ -586,5 +602,9 @@ void Sword::SpawnFinalSlash(int _lv)
 	spSlash->Init();
 	spSlash->SetSlashStatus(worldOBB, damage, m_baseWeaponStatus.knockback * 2.0f, dir, m_defenseIgnore, chargeTime);
 	spSlash->SetAttackHitCharacterList(m_attackHitCharacterList);
+	if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
+	{
+		spSlash->SetCamera(spParent->GetCamera());	// 弾けたときに画面を揺らす用
+	}
 	SceneManager::Instance().AddObject(spSlash);
 }

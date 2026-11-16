@@ -18,18 +18,34 @@ void CameraBase::Update()
 	{
 		EvasionCamera();
 	}
+
+
 }
 
 void CameraBase::PostUpdate()
 {
-
+	ShakeUpdate();
 }
 
 void CameraBase::PreDraw()
 {
 	if (!m_spCamera) { return; }
 
-	m_spCamera->SetCameraMatrix(m_mWorld);
+	// 画面に渡す用のコピー（m_mWorld 自体は変えない）
+	Math::Matrix mWorld = m_mWorld;
+
+	// 揺れの分だけ、カメラの右方向・上方向にずらす
+	if (m_shakeOffset != Math::Vector3::Zero)
+	{
+		Math::Vector3 right = mWorld.Right();
+		Math::Vector3 up = mWorld.Up();
+		right.Normalize();
+		up.Normalize();
+
+		mWorld.Translation(mWorld.Translation() + right * m_shakeOffset.x + up * m_shakeOffset.y);
+	}
+
+	m_spCamera->SetCameraMatrix(mWorld);
 	m_spCamera->SetToShader();
 }
 
@@ -196,6 +212,45 @@ void CameraBase::UpdateRotateByMouse()
 	m_DegAng.x = std::clamp(m_DegAng.x, -45.f, 45.f);
 }
 
+void CameraBase::ShakeUpdate()
+{
+	// 揺れていないときは、ずらさない
+	if (m_shakeTimer <= 0.0f)
+	{
+		m_shakeOffset = Math::Vector3::Zero;
+		return;
+	}
+
+	// 残り時間を減らす（ヒットストップ中も揺れるように、実際の時間で減らす）
+	m_shakeTimer -= DeltaTime::Instance().GetRealDeltaTime();
+	if (m_shakeTimer <= 0.0f)
+	{
+		m_shakeTimer = 0.0f;
+		m_shakeOffset = Math::Vector3::Zero;
+		return;
+	}
+
+	//---------- 今の強さ ----------
+	// 残りの割合（揺らし始め = 1 → 終わり = 0）
+	float rate = 0.0f;
+	if (m_shakeTime > 0.0f)
+	{
+		rate = std::clamp(m_shakeTimer / m_shakeTime, 0.0f, 1.0f);
+	}
+
+	// 2乗して、最初は強く・終わりはすっと収まるようにする
+	const float nowPower = m_shakePower * rate * rate;
+
+	//---------- ずらす量 ----------
+	// -1 〜 1 のランダムな値
+	static std::mt19937 s_rand{ std::random_device{}() };
+	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+
+	m_shakeOffset.x = dist(s_rand) * nowPower;			// 横揺れ
+	m_shakeOffset.y = dist(s_rand) * nowPower * 0.7f;	// 縦揺れは少し弱く
+	m_shakeOffset.z = 0.0f;
+}
+
 
 
 bool CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
@@ -207,7 +262,7 @@ bool CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
 	float diff = targetYawDeg - m_DegAng.y;
 
 	// 許容誤差（度数法）
-	float toleranceDeg = 0.1f; 
+	float toleranceDeg = 0.1f;
 
 	// -180度 〜 +180度の範囲に正規化（最短ルートで旋回）
 	while (diff > 180.0f)  diff -= 360.0f;
@@ -233,4 +288,14 @@ bool CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
 	if (m_DegAng.y < 0.0f)    m_DegAng.y += 360.0f;
 
 	return isRotateFinished;
+}
+
+void CameraBase::Shake(float _time, float _power)
+{
+	// 今の揺れより弱いなら、上書きしない
+	if (m_shakeTimer > 0.0f && _power < m_shakePower) { return; }
+
+	m_shakeTimer = _time;
+	m_shakePower = _power;
+	m_shakeTime = _time;
 }

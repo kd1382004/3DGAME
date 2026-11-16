@@ -49,6 +49,38 @@ private:
 	const float m_slotSpacing = 10.0f;
 
 
+	//---------- 種類の切り替えボタン（消耗品／素材） ----------
+	// 通常（選ばれていないとき）の画像
+	std::shared_ptr<KdTexture> m_categoryTex[ItemCategory_Num];
+
+	// 選ばれているときの画像（明るい）
+	std::shared_ptr<KdTexture> m_categorySelectTex[ItemCategory_Num];
+
+
+	// 今選ばれている種類（開いたときは消耗品）
+	ItemCategory m_nowCategory = ItemCategory_Consumable;
+
+	// ボタンの中心座標（種類ごと）
+	Math::Vector2 m_categoryPos[ItemCategory_Num];
+
+	// ボタンの大きさ（画像から。全部同じ大きさ 96×34）
+	Math::Vector2 m_categorySiz;
+
+	// ボタンとボタンのすき間（ピクセル）
+	const float m_categorySpacing = 8.0f;
+
+	// 枠の右端から一番右のボタンまでの余白（ピクセル）
+	const float m_categoryRightMargin = 30.0f;
+
+	//種類の切り替えボタンの更新（クリックで m_nowCategory を変える）
+	void CategoryUpdate();
+
+	//種類の切り替えボタンの描画
+	void CategoryDraw();
+
+	//種類を変えたときの後始末（スクロールを戻す・先頭を選ぶ）
+	void OnCategoryChange();
+
 	//---------- スクロールバー ----------
 	// 溝（レール）
 	std::shared_ptr<KdTexture> m_scrollTrackTex;

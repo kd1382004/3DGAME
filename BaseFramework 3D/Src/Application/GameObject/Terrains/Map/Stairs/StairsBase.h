@@ -24,4 +24,7 @@ private:
 	std::weak_ptr<KdEffekseerObject> m_wpAuraEffect;
 
 	Math::Vector3 m_effectLocalPos;
+
+	// 階段のまわりで鳴り続ける魔法の音（ループ・3D）
+	std::shared_ptr<KdSoundInstance3D> m_spAmbient3DSE;
 };

@@ -159,17 +159,31 @@ void Dagger::Update()
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
 
+			// 当てる前に生きていたか（とどめの判定用）
+			const bool wasAlive = !spGameObj->GetIsDead();
+
 			spGameObj->OnAttackHit(
 				damage,
 				m_baseWeaponStatus.knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
 				dir,
 				m_baseWeaponStatus.startup,
 				false,
-				m_defenseIgnore
+				m_defenseIgnore,
+				results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
 			);
 
-			float hitStopTime = GetComboHitStopTime(0.03f);   // コンボの段のヒットストップ
+			// ヒットストップ（段・チャージ・最後の段・とどめで強弱をつける）
+			const bool isKill = wasAlive && spGameObj->GetIsDead();
+			float hitStopTime = CalcHitStopTime(m_ChargeLV, isKill);
 			DeltaTime::Instance().HitStop(hitStopTime);
+
+			// 画面を揺らす（ヒットストップが長い段・チャージ攻撃ほど強く）
+			if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
+			{
+				const float shakeTime = 0.08f + hitStopTime * 2.0f;
+				const float shakePower = hitStopTime * 1.6f + m_ChargeLV * 0.03f;
+				spParent->CameraShake(shakeTime, shakePower);
+			}
 
 			if (m_spHitSE)
 			{
@@ -177,6 +191,9 @@ void Dagger::Update()
 				m_spHitSE->Play();
 			}
 
+
+			//エフェクト
+			KdEffekseerManager::GetInstance().Play("Hit/Weapon/Dagger/Hit_Dagger.efkefc", results.begin()->m_hitPos, 3.0f, 1.0f, false);
 		}
 	}
 
@@ -253,6 +270,16 @@ void Dagger::ChargAttackPlay()
 			spDagger_ChargeAttack->SetShockwaveStatus(hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), ang);
 			spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
 			spDagger_ChargeAttack->SetMapObjList(m_objList);
+
+			if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
+			{
+				// 当たったときに揺らすカメラを渡す
+				spDagger_ChargeAttack->SetCamera(spParent->GetCamera());
+
+				// 撃った瞬間に画面を揺らす
+				spParent->CameraShake(0.15f, 0.1f);
+			}
+
 			SceneManager::Instance().AddObject(spDagger_ChargeAttack);
 		}
 

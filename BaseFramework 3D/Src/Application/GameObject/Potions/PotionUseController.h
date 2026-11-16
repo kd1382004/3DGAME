@@ -34,4 +34,10 @@ private:
 	void UseStaminaRegenBaseUPPotion();
 	void UseStaminaRegenBoostPotion();
 	void UseStaminaMaxUPPotion();
+
+	//スタミナ系ポーションを使ったときのエフェクト
+	void PlayStaminaEffect();
+
+	//ポーションを飲んだときの音（_path：鳴らす音のファイル）
+	void PlayPotionSE(const std::string& _path);
 };

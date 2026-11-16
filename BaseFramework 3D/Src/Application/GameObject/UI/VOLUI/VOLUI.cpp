@@ -24,6 +24,20 @@ void VOLUI::Init()
 	}
 
 
+	//つまみ
+	if (!m_volThumbTex)
+	{
+		m_volThumbTex = std::make_shared<KdTexture>();
+		m_volThumbTex->Load("Asset/Textures/GameUI/VOL/VOLThumb.png");
+		m_volThumbSiz = { (float)m_volThumbTex->GetWidth(),(float)m_volThumbTex->GetHeight() };
+	}
+	if (!m_volThumbHoverTex)
+	{
+		m_volThumbHoverTex = std::make_shared<KdTexture>();
+		m_volThumbHoverTex->Load("Asset/Textures/GameUI/VOL/VOLThumb_Hover.png");
+	}
+	m_volDragIndex = -1;
+
 	for (int i = 0;i < m_volInfoSiz;i++)
 	{
 		m_volInfo[i].m_volTex = std::make_shared<KdTexture>();
@@ -82,59 +96,36 @@ void VOLUI::Update()
 		}
 	}
 
-	if (!m_VolChangeOpenFlg) { return; }
+	if (!m_VolChangeOpenFlg)
+	{
+		m_volDragIndex = -1;
+		return;
+	}
 
+	// 枠の外をクリックしたら閉じる（ドラッグ中は閉じない）
+	if (m_volDragIndex < 0)
 	{
 		float left = m_volBackPos.x - m_volBackSiz.x / 2;
 		float rightt = m_volBackPos.x + m_volBackSiz.x / 2;
 		float top = m_volBackPos.y + m_volBackSiz.y;
 		float bot = m_volBackPos.y;
 
-		if (left <= mouse.x && rightt >= mouse.x &&
-			top >= mouse.y && bot <= mouse.y)
-		{
+		bool isOnBack = (left <= mouse.x && rightt >= mouse.x &&
+			top >= mouse.y && bot <= mouse.y);
 
-		}
-		else
+		if (!isOnBack && KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 		{
-			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
-			{
-				m_VolChangeOpenFlg = !m_VolChangeOpenFlg;
-				return;
-			}
+			m_VolChangeOpenFlg = false;
+			return;
 		}
 	}
 
+	// つまみの操作
+	VolThumbUpdate();
 
-
-
-
-
+	// 音量を反映
 	for (int i = 0;i < m_volInfoSiz;i++)
 	{
-		float left = m_volInfo[i].m_volValPos.x - m_volInfo[i].m_volVaSiz.x / 2;
-		float rightt = m_volInfo[i].m_volValPos.x + m_volInfo[i].m_volVaSiz.x / 2;
-		float top = m_volInfo[i].m_volValPos.y + m_volInfo[i].m_volVaSiz.y + 5;
-		float bot = m_volInfo[i].m_volValPos.y - 5;
-
-		if (left <= mouse.x && rightt >= mouse.x &&
-			top >= mouse.y && bot <= mouse.y)
-		{
-			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType_HIT);
-			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON))
-			{
-				float sizY = top - bot;        // 全体の高さ
-				float mouseY = top - mouse.y;  // 上からの距離
-
-				float fromBottom = sizY - mouseY;  // 下からの距離
-				float percent = fromBottom / sizY; // 下が0、上が1
-
-				percent = std::clamp(percent, 0.0f, 1.0f);
-				m_volInfo[i].vol = percent;
-			}
-		}
-
-
 		switch (i)
 		{
 		case 0:
@@ -150,6 +141,105 @@ void VOLUI::Update()
 			break;
 		}
 	}
+}
+
+void VOLUI::VolThumbUpdate()
+{
+	POINT mouse = MouseInfo::Instance().m_windowPos;
+
+	//---------- ドラッグ中 ----------
+	if (m_volDragIndex >= 0)
+	{
+		// 左ボタンが押されたままか（離したらドラッグ終了）
+		if (!(GetAsyncKeyState(VK_LBUTTON) & 0x8000))
+		{
+			m_volDragIndex = -1;
+		}
+		else
+		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType_HIT);
+
+			// つまみの中心が来てほしいy（つかんだ位置のずれを引く）
+			float wantY = (float)mouse.y - m_volDragOffsetY;
+			m_volInfo[m_volDragIndex].vol = ThumbYToVol(m_volDragIndex, wantY);
+		}
+	}
+
+	for (int i = 0;i < m_volInfoSiz;i++)
+	{
+		VolInfo& info = m_volInfo[i];
+
+		// つまみの四角
+		const float thumbY = VolToThumbY(i);
+		float thumbLeft = info.m_volValPos.x - m_volThumbSiz.x / 2;
+		float thumbRight = info.m_volValPos.x + m_volThumbSiz.x / 2;
+		float thumbTop = thumbY + m_volThumbSiz.y / 2;
+		float thumbBot = thumbY - m_volThumbSiz.y / 2;
+
+		// バーの四角（バーは下が基準 { 0.5,0 }）
+		float barLeft = info.m_volValPos.x - info.m_volVaSiz.x / 2;
+		float barRight = info.m_volValPos.x + info.m_volVaSiz.x / 2;
+		float barTop = info.m_volValPos.y + info.m_volVaSiz.y;
+		float barBot = info.m_volValPos.y;
+
+		bool isOnThumb = (mouse.x >= thumbLeft && mouse.x <= thumbRight &&
+			mouse.y >= thumbBot && mouse.y <= thumbTop);
+
+		bool isOnBar = (mouse.x >= barLeft && mouse.x <= barRight &&
+			mouse.y >= barBot && mouse.y <= barTop);
+
+		// つまみの色：マウスが乗っているか、このバーをドラッグ中なら明るく
+		info.thumbHoverFlg = isOnThumb || (m_volDragIndex == i);
+
+		// ドラッグ中はほかのバーを触らない
+		if (m_volDragIndex >= 0) { continue; }
+
+		if (isOnThumb || isOnBar)
+		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType_HIT);
+
+			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
+			{
+				m_volDragIndex = i;
+
+				if (isOnThumb)
+				{
+					// つまみをつかんだ：つかんだ位置のずれを覚える
+					m_volDragOffsetY = (float)mouse.y - thumbY;
+				}
+				else
+				{
+					// バーをクリック：その位置へつまみを移動して、そのままドラッグ
+					m_volDragOffsetY = 0.0f;
+					info.vol = ThumbYToVol(i, (float)mouse.y);
+				}
+				info.thumbHoverFlg = true;
+			}
+
+			//---------- マウスホイール ----------
+			int wheel = MouseInfo::Instance().GetMouseWheelValue();
+			if (wheel >= 1) { info.vol += m_volWheelStep; }
+			else if (wheel <= -1) { info.vol -= m_volWheelStep; }
+			info.vol = std::clamp(info.vol, 0.0f, 1.0f);
+		}
+	}
+}
+
+float VOLUI::VolToThumbY(int _index) const
+{
+	const VolInfo& info = m_volInfo[_index];
+	const float bot = info.m_volValPos.y + m_volBarInset;
+	const float top = info.m_volValPos.y + info.m_volVaSiz.y - m_volBarInset;
+	return bot + (top - bot) * info.vol;
+}
+
+float VOLUI::ThumbYToVol(int _index, float _y) const
+{
+	const VolInfo& info = m_volInfo[_index];
+	const float bot = info.m_volValPos.y + m_volBarInset;
+	const float top = info.m_volValPos.y + info.m_volVaSiz.y - m_volBarInset;
+	if (top - bot <= 0.0f) { return 0.0f; }
+	return std::clamp((_y - bot) / (top - bot), 0.0f, 1.0f);
 }
 
 void VOLUI::DrawSprite()
@@ -177,8 +267,29 @@ void VOLUI::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_volInfo[i].m_volValTex, m_volInfo[i].m_volValPos.x, m_volInfo[i].m_volValPos.y, nullptr, nullptr, { 0.5,0 });
 
 
-		Math::Color color = { 0,0.7,0,1 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_volInfo[i].m_volValTex, m_volInfo[i].m_volValPos.x, m_volInfo[i].m_volValPos.y, m_volInfo[i].m_volVaSiz.x, m_volInfo[i].m_volVaSiz.y * m_volInfo[i].vol, nullptr, &color, { 0.5,0 });
+		// 緑のゲージ：画像を縦につぶさず、下から音量の分だけ切り取って描く（目盛りがつぶれないように）
+		{
+			const long texW = (long)m_volInfo[i].m_volVaSiz.x;
+			const long texH = (long)m_volInfo[i].m_volVaSiz.y;
+			const long cutH = (long)(texH * m_volInfo[i].vol);		// 見せる高さ（下から）
+
+			if (cutH > 0)
+			{
+				// 画像の y は上が 0 なので、下の cutH ぶんを切り取る
+				Math::Rectangle rec = { 0, texH - cutH, texW, cutH };
+				Math::Color color = { 0,0.7,0,1 };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(m_volInfo[i].m_volValTex, m_volInfo[i].m_volValPos.x, m_volInfo[i].m_volValPos.y, (int)texW, (int)cutH, &rec, &color, { 0.5,0 });
+			}
+		}
+
+		//つまみ（ドット絵がにじまないよう、ポイントフィルタで描く）
+		const std::shared_ptr<KdTexture>& thumbTex = m_volInfo[i].thumbHoverFlg ? m_volThumbHoverTex : m_volThumbTex;
+		if (thumbTex)
+		{
+			KdShaderManager::Instance().m_spriteShader.Begin(false);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(thumbTex, m_volInfo[i].m_volValPos.x, VolToThumbY(i), m_volThumbSiz.x, m_volThumbSiz.y);
+			KdShaderManager::Instance().m_spriteShader.End();
+		}
 	}
 }
 

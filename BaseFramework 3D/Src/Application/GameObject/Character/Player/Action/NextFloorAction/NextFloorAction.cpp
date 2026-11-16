@@ -1,4 +1,5 @@
 ﻿#include "NextFloorAction.h"
+#include"../../../../../Info/VOL/VOLInfo.h"
 #include"../../../../../Info/KeyInfo/KeyInfo.h"
 #include"../../../../../Scene/GameScene/GameScene.h"
 
@@ -47,6 +48,12 @@ void NextFloorAction::Update(bool _nextFloorActionFlg)
 		auto gameScene = m_wpGameScene.lock();
 		if (gameScene)
 		{
+			// ワープの音
+			{
+				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/WarpGate/Warp.wav", false);
+				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+			}
+
 			gameScene->GenerateMap();
 		}
 

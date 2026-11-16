@@ -4,6 +4,7 @@
 
 
 #include"../../../Info/KeyInfo/KeyInfo.h"
+#include"../../../Info/VOL/VOLInfo.h"
 #include"../../../Scene/GameScene/GameScene.h"
 #include"../../../Info/MouseInfo/MouseInfo.h"
 
@@ -257,12 +258,12 @@ void PlayerInventoryUI::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_back2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y, m_back2Tex2DSiz.x, m_back2Tex2DSiz.y);
 
 		Math::Vector2 pos = m_back2Tex2DPos;
-		pos.y += 150;
+		pos.y += 147;	// 右の枠の上の暗い帯（数字の枠）の真ん中
 		pos.x += 85;
 
 		// 数字が変わるときはちょっと跳ねる(色も変わる)
 		Math::Color numColor = kWhiteColor;
-		float numScale = 4.0f;
+		float numScale = 2.5f;	// 数字の枠（高さ50）に収まる大きさ（14 × 2.5 = 35）
 		if (m_spContext->useEffectTimer > 0.0f && (m_nowInventoryType == PotionInventory || m_nowInventoryType == WeponInventory))
 		{
 			
@@ -361,6 +362,22 @@ void PlayerInventoryUI::PlayerInventoryOpen()
 	{
 		m_playerInventoryUIFlg = !m_playerInventoryUIFlg;
 
+		// 開ける音・閉じる音（かばん）
+		if (m_playerInventoryUIFlg)
+		{
+			{
+				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/BagOpen.wav", false);
+				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+			}
+		}
+		else
+		{
+			{
+				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/BagClose.wav", false);
+				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+			}
+		}
+
 		std::shared_ptr spGameScene = m_wpGameScene.lock();
 		if (spGameScene)
 		{
@@ -409,6 +426,15 @@ void PlayerInventoryUI::InventoryTypeChangeUpdate()
 			Icon.m_hit = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
+				// 違うタブに切り替えたときだけ、ページをめくる音
+				if (m_nowInventoryType != Icon.m_ID)
+				{
+					{
+						std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
+						if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+					}
+				}
+
 				m_nowInventoryType = Icon.m_ID;
 
 				// ステータスは選んだときの処理なし（以前と同じ）

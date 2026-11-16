@@ -48,9 +48,25 @@ void Golem::Init()
 		EnemyBase::Init();
 
 		m_viewAngle = 100;
+
+		//---------- 3D効果音 ----------
+		auto loadSE = [&](std::shared_ptr<KdSoundInstance3D>& _se, const std::string& _path)
+			{
+				if (_se) { return; }
+				_se = KdAudioManager::Instance().Play3D(_path, m_pos, false);
+				if (_se)
+				{
+					_se->Stop();
+					_se->SetCurveDistanceScaler(25.0f);
+				}
+			};
+		loadSE(m_spWalk3DSE, "Asset/Sound/SE/Enemy/Golem/Walk.wav");
+		loadSE(m_spCrying3DSE, "Asset/Sound/SE/Enemy/Golem/CryingSound.wav");
+		loadSE(m_spSmash3DSE, "Asset/Sound/SE/Enemy/Golem/Smash.wav");
 	}
 
 	m_PlayerChaseDir = 3;
+	m_material = EnemyMaterial::Stone;
 }
 
 void Golem::Update()
@@ -92,6 +108,8 @@ void Golem::Update()
 	{
 		ChangeAnime();
 	}
+
+	UpdateFootstepSE();
 }
 
 void Golem::PreUpdate()
@@ -133,7 +151,40 @@ void Golem::PreUpdate()
 
 void Golem::Release()
 {
+	if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); m_spWalk3DSE = nullptr; }
+	if (m_spCrying3DSE) { m_spCrying3DSE->Stop(); m_spCrying3DSE = nullptr; }
+	if (m_spSmash3DSE) { m_spSmash3DSE->Stop(); m_spSmash3DSE = nullptr; }
+}
 
+void Golem::UpdateFootstepSE()
+{
+	// 死んでいる・攻撃中は足音を止める
+	if (m_isDead || m_attackFlg)
+	{
+		if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); }
+		if (m_isDead && m_spCrying3DSE) { m_spCrying3DSE->Stop(); }
+		return;
+	}
+
+	if (!m_spWalk3DSE) { return; }
+
+	// 歩き・走りのときだけ、鳴り終わるたびに次の1歩を鳴らす
+	bool isMove = (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Walk ||
+		m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run);
+
+	if (isMove)
+	{
+		m_spWalk3DSE->SetPos(m_pos);
+		m_spWalk3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.5f);
+		if (!m_spWalk3DSE->IsPlaying())
+		{
+			m_spWalk3DSE->Play();
+		}
+	}
+	else
+	{
+		m_spWalk3DSE->Stop();
+	}
 }
 
 void Golem::ChangeAnime()
@@ -162,6 +213,13 @@ void Golem::ChangeAnime()
 	case EnemyBase::EnemyAnimeMode_Attck:
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.smashAnime), false);
 		m_attackFlg = true;
+		// 攻撃を始めるときのうなり声
+		if (m_spCrying3DSE)
+		{
+			m_spCrying3DSE->SetPos(m_pos);
+			m_spCrying3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+			m_spCrying3DSE->Play(false);
+		}
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
 		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.DieAnime), false);
@@ -234,6 +292,24 @@ void Golem::Attack()
 						m_hitTriggered = true;
 						spAttack->SetAttckFlg(true);
 						spAttack->SetAttckPower(NowAttack());
+
+						// ゴーレムの向いている方向に少し前（叩いた場所）
+						const float rad = DirectX::XMConvertToRadians(m_angle);
+						Math::Vector3 smashPos = m_pos + Math::Vector3{ sinf(rad), 0, cosf(rad) } * 1.5f;	// 1.5 は腕の長さに合わせて調整
+						smashPos.y = m_pos.y;	// 地面の高さ
+
+						KdEffekseerManager::GetInstance().Play("EnemyAttack/Golem/Golem_Smash.efkefc", smashPos, 2.0f, 1.0f, false);
+
+						// 叩きつけの音
+						if (m_spSmash3DSE)
+						{
+							m_spSmash3DSE->SetPos(smashPos);
+							m_spSmash3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+							m_spSmash3DSE->Play(false);
+						}
+
+						// 叩きつけで画面を揺らす（近いほど強い）
+						CameraShakeAt(smashPos, 0.4f, 0.2f, 30.0f);
 					}
 				}
 

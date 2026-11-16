@@ -78,12 +78,12 @@ void ResultScene::Init()
 
 	std::shared_ptr<GameButton>spGameButton = std::make_shared<GameButton>();
 	spGameButton->Init();
-	spGameButton->SetPos({ 500,-320,0 });
+	spGameButton->SetPos({ 420,-260,0 });
 	m_objList.push_back(spGameButton);
 
 	std::shared_ptr<TitleButton>spTitleButton = std::make_shared<TitleButton>();
 	spTitleButton->Init();
-	spTitleButton->SetPos({ -500,-320,0 });
+	spTitleButton->SetPos({ -420,-260,0 });
 	m_objList.push_back(spTitleButton);
 
 	if (gameResult.playerDead)

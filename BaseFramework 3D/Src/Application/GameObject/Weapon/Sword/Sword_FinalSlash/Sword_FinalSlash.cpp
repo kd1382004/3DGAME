@@ -1,6 +1,7 @@
 ﻿#include "Sword_FinalSlash.h"
 #include"../../../../Info/DeltaTime/DeltaTime.h"
 #include"../../../Character/CharacterBase.h"
+#include"../../../Camera/CameraBase.h"
 void Sword_FinalSlash::Init()
 {
 	m_state = State::Charge;
@@ -379,10 +380,29 @@ void Sword_FinalSlash::SetSlashStatus(const DirectX::BoundingOrientedBox& _obb, 
 	m_timer = 0.0f;
 	RandomizeBolts();
 
+	// 溜めの音
+	m_spChargeSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Charge.wav", false);
+	if (m_spChargeSE)
+	{
+		m_spChargeSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.7f);
+	}
+
 }
 
 void Sword_FinalSlash::Burst()
 {
+	// 溜めの音を止めて、弾ける音
+	if (m_spChargeSE)
+	{
+		m_spChargeSE->Stop();
+		m_spChargeSE = nullptr;
+	}
+	std::shared_ptr<KdSoundInstance> burstSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Burst.wav", false);
+	if (burstSE)
+	{
+		burstSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+	}
+
 	// 斬撃の跡の箱
 	KdCollider::BoxInfo box(KdCollider::TypeDamage, m_obb);
 
@@ -408,13 +428,20 @@ void Sword_FinalSlash::Burst()
 			m_dir,
 			0,
 			false,
-			m_defenseIgnore
+			m_defenseIgnore,
+			results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
 		);
 	}
 
 	if (hitFlg)
 	{
 		DeltaTime::Instance().HitStop(0.06);
+	}
+
+	// 弾けた瞬間に画面を大きく揺らす（当たらなくても揺らす）
+	if (std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock())
+	{
+		spCamera->Shake(0.35f, 0.25f);
 	}
 
 }

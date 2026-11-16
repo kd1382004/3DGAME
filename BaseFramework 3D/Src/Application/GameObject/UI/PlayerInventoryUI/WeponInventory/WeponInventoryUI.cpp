@@ -1,4 +1,5 @@
 ﻿#include "WeponInventoryUI.h"
+#include"../../../../Info/VOL/VOLInfo.h"
 #include"../../../../Scene/SceneManager.h"
 
 #include"../../../../Info/KeyInfo/KeyInfo.h"
@@ -66,7 +67,7 @@ void WeponInventoryUI::Init()
 		m_LVTex = std::make_shared<KdTexture>();
 		m_LVTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/LV.png");
 		Math::Vector2 pos = m_spContext->back2Tex2DPos;
-		pos.y += 150;
+		pos.y += 147;	// 数字の枠の真ん中（数字と同じ高さ）
 		pos.x -= 80;
 		m_LVTex2DPos = pos;
 
@@ -535,11 +536,13 @@ void WeponInventoryUI::DrawSprite()
 
 	}
 
-	//LV
+	//LV（数字の枠に収まるよう、数字と同じ高さ35に縮める）
 	if (m_LVTex)
 	{
 		Math::Vector2 pivo = { 0,0.5 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_LVTex, m_LVTex2DPos.x, m_LVTex2DPos.y, nullptr, nullptr, pivo);
+		const float lvH = 35.0f;
+		const float lvW = m_LVTex->GetWidth() * lvH / m_LVTex->GetHeight();
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_LVTex, m_LVTex2DPos.x, m_LVTex2DPos.y, lvW, lvH, nullptr, nullptr, pivo);
 	}
 
 }
@@ -680,6 +683,12 @@ void WeponInventoryUI::WeaponsStrengtheningButtonHit()
 				m_spContext->useEffectType = UseEffectType::Shake;
 				m_spContext->useEffectTimer = m_spContext->useEffectTime;
 				m_spContext->useEffectItemID = m_weaponsStrengtheningInfo[m_selectIndex].PreconditionNodeID;
+
+				// 強化できない音
+				{
+					std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/Strengthen_Fail.wav", false);
+					if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+				}
 				return;
 			}
 
@@ -698,6 +707,12 @@ void WeponInventoryUI::WeaponsStrengtheningButtonHit()
 				m_spContext->useEffectType = UseEffectType::Bounce;
 				m_spContext->useEffectTimer = m_spContext->useEffectTime;
 				m_spContext->useEffectItemID = m_weaponsStrengtheningInfo[m_selectIndex].MyNodeID;
+
+				// 強化できた音（金床）
+				{
+					std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/Strengthen_Success.wav", false);
+					if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+				}
 			}
 			else if (!m_weaponsStrengtheningInfo[m_selectIndex].LvMaxFlg)
 			{
@@ -705,6 +720,12 @@ void WeponInventoryUI::WeaponsStrengtheningButtonHit()
 				m_spContext->useEffectType = UseEffectType::Shake;
 				m_spContext->useEffectTimer = m_spContext->useEffectTime;
 				m_spContext->useEffectItemID = -999;
+
+				// 素材が足りない音
+				{
+					std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/Strengthen_Fail.wav", false);
+					if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+				}
 			}
 		}
 	}

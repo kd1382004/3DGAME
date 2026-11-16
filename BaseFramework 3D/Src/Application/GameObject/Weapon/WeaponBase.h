@@ -341,6 +341,36 @@ public:
 	// 段のヒットストップ（コンボ中でなければ _default）
 	float GetComboHitStopTime(float _default) const { return m_hasComboStep ? m_comboStepNow.hitStopTime : _default; }
 
+	// 当たったときのヒットストップの長さ（強弱をつける）
+	// ・元はコンボの段の時間（データの hitStopTime）
+	// ・チャージ攻撃はためた段階ぶん長く
+	// ・コンボの最後の段は 1.4 倍
+	// ・とどめを刺した一撃は 2 倍
+	// _chargeLV : チャージの段階（0 = ためていない）
+	// _isKill   : この一撃で敵を倒したか
+	float CalcHitStopTime(int _chargeLV, bool _isKill) const
+	{
+		float time = GetComboHitStopTime(0.03f);
+
+		// チャージ攻撃
+		time += _chargeLV * 0.015f;
+
+		// コンボの最後の段（次の段の受付がない段 = acceptStart が 9.9 のまま）
+		if (m_hasComboStep && m_comboStepNow.acceptStart >= 9.0f)
+		{
+			time *= 1.4f;
+		}
+
+		// とどめの一撃
+		if (_isKill)
+		{
+			time *= 2.0f;
+		}
+
+		// 長すぎると操作が重く感じるので上限
+		return std::min(time, 0.15f);
+	}
+
 	// 今、当たり判定を出してよいか（コンボ中なら hitStart〜hitEnd の間だけ。コンボ以外は今までどおり常に）
 	bool IsInComboHitWindow() const
 	{

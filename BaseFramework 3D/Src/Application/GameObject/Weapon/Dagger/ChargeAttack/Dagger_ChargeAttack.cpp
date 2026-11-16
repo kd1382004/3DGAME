@@ -1,6 +1,7 @@
 ﻿#include "Dagger_ChargeAttack.h"
 
 #include"../../../Character/CharacterBase.h"
+#include"../../../Camera/CameraBase.h"
 
 #include"../../../Terrains/Map/MapBase.h"
 void Dagger_ChargeAttack::Init()
@@ -101,8 +102,15 @@ void Dagger_ChargeAttack::Update()
 				dir,
 				0.05f,
 				false,
-				1.0f
+				1.0f,
+				results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
 			);
+
+			// 当たったら弱く揺らす（何体に当たっても、強い揺れは上書きしない）
+			if (std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock())
+			{
+				spCamera->Shake(0.08f, 0.04f);
+			}
 
 			m_shockwaveStatus.maxHitNum--;
 			if (m_shockwaveStatus.maxHitNum <= 0)

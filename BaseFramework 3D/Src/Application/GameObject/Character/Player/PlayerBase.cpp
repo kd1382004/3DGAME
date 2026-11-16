@@ -472,7 +472,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 
 }
 
-void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
+void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
 {
 	if (m_evasionFlg)
 	{
@@ -489,7 +489,7 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 		return;
 	}
 
-	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate);
+	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
 
 	if (m_spDamageOverlay)
 	{
@@ -502,6 +502,10 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 		m_spDamageSE->Play();
 	}
 
+	KdEffekseerManager::GetInstance().Play("PlayerDamage/PlayerDamage.efkefc", m_pos, 3.0f, 1.0f, false);
+
+	// 被弾で画面を揺らす
+	CameraShake(0.2f, 0.15f);
 }
 
 void PlayerBase::HPHeal(int _Heal)
@@ -549,6 +553,14 @@ void PlayerBase::SetDead()
 {
 	m_nowPlayerAnimeMode = PlayerAnimeMode::DeathAnime;
 	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.DeathAnime), false);
+
+	// 倒れた音（2回呼ばれても1回だけ鳴らす）
+	if (!m_isDead)
+	{
+		std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Dead.wav", false);
+		if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol()); }
+	}
+
 	m_isDead = true;
 }
 

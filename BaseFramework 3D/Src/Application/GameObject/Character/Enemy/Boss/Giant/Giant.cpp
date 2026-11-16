@@ -75,6 +75,7 @@ void Giant::Init()
 	}
 
 	m_attackCoolTime = 5;
+	m_material = EnemyMaterial::Flesh;
 }
 
 void Giant::PreUpdate()
@@ -219,9 +220,9 @@ void Giant::DrawLit()
 	}
 }
 
-void Giant::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
+void Giant::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
 {
-	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate);
+	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
 }
 
 void Giant::AttackMode()
@@ -254,7 +255,6 @@ void Giant::AttackMode()
 			}
 
 
-			m_giantAttackMode = GiantAttackMode::JumpSlamAttack;
 			m_moveVec = m_playerPos - m_pos;
 			m_moveVec.Normalize();
 		}
@@ -352,6 +352,18 @@ void Giant::LeftAttackUpdate()
 					m_spPunch3DSE->SetPos(m_pos);
 					m_spPunch3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 					m_spPunch3DSE->Play(false);
+				}
+
+				{
+					const float yawRad = DirectX::XMConvertToRadians(m_angle);
+					Math::Vector3 dir = { sinf(yawRad), 0.0f, cosf(yawRad) };
+					Math::Vector3 punchPos = m_pos + dir * 5;
+					punchPos.y += 2.0f;		// 拳の高さ（巨人の大きさに合わせて調整）
+
+					KdEffekseerManager::GetInstance().Play("EnemyAttack/Giant/Giant_Punch.efkefc", punchPos, 2.5f, 1.0f, false);
+
+					// パンチで画面を揺らす（近いほど強い）
+					CameraShakeAt(punchPos, 0.3f, 0.15f, 30.0f);
 				}
 			}
 			m_playerChaseFlg = false;
@@ -460,6 +472,9 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 					m_spDon3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 					m_spDon3DSE->Play(false);
 				}
+
+				// ジャンプの着地で画面を大きく揺らす（近いほど強い）
+				CameraShakeAt(m_pos, 0.5f, 0.3f, 40.0f);
 
 				
 			}

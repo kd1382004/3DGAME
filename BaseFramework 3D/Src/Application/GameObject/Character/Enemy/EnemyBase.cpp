@@ -424,11 +424,34 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	HPPosPostUpdate();
 }
 
-void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
+void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
 {
 	m_playerChaseFlg = true;
 
-	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate);
+	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
+
+	// エフェクトを出す位置：当たった位置。分からないときはキャラの座標
+	const Math::Vector3 effectPos = _hitPos ? *_hitPos : m_pos;
+
+	switch (m_material)
+	{
+	case EnemyMaterial::Flesh:
+		KdEffekseerManager::GetInstance().Play("Hit/Material/Flesh/Hit_Flesh.efkefc", effectPos, 3.0f, 1.0f, false);
+		break;
+	case EnemyMaterial::Stone:
+		KdEffekseerManager::GetInstance().Play("Hit/Material/Stone/Hit_Stone.efkefc", effectPos, 3.0f, 1.0f, false);
+		break;
+	case EnemyMaterial::Num:
+		break;
+	default:
+		break;
+	}
+
+	// 当たった音（質感ごと。武器の当たる音に重ねて鳴らす）
+	PlayMaterialSE("Asset/Sound/SE/Hit/", 0.7f);
+
+	
+
 }
 
 void EnemyBase::Release()
@@ -608,6 +631,26 @@ void EnemyBase::ReturnSpawnPos()
 	}
 }
 
+void EnemyBase::PlayMaterialSE(const std::string& _folder, float _volRate)
+{
+	// 質感ごとのファイル名（Flesh.wav / Stone.wav）
+	std::string file;
+	switch (m_material)
+	{
+	case EnemyMaterial::Flesh:	file = "Flesh.wav";	break;
+	case EnemyMaterial::Stone:	file = "Stone.wav";	break;
+	default:					return;
+	}
+
+	// 1回鳴らすだけなので持っておかない（鳴り終わったら KdAudioManager が片付ける）
+	std::shared_ptr<KdSoundInstance3D> se = KdAudioManager::Instance().Play3D(_folder + file, m_pos, false);
+	if (se)
+	{
+		se->SetCurveDistanceScaler(20.0f);
+		se->SetVolume(VOLInfo::Instance().GetMSSEVol() * _volRate);
+	}
+}
+
 void EnemyBase::SetDead()
 {
 	m_AnimeChangeFlg = true;
@@ -627,6 +670,22 @@ void EnemyBase::SetDead()
 		spPlayer->AddExp(10);
 	}
 
+	switch (m_material)
+	{
+	case EnemyMaterial::Flesh:
+		KdEffekseerManager::GetInstance().Play("Death/Flesh/Death_Flesh.efkefc", m_pos, 3.0f, 1.0f, false);
+		break;
+	case EnemyMaterial::Stone:
+		KdEffekseerManager::GetInstance().Play("Death/Stone/Death_Stone.efkefc", m_pos, 3.0f, 1.0f, false);
+		break;
+	case EnemyMaterial::Num:
+		break;
+	default:
+		break;
+	}
+
+	// 倒れた音（質感ごと）
+	PlayMaterialSE("Asset/Sound/SE/Enemy/Death/", 1.0f);
 }
 
 void EnemyBase::SetAttackGagePercent(float _percent)

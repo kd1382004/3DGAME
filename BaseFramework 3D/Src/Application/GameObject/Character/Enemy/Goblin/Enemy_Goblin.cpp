@@ -68,8 +68,19 @@ void Goblin::Init()
 				m_spCrying3DSE->SetCurveDistanceScaler(20.0f);
 			}
 		}
+		if (!m_spSlam3DSE)
+		{
+			// 叩きつけの音
+			m_spSlam3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/Slam.wav", m_pos, false);
+			if (m_spSlam3DSE)
+			{
+				m_spSlam3DSE->Stop();
+				m_spSlam3DSE->SetCurveDistanceScaler(20.0f);
+			}
+		}
 	}
 	m_PlayerChaseDir = 2;
+	m_material = EnemyMaterial::Flesh;
 }
 
 void Goblin::Update()
@@ -173,6 +184,11 @@ void Goblin::Release()
 	{
 		m_spCrying3DSE->Stop();
 		m_spCrying3DSE = nullptr;
+	}
+	if (m_spSlam3DSE)
+	{
+		m_spSlam3DSE->Stop();
+		m_spSlam3DSE = nullptr;
 	}
 }
 
@@ -323,6 +339,22 @@ void Goblin::AttacksSlammingDown()
 				m_hitTriggered = true;
 				spAttack->SetAttckFlg();
 				spAttack->SetAttckPower(m_status.attck.nowAttck);
+				
+				// 叩きつけのエフェクト（地面の高さに出す）
+			// ゴーレムの向いている方向に少し前（叩いた場所）
+				const float rad = DirectX::XMConvertToRadians(m_angle);
+				Math::Vector3 slamPos = m_pos + Math::Vector3{ sinf(rad), 0, cosf(rad) } * 1.5f;	// 1.5 は腕の長さに合わせて調整
+				slamPos.y = m_pos.y;	// 地面の高さ
+				KdEffekseerManager::GetInstance().Play("EnemyAttack/Goblin/Goblin_Slam.efkefc", slamPos, 2.0f, 1.0f, false);
+
+				// 叩きつけの音
+				if (m_spSlam3DSE)
+				{
+					m_spSlam3DSE->SetPos(slamPos);
+					m_spSlam3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+					m_spSlam3DSE->Play(false);
+				}
+
 			}
 		}
 	}

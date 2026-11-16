@@ -57,4 +57,9 @@ private:
 
 	//叩きつけ攻撃のあたり判定を出すタイミング
 	float m_smasAttackAnimeHitTriggerTime = 0.46f;
+
+	// 3D効果音
+	std::shared_ptr<KdSoundInstance3D> m_spWalk3DSE;	// 足音（1歩ぶんの音を鳴り終わるたびに鳴らし直す）
+	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;	// 攻撃を始めるときのうなり声
+	std::shared_ptr<KdSoundInstance3D> m_spSmash3DSE;	// 叩きつけの音
 };

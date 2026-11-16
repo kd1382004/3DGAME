@@ -1,4 +1,5 @@
 #include "EscapeGate.h"
+#include"../../../Info/VOL/VOLInfo.h"
 #include"../../../Info/KeyInfo/KeyInfo.h"
 #include"../../Character/Player/PlayerBase.h"
 #include"../../../Scene/GameScene/GameScene.h"
@@ -64,6 +65,12 @@ void EscapeGate::Update()
 
 		if (KeyInfo::Instance().GetValidKeyPush(key))
 		{
+			// ワープの音
+			{
+				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/WarpGate/Warp.wav", false);
+				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+			}
+
 			spGameScene->ChangeResultScene();
 			m_isExpired = true;
 			if (spEffect)

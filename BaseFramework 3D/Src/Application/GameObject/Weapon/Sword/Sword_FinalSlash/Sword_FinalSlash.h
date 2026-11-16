@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class CharacterBase;
+class CameraBase;
 
 //////////////////////////////////////////////////////////////
 // 終ノ一閃（残し斬り）
@@ -10,7 +11,11 @@ class Sword_FinalSlash :public KdGameObject
 {
 public:
 	Sword_FinalSlash() {}
-	~Sword_FinalSlash()override {}
+	~Sword_FinalSlash()override
+	{
+		// 溜めの音が鳴りっぱなしにならないように止める
+		if (m_spChargeSE) { m_spChargeSE->Stop(); }
+	}
 
 	void Init()override;
 	void Update()override;
@@ -22,6 +27,9 @@ public:
 	// _dir    : ノックバックの向き
 	void SetSlashStatus(const DirectX::BoundingOrientedBox& _obb, float _damage,
 		float _knockback, const Math::Vector3& _dir, float _defenseIgnore, float _chargeTime);
+
+	// 弾けたときに揺らすカメラ
+	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
 
 	// 当たり判定をする敵のリスト（Sword が持っているものを渡す）
 	void SetAttackHitCharacterList(const std::list<std::weak_ptr<CharacterBase>>& _list)
@@ -45,6 +53,12 @@ private:
 		Fade,		// 消える
 	};
 	State m_state = State::Charge;
+
+	// 弾けたときに揺らすカメラ
+	std::weak_ptr<CameraBase> m_wpCamera;
+
+	// 効果音
+	std::shared_ptr<KdSoundInstance> m_spChargeSE;	// 溜めている間のバチバチ（弾けたら止める）
 
 	// 今の段階に入ってからの経過時間
 	float m_timer = 0.0f;

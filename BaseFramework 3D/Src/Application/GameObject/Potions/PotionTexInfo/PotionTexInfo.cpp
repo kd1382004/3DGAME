@@ -90,6 +90,32 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemIcon(int _I
 	return nullptr;
 }
 
+std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemName(int _ID)
+{
+	for (auto& tex : m_WeaponsStrengtheningItemTexs)
+	{
+		if (tex.ID == _ID)
+		{
+			return tex.m_Name;
+		}
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemExplanation(int _ID)
+{
+	for (auto& tex : m_WeaponsStrengtheningItemTexs)
+	{
+		if (tex.ID == _ID)
+		{
+			return tex.m_Explanation;
+		}
+	}
+
+	return nullptr;
+}
+
 void PotionTexInfo::Load()
 {
 	{
@@ -235,12 +261,24 @@ void PotionTexInfo::Load()
 		for (auto& tex : m_WeaponsStrengtheningItemTexs)
 		{
 			std::shared_ptr<KdTexture>icon = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>explanation = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>name = std::make_shared<KdTexture>();
 
-			std::string iconPath;
-			iconPath = m_weaponsStrengtheningItemPath + tex.m_name + m_Icom;
+			// アイコンの画像（Icon.png）
+			std::string iconPath = m_weaponsStrengtheningItemPath + tex.m_name + m_Icom;
 			icon->Load(iconPath);
 
+			// 説明の画像（SelectExplanationBase.png）
+			std::string explanationPath = m_weaponsStrengtheningItemPath + tex.m_name + m_Explanation;
+			explanation->Load(explanationPath);
+
+			// 名前の画像（SelectNameBase.png）
+			std::string namePath = m_weaponsStrengtheningItemPath + tex.m_name + m_Name;
+			name->Load(namePath);
+
 			tex.m_Icon = icon;
+			tex.m_Explanation = explanation;
+			tex.m_Name = name;
 		}
 	}
 }

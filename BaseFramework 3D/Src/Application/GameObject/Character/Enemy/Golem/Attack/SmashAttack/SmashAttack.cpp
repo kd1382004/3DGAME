@@ -46,7 +46,7 @@ void SmashAttack::Update()
 		}
 	}
 
-
+	SetPos(m_pos);
 }
 
 void SmashAttack::SetAttackStatus()

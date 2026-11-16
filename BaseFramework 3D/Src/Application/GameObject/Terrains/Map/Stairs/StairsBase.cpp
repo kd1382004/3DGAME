@@ -1,5 +1,6 @@
 ﻿#include "StairsBase.h"
 #include"../../../Character/Player/PlayerBase.h"
+#include"../../../../Info/VOL/VOLInfo.h"
 
 
 StairsBase::~StairsBase()
@@ -17,6 +18,13 @@ StairsBase::~StairsBase()
 	if (auto spEffect = m_wpAuraEffect.lock())
 	{
 		spEffect->StopEffect();
+	}
+
+	// 鳴り続ける音を止める
+	if (m_spAmbient3DSE)
+	{
+		m_spAmbient3DSE->Stop();
+		m_spAmbient3DSE = nullptr;
 	}
 }
 
@@ -50,6 +58,17 @@ void StairsBase::Init()
 	spEffect->SetLoop(false);
 
 	m_effectLocalPos.z += 5;
+
+	// 階段のまわりで鳴り続ける音（近づくと聞こえる）
+	if (!m_spAmbient3DSE)
+	{
+		m_spAmbient3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Stairs/Ambient.wav", worldEffectPos, true);
+		if (m_spAmbient3DSE)
+		{
+			m_spAmbient3DSE->SetCurveDistanceScaler(15.0f);
+			m_spAmbient3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.6f);
+		}
+	}
 
 	MapBase::Init();
 }
@@ -85,6 +104,14 @@ void StairsBase::Update()
 
 void StairsBase::PostUpdate()
 {
+	// 鳴り続ける音の位置と音量（音量の設定が変わっても合わせる）
+	if (m_spAmbient3DSE)
+	{
+		DirectX::SimpleMath::Vector3 sePos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
+		m_spAmbient3DSE->SetPos(sePos);
+		m_spAmbient3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.6f);
+	}
+
 	// エフェクトオブジェクトを取得
 	if (auto spEffect = m_wpAuraEffect.lock())
 	{

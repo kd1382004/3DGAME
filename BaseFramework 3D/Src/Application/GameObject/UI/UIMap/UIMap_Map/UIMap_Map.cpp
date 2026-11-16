@@ -39,7 +39,8 @@ void UIMap_Map::DrawSprit()
 	float drawX = m_basePos.x + m_StairsMineMapInfo.m_pos.x * m_siz;
 	float drawY = m_basePos.y + m_StairsMineMapInfo.m_pos.y * m_siz;
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mapStairsTex, drawX, drawY, m_mapTexSiz.x * 1.5, m_mapTexSiz.y * 1.5);
+	// 階段は目立つように画像そのままの大きさで描く（マスより大きい 11×11）
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mapStairsTex, drawX, drawY, m_mapStairsTex->GetWidth(), m_mapStairsTex->GetHeight());
 }
 
 void UIMap_Map::PreDraw()

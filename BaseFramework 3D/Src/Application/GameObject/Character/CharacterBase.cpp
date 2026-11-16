@@ -104,7 +104,29 @@ void CharacterBase::ImGUI()
 	ImGui::End();
 }
 
-void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate)
+void CharacterBase::CameraShake(float _time, float _power)
+{
+	std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock();
+	if (!spCamera) { return; }
+
+	spCamera->Shake(_time, _power);
+}
+
+void CharacterBase::CameraShakeAt(const Math::Vector3& _pos, float _time, float _power, float _range)
+{
+	std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock();
+	if (!spCamera) { return; }
+	if (_range <= 0.0f) { return; }
+
+	// プレイヤー（カメラが追いかけている相手）までの距離で弱める（近い = 1 → _range で 0）
+	const float dist = (spCamera->GetTargetPos() - _pos).Length();
+	const float rate = std::clamp(1.0f - dist / _range, 0.0f, 1.0f);
+	if (rate <= 0.0f) { return; }
+
+	spCamera->Shake(_time, _power * rate);
+}
+
+void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
 {
 	if (m_isDead) { return; }
 
@@ -113,16 +135,26 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 	m_status.HP.nowHP -= Damage;
 
 
-	std::shared_ptr<HitDamage>spHitDamage = m_wpHitDamage.lock();
-	if (spHitDamage)
-	{
-		spHitDamage->SetDamage(Damage, m_pos);
-	}
-
 	if (m_status.HP.nowHP <= 0)
 	{
 		m_isDead = true;
 		SetDead();
+	}
+
+	// ダメージ数字（死んだかどうかで色を変えるので、死亡判定の後に出す）
+	std::shared_ptr<HitDamage>spHitDamage = m_wpHitDamage.lock();
+	if (spHitDamage)
+	{
+		// 種類を決める（上から順に、当てはまったもの）
+		HitDamageType type = HitDamageType::Normal;
+		if (IsPlayer())			{ type = HitDamageType::Player; }	// プレイヤーが受けた
+		else if (m_isDead)		{ type = HitDamageType::Kill; }		// とどめ
+		else if (_isCritical)	{ type = HitDamageType::Critical; }	// 会心
+
+		// 出す位置：当たった位置。分からないときはキャラの頭の上
+		Math::Vector3 damagePos = _hitPos ? *_hitPos : m_pos + Math::Vector3(0.0f, 2.5f, 0.0f);
+
+		spHitDamage->SetDamage(Damage, damagePos, type);
 	}
 
 

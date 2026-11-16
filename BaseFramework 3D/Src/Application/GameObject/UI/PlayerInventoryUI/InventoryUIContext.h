@@ -5,6 +5,16 @@ class PotionUseController;
 class PotionTexInfo;
 
 
+// アイテム画面の種類（切り替えボタン）
+// 換金品などを増やすときは Num の前に足す
+enum ItemCategory
+{
+	ItemCategory_Consumable,	// 消耗品（ポーション）
+	ItemCategory_Material,		// 素材（武器強化アイテム）
+
+	ItemCategory_Num			// 種類の数（配列のサイズ用）
+};
+
 enum UseEffectType
 {
 	None,		// 演出なし

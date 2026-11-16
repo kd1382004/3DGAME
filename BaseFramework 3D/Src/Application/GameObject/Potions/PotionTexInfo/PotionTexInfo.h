@@ -25,12 +25,15 @@ public:
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningExplanation(int _ID);
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningName(int _ID);
 	std::shared_ptr<KdTexture> GetWeaponsStrengtheningItemIcon(int _ID);
+	std::shared_ptr<KdTexture> GetWeaponsStrengtheningItemName(int _ID);	// 武器強化用アイテムの名前の画像
+	std::shared_ptr<KdTexture> GetWeaponsStrengtheningItemExplanation(int _ID);
 private:
 
 	void Load();
 
 	std::vector<Texs> m_PotionTexs;
 	std::vector<Texs> m_WeaponsStrengtheningTexs;
+
 
 	std::vector<Texs> m_WeaponsStrengtheningItemTexs;
 

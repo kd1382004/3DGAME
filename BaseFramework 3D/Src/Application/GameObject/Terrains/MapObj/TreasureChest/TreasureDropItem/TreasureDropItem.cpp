@@ -1,4 +1,5 @@
 ﻿#include "TreasureDropItem.h"
+#include"../../../../../Info/VOL/VOLInfo.h"
 #include"../../../../Character/Player/PlayerBase.h"
 #include"../LootTableManager/LootTableManager.h"
 #include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"
@@ -117,6 +118,15 @@ void TreasureDropItem::GetItem()
 {
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
 	if (!spPlayer) { return; }
+
+	// 拾ったキラッ（アイテムがあった位置）
+	KdEffekseerManager::GetInstance().Play("ItemGet/ItemGet.efkefc", m_pos, 1.0f, 1.0f, false);
+
+	// 拾った音
+	{
+		std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/Item/Get.wav", false);
+		if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+	}
 
 
 	std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();

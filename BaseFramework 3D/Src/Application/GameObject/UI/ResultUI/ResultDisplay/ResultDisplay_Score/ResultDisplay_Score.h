@@ -30,7 +30,6 @@ private:
 
 	std::vector<DisplayFloorInfo>m_displayFloorInfo;
 
-	int m_displayFloorInfoNum = 0;
 	std::shared_ptr<KdTexture>m_OverallResultTex;
 	std::shared_ptr<KdTexture>m_HierarchyTex;
 	std::shared_ptr<KdTexture>m_DisplayFloorTex;
@@ -39,23 +38,7 @@ private:
 	std::shared_ptr<KdTexture>m_TimeColonTex;
 	std::shared_ptr<KdTexture>m_TreasureChestsNumTex;
 
-	std::shared_ptr<KdTexture>m_ArrowTex;
-
 	Math::Vector2 m_OverallResultPos;
-
-	Math::Vector2 m_ArrowLPos;
-	Math::Vector2 m_ArrowRPos;
-	Math::Vector2 m_ArrowSiz;
-
-	bool m_ArrowRHiFlg = false;
-	bool m_ArrowLHiFlg = false;
-
-	float m_AroowHitScale = 1.1;
-
-	float m_AroowAlpha = 1;
-	float m_AddAroowAlpha = 1;
-
-	void ArrowUpdate();
 
 	////////////////////////////////////////////////////////
 

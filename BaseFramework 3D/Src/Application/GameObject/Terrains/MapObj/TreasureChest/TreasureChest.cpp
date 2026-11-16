@@ -1,4 +1,5 @@
 ﻿#include "TreasureChest.h"
+#include"../../../../Info/VOL/VOLInfo.h"
 #include"../../../Character/Player/PlayerBase.h"
 #include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
 
@@ -209,6 +210,15 @@ void TreasureChest::Update()
 				if (m_spTreasureChestSE)
 				{
 					m_spTreasureChestSE->Stop();
+				}
+
+				// 宝箱が開く光
+				KdEffekseerManager::GetInstance().Play("TreasureChest/Chest_Open.efkefc", GetPos(), 1.0f, 1.0f, false);
+
+				// 宝箱が開く音
+				{
+					std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/TreasureChest/Open.wav", false);
+					if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 				}
 			}
 		}

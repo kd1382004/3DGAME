@@ -70,7 +70,7 @@ void ResultDisplay_WeponInventory::Init()
 	{
 		m_LVTex = std::make_shared<KdTexture>();
 		m_LVTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/LV.png");
-		Math::Vector2 pos = { 107,15 };
+		Math::Vector2 pos = { 112,11 };	// 右の枠の上の暗い帯（数字の枠）の左端・真ん中
 		m_LVTex2DPos = pos;
 
 	}
@@ -421,13 +421,16 @@ void ResultDisplay_WeponInventory::DrawSprite()
 	if (m_LVTex)
 	{
 		Math::Vector2 pivo = { 0,0.5 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_LVTex, m_LVTex2DPos.x, m_LVTex2DPos.y, nullptr, nullptr, pivo);
+		// 数字の枠に収まるよう、数字と同じ高さ35に縮める
+		const float lvH = 35.0f;
+		const float lvW = m_LVTex->GetWidth() * lvH / m_LVTex->GetHeight();
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_LVTex, m_LVTex2DPos.x, m_LVTex2DPos.y, lvW, lvH, nullptr, nullptr, pivo);
 
 
 		int num = m_weaponsStrengtheningInfo[m_selectWeaponsStrengtheningID].Lv;
 		Math::Vector2 pos = m_LVTex2DPos;
-		pos.x += 200;
-		NumDraw::GetInstance().Drow(num, Aligned::RAligned, pos, kWhiteColor, 4);
+		pos.x = 285;	// 枠の右端より少し内側に右揃え
+		NumDraw::GetInstance().Drow(num, Aligned::RAligned, pos, kWhiteColor, 2.5f);
 	}
 }
 

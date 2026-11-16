@@ -35,7 +35,8 @@ public:
 
 	void HitStop(float duration)
 	{
-		m_hitStopTimer = duration;
+		// 今のヒットストップより短いなら上書きしない（とどめの長い止まりを、次の弱い当たりで縮めない）
+		m_hitStopTimer = std::max(m_hitStopTimer, duration);
 	}
 
 	void SetTimeScale(float scale)
