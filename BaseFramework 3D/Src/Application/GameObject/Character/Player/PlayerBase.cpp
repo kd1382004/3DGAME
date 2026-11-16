@@ -1265,14 +1265,10 @@ void PlayerBase::EvasionUpdate()
 			m_evasionFlg = true;
 			m_nowPlayerAnimeMode = PlayerBase::RollAnime;
 
-			std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
-			if (camera)
-			{
-				m_moveVec = { 0,0,1 };
-				m_moveVec = Math::Vector3::TransformNormal(m_moveVec, camera->GetRotationYMatrix());
-				m_moveVec.y = 0;
-				m_moveVec.Normalize();
-			}
+			// プレイヤーの向き（m_angle）基準で前方向に回避
+			const float rad = DirectX::XMConvertToRadians(m_angle);
+			m_moveVec = { std::sin(rad), 0.0f, std::cos(rad) };
+			m_moveVec.Normalize();
 
 			if (m_spRollSE)
 			{
