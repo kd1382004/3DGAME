@@ -26,7 +26,7 @@
 void TitleScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
-
+	
 	m_spTitleSceneEditor = std::make_shared<TitleSceneEditor>();
 
 

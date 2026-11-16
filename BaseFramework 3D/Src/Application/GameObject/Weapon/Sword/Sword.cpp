@@ -1,6 +1,6 @@
 ﻿#include "Sword.h"
-#include <cmath>
-#include <algorithm>
+#include"Sword_FinalSlash/Sword_FinalSlash.h"
+
 #include"../../Character/CharacterBase.h"
 
 #include"../../../Scene/SceneManager.h"
@@ -89,6 +89,19 @@ void Sword::Update()
 			m_tPoly->AddPoint(mat);
 		}
 		return;
+	}
+
+	//最後段(終ノ一閃)
+	int finalSlashLv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].Lv;
+	if (finalSlashLv > 0 && !m_nowLvComboList.empty() &&
+		m_comboStepNow.comboIndex == m_nowLvComboList.back().comboIndex)
+	{
+		if (m_animePercentNow >= m_comboStepNow.hitEnd && !m_finalSlashDoneFlg)
+		{
+			// ここに終ノ一閃の処理（1回だけ通る）
+			m_finalSlashDoneFlg = true;
+			SpawnFinalSlash(finalSlashLv);
+		}
 	}
 
 	// コンボの段の当たり判定の範囲（hitStart〜hitEnd）の外なら、判定しない
@@ -201,6 +214,7 @@ void Sword::Update()
 
 		}
 	}
+
 
 	// ----------------------------------------------------
 	// デバッグワイヤー描画（ポリゴンの赤枠を表示）
@@ -488,7 +502,7 @@ const std::vector<ComboStep>& Sword::GetComboList()
 			}
 		}
 	}
-
+	m_finalSlashDoneFlg = false;
 	return m_nowLvComboList;
 }
 
@@ -502,4 +516,75 @@ bool Sword::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)
 		}
 	}
 	return false;
+}
+
+void Sword::SpawnFinalSlash(int _lv)
+{
+	//---------- コンボの段数で変わる値 ----------
+	// 今のコンボの段数（最後の段で出すので、出した段の番号 + 1）
+	const int comboCount = m_comboStepNow.comboIndex + 1;
+
+	// 基本の 3段からいくつ伸びているか（3段:0 〜 6段:3）
+	constexpr int kBaseComboCount = 3;
+	const int comboBonus = std::max(0, comboCount - kBaseComboCount);
+
+	//---------- Lv と段数で変わる値 ----------
+	// ダメージ倍率：Lv で +0.5、段数が1つ伸びるごとに +0.3
+	const float damageRate = 1.5f + 0.5f * (_lv - 1) + 0.3f * comboBonus;
+
+	// 判定の大きさ：Lv で +0.15、段数が1つ伸びるごとに +0.1
+	const float sizeRate = 1.3f + 0.15f * (_lv - 1) + 0.1f * comboBonus;
+
+	// 溜めの短さ：Lv で -0.05、段数が1つ伸びるごとに -0.02（下限 0.15秒）
+	const float chargeTime = std::max(0.15f, 0.35f - 0.05f * (_lv - 1) - 0.02f * comboBonus);
+
+	//---------- 判定の大きさ：今の剣の箱を大きくする ----------
+	Math::Vector3 extents = m_hitBoxExtents * sizeRate;
+	extents.z = std::max(extents.z, 0.3f);	// 薄すぎると当たらないので厚みを足す
+
+	//---------- 位置：プレイヤーの正面に固定 ----------
+	const float frontDist = 1.5f;	// プレイヤーから前に出す距離（m）
+	const float height = 1.0f;		// 地面からの高さ（m）
+
+	Math::Vector3 playerPos = m_mWorld.Translation();	// 持ち主がいなかったときの保険
+	if (auto spParent = m_wpParentChara.lock())
+	{
+		playerPos = spParent->GetPos();
+	}
+
+	// 向いている方向（m_attackAngle は atan2(x, z) で作っているので、前は (sin, 0, cos)）
+	const float rad = DirectX::XMConvertToRadians(m_attackAngle);
+	const Math::Vector3 forward = { std::sin(rad), 0.0f, std::cos(rad) };
+
+	const Math::Vector3 center = playerPos + forward * frontDist + Math::Vector3(0.0f, height, 0.0f);
+
+	//---------- 向き：横一文字（刃を寝かせて、プレイヤーの向きに合わせる） ----------
+	// 箱のローカルの Y（刃の長さ方向）を Z 軸で 90 度回して横にし、プレイヤーの向きに回す
+	const Math::Matrix slashMat =
+		Math::Matrix::CreateRotationZ(DirectX::XM_PIDIV2) *
+		Math::Matrix::CreateRotationY(rad) *
+		Math::Matrix::CreateTranslation(center);
+
+	// 箱は中心から置くので、ローカルの中心のずれ（m_hitBoxLocalOffset）は使わない
+	DirectX::BoundingOrientedBox localOBB(Math::Vector3::Zero, extents,
+		DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	DirectX::BoundingOrientedBox worldOBB;
+	localOBB.Transform(worldOBB, slashMat);
+
+	//---------- ダメージ：通常の当たりと同じ式 × 倍率 ----------
+	float damage = m_characterAttackPower * m_baseWeaponStatus.attackPower
+		+ (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2f) * 10;
+	damage *= damageRate;
+
+	// ノックバックの向き：プレイヤーの正面
+	const Math::Vector3 dir = forward;
+
+	m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
+
+	//---------- 作ってシーンに追加 ----------
+	auto spSlash = std::make_shared<Sword_FinalSlash>();
+	spSlash->Init();
+	spSlash->SetSlashStatus(worldOBB, damage, m_baseWeaponStatus.knockback * 2.0f, dir, m_defenseIgnore, chargeTime);
+	spSlash->SetAttackHitCharacterList(m_attackHitCharacterList);
+	SceneManager::Instance().AddObject(spSlash);
 }

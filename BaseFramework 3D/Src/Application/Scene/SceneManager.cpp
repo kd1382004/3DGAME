@@ -232,6 +232,9 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 
 
+	SetFogEnable(true);
+	SetDefaultAmbient();
+
 	//エフェクシアリセット
 	KdEffekseerManager::GetInstance().StopAllEffect();
 

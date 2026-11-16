@@ -68,7 +68,7 @@ private:
 	Math::Rectangle  m_HPBarTexRect;
 
 	//色
-	Math::Color  m_HPBarTexColor = kWhiteColor;
+	Math::Color  	m_HPBarTexColor = { 0.35f, 0.85f, 0.30f, 1.0f };
 
 	//パーセント
 	float m_HPBarTexPercent = 1;
@@ -87,7 +87,7 @@ private:
 	Math::Vector2 m_HPBarDelayTex2DPos = Math::Vector2::Zero;
 
 	//色
-	Math::Color  m_HPBarDelayTexColor = kRedColor;
+	Math::Color  m_HPBarDelayTexColor = { 0.85f, 0.2f, 0.15f, 1.0f };
 
 	//画像の切り取り範囲
 	Math::Rectangle  m_HPBarDelayTexRect;

@@ -10,7 +10,7 @@ MouseInfo::~MouseInfo()
 void MouseInfo::SetMouseType(MouseType _type)
 {
 
-	if (m_mouseType != MouseType::MouseType_HIT&& m_mouseOldType!= MouseType::MouseType_HIT)
+	if (m_mouseType != MouseType::MouseType_HIT && m_mouseOldType != MouseType::MouseType_HIT)
 	{
 		if (m_spHitSE)
 		{
@@ -182,25 +182,17 @@ void MouseInfo::Update()
 void MouseInfo::DrawSprite()
 {
 	if (!m_mousePointer) { return; }
-	Math::Rectangle rec;
-	switch (m_mouseType)
-	{
-	case MouseInfo::MouseType_Nomal:
-		rec = { 0,0,(long)m_mousePointer->GetWidth() / 2,(long)m_mousePointer->GetHeight() };
-		break;
-	case MouseInfo::MouseType_HIT:
-		rec = { (long)m_mousePointer->GetWidth() / 2,0,(long)m_mousePointer->GetWidth() / 2,(long)m_mousePointer->GetHeight() };
-		break;
-	case MouseInfo::MouseType_Click:
-		break;
-	case MouseInfo::MouseType_NotFree:
-		return;
-		break;
-	default:
-		break;
-	}
+
+	// NotFree のときは描かない
+	if (m_mouseType == MouseType::MouseType_NotFree) { return; }
+
+	// 1マスの大きさ（画像の高さと同じ正方形）
+	const long cell = (long)m_mousePointer->GetHeight();
+
+	// enum の番号 × 1マスの幅で切り出す（画像は enum と同じ順に並んでいる）
+	Math::Rectangle rec = { (long)m_mouseType * cell, 0, cell, cell };
 
 	Math::Vector2 piv = { 0,1 };
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, &rec, nullptr, piv);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, 24, 24, &rec, nullptr, piv);
 
 }

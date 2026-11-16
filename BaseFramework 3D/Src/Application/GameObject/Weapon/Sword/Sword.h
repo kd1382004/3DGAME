@@ -53,4 +53,6 @@ private:
 
 
 	std::vector<ComboStep> m_nowLvComboList;
+
+	void SpawnFinalSlash(int _lv);
 };

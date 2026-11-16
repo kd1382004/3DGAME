@@ -23,7 +23,7 @@ void UIMap_TreasureChest::DrawSprite()
 	float drawX = m_basePos.x + m_2DPos.x * m_siz;
 	float drawY = m_basePos.y + m_2DPos.y * m_siz;
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_treasureChestTex, drawX, drawY, m_mapTexSiz.x, m_mapTexSiz.y);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_treasureChestTex, drawX, drawY);
 }
 
 void UIMap_TreasureChest::SetPos(Math::Vector3 _3DPos, float _worldTileSize)

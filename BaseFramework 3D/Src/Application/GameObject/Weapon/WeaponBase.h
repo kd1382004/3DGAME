@@ -486,5 +486,8 @@ protected:
 
 
 	std::vector<ComboStep> m_comboList;
+
+
+	bool m_finalSlashDoneFlg = false;
 };
 

@@ -48,7 +48,6 @@ void HPBar::PreDraw()
 
 	HPBarDelayPreDraw();
 
-	m_HPBarTexColor = kGreenColor;
 	m_HPBarTexRect = { 0, 0, static_cast<long>(m_HPBarTexLength.x * m_HPBarTexPercent), static_cast<long>(m_HPBarTexLength.y) };
 
 	//遅延バーの座標補正

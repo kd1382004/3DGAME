@@ -388,6 +388,9 @@
     <Filter Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem">
       <UniqueIdentifier>{6cefab19-0b2f-4705-8a70-8ff39e6a0767}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash">
+      <UniqueIdentifier>{473250fe-4ebd-4943-9342-424d79ef7ead}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -894,6 +897,9 @@
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem\TreasureDropItem.h">
       <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash\Sword_FinalSlash.h">
+      <Filter>Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1357,6 +1363,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem\TreasureDropItem.cpp">
       <Filter>Src\Application\GameObject\Terrains\MapObj\TreasureChest\TreasureDropItem</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash\Sword_FinalSlash.cpp">
+      <Filter>Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
