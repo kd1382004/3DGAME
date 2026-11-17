@@ -13,12 +13,14 @@ class ComboPreviewObject : public KdGameObject
 public:
 
 	// 映すモデル（nullptr で消す）
+	// _spData ... 映すモデル
 	void SetModel(const std::shared_ptr<KdModelData>& _spData)
 	{
 		m_spModel = _spData ? std::make_shared<KdModelWork>(_spData) : nullptr;
 	}
 
 	// 手に持たせる武器のモデル（空のパスで外す）。読み込めなければ false
+	// _path ... 武器モデルのパス
 	bool SetWeaponModel(const std::string& _path)
 	{
 		m_spWeapon = nullptr;
@@ -43,18 +45,23 @@ public:
 	}
 
 	// ゲームのカメラ（プレビューを描いた後、シェーダーのカメラをこれに戻す）
+	// _spCamera ... ゲームのカメラ
 	void SetMainCamera(const std::shared_ptr<KdGameObject>& _spCamera) { m_wpMainCamera = _spCamera; }
 
 	// 軌跡を出す区間（trailStart〜trailEnd）にいるか
+	// _active ... 軌跡を出すか
 	void SetTrailActive(bool _active) { m_trailActive = _active; }
 
 	// 当たり判定が出ている間は赤っぽく描く
+	// _active ... 当たり判定が出ているか
 	void SetHitActive(bool _active) { m_hitActive = _active; }
 
 	// エディターが毎フレーム呼ぶ。呼ばれなくなったら数フレームで描くのをやめる
 	void KeepAlive() { m_aliveFrames = 3; }
 
 	// 描くテクスチャの大きさ（ピクセル）。ウィンドウの大きさに合わせて毎フレーム呼んでよい
+	// _w ... 横幅(ピクセル)
+	// _h ... 高さ(ピクセル)
 	void SetViewSize(int _w, int _h)
 	{
 		m_reqW = std::max(_w, 16);
@@ -85,6 +92,7 @@ public:
 	std::string   m_weaponNodeName = "Weapon.R";
 	Math::Vector3 m_weaponRot = { 0.0f, 0.0f, 70.0f };   // 度（x=ピッチ, y=ヨー, z=ロール）
 
+	//カメラの位置を最初に戻す
 	void ResetCamera()
 	{
 		m_camYaw = 180.0f; m_camPitch = 10.0f; m_camDistance = 3.0f; m_camHeight = 0.9f;
@@ -125,6 +133,7 @@ public:
 		m_spModel->CalcNodeMatrices();
 	}
 
+	//更新
 	void Update() override
 	{
 		if (m_aliveFrames > 0) { --m_aliveFrames; }
@@ -169,7 +178,7 @@ public:
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, Math::Matrix::Identity, col, emissive);
 
 		// 武器：手のノードの行列に、ゲームと同じ回転を掛けた位置に描く
-		//  （PlayerBase の m_weponParentMatrix = rMat * handNode->m_worldTransform * modelWorld と同じ。
+		//  （PlayerBase の m_weaponParentMatrix = rMat * handNode->m_worldTransform * modelWorld と同じ。
 		//    プレビューではモデルを原点に置いているので modelWorld は単位行列）
 		if (const KdModelWork::Node* pHand = m_spModel->FindNode(m_weaponNodeName))
 		{
@@ -207,10 +216,13 @@ public:
 
 private:
 
+	//映すキャラのモデル
 	std::shared_ptr<KdModelWork> m_spModel = nullptr;
 	std::shared_ptr<KdModelData> m_spWeapon = nullptr;   // 手に持たせる武器（アニメーションなし）
 	std::weak_ptr<KdGameObject>  m_wpMainCamera;
+	//当たり判定が出ているか
 	bool                         m_hitActive = false;
+	//残りの生存フレーム(呼ばれなくなったら描かない)
 	int                          m_aliveFrames = 0;
 
 	//==============================
@@ -218,6 +230,7 @@ private:
 	//==============================
 
 	// 切っ先の位置を軌跡に足す（時間が動いたときだけ）
+	// _tipPos ... 切っ先の位置(ワールド)
 	void UpdateTrail(const Math::Vector3& _tipPos)
 	{
 		if (!m_spTrail)
@@ -250,16 +263,22 @@ private:
 		m_poseChanged = false;
 	}
 
+	//軌跡
 	std::shared_ptr<KdTrailPolygon> m_spTrail = nullptr;
 	Math::Vector3 m_tipLocal = { 0.0f, 0.6f, 0.0f };   // 武器のローカルでの切っ先の位置
 	bool          m_trailActive = false;
 	bool          m_prevTrailActive = false;   // 前のフレームの m_trailActive（始まり・途切れを見つける用）
 	bool          m_trailClearRequest = false;
+	//このフレームで姿勢が変わったか
 	bool          m_poseChanged = false;
+	//前に姿勢を作ったアニメーション名
 	std::string   m_lastPoseAnime;
+	//前に姿勢を作った時間
 	float         m_lastPoseTime = -1.0f;
 
+	//プレビュー用のカメラ
 	KdCamera           m_camera;
+	//プレビューを描くテクスチャ
 	KdRenderTargetPack m_rtPack;
 	int                m_rtW = 0, m_rtH = 0;     // 今のテクスチャの大きさ
 	int                m_reqW = 480, m_reqH = 480; // 欲しい大きさ

@@ -3,15 +3,15 @@
 #include <vector>
 #include <cmath>
 
-void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _siz, bool _Separator, int _digit, Math::Vector2 _maxSiz)
+void NumDraw::Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _siz, bool _separator, int _digit, Math::Vector2 _maxSiz)
 {
-	if (!m_tex) return;
+	if (!m_spTex) return;
 
 	// ドット絵フォントのにじみ・隣の文字の映り込み(縦線)を防ぐため、ポイントフィルタリング(Point_Clamp)で描画
 	KdShaderManager::Instance().m_spriteShader.Begin(false);
 
 	// 1. 数値を文字列化（桁数指定のパディング処理も含む）
-	long num = std::abs(_Num);
+	long num = std::abs(_num);
 	std::string numStr = std::to_string(num);
 
 	// _digitが指定されていれば、その桁数になるように先頭を'0'で埋める
@@ -31,15 +31,15 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 
 		// 3桁区切りのカンマ判定 (右からの桁数位置)
 		int distFromRight = numLen - 1 - i;
-		if (_Separator && distFromRight > 0 && distFromRight % 3 == 0)
+		if (_separator && distFromRight > 0 && distFromRight % 3 == 0)
 		{
 			glyphs.push_back(10); // 10番目のスプライトがカンマ ','
 		}
 	}
 
 	// 3. 各文字の描画サイズと位置を計算して描画
-	float charW = recX * _siz;
-	float charH = recY * _siz;
+	float charW = m_recX * _siz;
+	float charH = m_recY * _siz;
 	int totalGlyphs = static_cast<int>(glyphs.size());
 
 	// 超えてはいけない大きさがあれば、横・縦それぞれの倍率を下げて収める
@@ -56,7 +56,7 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 
 	for (int k = 0; k < totalGlyphs; k++)
 	{
-		Math::Rectangle srcRect = { recX * glyphs[k], 0, recX, recY };
+		Math::Rectangle srcRect = { m_recX * glyphs[k], 0, m_recX, m_recY };
 		Math::Vector2 drawPos = _pos;
 
 		switch (_aligned)
@@ -82,7 +82,7 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 
 
 		KdShaderManager::Instance().m_spriteShader.DrawTex(
-			m_tex,
+			m_spTex,
 			(int)drawPos.x,
 			(int)drawPos.y,
 			(int)charW,
@@ -98,13 +98,13 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 
 void NumDraw::Init()
 {
-	m_tex = std::make_shared<KdTexture>();
-	m_tex->Load("Asset/Textures/Num/pixel-letters-7-8x14_transparent.png");
-	if (m_tex)
+	m_spTex = std::make_shared<KdTexture>();
+	m_spTex->Load("Asset/Textures/Num/pixel-letters-7-8x14_transparent.png");
+	if (m_spTex)
 	{
 		// 横99px / 11スプライト (0~9 + カンマ,) = 横幅9px
-		recX = m_tex->GetInfo().Width / 11;
-		recY = m_tex->GetInfo().Height;
+		m_recX = m_spTex->GetInfo().Width / 11;
+		m_recY = m_spTex->GetInfo().Height;
 	}
 }
 

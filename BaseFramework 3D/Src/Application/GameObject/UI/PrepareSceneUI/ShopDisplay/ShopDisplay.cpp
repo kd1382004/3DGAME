@@ -121,10 +121,10 @@ void ShopDisplay::Init()
 	}
 
 	// スクロールの場所(レールの左端のx・真ん中のy・長さ)
-	m_listScroll.trackLeft = -60.0f; m_listScroll.trackY = 40.0f; m_listScroll.trackW = 640.0f;
-	m_listScroll.visibleNum = kListVisibleNum;
-	m_haveScroll.trackLeft = 40.0f; m_haveScroll.trackY = -324.0f; m_haveScroll.trackW = 520.0f;
-	m_haveScroll.visibleNum = kHaveVisibleNum;
+	m_listScroll.m_trackLeft = -60.0f; m_listScroll.m_trackY = 40.0f; m_listScroll.m_trackW = 640.0f;
+	m_listScroll.m_visibleNum = kListVisibleNum;
+	m_haveScroll.m_trackLeft = 40.0f; m_haveScroll.m_trackY = -324.0f; m_haveScroll.m_trackW = 520.0f;
+	m_haveScroll.m_visibleNum = kHaveVisibleNum;
 }
 
 void ShopDisplay::LoadShopData()
@@ -154,8 +154,8 @@ void ShopDisplay::LoadShopData()
 			{
 				int id = item.value("id", -1);
 				if (id < 0 || id >= _num) { continue; }
-				_items[id].buyPrice = item.value("buyPrice", 0);
-				_items[id].sellPrice = item.value("sellPrice", 0);
+				_items[id].m_buyPrice = item.value("buyPrice", 0);
+				_items[id].m_sellPrice = item.value("sellPrice", 0);
 			}
 		};
 	readMaster("potions", m_potionItem, PotionsTypeMax);
@@ -170,7 +170,7 @@ void ShopDisplay::LoadShopData()
 			{
 				int id = item.value("id", -1);
 				if (id < 0 || id >= _num) { continue; }
-				_items[id].stock = item.value("stock", 0);
+				_items[id].m_stock = item.value("stock", 0);
 			}
 		};
 	readStock("potions", m_potionItem, PotionsTypeMax);
@@ -287,8 +287,8 @@ void ShopDisplay::Update()
 				m_tab = static_cast<ShopTab>(t);
 				m_selectIndex = 0;
 				m_count = 1;
-				m_listScroll.index = 0;
-				m_haveScroll.index = 0;
+				m_listScroll.m_index = 0;
+				m_haveScroll.m_index = 0;
 				m_clickFlg = false;
 			}
 		}
@@ -308,11 +308,11 @@ void ShopDisplay::Update()
 
 	//---------- 商品一覧(カーソル・選択) ----------
 	m_hoverIndex = -1;
-	if (!m_listScroll.dragFlg)
+	if (!m_listScroll.m_dragFlg)
 	{
 		for (int slot = 0; slot < kListVisibleNum; slot++)
 		{
-			int index = m_listScroll.index + slot;
+			int index = m_listScroll.m_index + slot;
 			if (index >= listNum) { break; }
 
 			const Math::Vector2 slotPos = { kSlotPos.x + kSlotSpace * slot, kSlotPos.y };
@@ -359,81 +359,81 @@ bool ShopDisplay::MouseHit(const Math::Vector2& _pos, float _w, float _h) const
 /////////////////////////////////////////////////////////////////////
 void ShopDisplay::ScrollCalc(HScroll& _scroll, int _total)
 {
-	const int   maxIndex = std::max(0, _total - _scroll.visibleNum);
-	const float innerX = _scroll.trackLeft + kTrackInset;
-	const float innerW = _scroll.trackW - kTrackInset * 2.0f;
+	const int   maxIndex = std::max(0, _total - _scroll.m_visibleNum);
+	const float innerX = _scroll.m_trackLeft + kTrackInset;
+	const float innerW = _scroll.m_trackW - kTrackInset * 2.0f;
 
 	// スクロールの必要がなければ、つまみはレールいっぱい
 	if (maxIndex == 0)
 	{
-		_scroll.index = 0;
-		_scroll.thumbX = innerX;
-		_scroll.thumbW = innerW;
+		_scroll.m_index = 0;
+		_scroll.m_thumbX = innerX;
+		_scroll.m_thumbW = innerW;
 		return;
 	}
 
 	// 長さ = レールの長さ × 見えている数 ÷ 全部の数(下限あり)
-	const float thumbW = innerW * static_cast<float>(_scroll.visibleNum) / static_cast<float>(_total);
-	_scroll.thumbW = std::clamp(thumbW, m_thumbMinW, innerW);
+	const float thumbW = innerW * static_cast<float>(_scroll.m_visibleNum) / static_cast<float>(_total);
+	_scroll.m_thumbW = std::clamp(thumbW, m_thumbMinW, innerW);
 
 	// 位置 = 今の番号の割合
-	_scroll.index = std::clamp(_scroll.index, 0, maxIndex);
-	const float ratio = static_cast<float>(_scroll.index) / static_cast<float>(maxIndex);
-	_scroll.thumbX = innerX + (innerW - _scroll.thumbW) * ratio;
+	_scroll.m_index = std::clamp(_scroll.m_index, 0, maxIndex);
+	const float ratio = static_cast<float>(_scroll.m_index) / static_cast<float>(maxIndex);
+	_scroll.m_thumbX = innerX + (innerW - _scroll.m_thumbW) * ratio;
 }
 
 void ShopDisplay::ScrollUpdate(HScroll& _scroll, int _total, const Math::Vector2& _panelPos, float _panelW, float _panelH)
 {
-	const int maxIndex = std::max(0, _total - _scroll.visibleNum);
+	const int maxIndex = std::max(0, _total - _scroll.m_visibleNum);
 
 	// スクロールの必要がなければ何もしない
 	if (maxIndex == 0)
 	{
-		_scroll.index = 0;
-		_scroll.dragFlg = false;
-		_scroll.hoverFlg = false;
+		_scroll.m_index = 0;
+		_scroll.m_dragFlg = false;
+		_scroll.m_hoverFlg = false;
 		return;
 	}
 
 	const float mx = static_cast<float>(MouseInfo::Instance().m_windowPos.x);
 
-	const float trackLeft = _scroll.trackLeft + kTrackInset;
-	const float trackRight = _scroll.trackLeft + _scroll.trackW - kTrackInset;
+	const float trackLeft = _scroll.m_trackLeft + kTrackInset;
+	const float trackRight = _scroll.m_trackLeft + _scroll.m_trackW - kTrackInset;
 
-	const bool isOnTrack = MouseHit({ (trackLeft + trackRight) / 2.0f, _scroll.trackY }, trackRight - trackLeft, kTrackH);
-	const bool isOnThumb = isOnTrack && mx >= _scroll.thumbX && mx <= _scroll.thumbX + _scroll.thumbW;
+	const bool isOnTrack = MouseHit({ (trackLeft + trackRight) / 2.0f, _scroll.m_trackY }, trackRight - trackLeft, kTrackH);
+	const bool isOnThumb = isOnTrack && mx >= _scroll.m_thumbX && mx <= _scroll.m_thumbX + _scroll.m_thumbW;
 
 	//---------- ドラッグ開始 ----------
-	if (isOnThumb && !_scroll.dragFlg)
+	if (isOnThumb && !_scroll.m_dragFlg)
 	{
 		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 		if (m_clickFlg)
 		{
-			_scroll.dragFlg = true;
-			_scroll.dragOffsetX = mx - _scroll.thumbX;
+			_scroll.m_dragFlg = true;
+			_scroll.m_dragOffsetX = mx - _scroll.m_thumbX;
 			m_clickFlg = false;
 		}
 	}
 
 	//---------- ドラッグ中 ----------
-	if (_scroll.dragFlg)
+	if (_scroll.m_dragFlg)
 	{
 		if (!(GetAsyncKeyState(VK_LBUTTON) & 0x8000))
 		{
-			_scroll.dragFlg = false;
+			_scroll.m_dragFlg = false;
 		}
 		else
 		{
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 
-			const float moveRange = (trackRight - _scroll.thumbW) - trackLeft;
+			const float moveRange = (trackRight - _scroll.m_thumbW) - trackLeft;
 			float ratio = 0.0f;
 			if (moveRange > 0.0f)
 			{
-				ratio = (mx - _scroll.dragOffsetX - trackLeft) / moveRange;
+				ratio = (mx - _scroll.m_dragOffsetX - trackLeft) / moveRange;
 			}
 			ratio = std::clamp(ratio, 0.0f, 1.0f);
-			_scroll.index = static_cast<int>(std::round(ratio * maxIndex));
+			_scroll.m_index = static_cast<int>(std::round(ratio * maxIndex));
 		}
 	}
 	//---------- レールをクリック → 1画面分動く ----------
@@ -442,21 +442,21 @@ void ShopDisplay::ScrollUpdate(HScroll& _scroll, int _total, const Math::Vector2
 		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 		if (m_clickFlg)
 		{
-			_scroll.index += (mx < _scroll.thumbX) ? -_scroll.visibleNum : _scroll.visibleNum;
+			_scroll.m_index += (mx < _scroll.m_thumbX) ? -_scroll.m_visibleNum : _scroll.m_visibleNum;
 			m_clickFlg = false;
 		}
 	}
 
 	//---------- マウスホイール(そのパネルの上にあるときだけ) ----------
-	if (!_scroll.dragFlg && MouseHit(_panelPos, _panelW, _panelH))
+	if (!_scroll.m_dragFlg && MouseHit(_panelPos, _panelW, _panelH))
 	{
 		int wheel = MouseInfo::Instance().GetMouseWheelValue();
-		if (wheel >= 1) { _scroll.index -= 1; }
-		else if (wheel <= -1) { _scroll.index += 1; }
+		if (wheel >= 1) { _scroll.m_index -= 1; }
+		else if (wheel <= -1) { _scroll.m_index += 1; }
 	}
 
-	_scroll.hoverFlg = isOnThumb || _scroll.dragFlg;
-	_scroll.index = std::clamp(_scroll.index, 0, maxIndex);
+	_scroll.m_hoverFlg = isOnThumb || _scroll.m_dragFlg;
+	_scroll.m_index = std::clamp(_scroll.m_index, 0, maxIndex);
 }
 
 void ShopDisplay::ScrollDraw(const HScroll& _scroll, ShopTex _track)
@@ -464,9 +464,9 @@ void ShopDisplay::ScrollDraw(const HScroll& _scroll, ShopTex _track)
 	// 左端を基準に、横に並べて描く
 	const Math::Vector2 pivotLeft = { 0.0f, 0.5f };
 
-	DrawTexSize(m_spTex[static_cast<int>(_track)], { _scroll.trackLeft, _scroll.trackY }, _scroll.trackW, kTrackH, pivotLeft);
+	DrawTexSize(m_spTex[static_cast<int>(_track)], { _scroll.m_trackLeft, _scroll.m_trackY }, _scroll.m_trackW, kTrackH, pivotLeft);
 
-	const bool hover = _scroll.hoverFlg;
+	const bool hover = _scroll.m_hoverFlg;
 	const auto& spL = m_spTex[static_cast<int>(hover ? ShopTex::ThumbLeftHover : ShopTex::ThumbLeft)];
 	const auto& spM = m_spTex[static_cast<int>(hover ? ShopTex::ThumbMidHover : ShopTex::ThumbMid)];
 	const auto& spR = m_spTex[static_cast<int>(hover ? ShopTex::ThumbRightHover : ShopTex::ThumbRight)];
@@ -475,15 +475,15 @@ void ShopDisplay::ScrollDraw(const HScroll& _scroll, ShopTex _track)
 
 	const float lw = static_cast<float>(spL->GetWidth());
 	const float rw = static_cast<float>(spR->GetWidth());
-	const float y = _scroll.trackY;
+	const float y = _scroll.m_trackY;
 
-	DrawTexSize(spL, { _scroll.thumbX, y }, lw, kTrackH, pivotLeft);
-	const float midW = _scroll.thumbW - lw - rw;
-	if (midW > 0.0f) { DrawTexSize(spM, { _scroll.thumbX + lw, y }, midW, kTrackH, pivotLeft); }
-	DrawTexSize(spR, { _scroll.thumbX + _scroll.thumbW - rw, y }, rw, kTrackH, pivotLeft);
+	DrawTexSize(spL, { _scroll.m_thumbX, y }, lw, kTrackH, pivotLeft);
+	const float midW = _scroll.m_thumbW - lw - rw;
+	if (midW > 0.0f) { DrawTexSize(spM, { _scroll.m_thumbX + lw, y }, midW, kTrackH, pivotLeft); }
+	DrawTexSize(spR, { _scroll.m_thumbX + _scroll.m_thumbW - rw, y }, rw, kTrackH, pivotLeft);
 
 	// 持ち手はつまみの真ん中
-	DrawTex(spG, { _scroll.thumbX + _scroll.thumbW / 2.0f, y });
+	DrawTex(spG, { _scroll.m_thumbX + _scroll.m_thumbW / 2.0f, y });
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -540,7 +540,7 @@ void ShopDisplay::DrawList()
 	const int listNum = GetListNum();
 	for (int slot = 0; slot < kListVisibleNum; slot++)
 	{
-		const int index = m_listScroll.index + slot;
+		const int index = m_listScroll.m_index + slot;
 		if (index >= listNum) { break; }
 
 		const Math::Vector2 slotPos = { kSlotPos.x + kSlotSpace * slot, kSlotPos.y };
@@ -551,13 +551,13 @@ void ShopDisplay::DrawList()
 			// 消耗品・素材のアイコンは40px → 1.5倍(60px)
 			DrawTex(GetStackTex(index, ItemTex::Icon), slotPos, 1.5f);
 
-			if (GetStackItem(index).stock <= 0)
+			if (GetStackItem(index).m_stock <= 0)
 			{
 				DrawTex(m_spTex[static_cast<int>(ShopTex::SoldOut)], underPos);
 			}
 			else
 			{
-				drawPrice(GetStackItem(index).buyPrice, slotPos.x);
+				drawPrice(GetStackItem(index).m_buyPrice, slotPos.x);
 			}
 		}
 		else if (m_tab == ShopTab::Weapon)
@@ -565,13 +565,13 @@ void ShopDisplay::DrawList()
 			DrawTex(m_spWeaponTex[index][static_cast<int>(ItemTex::Icon)], slotPos);
 
 			// 持っている → 所持済み / 在庫なし → 未入荷 / それ以外 → 値段
-			if (m_weaponOwned[index] || m_weaponItem[index].stock <= 0)
+			if (m_weaponOwned[index] || m_weaponItem[index].m_stock <= 0)
 			{
 				DrawTex(m_spTex[static_cast<int>(m_weaponOwned[index] ? ShopTex::Owned : ShopTex::NotStocked)], underPos);
 			}
 			else
 			{
-				drawPrice(m_weaponItem[index].buyPrice, slotPos.x);
+				drawPrice(m_weaponItem[index].m_buyPrice, slotPos.x);
 			}
 		}
 
@@ -615,7 +615,7 @@ void ShopDisplay::DrawDetail()
 		DrawTex(m_spTex[static_cast<int>(ShopTex::Count)], { kInfoValueX + haveW + 28.0f, InfoRowY(0) + 1.0f });
 
 		// 在庫 〇(同じ行の右側)
-		DrawStock(item.stock);
+		DrawStock(item.m_stock);
 
 		// 数量 － 〇 ＋(数字は-と+の真ん中)
 		label(ShopTex::CountLabel, 1);
@@ -624,11 +624,11 @@ void ShopDisplay::DrawDetail()
 		DrawButton(ShopButton::Plus, { kCountPlusX, InfoRowY(1) }, true);
 
 		// 買値・売値 … 数量分の合計
-		const long buyTotal = static_cast<long>(item.buyPrice) * m_count;
-		const long sellTotal = static_cast<long>(item.sellPrice) * m_count;
+		const long buyTotal = static_cast<long>(item.m_buyPrice) * m_count;
+		const long sellTotal = static_cast<long>(item.m_sellPrice) * m_count;
 
 		// 買える:在庫が数量以上 かつ お金が足りる / 売れる:持っている数が数量以上
-		const bool canBuy = (item.stock >= m_count) && (m_money >= buyTotal);
+		const bool canBuy = (item.m_stock >= m_count) && (m_money >= buyTotal);
 		const bool canSell = (have >= m_count);
 
 		// 買値 〇 G [買う]
@@ -659,7 +659,7 @@ void ShopDisplay::DrawDetail()
 		DrawTex(m_spTex[static_cast<int>(owned ? ShopTex::Have : ShopTex::NotHave)], { kHaveTextX, InfoRowY(0) });
 
 		// 在庫 〇(同じ行の右側)
-		DrawStock(item.stock);
+		DrawStock(item.m_stock);
 
 		// 買値(持っていたら ー)
 		label(ShopTex::BuyPriceLabel, 1);
@@ -669,13 +669,13 @@ void ShopDisplay::DrawDetail()
 		}
 		else
 		{
-			DrawPrice(item.buyPrice, InfoRowY(1));
+			DrawPrice(item.m_buyPrice, InfoRowY(1));
 		}
 
 		// 武器は売れないので、売値の行と売るボタンは出さない
 
 		// 買える:持っていない・在庫あり・お金が足りる
-		const bool canBuy = !owned && item.stock > 0 && m_money >= item.buyPrice;
+		const bool canBuy = !owned && item.m_stock > 0 && m_money >= item.m_buyPrice;
 		DrawButton(ShopButton::Buy, { kInfoButtonX, InfoRowY(1) }, canBuy);
 	}
 }
@@ -688,12 +688,12 @@ void ShopDisplay::DrawInventory()
 	const std::vector<HaveItem> list = GetHaveList();
 	for (int slot = 0; slot < kHaveVisibleNum; slot++)
 	{
-		const int index = m_haveScroll.index + slot;
+		const int index = m_haveScroll.m_index + slot;
 		if (index >= static_cast<int>(list.size())) { break; }
 
 		// アイコン(40px) → 「×」 → 個数 の順に右へ並べる
 		const float x = kHaveItemX + kHaveSpace * slot;
-		const auto& spIcon = list[index].spIcon;
+		const auto& spIcon = list[index].m_spIcon;
 		if (spIcon)
 		{
 			// アイコンは40pxに揃える(武器は64px → 縮める)
@@ -701,7 +701,7 @@ void ShopDisplay::DrawInventory()
 			DrawTex(spIcon, { x, kHaveItemY }, scale);
 		}
 		DrawTex(m_spTex[static_cast<int>(ShopTex::Times)], { x + 44.0f, kHaveItemY });
-		DrawNum(list[index].num, LAligned, { x + 60.0f, kHaveItemY }, 2.0f, false, kHaveNumMaxW);
+		DrawNum(list[index].m_num, LAligned, { x + 60.0f, kHaveItemY }, 2.0f, false, kHaveNumMaxW);
 	}
 
 	ScrollDraw(m_haveScroll, ShopTex::InventoryTrack);
@@ -789,11 +789,11 @@ bool ShopDisplay::BuyStackItem(int _index, int _count)
 	ShopItem& item = items[_index];
 
 	// 合計の値段
-	const long total = static_cast<long>(item.buyPrice) * _count;
+	const long total = static_cast<long>(item.m_buyPrice) * _count;
 
 
 	// 在庫が足りない
-	if (item.stock < _count) { return false; }
+	if (item.m_stock < _count) { return false; }
 
 	// お金が足りない
 	if (m_money < total) { return false; }
@@ -801,7 +801,7 @@ bool ShopDisplay::BuyStackItem(int _index, int _count)
 
 	//---------- 買う ----------
 	m_money -= total;		// お金を払う
-	item.stock -= _count;	// お店の在庫が減る
+	item.m_stock -= _count;	// お店の在庫が減る
 	have[_index] += _count;	// 自分の持ち物が増える
 
 	return true;
@@ -845,7 +845,7 @@ bool ShopDisplay::SellStackItem(int _index, int _count)
 	ShopItem& item = items[_index];
 
 	// 合計の値段
-	const long total = static_cast<long>(item.sellPrice) * _count;
+	const long total = static_cast<long>(item.m_sellPrice) * _count;
 
 
 	// 所持量が足りない
@@ -854,7 +854,7 @@ bool ShopDisplay::SellStackItem(int _index, int _count)
 
 	//---------- 売る ----------
 	m_money += total;		// お金をもらう
-	item.stock += _count;	// お店の在庫が増える
+	item.m_stock += _count;	// お店の在庫が増える
 	have[_index] -= _count;	// 自分の持ち物が減る
 
 	return true;
@@ -868,12 +868,12 @@ bool ShopDisplay::BuyWeapon(int _id)
 	ShopItem& item = m_weaponItem[_id];		// 書き換えるので参照(&)で取る
 
 	if (m_weaponOwned[_id]) { return false; }	// もう持っている(同じ武器は2本いらない)
-	if (item.stock <= 0) { return false; }	// 在庫がない(未入荷)
-	if (m_money < item.buyPrice) { return false; }	// お金が足りない
+	if (item.m_stock <= 0) { return false; }	// 在庫がない(未入荷)
+	if (m_money < item.m_buyPrice) { return false; }	// お金が足りない
 
 	//---------- 買う ----------
-	m_money -= item.buyPrice;		// お金を払う
-	item.stock -= 1;				// お店の在庫が減る
+	m_money -= item.m_buyPrice;		// お金を払う
+	item.m_stock -= 1;				// お店の在庫が減る
 	m_weaponOwned[_id] = true;		// 持っている武器になる
 
 	return true;
@@ -902,7 +902,7 @@ void ShopDisplay::SaveShopData()
 			file << _data.dump(4);	// 4 … 字下げの幅(今のファイルと同じ見た目)
 		};
 
-	// 配列 _key の中で "id" が合う要素の _valueKey に、_values[id] を書く
+	// 配列 _key の中で "id" が合う要素の _valueKey に、_getValue(id) を書く
 	// (ファイルに無いidは書かない。順番が違っても id で合わせる)
 	auto writeArray = [](nlohmann::json& _data, const char* _key, const char* _valueKey, auto _getValue, int _num)
 		{
@@ -917,9 +917,9 @@ void ShopDisplay::SaveShopData()
 
 	//---------- お店の在庫(ShopStockData.json) ----------
 	nlohmann::json stock = readJson(m_shopStockPath);
-	writeArray(stock, "potions", "stock", [&](int _id) { return m_potionItem[_id].stock; }, PotionsTypeMax);
-	writeArray(stock, "materials", "stock", [&](int _id) { return m_materialItem[_id].stock; }, kMaterialNum);
-	writeArray(stock, "weapons", "stock", [&](int _id) { return m_weaponItem[_id].stock; }, PlayerWeaponInfoSize);
+	writeArray(stock, "potions", "stock", [&](int _id) { return m_potionItem[_id].m_stock; }, PotionsTypeMax);
+	writeArray(stock, "materials", "stock", [&](int _id) { return m_materialItem[_id].m_stock; }, kMaterialNum);
+	writeArray(stock, "weapons", "stock", [&](int _id) { return m_weaponItem[_id].m_stock; }, PlayerWeaponInfoSize);
 	writeJson(m_shopStockPath, stock);
 
 	//---------- 持ち物とお金(PlayerInventoryData.json) ----------
@@ -977,7 +977,7 @@ void ShopDisplay::DrawPrice(long _price, float _rowY)
 
 void ShopDisplay::DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _siz, bool _separator, float _maxW)
 {
-	NumDraw::GetInstance().Drow(_num, _aligned, _pos, Math::Color(1, 1, 1, 1), _siz, _separator, -1, { _maxW, 0.0f });
+	NumDraw::GetInstance().Draw(_num, _aligned, _pos, Math::Color(1, 1, 1, 1), _siz, _separator, -1, { _maxW, 0.0f });
 
 	// NumDrawの中で Begin/End しているので、続けて描けるよう開き直す
 	KdShaderManager::Instance().m_spriteShader.Begin(false);

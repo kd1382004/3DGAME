@@ -7,15 +7,22 @@ class PlayerBase;
 class PotionUseController
 {
 public:
+	//コンストラクタ
 	PotionUseController() {};
+	//デストラクタ
 	~PotionUseController() {};
 
+	//ポーションを使う(番号で効果を分ける)
+	// _potionsID ... 使うポーションの番号
 	void PotionUse(int _potionsID);
 
+	//ポーションを使うプレイヤーをセット
+	// _spPlayerBase ... プレイヤー
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
 
 private:
 
+	//ポーションを使うプレイヤー
 	std::weak_ptr<PlayerBase>m_wpPlayerBase;
 
 	/////////////////
@@ -26,13 +33,17 @@ private:
 	//攻撃力関係
 	void UseBaseAttackUPPotion();
 
+	//攻撃力を一時的に上げるポーションを使う
 	void UseAttackBoostPotion();
 
 	/////////////////
 	//スタミナ関係
 	void UseInstantStaminaHeal();
+	//スタミナ回復速度の基礎を上げるポーションを使う
 	void UseStaminaRegenBaseUPPotion();
+	//スタミナ回復速度を一時的に上げるポーションを使う
 	void UseStaminaRegenBoostPotion();
+	//最大スタミナを上げるポーションを使う
 	void UseStaminaMaxUPPotion();
 
 	//スタミナ系ポーションを使ったときのエフェクト

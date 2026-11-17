@@ -21,24 +21,27 @@ class 	MapGenerate;
 // ノード構造体 (A* 経路探索用)
 struct Node
 {
-	Math::Vector2 pos = Math::Vector2::Zero;
+	//ノードの位置(マス番号)
+	Math::Vector2 m_pos = Math::Vector2::Zero;
 
 	// 通れるかどうか
-	bool walkable = false;
+	bool m_walkable = false;
 
 	// スタートからのコスト
-	float gCost = 0.0f;
+	float m_gCost = 0.0f;
 
 	// ゴールまでの推定コスト
-	float hCost = 0.0f;
+	float m_hCost = 0.0f;
 
 	// 経路復元用
-	Node* parent = nullptr;
+	Node* m_parent = nullptr;
 
-	uint32_t searchId = 0; // 今回の探索ID（これで初期化を判定）
-	bool inClosed = false;
+	uint32_t m_searchId = 0; // 今回の探索ID（これで初期化を判定）
+	bool m_inClosed = false;
 
-	float fCost() const { return gCost + hCost; }
+	//合計のコストを返す
+	//戻り値 ... gCost+hCost
+	float FCost() const { return m_gCost + m_hCost; }
 };
 
 enum MapType
@@ -51,76 +54,114 @@ enum MapType
 class MapManager : public KdGameObject
 {
 public:
+	//コンストラクタ
 	MapManager() = default;
+	//デストラクタ
 	~MapManager() override = default;
 
+	//初期化
 	void Init() override;
+	//更新
 	void Update() override;
+	//更新後の処理
 	void PostUpdate() override;
+	//ライトありの描画
 	void DrawLit() override;
+	//描画前の処理(視錐台カリングなど)
 	void PreDraw() override;
+	//影の描画
 	void GenerateDepthMapFromLight() override;
 
 	// マップと当たり判定させたいオブジェクトを登録
-	void MapHit(const std::shared_ptr<KdGameObject>& obj);
+	// _spObj ... 当たり判定させるオブジェクト
+	void MapHit(const std::shared_ptr<KdGameObject>& _spObj);
 
 	// マップと当たり判定させたい敵を登録
-	void MapHitEnemy(const std::shared_ptr<EnemyBase>& obj);
+	// _spObj ... 当たり判定させる敵
+	void MapHitEnemy(const std::shared_ptr<EnemyBase>& _spObj);
 
-	void SetCamera(const std::shared_ptr<CameraBase>& spCamera);
+	//カメラをセット
+	// _spCamera ... カメラ
+	void SetCamera(const std::shared_ptr<CameraBase>& _spCamera);
 
+	//プレイヤーのスポーン位置を返す
+	//戻り値 ... スポーン位置
 	const Math::Vector3& GetPlayerSpawnPos() const { return m_playerSpawnPos; }
 
-	void SetPlayerSpawnPos(const Math::Vector3& playerSpawnPos) { m_playerSpawnPos = playerSpawnPos; }
+	//プレイヤーのスポーン位置をセット
+	// _playerSpawnPos ... スポーン位置
+	void SetPlayerSpawnPos(const Math::Vector3& _playerSpawnPos) { m_playerSpawnPos = _playerSpawnPos; }
 
 
 	//マップ生成
 	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
-	//roomNum			...部屋の最大個数
+	//_roomNum			...部屋の最大個数
 	//_type				...マップの種類
-	void GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _type);
+	void GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _type);
 
 	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
 	//_type				...マップの種類
 	void GenerateBossMap(Math::Vector2 _mapSiz, MapType _type);
 
-	void SetPlayer(const std::shared_ptr<PlayerBase>& spPlayerBase) { m_wpPlayerBase = spPlayerBase; }
-	void SetEnemyManager(const std::shared_ptr<EnemyManager>& spEnemyManager) { m_wpEnemyManager = spEnemyManager; }
-	void SetUIManager(const std::shared_ptr<UIManager>& spUIManager) { m_wpUIManager = spUIManager; }
+	//プレイヤーをセット
+	// _spPlayerBase ... プレイヤー
+	void SetPlayer(const std::shared_ptr<PlayerBase>& _spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
+	//敵の管理をセット
+	// _spEnemyManager ... 敵の管理
+	void SetEnemyManager(const std::shared_ptr<EnemyManager>& _spEnemyManager) { m_wpEnemyManager = _spEnemyManager; }
+	//UIの管理をセット
+	// _spUIManager ... UIの管理
+	void SetUIManager(const std::shared_ptr<UIManager>& _spUIManager) { m_wpUIManager = _spUIManager; }
 
 	////////////////////////////////////////////
 	/// <ノード>
 
 	// ノードからワールド座標に変換
-	Math::Vector3 NodeToWorld(const Node* node) const;
+	// _node ... ノード
+	Math::Vector3 NodeToWorld(const Node* _node) const;
 
 	// ワールド座標からノードに変換
-	Node* WorldToNode(const Math::Vector3& worldPos);
+	// _worldPos ... ワールド座標
+	Node* WorldToNode(const Math::Vector3& _worldPos);
 
 	// A* 経路探索
-	std::vector<Node*> FindPath(Node* start, Node* goal);
+	// _start ... スタートのノード
+	// _goal ... ゴールのノード
+	std::vector<Node*> FindPath(Node* _start, Node* _goal);
 
 	/// </ノード>
 	////////////////////////////////////////////
 
 
-	void SetMapObjManager(std::shared_ptr<MapObjManager>_obj) { m_wpMapObjManager = _obj; }
+	//マップオブジェクトの管理をセット
+	// _spObj ... マップオブジェクトの管理
+	void SetMapObjManager(std::shared_ptr<MapObjManager>_spObj) { m_wpMapObjManager = _spObj; }
 
 
 
 	//プレイヤーの座標をセットして、Update以降処理するチャンクを決める
-	void SetPlayerChanke(Math::Vector3 _pos);
+	// _pos ... プレイヤーの座標
+	void SetPlayerChunk(Math::Vector3 _pos);
 
 	//座標を渡して更新するかどうかを返す
+	// _pos ... 座標
 	bool GetChunksUpdate(Math::Vector3 _pos);
 
 	//チャンク番号を渡して更新するかどうかを返す
+	// _chunkNum ... チャンク番号
 	bool GetChunksUpdate(Math::Vector2 _chunkNum);
+	//チャンク番号を渡して描画するかどうかを返す
+	// _chunkNum ... チャンク番号
+	//戻り値 ... 描画するならtrue
 	bool GetChunksDraw(Math::Vector2 _chunkNum);
 
+	//このフレームでプレイヤーのいるチャンクが変わったか
+	//戻り値 ... 変わったならtrue
 	bool GetIsChunkChanged() { return m_isChunkChanged; }
 
-	std::vector<std::shared_ptr<MapBase>> GetUpdateChankes() { return m_updateChankes; }
+	//更新するチャンクのマップを返す
+	//戻り値 ... 更新するマップの一覧
+	std::vector<std::shared_ptr<MapBase>> GetUpdateChunks() { return m_updateChunks; }
 
 
 	///////////////////////////////////////
@@ -128,72 +169,100 @@ public:
 	Math::Vector3 GetRandomPos();
 
 
-	Math::Vector3 GetNextWarpGatePos() { return m_NextWarpGatePos; }
-	Math::Vector3 GetEscapeWarpGatePos() { return m_EscapeWarpGatePos; }
+	//次の階へのワープゲートの位置を返す
+	//戻り値 ... ワープゲートの位置
+	Math::Vector3 GetNextWarpGatePos() { return m_nextWarpGatePos; }
+	//脱出用ワープゲートの位置を返す
+	//戻り値 ... ワープゲートの位置
+	Math::Vector3 GetEscapeWarpGatePos() { return m_escapeWarpGatePos; }
 
-	Math::Vector3 GetCHUNKCenterPos();
+	//描画チャンクの中心の座標を返す
+	//戻り値 ... 中心の座標
+	Math::Vector3 GetChunkCenterPos();
 
 
 private:
 
-	Math::Vector3 m_NextWarpGatePos;
-	Math::Vector3 m_EscapeWarpGatePos;
+	//次の階へのワープゲートの位置
+	Math::Vector3 m_nextWarpGatePos;
+	//脱出用ワープゲートの位置
+	Math::Vector3 m_escapeWarpGatePos;
 
 
+	//マップの基準位置
 	Math::Vector3 m_mapBasePos;
 
 	////////////////////////////////////////////
 	/// <ノード>
 
 	// ノード配列初期化
-	void CreateNodeGrid(int width, int height, float tileSize);
+	// _width ... 横のマス数
+	// _height ... 縦のマス数
+	// _tileSize ... 1マスの大きさ
+	void CreateNodeGrid(int _width, int _height, float _tileSize);
 
 	// 歩けるかどうかを設定
-	void ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapData);
+	// _mapData ... 歩けるかどうかのマップデータ
+	void ApplyWalkableFromMap(const std::vector<std::vector<bool>>& _mapData);
 
+	//ノードの配列
 	std::vector<std::vector<Node>> m_nodes;
+	//今の探索ID
 	uint32_t m_currentSearchId = 0;
 
 	// 経路復元
-	std::vector<Node*> BuildPath(Node* goal) const;
+	// _goal ... ゴールのノード
+	std::vector<Node*> BuildPath(Node* _goal) const;
 
 	// 上下左右を返す
-	std::vector<Node*> GetNeighbors(Node* node);
+	// _node ... 中心のノード
+	std::vector<Node*> GetNeighbors(Node* _node);
 
 	// 8方向移動用ヒューリスティック(Octile距離)
-	float Heuristic(const Node* a, const Node* b) const
+	// _a ... ノード1
+	// _b ... ノード2
+	float Heuristic(const Node* _a, const Node* _b) const
 	{
-		float dx = std::abs(a->pos.x - b->pos.x);
-		float dy = std::abs(a->pos.y - b->pos.y);
+		float dx = std::abs(_a->m_pos.x - _b->m_pos.x);
+		float dy = std::abs(_a->m_pos.y - _b->m_pos.y);
 		return (dx + dy) + (1.41421356f - 2.0f) * std::min(dx, dy);
 	}
 
 	/// </ノード>
 	////////////////////////////////////////////
 
+	//プレイヤー
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
+	//プレイヤーのスポーン位置
 	Math::Vector3 m_playerSpawnPos = Math::Vector3::Zero;
 
+	//敵の管理
 	std::weak_ptr<EnemyManager> m_wpEnemyManager;
 
 
 
+	//カメラ
 	std::weak_ptr<CameraBase> m_wpCamera;
 
+	//マップオブジェクトの一覧
 	std::list<std::shared_ptr<MapBase>> m_mapObj;
 
+	//チャンクごとのマップオブジェクト
 	std::vector<std::vector<std::vector<std::weak_ptr<MapBase>>>> m_chunks;
 
 
 	//更新処理するチャンク
-	std::vector<std::shared_ptr<MapBase>>m_updateChankes;
-	std::vector<std::shared_ptr<MapBase>>m_darawChankes;
+	std::vector<std::shared_ptr<MapBase>>m_updateChunks;
+	//描画するチャンク
+	std::vector<std::shared_ptr<MapBase>>m_drawChunks;
 
 	//チャンクのXYを保存
-	Math::Vector2 m_chankeNum = { -999,-999 };
+	Math::Vector2 m_chunkNum = { -999,-999 };
 
+	//このフレームでプレイヤーのいるチャンクが変わったか
 	bool m_isChunkChanged = false;
 
+	//1タイルの大きさ
 	float m_mapTileSiz = 10.0f;
 
 	////////////////////////////////////////
@@ -206,9 +275,11 @@ private:
 
 
 
+	//マップ生成
 	std::shared_ptr<MapGenerate> m_spMapGenerate;
 
-	int CHUNK_SIZE;
+	//1チャンクのタイル数(縦横)
+	int m_chunkSize;
 
 	//更新チャンク
 	//縦横に+-xyずつ
@@ -221,8 +292,10 @@ private:
 
 	//チャンクを囲むボックス
 	Math::Vector3 m_boxPos;
+	//チャンクを囲むボックスの大きさ
 	Math::Vector3 m_boxSiz;
 
+	//チャンクを囲むボックスのモデル
 	std::shared_ptr<KdModelData>m_spBoxModel;
 };
 

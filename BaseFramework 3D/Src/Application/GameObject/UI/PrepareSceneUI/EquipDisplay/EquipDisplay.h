@@ -7,19 +7,28 @@ class PrepareScene;
 class EquipDisplay :public UIBase
 {
 public:
+	//コンストラクタ
 	EquipDisplay() {};
+	//デストラクタ
 	~EquipDisplay() override{};
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//2Dの描画
 	void DrawSprite()override;
 
 	// 準備シーンをセット
+	// _spPrepareScene ... 準備シーン
 	void SetPrepareScene(std::shared_ptr<PrepareScene> _spPrepareScene) { m_wpPrepareScene = _spPrepareScene; }
 
 	// 表示する(true)・しない(false)
 	// PrepareScene::ChangeTabから呼ばれる
+	// _flg ... 表示するか
 	void SetActive(bool _flg) { m_activeFlg = _flg; }
+	//表示中かを返す
+	//戻り値 ... 表示中ならtrue
 	bool GetActive() const { return m_activeFlg; }
 
 	// 持っている武器をセット(PrepareScene::Initから、Initより前に呼ぶ)
@@ -37,6 +46,8 @@ private:
 	// 座標はフレームワークと同じ(画面の真ん中が0,0・右と上がプラス)
 
 	//マウスと当たってるかを返す(_pos … 四角の真ん中)
+	// _w ... 四角の横幅
+	// _h ... 四角の高さ
 	bool MouseHit(Math::Vector2 _pos,float _w,float _h);
 
 
@@ -67,6 +78,7 @@ private:
 		TexSize
 	};
 
+	//画面共通の画像
 	std::shared_ptr<KdTexture> m_spTex[static_cast<int>(EquipTex::TexSize)];
 
 	// パス(EquipTexの順)
@@ -100,6 +112,7 @@ private:
 		WeaponTexSize
 	};
 
+	//武器ごとの画像
 	std::shared_ptr<KdTexture> m_spWeaponTex[PlayerWeaponInfoSize][static_cast<int>(WeaponTex::WeaponTexSize)];
 
 	// パス(PlayerWeaponInfoの順 × WeaponTexの順)
@@ -119,6 +132,9 @@ private:
 
 	// 画像の読み込み
 	void LoadTex();
+	//画像を1枚読み込む(読み込み済みなら何もしない)
+	// _spTex ... 読み込んだ画像を入れる先
+	// _path ... 画像のパス
 	void LoadOneTex(std::shared_ptr<KdTexture>& _spTex, const std::string& _path);
 
 
@@ -140,6 +156,7 @@ private:
 	//---------- スクロールバー(PotionInventoryUIの縦を横にしたもの) ----------
 	// つまみの左端のX・横の長さ
 	float m_scrollThumbX = 0.0f;
+	//つまみの横の長さ
 	float m_scrollThumbW = 0.0f;
 
 	// つまみの横の長さの最小(左端＋持ち手＋右端が入る長さ)
@@ -169,6 +186,7 @@ private:
 	int m_hoverIndex = -1;
 
 	// 一覧のi番目(見えている枠の番号)の真ん中の座標
+	// _slot ... 見えている枠の番号
 	Math::Vector2 GetSlotPos(int _slot) const;
 
 
@@ -178,10 +196,16 @@ private:
 
 	// 画像を描く(_pos … _pivotの点の位置。_pivotは{0.5,0.5}で真ん中、{0,1}で左上)
 	// _scale … 元画像に対する倍率
+	// _spTex ... 描く画像
 	void DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale = 1.0f,
 		const Math::Vector2& _pivot = { 0.5f, 0.5f });
 
 	// 大きさを指定して描く(つまみの中央を伸ばすとき用)
+	// _spTex ... 描く画像
+	// _pos ... _pivotの点の位置
+	// _w ... 横幅
+	// _h ... 高さ
+	// _pivot ... 基準点({0.5,0.5}で真ん中)
 	void DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _w, float _h,
 		const Math::Vector2& _pivot = { 0.5f, 0.5f });
 

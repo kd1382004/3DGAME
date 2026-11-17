@@ -31,7 +31,7 @@ ResultScene::~ResultScene()
 		m_spEscapeBGM->Stop();
 	}
 }
-void ResultScene::ImGUi()
+void ResultScene::ImGUI()
 {
 
 }
@@ -66,16 +66,16 @@ void ResultScene::Init()
 	}
 	spWeaponBase->Init();
 	// セーブだけではLvMaxや前提ノードがないので、マスタと重ねてから渡す
-	spWeaponBase->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_WeaponStrengtheningGameResultFilePath));
+	spWeaponBase->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_weaponStrengtheningGameResultFilePath));
 
 	spResultDisplay = std::make_shared<ResultDisplay>();
 	spResultDisplay->Init();
 	spResultDisplay->SetSpWeaponBase(spWeaponBase);
 	spResultDisplay->Set2DPos({ 0,200 });
-	spResultDisplay->SetDisplayFloorInfo(gameResult.displayFloorInfo);
-	spResultDisplay->SetPlayerInventoryList(LoadInventoryData(m_InventoryGameResultFilePath));
-	spResultDisplay->SetPlayerStatusGameResultFilePath(m_PlayerStatusGameResultFilePath);
-	spResultDisplay->SetPlayerDead(gameResult.playerDead);
+	spResultDisplay->SetDisplayFloorInfo(gameResult.m_displayFloorInfo);
+	spResultDisplay->SetPlayerInventoryList(LoadInventoryData(m_inventoryGameResultFilePath));
+	spResultDisplay->SetPlayerStatusGameResultFilePath(m_playerStatusGameResultFilePath);
+	spResultDisplay->SetPlayerDead(gameResult.m_playerDead);
 	spUIManager->AddUIObj(spResultDisplay);
 
 
@@ -92,7 +92,7 @@ void ResultScene::Init()
 	spTitleButton->SetPos({ -420,-260,0 });
 	m_objList.push_back(spTitleButton);
 
-	if (gameResult.playerDead)
+	if (gameResult.m_playerDead)
 	{
 		if (!m_spPlayerDeadBGM)
 		{

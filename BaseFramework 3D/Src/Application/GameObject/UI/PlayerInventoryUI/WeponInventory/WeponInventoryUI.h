@@ -7,15 +7,19 @@
 class WeponInventoryUI :public InventoryTabBase
 {
 public:
+	//コンストラクタ
 	WeponInventoryUI() {}
+	//デストラクタ
 	~WeponInventoryUI()override {}
 
+	//初期化
 	void Init()override;
 	void OnSelect()override;		// = 旧 WeaponsStrengtheningInfoInit
 	void Update()override;			// = 旧 WeaponsStrengtheningUpdate
 	void DrawSprite()override;		// = 旧 WeaponsStrengtheningDraw
 
 private:
+	//強化アイコンの位置を決める
 	void WeaponsStrengtheningInfoInitPos();
 
 	//あるものを入れてく関数
@@ -28,105 +32,128 @@ private:
 	void WeaponsStrengtheningButtonHit();
 
 	//IDのみ選ばれてそれ以外は選ばれてないに
+	// _index ... 選ぶ強化の配列番号
 	void WeaponChooseFlg(int _index);
 
-	std::shared_ptr<KdTexture>m_numSlashTex;
-	std::shared_ptr<KdTexture>m_LineTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeExplanationTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeNameTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeIconTex;
-	std::shared_ptr<KdTexture>m_weaponsStrengtheningButtonTex;
-	std::shared_ptr<KdTexture>m_LVTex;
-	std::shared_ptr<KdTexture>m_LineGlowTex;
+	//「/」の画像
+	std::shared_ptr<KdTexture>m_spNumSlashTex;
+	//ノードをつなぐ線の画像
+	std::shared_ptr<KdTexture>m_spLineTex;
+	//「前提ノードを解放してください」の説明の画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeExplanationTex;
+	//前提ノードの名前の画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeNameTex;
+	//前提ノードの枠の画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeTex;
+	//前提ノードのアイコンの画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeIconTex;
+	//強化ボタンの画像
+	std::shared_ptr<KdTexture>m_spWeaponsStrengtheningButtonTex;
+	//「LV」の画像
+	std::shared_ptr<KdTexture>m_spLVTex;
+	//光っている線の画像
+	std::shared_ptr<KdTexture>m_spLineGlowTex;
+	//強化ボタンの位置
 	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
+	//「LV」の位置
 	Math::Vector2 m_LVTex2DPos;
+	//選んでいるアイコンの1フレームあたりの拡大量
 	float m_selectAdd = 0.1;
-	float m_selectDefoAdd = 0.1;
+	//拡大量の初期値
+	float m_selectDefaultAdd = 0.1;
+	//拡大量の増減
 	float m_selectAddNum = 0.05;
+	//今の拡大の合計
 	float m_selectAddTotal = 0;
+	//拡大の合計の最大
 	float m_selectAddTotalMax = 50;
 
-	std::shared_ptr<KdTexture>m_LvMaxButtonTex;
+	//最大レベルのときのボタンの画像
+	std::shared_ptr<KdTexture>m_spLvMaxButtonTex;
 
 
 	// 選んでいるノードの前提ノードが、まだ解放されていないか
 	// true  … 強化できない（強化ボタンの代わりに「前提ノードを解放してください」を表示）
 	// false … 前提なし、または解放済み（通常の強化ボタンを表示）
 	// ※ WeaponsStrengtheningButtonHit() で毎フレーム更新
-	bool m_PreconditionNodeFlg = false;
+	bool m_preconditionNodeFlg = false;
 
 	struct WeaponsStrengtheningInfo
 	{
 		//現LV
-		int Lv;
+		int m_lv;
 
-		int strengtheningItem_ID = 0;
+		//強化に使うアイテムの番号
+		int m_strengtheningItemID = 0;
 
 		//次のLVにするために必要な強化アイテムの数
-		int nextLvNum;
+		int m_nextLvNum;
 
-		bool LvMaxFlg = false;
+		//最大レベルか
+		bool m_lvMaxFlg = false;
 
 		//強化が可能かどうか
-		bool strengtheningFlg = false;
+		bool m_strengtheningFlg = false;
 
 		//アイコン
-		std::shared_ptr<KdTexture>iconTex;
+		std::shared_ptr<KdTexture>m_spIconTex;
 
 		//アイコンの位置
-		Math::Vector2 iconPos;
+		Math::Vector2 m_iconPos;
 
 		//アイコンのサイズ
-		Math::Vector2 iconSiz;
+		Math::Vector2 m_iconSiz;
 
 		//当たってるか
 		bool m_hit = false;
 
 		//説明画像
-		std::shared_ptr<KdTexture>m_ExplanationTex;
+		std::shared_ptr<KdTexture>m_spExplanationTex;
 
 
 		//強化アイテムの数
-		int num;
+		int m_num;
 
 		//強化アイテムの画像
-		std::shared_ptr<KdTexture>iconStrengtheningTex;
+		std::shared_ptr<KdTexture>m_spIconStrengtheningTex;
 
 		//強化アイテムの位置
-		Math::Vector2 iconStrengtheningPos;
+		Math::Vector2 m_iconStrengtheningPos;
 
 		//アイコンのサイズ
-		Math::Vector2 iconStrengtheningSiz;
+		Math::Vector2 m_iconStrengtheningSiz;
 
-		float timer = 0.0f;
+		//演出用のタイマー
+		float m_timer = 0.0f;
 
-		std::shared_ptr<KdTexture> m_NameTex;
+		//名前の画像
+		std::shared_ptr<KdTexture> m_spNameTex;
 
 
 		//選ばれてるかどうか
-		bool ChooseFlg = false;
+		bool m_chooseFlg = false;
 
 		//自分のノードID
-		int MyNodeID = 0;
+		int m_myNodeID = 0;
 
 		//前提ノードのMyNodeID（-1 = 前提なし）
-		int PreconditionNodeID = -1;
+		int m_preconditionNodeID = -1;
 
 		//前提ノードの配列番号（-1 = 前提なし）
-		int PreconditionNodeID_index = -1;
+		int m_preconditionNodeIndex = -1;
 
 		//線の光の強さ（0=消えてる 1=全開）毎フレーム目標に近づける
-		float lineGlow = 0.0f;
+		float m_lineGlow = 0.0f;
 
 
-		float auraAlpha = 0.0f;
+		//オーラのアルファ
+		float m_auraAlpha = 0.0f;
 	};
 
-	enum WeponStrengtheningID
+	enum WeaponStrengtheningID
 	{
 		//攻撃力
-		WeaponsStrengthening_Attck,
+		WeaponsStrengthening_Attack,
 
 		//スタミナ
 		WeaponsStrengthening_Stamina,
@@ -157,14 +184,17 @@ private:
 
 	//選択中の強化の配列番号（= 種類）
 	int m_selectIndex = 0;
+	//選んでいる強化アイコンの大きさ
 	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;
 
+	//強化の情報(種類ごと)
 	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
 
+	//強化アイテムのアイコン情報
 	InventoryItemIconInfo m_weaponsStrengtheningIconInfo;
 
 	//次のLVにするために必要な強化アイテムの数
-	int m_selectWeaponsStrengtheningnextLVNum = 0;
+	int m_selectWeaponsStrengtheningNextLVNum = 0;
 
 	// 線の光がフェードする速さ
 	const float m_lineGlowFadeSpeed = 10.0f;

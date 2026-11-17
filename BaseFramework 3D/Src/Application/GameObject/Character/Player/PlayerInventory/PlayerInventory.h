@@ -4,8 +4,11 @@ class ItemGetUIController;
 
 struct Inventory
 {
+	//アイテムの番号
 	int m_ID;
+	//持っている数
 	int m_num;
+	//アイテムの名前
 	std::string m_name;
 };
 
@@ -13,34 +16,50 @@ struct Inventory
 class PlayerInventory
 {
 public:
+	//コンストラクタ
 	PlayerInventory() {};
+	//デストラクタ
 	~PlayerInventory() {};
 
+	//jsonからアイテムの一覧を読み込んで、所持数0で初期化
 	void Init();
 
+	//ポーションのインベントリを返す
+	//戻り値 ... ポーションのインベントリ(コピー)
 	std::vector<Inventory> GetPotionsInventory() { return m_potionsInventory; }
+	//武器強化素材のインベントリを返す
+	//戻り値 ... 武器強化素材のインベントリ(コピー)
 	std::vector<Inventory> GetWeaponsStrengtheningInventory() { return m_weaponsStrengtheningInventory; }
 
 
 	//ポーションがインベントリで増えたとき
-	void AddPotionsInventory(int _PotionsType);
+	// _potionsType ... 増やすポーションの番号
+	void AddPotionsInventory(int _potionsType);
 
 	//ポーションが使われたとき
-	void UsePotionsInventory(int _PotionsType);
+	// _potionsType ... 使うポーションの番号
+	void UsePotionsInventory(int _potionsType);
 
 	//ポーションの数を取得
-	int GetPotionsInventoryNum(int _PotionsType);
+	// _potionsType ... 数を知りたいポーションの番号
+	int GetPotionsInventoryNum(int _potionsType);
 
 	//武器強化素材がインベントリで増えたとき
-	void AddWeaponsStrengtheningInventory(int _WeaponsStrengtheningType);
+	// _weaponsStrengtheningType ... 増やす武器強化素材の番号
+	void AddWeaponsStrengtheningInventory(int _weaponsStrengtheningType);
 
 	//武器強化素材が使われたとき
-	void UseWeaponsStrengtheningInventory(int _WeaponsStrengtheningType, int _num);
+	// _weaponsStrengtheningType ... 使う武器強化素材の番号
+	// _num ... 使う数
+	void UseWeaponsStrengtheningInventory(int _weaponsStrengtheningType, int _num);
 
 	//武器強化素材の数を取得
-	int GetWeaponsStrengtheningInventoryNum(int _WeaponsStrengtheningType);
+	// _weaponsStrengtheningType ... 数を知りたい武器強化素材の番号
+	int GetWeaponsStrengtheningInventoryNum(int _weaponsStrengtheningType);
 
-	void SetItemGetUIController(std::shared_ptr<ItemGetUIController>_ItemGetUIController) { m_wpItemGetUIController = _ItemGetUIController; }
+	//アイテムを手に入れたときのUIをセット
+	// _spItemGetUIController ... アイテム取得UIの管理
+	void SetItemGetUIController(std::shared_ptr<ItemGetUIController>_spItemGetUIController) { m_wpItemGetUIController = _spItemGetUIController; }
 
 
 	//ポーションのインベントリリストを取得
@@ -51,8 +70,10 @@ public:
 
 
 	//ポーションのインベントリリストを設定
+	// _potions ... 設定するポーションのリスト
 	void SetPotionsInventoryList(const std::vector<Inventory>& _potions);
 	//武器強化素材のインベントリリストを設定
+	// _weapons ... 設定する武器強化素材のリスト
 	void SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons);
 
 	//////////////////////////////
@@ -62,12 +83,15 @@ public:
 	long GetMoney() const { return m_money; }
 
 	//所持金を設定(セーブデータを読み込んだとき)
+	// _money ... 設定する所持金(0未満は0にする)
 	void SetMoney(long _money) { m_money = std::max(0L, _money); }
 
 	//お金が増えたとき(拾った・もらった)
+	// _money ... 増やす金額(0以下なら何もしない)
 	void AddMoney(long _money) { if (_money > 0) { m_money += _money; } }
 
 	//お金を使うとき。足りなければ使わずにfalseを返す
+	// _money ... 使う金額
 	bool UseMoney(long _money)
 	{
 		if (_money < 0 || m_money < _money) { return false; }
@@ -84,6 +108,7 @@ private:
 	std::vector<Inventory>m_weaponsStrengtheningInventory;
 
 
+	//アイテムを手に入れたときのUI
 	std::weak_ptr<ItemGetUIController>m_wpItemGetUIController;
 
 	//お金

@@ -26,14 +26,14 @@ void ComboStepValidator::CheckComboIndex(const std::vector<ComboStep>& _steps, s
 	// 範囲外を見る ＋ 範囲内なら誰が使っているかを記録
 	for (int i = 0; i < num; ++i)
 	{
-		const int index = _steps[i].comboIndex;
+		const int index = _steps[i].m_comboIndex;
 
 		if (index < 0 || index >= num)
 		{
 			ComboStepIssue issue;
-			issue.isError = true;
-			issue.stepIndex = i;
-			issue.message = std::to_string(index) + U8(" は範囲外です");
+			issue.m_isError = true;
+			issue.m_stepIndex = i;
+			issue.m_message = std::to_string(index) + U8(" は範囲外です");
 			_outIssues.push_back(issue);
 			continue;
 		}
@@ -48,9 +48,9 @@ void ComboStepValidator::CheckComboIndex(const std::vector<ComboStep>& _steps, s
 		if (users[n].empty())
 		{
 			ComboStepIssue issue;
-			issue.isError = true;
-			issue.stepIndex = -1;
-			issue.message = std::to_string(n) + U8(" 番が欠番です");
+			issue.m_isError = true;
+			issue.m_stepIndex = -1;
+			issue.m_message = std::to_string(n) + U8(" 番が欠番です");
 			_outIssues.push_back(issue);
 		}
 		// 重複
@@ -59,9 +59,9 @@ void ComboStepValidator::CheckComboIndex(const std::vector<ComboStep>& _steps, s
 			for (int stepIdx : users[n])
 			{
 				ComboStepIssue issue;
-				issue.isError = true;
-				issue.stepIndex = stepIdx;   // 配列の添字
-				issue.message = std::to_string(n) + U8(" 番が重複しています");
+				issue.m_isError = true;
+				issue.m_stepIndex = stepIdx;   // 配列の添字
+				issue.m_message = std::to_string(n) + U8(" 番が重複しています");
 				_outIssues.push_back(issue);
 			}
 		}
@@ -75,10 +75,10 @@ void ComboStepValidator::CheckTiming(const std::vector<ComboStep>& _steps, std::
 	if (num == 0) { return; }
 
 	// 最後の段 = comboIndex が一番大きい段（配列の末尾ではない）
-	int lastComboIndex = _steps[0].comboIndex;
+	int lastComboIndex = _steps[0].m_comboIndex;
 	for (const ComboStep& step : _steps)
 	{
-		lastComboIndex = std::max(lastComboIndex, step.comboIndex);
+		lastComboIndex = std::max(lastComboIndex, step.m_comboIndex);
 	}
 
 	for (int i = 0; i < num; i++)
@@ -86,15 +86,15 @@ void ComboStepValidator::CheckTiming(const std::vector<ComboStep>& _steps, std::
 		const ComboStep& step = _steps[i];
 
 		// メッセージの頭に付ける「1番 Attack2: 」
-		const std::string head = std::to_string(step.comboIndex) + U8("番 ") + step.animeName + ": ";
+		const std::string head = std::to_string(step.m_comboIndex) + U8("番 ") + step.m_animeName + ": ";
 
 		//問題を1件足す
 		auto add = [&](bool _isError, const std::string& _msg)
 			{
 				ComboStepIssue issue;
-				issue.isError = _isError;
-				issue.stepIndex = i;
-				issue.message = head + _msg;
+				issue.m_isError = _isError;
+				issue.m_stepIndex = i;
+				issue.m_message = head + _msg;
 				_outIssues.push_back(issue);
 			};
 
@@ -107,8 +107,8 @@ void ComboStepValidator::CheckTiming(const std::vector<ComboStep>& _steps, std::
 				}
 			};
 
-		const bool isLastStep = (step.comboIndex == lastComboIndex);
-		const bool hasNext = (step.acceptStart <= 1.0f);   // 9.9 なら「次なし」
+		const bool isLastStep = (step.m_comboIndex == lastComboIndex);
+		const bool hasNext = (step.m_acceptStart <= 1.0f);   // 9.9 なら「次なし」
 
 
 		//==============================
@@ -116,25 +116,25 @@ void ComboStepValidator::CheckTiming(const std::vector<ComboStep>& _steps, std::
 		//==============================
 
 				// 速度
-		if (step.speed <= 0.0f)
+		if (step.m_speed <= 0.0f)
 		{
 			add(true, U8("再生速度が 0 以下です（アニメーションが進みません）"));
 		}
 
 		// 当たり判定
-		if (step.hitStart > step.hitEnd)
+		if (step.m_hitStart > step.m_hitEnd)
 		{
 			add(true, U8("当たり判定の開始が終了より後です（判定が出ません）"));
 		}
 
 		// 軌跡
-		if (step.trailStart > step.trailEnd)
+		if (step.m_trailStart > step.m_trailEnd)
 		{
 			add(true, U8("軌跡の開始が終了より後です（軌跡が出ません）"));
 		}
 
 		// 受付と切替の順番（次の段がある場合だけ）
-		if (!isLastStep && hasNext && step.acceptStart > step.cancelPoint)
+		if (!isLastStep && hasNext && step.m_acceptStart > step.m_cancelPoint)
 		{
 			add(true, U8("受付開始が切替点より後です（予約しても次の段に進めません）"));
 		}
@@ -159,15 +159,15 @@ void ComboStepValidator::CheckTiming(const std::vector<ComboStep>& _steps, std::
 		// 範囲（受付・切替は次の段があるときだけ調べる）
 		if (hasNext)
 		{
-			checkRange(step.acceptStart, "acceptStart");
-			checkRange(step.cancelPoint, "cancelPoint");
+			checkRange(step.m_acceptStart, "acceptStart");
+			checkRange(step.m_cancelPoint, "cancelPoint");
 		}
 
-		checkRange(step.evasionCancel, "evasionCancel");
-		checkRange(step.hitStart, "hitStart");
-		checkRange(step.hitEnd, "hitEnd");
-		checkRange(step.trailStart, "trailStart");
-		checkRange(step.trailEnd, "trailEnd");
+		checkRange(step.m_evasionCancel, "evasionCancel");
+		checkRange(step.m_hitStart, "hitStart");
+		checkRange(step.m_hitEnd, "hitEnd");
+		checkRange(step.m_trailStart, "trailStart");
+		checkRange(step.m_trailEnd, "trailEnd");
 
 	}
 }
@@ -183,23 +183,23 @@ void ComboStepValidator::CheckAnimeName(const std::vector<ComboStep>& _steps,
 		auto add = [&](const std::string& _msg)
 			{
 				ComboStepIssue issue;
-				issue.isError = true;
-				issue.stepIndex = i;
-				issue.message = std::to_string(step.comboIndex) + U8("番: ") + _msg;
+				issue.m_isError = true;
+				issue.m_stepIndex = i;
+				issue.m_message = std::to_string(step.m_comboIndex) + U8("番: ") + _msg;
 				_outIssues.push_back(issue);
 			};
 
 		// 名前が空（一覧がなくても調べる）
-		if (step.animeName.empty())
+		if (step.m_animeName.empty())
 		{
 			add(U8("アニメーション名が空です"));
 			continue;
 		}
 
 		// モデルにない（一覧が渡されたときだけ調べる）
-		if (_animeNames && _animeNames->count(step.animeName) == 0)
+		if (_animeNames && _animeNames->count(step.m_animeName) == 0)
 		{
-			add(U8("モデルにアニメーション ") + step.animeName + U8(" がありません"));
+			add(U8("モデルにアニメーション ") + step.m_animeName + U8(" がありません"));
 		}
 	}
 }

@@ -7,16 +7,22 @@ class AttackBase;
 class Golem :public EnemyAmbush
 {
 public:
+	//コンストラクタ
 	Golem() {};
+	//デストラクタ
 	~Golem()override { Release(); };
 
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//更新前の処理
 	void PreUpdate()override;
 
 private:
 
+	//解放
 	void Release()override;
 
 	// 3D足音SE更新
@@ -26,37 +32,49 @@ private:
 	//アニメーションモード
 	struct GolemAnimeName
 	{
-		std::string IdleAnime = "idle";
-		std::string WalkAnime = "walk";
-		std::string DashAnime = "run";
-		std::string DieAnime = "death";
+		//待機のアニメーション名
+		std::string m_idleAnime = "idle";
+		//歩きのアニメーション名
+		std::string m_walkAnime = "walk";
+		//走りのアニメーション名
+		std::string m_dashAnime = "run";
+		//死亡のアニメーション名
+		std::string m_dieAnime = "death";
 		//すまっしゅ
-		std::string smashAnime = "smash";
+		std::string m_smashAnime = "smash";
 	};
 
 
+	//アニメーション名
 	GolemAnimeName m_golemAnimeName;
 
+	//今の状態に合わせてアニメーションを変える
 	void ChangeAnime();
 
 
 
 	//攻撃
 	void Attack();
+	//叩きつけ攻撃
 	void AttacksSlammingDown();
 
+	//攻撃中か
 	bool m_attackFlg = false;
+	//当たり判定を出したか
 	bool m_hitTriggered = false;
 
+	//攻撃の当たり判定
 	std::weak_ptr<AttackBase>m_wpAttack;
 
 	//攻撃待機時間(秒)
 	float m_attackWaitMax = 5;
-	float m_attackWaitMine = 2;
+	//攻撃待機時間の最小(秒)
+	float m_attackWaitMin = 2;
+	//次の攻撃までの待機時間(秒)
 	float m_attackWait = m_attackWaitMax;
 
 	//叩きつけ攻撃のあたり判定を出すタイミング
-	float m_smasAttackAnimeHitTriggerTime = 0.46f;
+	float m_smashAttackAnimeHitTriggerTime = 0.46f;
 
 	// 3D効果音
 	std::shared_ptr<KdSoundInstance3D> m_spWalk3DSE;	// 足音（1歩ぶんの音を鳴り終わるたびに鳴らし直す）

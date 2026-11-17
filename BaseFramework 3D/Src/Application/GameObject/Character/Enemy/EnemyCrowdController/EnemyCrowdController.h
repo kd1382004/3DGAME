@@ -5,18 +5,26 @@ class EnemyBase;
 class EnemyCrowdController
 {
 public:
+	//コンストラクタ
 	EnemyCrowdController() {};
+	//デストラクタ
 	~EnemyCrowdController() {};
 
-	void Update(EnemyBase* enemy, float dt);
+	//敵の移動方向を、ほかの敵とぶつからないように決める
+	// _enemy ... 動かす敵
+	// _dt ... デルタタイム(秒)
+	void Update(EnemyBase* _enemy, float _dt);
 
 private:
 	//プレイヤーへ向かう
-	Math::Vector3 CalcSeparation(EnemyBase* enemy);
+	// _enemy ... 計算する敵
+	Math::Vector3 CalcSeparation(EnemyBase* _enemy);
 
 	//敵同士の押し返し
-	Math::Vector3 CalcAvoidance(EnemyBase* enemy);
+	// _enemy ... 計算する敵
+	Math::Vector3 CalcAvoidance(EnemyBase* _enemy);
 
 	//進行方向の敵からずれる
-	Math::Vector3 CalcToPlayer(EnemyBase* enemy);
+	// _enemy ... 計算する敵
+	Math::Vector3 CalcToPlayer(EnemyBase* _enemy);
 };

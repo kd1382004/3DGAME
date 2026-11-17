@@ -9,15 +9,15 @@
 void Goblin::Init()
 {
 	EnemyAmbush::Init();
-	wanderRadius = 20;
+	m_wanderRadius = 20;
 	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Goblin/Status/Status.json";
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
 		m_spCharaModel->SetModelData("Asset/Models/Character/Enemy/Goblin/goblin-FINAL.gltf");
 		//アニメータの準備
-		m_spAnimetor = std::make_shared<KdAnimator>();
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.IdleAnime), true);
+		m_spAnimator = std::make_shared<KdAnimator>();
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_idleAnime), true);
 
 
 
@@ -79,7 +79,7 @@ void Goblin::Init()
 			}
 		}
 	}
-	m_PlayerChaseDir = 2;
+	m_playerChaseDir = 2;
 	m_material = EnemyMaterial::Flesh;
 }
 
@@ -89,7 +89,7 @@ void Goblin::Update()
 
 	if (m_isDead)
 	{
-		if (!m_spAnimetor) { return; }
+		if (!m_spAnimator) { return; }
 
 		// 死亡時に出しっぱなしの攻撃判定を必ず消す
 		if (auto spAttack = m_wpAttack.lock())
@@ -97,7 +97,7 @@ void Goblin::Update()
 			spAttack->FinishAttack_Slamming();
 		}
 
-		if (m_spAnimetor->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
 			m_isExpired = true;
 		}
@@ -115,7 +115,7 @@ void Goblin::Update()
 
 	Attack();
 
-	if (m_AnimeChangeFlg)
+	if (m_animeChangeFlg)
 	{
 		ChangeAnime();
 	}
@@ -194,7 +194,7 @@ void Goblin::Release()
 
 void Goblin::ChangeAnime()
 {
-	if (!m_spAnimetor) { return; }
+	if (!m_spAnimator) { return; }
 
 
 	if (!m_isDead)
@@ -206,17 +206,17 @@ void Goblin::ChangeAnime()
 
 	switch (m_enemyAnimeMode)
 	{
-	case EnemyBase::EnemyAnimeMode_Idel:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.IdleAnime), true);
+	case EnemyBase::EnemyAnimeMode_Idle:
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_idleAnime), true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Walk:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.WalkAnime), true);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_walkAnime), true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Run:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.RunAnime), true);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_runAnime), true);
 		break;
-	case EnemyBase::EnemyAnimeMode_Attck:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.SlammingDownAttackAnime), false);
+	case EnemyBase::EnemyAnimeMode_Attack:
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_slammingDownAttackAnime), false);
 		m_attackFlg = true;
 		if (m_spCrying3DSE)
 		{
@@ -226,13 +226,13 @@ void Goblin::ChangeAnime()
 		}
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.DieAnime), false);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_dieAnime), false);
 		break;
 	default:
 		break;
 	}
 
-	m_AnimeChangeFlg = false;
+	m_animeChangeFlg = false;
 }
 
 void Goblin::Attack()
@@ -276,10 +276,10 @@ void Goblin::Attack()
 				m_spCrying3DSE->SetPos(m_pos);
 			}
 
-			if (m_spAnimetor)
+			if (m_spAnimator)
 			{
 				//アニメーションが終わったら攻撃終了
-				if (m_spAnimetor->IsAnimationEnd())
+				if (m_spAnimator->IsAnimationEnd())
 				{
 					m_attackFlg = false;
 					if (spAttack)
@@ -290,7 +290,7 @@ void Goblin::Attack()
 
 					m_attackWait = m_attackWaitMax;
 
-					m_AnimeChangeFlg = true;
+					m_animeChangeFlg = true;
 					m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
 				}
 			}
@@ -321,24 +321,24 @@ void Goblin::AttacksSlammingDown()
 				spAttack->SetPlayer(m_wpPlayer.lock());
 				SceneManager::Instance().AddObject(spAttack);
 
-				m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Attck;
-				m_AnimeChangeFlg = true;
+				m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Attack;
+				m_animeChangeFlg = true;
 			}
 		}
 	}
 
 	if (m_attackFlg)
 	{
-		float progress = m_spAnimetor->GetTime() / m_spAnimetor->GetMaxLength();
+		float progress = m_spAnimator->GetTime() / m_spAnimator->GetMaxLength();
 
-		if (progress > m_SlammingDownAttackAnimeHitTriggerTime && !m_hitTriggered)
+		if (progress > m_slammingDownAttackAnimeHitTriggerTime && !m_hitTriggered)
 		{
 			std::shared_ptr<AttackBase>spAttack = m_wpAttack.lock();
 			if (spAttack)
 			{
 				m_hitTriggered = true;
-				spAttack->SetAttckFlg();
-				spAttack->SetAttckPower(m_status.attck.nowAttck);
+				spAttack->SetAttackFlg();
+				spAttack->SetAttackPower(m_status.m_attack.m_nowAttack);
 				
 				// 叩きつけのエフェクト（地面の高さに出す）
 			// ゴーレムの向いている方向に少し前（叩いた場所）
@@ -360,7 +360,7 @@ void Goblin::AttacksSlammingDown()
 	}
 
 
-	SetAttackGagePercent(m_attackWait / m_attackWaitMax);
+	SetAttackGaugePercent(m_attackWait / m_attackWaitMax);
 }
 
 void Goblin::UpdateFootstepSE()

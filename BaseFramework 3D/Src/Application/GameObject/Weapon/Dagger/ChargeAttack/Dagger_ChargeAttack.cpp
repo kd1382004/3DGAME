@@ -6,12 +6,12 @@
 #include"../../../Terrains/Map/MapBase.h"
 void Dagger_ChargeAttack::Init()
 {
-	if (!m_Poly)
+	if (!m_spPoly)
 	{
-		m_Poly = std::make_shared<KdSquarePolygon>();
-		m_Poly->SetMaterial("Asset/Textures/Weapon/Daerre/ChargeAttack/jet.png");
-		m_Poly->SetScale(m_polyScale);
-		m_Poly->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
+		m_spPoly = std::make_shared<KdSquarePolygon>();
+		m_spPoly->SetMaterial("Asset/Textures/Weapon/Daerre/ChargeAttack/jet.png");
+		m_spPoly->SetScale(m_polyScale);
+		m_spPoly->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
 	}
 
 
@@ -27,21 +27,21 @@ void Dagger_ChargeAttack::Update()
 	// 1. 移動処理
 	// ----------------------------------------------------
 	bool isReachMaxDistance = false;
-	if (m_shockwaveStatus.maxHitNum > 0 && m_shockwaveStatus.DistanceM < m_shockwaveStatus.maxDistanceM)
+	if (m_shockwaveStatus.m_maxHitNum > 0 && m_shockwaveStatus.m_distanceM < m_shockwaveStatus.m_maxDistanceM)
 	{
 		float yawRad = DirectX::XMConvertToRadians(m_angle);
 		Math::Vector3 dir(sinf(yawRad), 0.0f, cosf(yawRad));
 		dir.Normalize();
-		Math::Vector3 distance = dir * m_shockwaveStatus.speed * DeltaTime::Instance().GetGameDeltaTime();
+		Math::Vector3 distance = dir * m_shockwaveStatus.m_speed * DeltaTime::Instance().GetGameDeltaTime();
 		// 最大距離を超える場合は距離ぴったりにクランプ
-		if (m_shockwaveStatus.DistanceM + distance.Length() >= m_shockwaveStatus.maxDistanceM)
+		if (m_shockwaveStatus.m_distanceM + distance.Length() >= m_shockwaveStatus.m_maxDistanceM)
 		{
-			float remainDist = m_shockwaveStatus.maxDistanceM - m_shockwaveStatus.DistanceM;
+			float remainDist = m_shockwaveStatus.m_maxDistanceM - m_shockwaveStatus.m_distanceM;
 			distance = dir * remainDist;
 			isReachMaxDistance = true;
 		}
 		m_pos += distance;
-		m_shockwaveStatus.DistanceM += distance.Length();
+		m_shockwaveStatus.m_distanceM += distance.Length();
 	}
 	else
 	{
@@ -57,7 +57,7 @@ void Dagger_ChargeAttack::Update()
 	Math::Vector3 currPos = m_pos;
 
 	// ----------------------------------------------------
-	// 3. m_Poly のスケール変数 (m_polyScale) に連動したローカル AABB の自動計算
+	// 3. m_spPoly のスケール変数 (m_polyScale) に連動したローカル AABB の自動計算
 	// ----------------------------------------------------
 
 	float moveDist = (currPos - m_prevTipPos).Length(); // 1フレームでの移動量
@@ -97,7 +97,7 @@ void Dagger_ChargeAttack::Update()
 			Math::Vector3 dir(sinf(yawRad), 0.0f, cosf(yawRad));
 
 			spGameObj->OnAttackHit(
-				m_shockwaveStatus.maxDamage,
+				m_shockwaveStatus.m_maxDamage,
 				5.0f,
 				dir,
 				0.05f,
@@ -112,15 +112,15 @@ void Dagger_ChargeAttack::Update()
 				spCamera->Shake(0.08f, 0.04f);
 			}
 
-			m_shockwaveStatus.maxHitNum--;
-			if (m_shockwaveStatus.maxHitNum <= 0)
+			m_shockwaveStatus.m_maxHitNum--;
+			if (m_shockwaveStatus.m_maxHitNum <= 0)
 			{
 				m_isExpired = true;
 				break;
 			}
 
 
-			m_shockwaveStatus.maxDamage *= 0.9;
+			m_shockwaveStatus.m_maxDamage *= 0.9;
 		}
 	}
 
@@ -136,7 +136,7 @@ void Dagger_ChargeAttack::Update()
 				m_pos
 			);
 
-			for (auto& wpMapObj : m_MapObjList)
+			for (auto& wpMapObj : m_mapObjList)
 			{
 				auto spMapObj = wpMapObj.lock();
 				if (!spMapObj) { continue; }
@@ -197,24 +197,24 @@ void Dagger_ChargeAttack::DrawEffect()
 	for (auto& t : m_trails)
 	{
 		Math::Matrix mat = m_mWorld;
-		mat.Translation(t.pos);
+		mat.Translation(t.m_pos);
 
-		Math::Color color = { 1,1,1,t.alpha };
-		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_Poly, mat, color);
+		Math::Color color = { 1,1,1,t.m_alpha };
+		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly, mat, color);
 	}
 
 	// 本体の斬撃を描画
-	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_Poly, m_mWorld);
+	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly, m_mWorld);
 }
 
 
-bool Dagger_ChargeAttack::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)
+bool Dagger_ChargeAttack::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)
 {
 	for (auto& wp : m_hitCharactersList)
 	{
 		if (auto sp = wp.lock())
 		{
-			if (sp == _chara) return true;
+			if (sp == _spChara) return true;
 		}
 	}
 	return false;
@@ -232,9 +232,9 @@ void Dagger_ChargeAttack::GhostTrailUpdate()
 		m_trailTimer = 0.0f;
 
 		GhostTrail trail;
-		trail.pos = m_pos;
-		trail.alpha = 1.0f;      // 最初は不透明
-		trail.lifeTime = 0.2f;   // 0.2秒で消える
+		trail.m_pos = m_pos;
+		trail.m_alpha = 1.0f;      // 最初は不透明
+		trail.m_lifeTime = 0.2f;   // 0.2秒で消える
 
 		m_trails.push_back(trail);
 	}
@@ -242,14 +242,14 @@ void Dagger_ChargeAttack::GhostTrailUpdate()
 	// 残像の寿命処理
 	for (auto& t : m_trails)
 	{
-		t.lifeTime -= deltaTime;
-		t.alpha = t.lifeTime * 5.0f; // 徐々に透明に
+		t.m_lifeTime -= deltaTime;
+		t.m_alpha = t.m_lifeTime * 5.0f; // 徐々に透明に
 	}
 
 	// 寿命が尽きた残像を削除
 	m_trails.erase(
 		std::remove_if(m_trails.begin(), m_trails.end(),
-			[](const GhostTrail& t) { return t.lifeTime <= 0.0f; }),
+			[](const GhostTrail& _t) { return _t.m_lifeTime <= 0.0f; }),
 		m_trails.end()
 	);
 }

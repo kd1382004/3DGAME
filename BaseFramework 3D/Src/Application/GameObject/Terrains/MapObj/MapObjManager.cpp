@@ -127,11 +127,11 @@ void MapObjManager::DrawDebug()
 	}
 }
 
-void MapObjManager::AddMapObj(std::shared_ptr<MapObjBase> _obj)
+void MapObjManager::AddMapObj(std::shared_ptr<MapObjBase> _spObj)
 {
 	
-		_obj->SetGameScene(m_wpGameScene.lock());
-		m_mapObjList.push_back(_obj);
+		_spObj->SetGameScene(m_wpGameScene.lock());
+		m_mapObjList.push_back(_spObj);
 	
 }
 
@@ -155,11 +155,11 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 		if (_spMapManager->GetChunksUpdate(chunkNum))
 		{
 			m_mapObjUpdateList.push_back(obj);
-			obj->SetInHaunk(true);
+			obj->SetInChunk(true);
 		}
 		else
 		{
-			obj->SetInHaunk(false);
+			obj->SetInChunk(false);
 		}
 		
 		if (_spMapManager->GetChunksDraw(chunkNum))
@@ -179,21 +179,21 @@ void MapObjManager::SetMapObjDrawList(std::shared_ptr<MapManager> _spMapManager)
 		Math::Vector2 chunkNum = obj->GetChunkNum();
 		if (_spMapManager->GetChunksUpdate(chunkNum))
 		{
-			obj->SetInHaunk(true);
+			obj->SetInChunk(true);
 		}
 		else
 		{
-			obj->SetInHaunk(false);
+			obj->SetInChunk(false);
 		}
 	}
 
 }
 
-void MapObjManager::MapObjHit(const std::shared_ptr<KdGameObject>& obj)
+void MapObjManager::MapObjHit(const std::shared_ptr<KdGameObject>& _spObj)
 {
-	if (!obj) { return; }
+	if (!_spObj) { return; }
 
-	const Math::Vector3 objPos = obj->GetPos();
+	const Math::Vector3 objPos = _spObj->GetPos();
 	constexpr float hitCheckDistSq = 15.0f * 15.0f;
 
 	for (const auto& mapObj : m_mapObjUpdateList)
@@ -202,7 +202,7 @@ void MapObjManager::MapObjHit(const std::shared_ptr<KdGameObject>& obj)
 		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
 		if (distSq <= hitCheckDistSq)
 		{
-			obj->RegistHitObject(mapObj);
+			_spObj->RegistHitObject(mapObj);
 		}
 	}
 }

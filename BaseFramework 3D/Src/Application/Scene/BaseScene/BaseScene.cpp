@@ -212,7 +212,7 @@ void BaseScene::DrawDebug()
 }
 
 
-void BaseScene::ImGUi()
+void BaseScene::ImGUI()
 {
 
 }
@@ -343,7 +343,7 @@ std::vector<Inventory> BaseScene::ReadInventoryList(const nlohmann::json& _data,
 	return list;
 }
 
-void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath, std::vector<WeaponsStrengtheningInfo> weaponStrengtheningList)
+void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath, std::vector<WeaponsStrengtheningInfo> _weaponStrengtheningList)
 {
 	// 他の武器のデータを残すために1度開く（ファイルがなくても続行する）
 	nlohmann::json oldData = nlohmann::json::object();
@@ -373,7 +373,7 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 		{
 			if (weapon == currentWeapon)
 			{
-				infoList = weaponStrengtheningList;
+				infoList = _weaponStrengtheningList;
 			}
 			else
 			{
@@ -392,14 +392,14 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 
 			if (i == WeaponsStrengthening_Body)
 			{
-				item.Lv = 1;
+				item.m_lv = 1;
 			}
 
 			weaponData[kStrengtheningKeys[i]] = {
-				{"Lv", item.Lv},
-				{"nextLvNum", item.nextLvNum},
-				{"strengtheningItemNum", item.strengtheningItemNum},
-				{"strengtheningFlg", item.strengtheningFlg}
+				{"Lv", item.m_lv},
+				{"nextLvNum", item.m_nextLvNum},
+				{"strengtheningItemNum", item.m_strengtheningItemNum},
+				{"strengtheningFlg", item.m_strengtheningFlg}
 			};
 		}
 
@@ -418,9 +418,9 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::LoadWeaponStrengtheningData(std
 	if (!file) return {}; // 初回起動などでファイルがない場合は何もしない
 	nlohmann::json data = nlohmann::json::parse(file);
 
-	std::string _key = GetWeaponKey(SceneManager::Instance().GetPlayerWeaponInfo());
+	std::string key = GetWeaponKey(SceneManager::Instance().GetPlayerWeaponInfo());
 
-	return ReadWeaponStrengtheningList(data, _key);
+	return ReadWeaponStrengtheningList(data, key);
 
 }
 
@@ -438,23 +438,23 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::ReadWeaponStrengtheningList(con
 	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
 	{
 		WeaponsStrengtheningInfo item;
-		item.MyNodeID = i; // MyNodeID がないデータは種類の番号にしておく
+		item.m_myNodeID = i; // MyNodeID がないデータは種類の番号にしておく
 
 		// 保存データがない項目は初期値のまま追加し、番号がずれないようにする
 		if (weaponData.contains(kStrengtheningKeys[i]) && weaponData[kStrengtheningKeys[i]].is_object())
 		{
 			const nlohmann::json& itemData = weaponData[kStrengtheningKeys[i]];
 
-			item.MyNodeID = itemData.value("MyNodeID", item.MyNodeID);
-			item.Lv = itemData.value("Lv", item.Lv);
-			item.nextLvNum = itemData.value("nextLvNum", item.nextLvNum);
-			item.strengtheningItemNum = itemData.value("strengtheningItemNum", item.strengtheningItemNum);
-			item.strengtheningFlg = itemData.value("strengtheningFlg", item.strengtheningFlg);
-			item.LvMax = itemData.value("LvMax", item.LvMax);
-			item.strengtheningItem_ID = itemData.value("strengtheningItem_ID", item.strengtheningItem_ID);
-			item.InitialNextLvNum = itemData.value("InitialNextLvNum", item.InitialNextLvNum);
-			item.GrowthRate = itemData.value("GrowthRate", item.GrowthRate);
-			item.PreconditionNodeID = itemData.value("PreconditionNodeID", item.PreconditionNodeID);
+			item.m_myNodeID = itemData.value("MyNodeID", item.m_myNodeID);
+			item.m_lv = itemData.value("Lv", item.m_lv);
+			item.m_nextLvNum = itemData.value("nextLvNum", item.m_nextLvNum);
+			item.m_strengtheningItemNum = itemData.value("strengtheningItemNum", item.m_strengtheningItemNum);
+			item.m_strengtheningFlg = itemData.value("strengtheningFlg", item.m_strengtheningFlg);
+			item.m_lvMax = itemData.value("LvMax", item.m_lvMax);
+			item.m_strengtheningItemID = itemData.value("strengtheningItem_ID", item.m_strengtheningItemID);
+			item.m_initialNextLvNum = itemData.value("InitialNextLvNum", item.m_initialNextLvNum);
+			item.m_growthRate = itemData.value("GrowthRate", item.m_growthRate);
+			item.m_preconditionNodeID = itemData.value("PreconditionNodeID", item.m_preconditionNodeID);
 		}
 
 		list.push_back(item);
@@ -466,7 +466,7 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::ReadWeaponStrengtheningList(con
 std::vector<WeaponsStrengtheningInfo> BaseScene::LoadMergedWeaponStrengtheningData(const std::string& _saveFilePath)
 {
 	const std::vector<WeaponsStrengtheningInfo> save = LoadWeaponStrengtheningData(_saveFilePath);   // セーブデータ
-	std::vector<WeaponsStrengtheningInfo> now = LoadWeaponStrengtheningData(m_WeaponStrengtheningMSDateFilePath); // マスタを土台にする
+	std::vector<WeaponsStrengtheningInfo> now = LoadWeaponStrengtheningData(m_weaponStrengtheningMSDateFilePath); // マスタを土台にする
 
 	for (size_t i = 0; i < now.size(); ++i)
 	{
@@ -475,16 +475,16 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::LoadMergedWeaponStrengtheningDa
 		// セーブにある分だけ進行状況を上書き（マスタで項目が増えてもOK）
 		if (i < save.size())
 		{
-			n.Lv = save[i].Lv;
-			n.strengtheningItemNum = save[i].strengtheningItemNum;
-			n.strengtheningFlg = save[i].strengtheningFlg;
+			n.m_lv = save[i].m_lv;
+			n.m_strengtheningItemNum = save[i].m_strengtheningItemNum;
+			n.m_strengtheningFlg = save[i].m_strengtheningFlg;
 		}
 
 		// レベルが最大を超えないようにする
-		if (n.Lv > n.LvMax) { n.Lv = n.LvMax; }
+		if (n.m_lv > n.m_lvMax) { n.m_lv = n.m_lvMax; }
 
 		// 次のレベルに必要な数はマスタの式で計算し直す
-		n.nextLvNum = static_cast<int>(std::ceil(n.InitialNextLvNum * std::pow(n.GrowthRate, n.Lv)));
+		n.m_nextLvNum = static_cast<int>(std::ceil(n.m_initialNextLvNum * std::pow(n.m_growthRate, n.m_lv)));
 	}
 
 	return now;
@@ -503,30 +503,30 @@ std::string BaseScene::GetWeaponKey(int _weaponType)
 void BaseScene::SaveGameRecord(const GameResult& _result)
 {
 	// 中身が空の結果(プレイしていない)は保存しない
-	if (_result.displayFloorInfo.empty()) { return; }
+	if (_result.m_displayFloorInfo.empty()) { return; }
 
 	GameRecord record = LoadGameRecord();
 
 	// 最新を上書き
-	record.latest = _result;
-	record.hasLatest = true;
+	record.m_latest = _result;
+	record.m_hasLatest = true;
 
 	// ベスト3に入れて並べ替え、4位以下を切る
-	record.best.push_back(_result);
-	std::stable_sort(record.best.begin(), record.best.end(),
-		[&](const GameResult& a, const GameResult& b) { return IsBetterResult(a, b); });
-	if (record.best.size() > 3) { record.best.resize(3); }
+	record.m_best.push_back(_result);
+	std::stable_sort(record.m_best.begin(), record.m_best.end(),
+		[&](const GameResult& _a, const GameResult& _b) { return IsBetterResult(_a, _b); });
+	if (record.m_best.size() > 3) { record.m_best.resize(3); }
 
 	// 書き出し
 	nlohmann::json data;
-	data["Latest"] = GameResultToJson(record.latest);
+	data["Latest"] = GameResultToJson(record.m_latest);
 	data["Best"] = nlohmann::json::array();
-	for (const auto& r : record.best)
+	for (const auto& r : record.m_best)
 	{
 		data["Best"].push_back(GameResultToJson(r));
 	}
 
-	std::ofstream ofs(m_GameRecordFilePath);
+	std::ofstream ofs(m_gameRecordFilePath);
 	ofs << data.dump(4);
 }
 
@@ -534,31 +534,31 @@ GameRecord BaseScene::LoadGameRecord()
 {
 	GameRecord record;
 
-	std::ifstream ifs(m_GameRecordFilePath);
+	std::ifstream ifs(m_gameRecordFilePath);
 	if (!ifs.is_open())
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] GameRecordファイルが見つかりません : %s\n"), m_GameRecordFilePath.c_str());
+		KdDebugGUI::Instance().AddLog(U8("[Error] GameRecordファイルが見つかりません : %s\n"), m_gameRecordFilePath.c_str());
 		return record;
 	}
 
 	nlohmann::json data = nlohmann::json::parse(ifs, nullptr, false);
 	if (data.is_discarded())
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] GameRecordファイルの読み込みに失敗しました : %s\n"), m_GameRecordFilePath.c_str());
+		KdDebugGUI::Instance().AddLog(U8("[Error] GameRecordファイルの読み込みに失敗しました : %s\n"), m_gameRecordFilePath.c_str());
 		return record;
 	}
 
 	if (data.contains("Latest") && data["Latest"].is_object())
 	{
-		record.latest = JsonToGameResult(data["Latest"]);
-		record.hasLatest = true;
+		record.m_latest = JsonToGameResult(data["Latest"]);
+		record.m_hasLatest = true;
 	}
 
 	if (data.contains("Best") && data["Best"].is_array())
 	{
 		for (const auto& item : data["Best"])
 		{
-			record.best.push_back(JsonToGameResult(item));
+			record.m_best.push_back(JsonToGameResult(item));
 		}
 	}
 
@@ -568,16 +568,16 @@ GameRecord BaseScene::LoadGameRecord()
 nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
 {
 	nlohmann::json data;
-	data["PlayerDead"] = _result.playerDead;
+	data["PlayerDead"] = _result.m_playerDead;
 	data["Floors"] = nlohmann::json::array();
 
-	for (const auto& f : _result.displayFloorInfo)
+	for (const auto& f : _result.m_displayFloorInfo)
 	{
 		nlohmann::json floor;
-		floor["DisplayFloor"] = f.DisplayFloor;
-		floor["EnemyKillCount"] = f.enemyKillCount;
-		floor["TreasureChestsNum"] = f.TreasureChestsNum;
-		floor["PlayTimeSc"] = f.playTimeSc;
+		floor["DisplayFloor"] = f.m_displayFloor;
+		floor["EnemyKillCount"] = f.m_enemyKillCount;
+		floor["TreasureChestsNum"] = f.m_treasureChestsNum;
+		floor["PlayTimeSc"] = f.m_playTimeSc;
 		data["Floors"].push_back(floor);
 	}
 	return data;
@@ -586,18 +586,18 @@ nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
 GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
 {
 	GameResult result;
-	result.playerDead = _data.value("PlayerDead", false);
+	result.m_playerDead = _data.value("PlayerDead", false);
 
 	if (_data.contains("Floors") && _data["Floors"].is_array())
 	{
 		for (const auto& item : _data["Floors"])
 		{
 			DisplayFloorInfo f;
-			f.DisplayFloor = item.value("DisplayFloor", 0);
-			f.enemyKillCount = item.value("EnemyKillCount", 0);
-			f.TreasureChestsNum = item.value("TreasureChestsNum", 0);
-			f.playTimeSc = item.value("PlayTimeSc", 0.0f);
-			result.displayFloorInfo.push_back(f);
+			f.m_displayFloor = item.value("DisplayFloor", 0);
+			f.m_enemyKillCount = item.value("EnemyKillCount", 0);
+			f.m_treasureChestsNum = item.value("TreasureChestsNum", 0);
+			f.m_playTimeSc = item.value("PlayTimeSc", 0.0f);
+			result.m_displayFloorInfo.push_back(f);
 		}
 	}
 	return result;
@@ -606,15 +606,15 @@ GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
 bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
 {
 	// [0]は全体の情報
-	const DisplayFloorInfo a = _a.displayFloorInfo.empty() ? DisplayFloorInfo{} : _a.displayFloorInfo[0];
-	const DisplayFloorInfo b = _b.displayFloorInfo.empty() ? DisplayFloorInfo{} : _b.displayFloorInfo[0];
+	const DisplayFloorInfo a = _a.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _a.m_displayFloorInfo[0];
+	const DisplayFloorInfo b = _b.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _b.m_displayFloorInfo[0];
 
 	// ① 到達階が深いほうが上
-	if (a.DisplayFloor != b.DisplayFloor) { return a.DisplayFloor > b.DisplayFloor; }
+	if (a.m_displayFloor != b.m_displayFloor) { return a.m_displayFloor > b.m_displayFloor; }
 	// ② 同じ階なら、脱出したほうが上
-	if (_a.playerDead != _b.playerDead) { return !_a.playerDead; }
+	if (_a.m_playerDead != _b.m_playerDead) { return !_a.m_playerDead; }
 	// ③ それも同じなら、時間が短いほうが上
-	return a.playTimeSc < b.playTimeSc;
+	return a.m_playTimeSc < b.m_playTimeSc;
 }
 
 void BaseScene::RestockShop()
@@ -629,8 +629,8 @@ void BaseScene::RestockShop()
 			return data;
 		};
 
-	const nlohmann::json master = readJson(m_ShopMasterFilePath);	// 値段・最初の在庫数
-	nlohmann::json       stock = readJson(m_ShopStockFilePath);	// 今の在庫
+	const nlohmann::json master = readJson(m_shopMasterFilePath);	// 値段・最初の在庫数
+	nlohmann::json       stock = readJson(m_shopStockFilePath);	// 今の在庫
 
 	//---------- 配列1つ分を再入荷する ----------
 	// _key … "potions" / "materials" / "weapons"
@@ -661,7 +661,7 @@ void BaseScene::RestockShop()
 	restock("weapons");
 
 	//---------- 保存 ----------
-	std::ofstream file(m_ShopStockFilePath);
+	std::ofstream file(m_shopStockFilePath);
 	if (!file) { return; }
 	file << stock.dump(4);
 }
@@ -673,7 +673,7 @@ std::vector<bool> BaseScene::LoadOwnedWeapons()
 	std::vector<bool> owned(PlayerWeaponInfoSize, false);
 	owned[PlayerWeaponInfo_Dagger] = true;
 
-	std::ifstream file(m_InventoryFilePath);
+	std::ifstream file(m_inventoryFilePath);
 	if (!file) { return owned; }
 
 	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
@@ -695,7 +695,7 @@ void BaseScene::SaveOwnedWeapons(const std::vector<bool>& _owned)
 	// ポーションなど他の項目は消さずに、"weapons" だけを書き換える
 	nlohmann::json data = nlohmann::json::object();
 	{
-		std::ifstream file(m_InventoryFilePath);
+		std::ifstream file(m_inventoryFilePath);
 		if (file)
 		{
 			data = nlohmann::json::parse(file, nullptr, false);
@@ -716,7 +716,7 @@ void BaseScene::SaveOwnedWeapons(const std::vector<bool>& _owned)
 			});
 	}
 
-	std::ofstream file(m_InventoryFilePath);
+	std::ofstream file(m_inventoryFilePath);
 	if (!file) { return; }
 	file << data.dump(4);
 }
@@ -724,7 +724,7 @@ void BaseScene::SaveOwnedWeapons(const std::vector<bool>& _owned)
 
 long BaseScene::LoadMoney()
 {
-	std::ifstream file(m_InventoryFilePath);
+	std::ifstream file(m_inventoryFilePath);
 	if (!file) { return 0; }
 
 	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
@@ -738,7 +738,7 @@ void BaseScene::SaveMoney(long _money)
 	// ポーションなど他の項目は消さずに、"money" だけを書き換える
 	nlohmann::json data = nlohmann::json::object();
 	{
-		std::ifstream file(m_InventoryFilePath);
+		std::ifstream file(m_inventoryFilePath);
 		if (file)
 		{
 			data = nlohmann::json::parse(file, nullptr, false);
@@ -748,7 +748,7 @@ void BaseScene::SaveMoney(long _money)
 
 	data["money"] = std::max(0L, _money);	// マイナスにはしない
 
-	std::ofstream file(m_InventoryFilePath);
+	std::ofstream file(m_inventoryFilePath);
 	if (!file) { return; }
 	file << data.dump(4);
 }

@@ -8,35 +8,40 @@ class  CameraBase;
 struct StatusShockwave
 {
 	// 何体までヒットしていいか
-	int maxHitNum = 0;
+	int m_maxHitNum = 0;
 
 	// 最大飛距離（メートル）
-	float maxDistanceM = 0;
+	float m_maxDistanceM = 0;
 
 	//進んだ距離
-	float DistanceM = 0;
+	float m_distanceM = 0;
 
 	// 飛ぶ速度（m/s）
-	float speed = 0;
+	float m_speed = 0;
 
 	// 最大ダメージ
-	float maxDamage = 0;
+	float m_maxDamage = 0;
 
 	// 現在の飛行距離
-	float nowDistance = 0.0f;
+	float m_nowDistance = 0.0f;
 
 };
 
 class  Dagger_ChargeAttack :public KdGameObject
 {
 public:
+	//コンストラクタ
 	Dagger_ChargeAttack() {};
+	//デストラクタ
 	~Dagger_ChargeAttack()override {};
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
 
 
+	//エフェクトの描画
 	void DrawEffect()override;
 
 
@@ -45,14 +50,16 @@ public:
 	//_maxDistanceM ...　どれだけの距離(メートル)飛んでいいか
 	//_speed ... 速度
 	// _maxDamage ..最大ダメージ
-	void SetShockwaveStatus(int _hitNum, float _maxDistanceM, float _speed, float _maxDamage, Math::Vector3 _pos, float _Angle)
+	// _pos ... 出す座標
+	// _angle ... 進む角度(度)
+	void SetShockwaveStatus(int _hitNum, float _maxDistanceM, float _speed, float _maxDamage, Math::Vector3 _pos, float _angle)
 	{
-		m_shockwaveStatus.maxHitNum = _hitNum;
-		m_shockwaveStatus.maxDistanceM = _maxDistanceM;
-		m_shockwaveStatus.speed = _speed;
-		m_shockwaveStatus.maxDamage = _maxDamage;
+		m_shockwaveStatus.m_maxHitNum = _hitNum;
+		m_shockwaveStatus.m_maxDistanceM = _maxDistanceM;
+		m_shockwaveStatus.m_speed = _speed;
+		m_shockwaveStatus.m_maxDamage = _maxDamage;
 		m_pos = _pos;
-		m_angle = _Angle;
+		m_angle = _angle;
 
 		m_startPos = m_pos;
 		m_prevTipPos = m_pos;
@@ -67,28 +74,33 @@ public:
 	}
 
 	// 攻撃対象キャラクターリストを親から受け取る関数
+	// _list ... 当たり判定をするキャラのリスト
 	void SetAttackHitCharacterList(const std::list<std::weak_ptr<CharacterBase>>& _list)
 	{
 		m_attackHitCharacterList = _list;
 	}
 
 	// ポリゴンスケール（サイズ）の設定 (X: 横幅, Y: 進行方向の長さ)
+	// _scale ... 大きさ
 	void SetPolyScale(const Math::Vector2& _scale)
 	{
 		m_polyScale = _scale;
-		if (m_Poly)
+		if (m_spPoly)
 		{
-			m_Poly->SetScale(m_polyScale);
+			m_spPoly->SetScale(m_polyScale);
 		}
 	}
 
+	//当たり判定をするマップオブジェクトのリストをセット
+	// _list ... マップオブジェクトのリスト
 	void SetMapObjList(std::list<std::weak_ptr<MapBase>> _list)
 	{ 
-		m_MapObjList = _list;
+		m_mapObjList = _list;
 	}
 
 	// 当たったときに揺らすカメラ
-	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
+	// _spCamera ... カメラ
+	void SetCamera(const std::shared_ptr<CameraBase>& _spCamera) { m_wpCamera = _spCamera; }
 
 private:
 
@@ -98,16 +110,18 @@ private:
 	//あたり判定をするリスト
 	std::list<std::weak_ptr<CharacterBase>>m_attackHitCharacterList;
 
-	std::list<std::weak_ptr<MapBase>>m_MapObjList;
+	//当たり判定をするマップオブジェクトのリスト
+	std::list<std::weak_ptr<MapBase>>m_mapObjList;
 
 	//既に当たったキャラリスト
 	std::list<std::weak_ptr<CharacterBase>>m_hitCharactersList;
 
+	//衝撃波のステータス
 	StatusShockwave m_shockwaveStatus;
 
 
 	// ポリゴン
-	std::shared_ptr<KdSquarePolygon> m_Poly = nullptr;
+	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
 
 	// ポリゴンスケール変数 (X: 幅, Y: 長さ)
 	Math::Vector2 m_polyScale = { 2.0f, 1.0f };
@@ -130,10 +144,14 @@ private:
 	Math::Vector3 m_hitBoxLocalOffset = { 0.0f, 0.6f, 0.0f };
 	// 前フレームのワールド座標および行列
 	Math::Vector3 m_prevTipPos = Math::Vector3::Zero;
+	//前フレームの根元の位置(ワールド)
 	Math::Vector3 m_prevBasePos = Math::Vector3::Zero;
-	Math::Matrix  m_prevWeponParentMat = Math::Matrix::Identity; // 追加：前フレーム行列
+	Math::Matrix  m_prevWeaponParentMat = Math::Matrix::Identity; // 追加：前フレーム行列
 	bool m_isFirstFrame = true;
-	bool IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara);
+	//このフレームですでに当たったキャラか
+	// _spChara ... 調べるキャラ
+	//戻り値 ... 当たっていたらtrue
+	bool IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara);
 
 	// 前フレームの位置およびワールド行列
 	Math::Matrix  m_prevWorldMat = Math::Matrix::Identity;
@@ -142,14 +160,17 @@ private:
 	//残像用
 	struct GhostTrail
 	{
-		Math::Vector3 pos;
-		float alpha;      // 透明度
-		float lifeTime;   // 残像の寿命
+		//残像の座標
+		Math::Vector3 m_pos;
+		float m_alpha;      // 透明度
+		float m_lifeTime;   // 残像の寿命
 	};
 
+	//残像の一覧
 	std::vector<GhostTrail> m_trails;
 	float m_trailSpawnInterval = 0.002f; //ごとに残像生成
 	float m_trailTimer = 0.0f;
 
+	//残像の更新
 	void GhostTrailUpdate();
 };

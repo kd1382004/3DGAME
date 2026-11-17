@@ -7,12 +7,12 @@ void TitleButton::Init()
 {
 	ButtonBase::Init();
 
-	if (!m_tex)
+	if (!m_spTex)
 	{
-		m_tex = std::make_shared<KdTexture>();
-		m_tex->Load("Asset/Textures/Button/TitleButton/TitleButton.png");
+		m_spTex = std::make_shared<KdTexture>();
+		m_spTex->Load("Asset/Textures/Button/TitleButton/TitleButton.png");
 		m_scale = m_defScale;
-		m_diameter = { m_tex->GetWidth() / 2.0f * m_scale , m_tex->GetHeight() / 2.0f * m_scale };
+		m_diameter = { m_spTex->GetWidth() / 2.0f * m_scale , m_spTex->GetHeight() / 2.0f * m_scale };
 
 		Math::Matrix scaleMat = Math::Matrix::CreateScale(m_scale);
 		Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0);

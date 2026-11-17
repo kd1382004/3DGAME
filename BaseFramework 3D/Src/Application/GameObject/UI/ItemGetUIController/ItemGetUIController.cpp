@@ -4,25 +4,25 @@
 #include"../../Potions/PotionTexInfo/PotionTexInfo.h"
 void ItemGetUIController::Init()
 {
-	if (!m_backTex)
+	if (!m_spBackTex)
 	{
-		m_backTex = std::make_shared<KdTexture>();
-		m_backTex->Load("Asset/Textures/GameUI/Item/ItemGetUI/ItemGetUI.png");
+		m_spBackTex = std::make_shared<KdTexture>();
+		m_spBackTex->Load("Asset/Textures/GameUI/Item/ItemGetUI/ItemGetUI.png");
 		m_basePos = { -640,-50 };
 
-		m_basePos.x += m_backTex->GetWidth() / 2;
+		m_basePos.x += m_spBackTex->GetWidth() / 2;
 
-		float recY = m_backTex->GetHeight();
-		m_IconWH = { recY,recY };
+		float recY = m_spBackTex->GetHeight();
+		m_iconWH = { recY,recY };
 
-		float recX = m_backTex->GetWidth() / 2;
-		m__backWH = { recX ,recY / 2 };
+		float recX = m_spBackTex->GetWidth() / 2;
+		m_backWH = { recX ,recY / 2 };
 	}
 
-	if (!m_back2Tex)
+	if (!m_spBack2Tex)
 	{
-		m_back2Tex = std::make_shared<KdTexture>();
-		m_back2Tex->Load("Asset/Textures/GameUI/Item/ItemGetUI/Get.png");
+		m_spBack2Tex = std::make_shared<KdTexture>();
+		m_spBack2Tex->Load("Asset/Textures/GameUI/Item/ItemGetUI/Get.png");
 	}
 
 	if (!m_spPotionTexInfo)
@@ -39,7 +39,7 @@ void ItemGetUIController::PreUpdate()
 
 	while (it != m_getItemList.end())
 	{
-		if (it->isFinished)	// isFinished ・・・ 無効ならtrue
+		if (it->m_isFinished)	// isFinished ・・・ 無効ならtrue
 		{
 			// 無効なオブジェクトをリストから削除
 			it = m_getItemList.erase(it);
@@ -53,36 +53,36 @@ void ItemGetUIController::PreUpdate()
 
 void ItemGetUIController::Update()
 {
-	float delt = DeltaTime::Instance().GetGameDeltaTime();
+	float delta = DeltaTime::Instance().GetGameDeltaTime();
 
 
 	int i = 1;
 	for (auto& item : m_getItemList)
 	{
-		item.drawFlg = true;
+		item.m_drawFlg = true;
 
 
 		//座標決め
 		item.m_pos = m_basePos;
-		item.m_pos.y -= i * m_IconWH.y;
+		item.m_pos.y -= i * m_iconWH.y;
 		item.m_iconPos = item.m_pos;
-		item.m_iconPos.x += -m__backWH.x + m_IconWH.x;
+		item.m_iconPos.x += -m_backWH.x + m_iconWH.x;
 		item.m_namePos = item.m_iconPos;
-		item.m_namePos.x += m_IconWH.x;
+		item.m_namePos.x += m_iconWH.x;
 
 		//表示時間管理
-		item.showTime -= 0.5 * delt;
+		item.m_showTime -= 0.5 * delta;
 
-		if (item.showTime < 0)
+		if (item.m_showTime < 0)
 		{
-			item.alpha -= delt;
-			if (item.alpha <= 0)
+			item.m_alpha -= delta;
+			if (item.m_alpha <= 0)
 			{
-				item.isFinished = true;
+				item.m_isFinished = true;
 			}
 		}
 
-		m_alpha = item.alpha;
+		m_alpha = item.m_alpha;
 		i++;
 	}
 
@@ -91,62 +91,62 @@ void ItemGetUIController::Update()
 void ItemGetUIController::DrawSprite()
 {
 
-	if (!m_backTex) { return; }
+	if (!m_spBackTex) { return; }
 
 	if (m_getItemList.size() != 0)
 	{
 		Math::Color color = { 1,1,1,m_alpha };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_back2Tex, m_basePos.x, m_basePos.y, nullptr, &color);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spBack2Tex, m_basePos.x, m_basePos.y, nullptr, &color);
 	}
 
 
 	for (const auto& item : m_getItemList)
 	{
-		if (!item.drawFlg) { continue; }
+		if (!item.m_drawFlg) { continue; }
 
 
 		//背景描画
-		Math::Color color = { 1,1,1,item.alpha };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_backTex, item.m_pos.x, item.m_pos.y, nullptr, &color);
+		Math::Color color = { 1,1,1,item.m_alpha };
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spBackTex, item.m_pos.x, item.m_pos.y, nullptr, &color);
 
 		Math::Vector2 pos = item.m_pos;
 		pos.x += 60;
-		NumDraw::GetInstance().Drow(item.GetNum, LAligned, pos, color);
+		NumDraw::GetInstance().Draw(item.m_getNum, LAligned, pos, color);
 
-		if (!item.IconTex) { continue; }
-		KdShaderManager::Instance().m_spriteShader.DrawTex(item.IconTex, item.m_iconPos.x, item.m_iconPos.y, m_IconWH.x, m_IconWH.y, nullptr, &color);
+		if (!item.m_spIconTex) { continue; }
+		KdShaderManager::Instance().m_spriteShader.DrawTex(item.m_spIconTex, item.m_iconPos.x, item.m_iconPos.y, m_iconWH.x, m_iconWH.y, nullptr, &color);
 
-		if (!item.nameTex) { continue; }
+		if (!item.m_spNameTex) { continue; }
 		Math::Vector2 nameSiz = {};
-		Math::Vector2 nameNowSiz = { (float)item.nameTex->GetWidth() , (float)item.nameTex->GetHeight() };
-		Math::Vector2 pivo = { 0,0.5 };
+		Math::Vector2 nameNowSiz = { (float)item.m_spNameTex->GetWidth() , (float)item.m_spNameTex->GetHeight() };
+		Math::Vector2 pivot = { 0,0.5 };
 
-		float a = m_IconWH.y / nameNowSiz.y;
+		float a = m_iconWH.y / nameNowSiz.y;
 		nameSiz = nameNowSiz * a;
-		KdShaderManager::Instance().m_spriteShader.DrawTex(item.nameTex, item.m_namePos.x, item.m_namePos.y, nameSiz.x, nameSiz.y, nullptr, &color, pivo);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(item.m_spNameTex, item.m_namePos.x, item.m_namePos.y, nameSiz.x, nameSiz.y, nullptr, &color, pivot);
 	}
 
 }
 
-void ItemGetUIController::AddGetItemList(GetItem Item, ItemType type)
+void ItemGetUIController::AddGetItemList(GetItem _item, ItemType _type)
 {
 
 	if (!m_spPotionTexInfo) { return; }
 
 
-	switch (type)
+	switch (_type)
 	{
 	case Potion:
 
-		Item.IconTex = m_spPotionTexInfo->GetPotionIcon(Item.ID);
-		Item.nameTex = m_spPotionTexInfo->GetPotionName(Item.ID);
+		_item.m_spIconTex = m_spPotionTexInfo->GetPotionIcon(_item.m_ID);
+		_item.m_spNameTex = m_spPotionTexInfo->GetPotionName(_item.m_ID);
 		break;
 	case WeaponsStrengthening:
-		Item.IconTex = m_spPotionTexInfo->GetWeaponsStrengtheningItemIcon(Item.ID);
-		Item.nameTex = m_spPotionTexInfo->GetWeaponsStrengtheningItemName(Item.ID);
+		_item.m_spIconTex = m_spPotionTexInfo->GetWeaponsStrengtheningItemIcon(_item.m_ID);
+		_item.m_spNameTex = m_spPotionTexInfo->GetWeaponsStrengtheningItemName(_item.m_ID);
 		break;
 	default:
 		break;
 	}
-	m_getItemList.push_back(Item);
+	m_getItemList.push_back(_item);
 }

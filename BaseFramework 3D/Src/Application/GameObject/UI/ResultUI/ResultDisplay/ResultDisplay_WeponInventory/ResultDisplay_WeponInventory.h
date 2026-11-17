@@ -7,38 +7,56 @@ struct Inventory;
 class ResultDisplay_WeponInventory :public ResultDisplayBase
 {
 public:
+	//コンストラクタ
 	ResultDisplay_WeponInventory() {}
+	//デストラクタ
 	~ResultDisplay_WeponInventory() {}
 
 
+	//初期化
 	void Init();
 
+	//更新
 	void Update();
 
+	//描画前の処理
 	void PreDraw();
+	//2Dの描画
 	void DrawSprite();
 
 
 	//武器
+	// _weaponsStrengtheningInventory ... 持っている武器強化素材の一覧
 	void WeaponsStrengtheningInfoInit(std::vector<Inventory> _weaponsStrengtheningInventory);
 
 
-	void SetSpWeaponBase(std::shared_ptr<WeaponBase>spWeapon) { m_spWeapon = spWeapon; }
+	//ゲーム終了時の武器をセット
+	// _spWeapon ... 武器
+	void SetSpWeaponBase(std::shared_ptr<WeaponBase>_spWeapon) { m_spWeapon = _spWeapon; }
 private:		 
 
+	//ゲーム終了時の武器
 	std::shared_ptr<WeaponBase>m_spWeapon;
 
 	struct ItemIconInfo
 	{
-		int m_ItemID;
+		//アイテムの番号
+		int m_itemID;
+		//表示位置
 		Math::Vector2 m_2DPos;
+		//所持数
 		int m_num;
+		//マウスが乗っているか
 		bool m_hit = false;
 
+		//アイテムの名前
 		std::string m_name;
-		std::shared_ptr<KdTexture>m_IconTex;
-		std::shared_ptr<KdTexture>m_ExplanationTex;
-		std::shared_ptr<KdTexture> m_NameTex;
+		//アイコンの画像
+		std::shared_ptr<KdTexture>m_spIconTex;
+		//説明の画像
+		std::shared_ptr<KdTexture>m_spExplanationTex;
+		//名前の画像
+		std::shared_ptr<KdTexture> m_spNameTex;
 	};
 
 
@@ -47,91 +65,113 @@ private:
 	//アイコンとの当り判定
 	void WeaponsStrengtheningIconHit();
 
-	std::shared_ptr<KdTexture>m_PreconditionNodeExplanationTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeNameTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeTex;
-	std::shared_ptr<KdTexture>m_PreconditionNodeIconTex;
+	//「前提ノードを解放してください」の説明の画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeExplanationTex;
+	//前提ノードの名前の画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeNameTex;
+	//前提ノードの枠の画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeTex;
+	//前提ノードのアイコンの画像
+	std::shared_ptr<KdTexture>m_spPreconditionNodeIconTex;
 
-	std::shared_ptr<KdTexture>m_selectExplanationTex;
-	std::shared_ptr<KdTexture>m_selectNameTex;
+	//選んでいるものの説明の画像
+	std::shared_ptr<KdTexture>m_spSelectExplanationTex;
+	//選んでいるものの名前の画像
+	std::shared_ptr<KdTexture>m_spSelectNameTex;
 
+	//強化ボタンの位置
 	Math::Vector2 m_weaponsStrengtheningButtonTex2DPos;
 
-	std::shared_ptr<KdTexture>m_selectTex;
-	std::shared_ptr<KdTexture>m_LVTex;
+	//選んでいる枠の画像
+	std::shared_ptr<KdTexture>m_spSelectTex;
+	//「LV」の画像
+	std::shared_ptr<KdTexture>m_spLVTex;
+	//「LV」の位置
 	Math::Vector2 m_LVTex2DPos;
+	//選んでいる枠の位置
 	Math::Vector2 m_selectTex2DPos;
+	//選んでいるアイコンの1フレームあたりの拡大量
 	float m_selectAdd = 0.1;
-	float m_selectDefoAdd = 0.1;
+	//拡大量の初期値
+	float m_selectDefaultAdd = 0.1;
+	//拡大量の増減
 	float m_selectAddNum = 0.05;
+	//今の拡大の合計
 	float m_selectAddTotal = 0;
+	//拡大の合計の最大
 	float m_selectAddTotalMax = 50;
 
-	std::shared_ptr<KdTexture>m_LvMaxButtonTex;
+	//最大レベルのときのボタンの画像
+	std::shared_ptr<KdTexture>m_spLvMaxButtonTex;
 
-	bool m_PreconditionNodeFlg = false;
+	//選んでいるノードの前提ノードがまだ解放されていないか
+	bool m_preconditionNodeFlg = false;
 
 	struct WeaponsStrengtheningInfo
 	{
 		//現LV
-		int Lv;
+		int m_lv;
 
-		int ID;
+		//強化の番号
+		int m_ID;
 
 		//次のLVにするために必要な強化アイテムの数
-		int nextLvNum;
+		int m_nextLvNum;
 
 		//強化が可能かどうか
-		bool strengtheningFlg = false;
+		bool m_strengtheningFlg = false;
 
 		//LVがMAXかどうか
-		bool LvMaxFlg = false;
+		bool m_lvMaxFlg = false;
 
 		//アイコン
-		std::shared_ptr<KdTexture>iconTex;
+		std::shared_ptr<KdTexture>m_spIconTex;
 
 		//アイコンの位置
-		Math::Vector2 iconPos;
+		Math::Vector2 m_iconPos;
 
 		//アイコンのサイズ
-		Math::Vector2 iconSiz;
+		Math::Vector2 m_iconSiz;
 
 		//当たってるか
 		bool m_hit = false;
 
 		//説明画像
-		std::shared_ptr<KdTexture>m_ExplanationTex;
+		std::shared_ptr<KdTexture>m_spExplanationTex;
 
 
 		//強化アイテムの数
-		int num;
+		int m_num;
 
 		//強化アイテムの画像
-		std::shared_ptr<KdTexture>iconStrengtheningTex;
+		std::shared_ptr<KdTexture>m_spIconStrengtheningTex;
 
 		//強化アイテムの位置
-		Math::Vector2 iconStrengtheningPos;
+		Math::Vector2 m_iconStrengtheningPos;
 
 		//アイコンのサイズ
-		Math::Vector2 iconStrengtheningSiz;
+		Math::Vector2 m_iconStrengtheningSiz;
 
-		float timer = 0.0f;
+		//演出用のタイマー
+		float m_timer = 0.0f;
 
-		std::shared_ptr<KdTexture> m_NameTex;
+		//名前の画像
+		std::shared_ptr<KdTexture> m_spNameTex;
 
 		//前提ノードのMyNodeID（-1 = 前提なし）
-		int PreconditionNodeID = -1;
+		int m_preconditionNodeID = -1;
 
 		//前提ノードの配列番号（-1 = 前提なし）
-		int PreconditionNodeID_index = -1;
+		int m_preconditionNodeIndex = -1;
 
-		bool ChooseFlg;
+		//選ばれているか
+		bool m_chooseFlg;
 	};
 
-	enum WeponStrengtheningID
+	enum WeaponStrengtheningID
 	{
 		//攻撃力
-		WeaponsStrengthening_Attck,
+		WeaponsStrengthening_Attack,
 
 		//スタミナ
 		WeaponsStrengthening_Stamina,
@@ -160,27 +200,39 @@ private:
 		WeaponsStrengtheningSiz
 	};
 
+	//選んでいる強化の番号
 	int m_selectWeaponsStrengtheningID;
+	//選んでいる強化アイコンの大きさ
 	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;
 
+	//強化の情報(種類ごと)
 	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
 
+	//強化アイテムのアイコン一覧
 	std::vector<ItemIconInfo> m_weaponsStrengtheningIconInfoList;
 
 	//次のLVにするために必要な強化アイテムの数
-	int m_selectWeaponsStrengtheningnextLVNum = 0;
+	int m_selectWeaponsStrengtheningNextLVNum = 0;
 
 	//////////////////////////////////////////////////
 
-	std::shared_ptr<KdTexture>m_WeaponsStrengtheningBackTex;
-	std::shared_ptr<KdTexture>m_WeaponsStrengtheningBack2Tex;
-	Math::Vector2 m_WeaponsStrengtheningTexPos;
+	//背景の画像
+	std::shared_ptr<KdTexture>m_spWeaponsStrengtheningBackTex;
+	//背景2の画像
+	std::shared_ptr<KdTexture>m_spWeaponsStrengtheningBack2Tex;
+	//背景の位置
+	Math::Vector2 m_weaponsStrengtheningTexPos;
 
-	std::shared_ptr<KdTexture>m_WeaponsStrengtheninTitleTex;
-	Math::Vector2 m_WeaponsStrengtheninTitleTexPos;
+	//タイトルの画像
+	std::shared_ptr<KdTexture>m_spWeaponsStrengtheningTitleTex;
+	//タイトルの位置
+	Math::Vector2 m_weaponsStrengtheningTitleTexPos;
 
-	std::shared_ptr<KdTexture>m_LineTex;
+	//ノードをつなぐ線の画像
+	std::shared_ptr<KdTexture>m_spLineTex;
 
+	//指定した強化だけ選んで、それ以外は選ばれていないようにする
+	// _ID ... 選ぶ強化の番号
 	void WeaponChooseFlg(int _ID);
 
 	//選択中の強化に使うアイテムが m_weaponsStrengtheningIconInfoList の何番目か（なければ -1）

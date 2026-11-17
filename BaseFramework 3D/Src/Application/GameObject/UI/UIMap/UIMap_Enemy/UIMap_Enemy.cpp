@@ -3,18 +3,18 @@
 
 void UIMap_EnemyManage::Init()
 {
-	if (!m_enemyTex)
+	if (!m_spEnemyTex)
 	{
-		m_enemyTex = std::make_shared<KdTexture>();
-		m_enemyTex->Load("Asset/Textures/GameUI/Map/Enemy.png");
+		m_spEnemyTex = std::make_shared<KdTexture>();
+		m_spEnemyTex->Load("Asset/Textures/GameUI/Map/Enemy.png");
 
 		m_angle = 0;
 	}
 }
 
-void UIMap_EnemyManage::DrawSprit()
+void UIMap_EnemyManage::DrawSprite()
 {
-	if (!m_enemyTex) { return; }
+	if (!m_spEnemyTex) { return; }
 	for (auto& posL : m_posList)
 	{
 		
@@ -22,11 +22,11 @@ void UIMap_EnemyManage::DrawSprit()
 
 		if (!posL.m_drawFlg) { continue; }
 		Math::Vector2 pos = Change2DPos(posL.m_pos);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_enemyTex, m_basePos.x + pos.x * m_siz, m_basePos.y + pos.y * m_siz, nullptr, nullptr, { 0.5,0.5 }, posL.m_angle);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spEnemyTex, m_basePos.x + pos.x * m_siz, m_basePos.y + pos.y * m_siz, nullptr, nullptr, { 0.5,0.5 }, posL.m_angle);
 	}
 }
 
-void UIMap_EnemyManage::PosListRiseto()
+void UIMap_EnemyManage::PosListReset()
 {
 	m_posList.clear();
 }
@@ -60,7 +60,7 @@ void UIMap_EnemyManage::DiscoverEnemy(List* _info)
 	int enemyTileX = (int)((_info->m_pos.x - m_base3DPos.x) / m_tileSiz);
 	int enemyTileY = (int)((_info->m_pos.z - m_base3DPos.z) / m_tileSiz);
 
-	const MineMapInfo* tile = spUIMap_Map->FindTile(enemyTileX, enemyTileY);
+	const MiniMapInfo* tile = spUIMap_Map->FindTile(enemyTileX, enemyTileY);
 	_info->m_drawFlg = tile ? tile->m_drawFlg : false;
 
 }

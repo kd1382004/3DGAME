@@ -13,19 +13,26 @@ struct Inventory;
 class ResultDisplay_PotionInventory :public ResultDisplayBase
 {
 public:
+	//コンストラクタ
 	ResultDisplay_PotionInventory() {}
+	//デストラクタ
 	~ResultDisplay_PotionInventory() {}
 
 
+	//初期化
 	void Init();
 
+	//更新
 	void Update();
 
+	//描画前の処理
 	void PreDraw();
+	//2Dの描画
 	void DrawSprite();
 
 
 	//あるものを入れてく関数
+	// _potions ... 持っているポーションの一覧
 	void AddPotionTexInfo(std::vector<Inventory>_potions);
 private:
 
@@ -37,37 +44,48 @@ private:
 
 	struct ItemIconInfo
 	{
-		int m_ItemID = 0;
+		//アイテムの番号
+		int m_itemID = 0;
+		//表示位置
 		Math::Vector2 m_2DPos;
+		//所持数
 		int m_num = 0;
+		//マウスが乗っているか
 		bool m_hit = false;
 
 		// 何番目のアイテムか（マスの位置を決めるのに使う）
 		int m_index = 0;
 
+		//アイテムの名前
 		std::string m_name;
-		std::shared_ptr<KdTexture>m_IconTex;
-		std::shared_ptr<KdTexture>m_ExplanationTex;
-		std::shared_ptr<KdTexture> m_NameTex;
+		//アイコンの画像
+		std::shared_ptr<KdTexture>m_spIconTex;
+		//説明の画像
+		std::shared_ptr<KdTexture>m_spExplanationTex;
+		//名前の画像
+		std::shared_ptr<KdTexture> m_spNameTex;
 	};
 
 
+	//表示するアイテムのアイコン一覧
 	std::vector<ItemIconInfo> m_itemIconInfo;
-	struct { int w; int h; } m_iconDimensions = { 40,40 };
+	//アイコンの大きさ
+	struct { int m_w; int m_h; } m_iconDimensions = { 40,40 };
 
 	//選ばれてるポーションのID
 	int m_selectPotionID = -999;
 
 	//ポーションselect（空きマスにも使う）
-	std::shared_ptr<KdTexture>m_potionSelectTex;
+	std::shared_ptr<KdTexture>m_spPotionSelectTex;
 
 
 	//---------- 背景・タイトル ----------
-	std::shared_ptr<KdTexture>m_potionTitleTex;
+	std::shared_ptr<KdTexture>m_spPotionTitleTex;
+	//タイトルの位置
 	Math::Vector2 m_potionTitleTexPos;
 
-	std::shared_ptr<KdTexture>m_potionBackTex;		// 右の枠（名前・説明）
-	std::shared_ptr<KdTexture>m_potionBack2Tex;		// 左の枠（アイテム一覧）
+	std::shared_ptr<KdTexture>m_spPotionBackTex;		// 右の枠（名前・説明）
+	std::shared_ptr<KdTexture>m_spPotionBack2Tex;		// 左の枠（アイテム一覧）
 	Math::Vector2 m_potionBackTexPos;				// 右の枠の位置
 	Math::Vector2 m_potionBack2TexPos;				// 左の枠の位置
 
@@ -88,19 +106,23 @@ private:
 
 	//---------- スクロールバー ----------
 	// 溝（レール）
-	std::shared_ptr<KdTexture> m_scrollTrackTex;
+	std::shared_ptr<KdTexture> m_spScrollTrackTex;
 
 	// つまみ（上の端・真ん中・下の端・中央の3本線）
-	std::shared_ptr<KdTexture> m_scrollThumbTopTex;
-	std::shared_ptr<KdTexture> m_scrollThumbMidTex;		// 縦に伸ばして使う
-	std::shared_ptr<KdTexture> m_scrollThumbBottomTex;
-	std::shared_ptr<KdTexture> m_scrollThumbGripTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbTopTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbMidTex;		// 縦に伸ばして使う
+	std::shared_ptr<KdTexture> m_spScrollThumbBottomTex;
+	//つまみの中央の3本線の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbGripTex;
 
 	// マウスを乗せたときのつまみ
-	std::shared_ptr<KdTexture> m_scrollThumbTopHoverTex;
-	std::shared_ptr<KdTexture> m_scrollThumbMidHoverTex;
-	std::shared_ptr<KdTexture> m_scrollThumbBottomHoverTex;
-	std::shared_ptr<KdTexture> m_scrollThumbGripHoverTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbTopHoverTex;
+	//マウスを乗せたときのつまみの真ん中の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbMidHoverTex;
+	//マウスを乗せたときのつまみの下の端の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbBottomHoverTex;
+	//マウスを乗せたときのつまみの3本線の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbGripHoverTex;
 
 	// 溝（レール）
 	Math::Vector2 m_scrollTrackPos;		// 溝の中心座標（マスの右側から計算）
@@ -137,5 +159,8 @@ private:
 	// つかんだ位置と、つまみの中心との縦のずれ（マウスのy − つまみの中心のy）
 	float m_scrollDragOffsetY = 0.0f;
 
+	//その高さのマスが今見えている範囲か
+	// _y ... マスの中心のy
+	//戻り値 ... 見えているならtrue
 	bool IsInSlotView(float _y) const;
 };

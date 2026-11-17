@@ -42,115 +42,115 @@ void PlayerInventoryUI::Init()
 	KeyInfo::Instance().SetKeyValid(VK_TAB);
 
 	// 所持金の画像
-	if (!m_coinTex)
+	if (!m_spCoinTex)
 	{
-		m_coinTex = std::make_shared<KdTexture>();
-		m_coinTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/Money/Coin.png");
+		m_spCoinTex = std::make_shared<KdTexture>();
+		m_spCoinTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/Money/Coin.png");
 	}
-	if (!m_goldTex)
+	if (!m_spGoldTex)
 	{
-		m_goldTex = std::make_shared<KdTexture>();
-		m_goldTex->Load("Asset/Textures/GameUI/Prepare/Menu/Text/Gold.png");
+		m_spGoldTex = std::make_shared<KdTexture>();
+		m_spGoldTex->Load("Asset/Textures/GameUI/Prepare/Menu/Text/Gold.png");
 	}
 
 	m_playerInventoryUIFlg = false;
 
-	if (!m_back1Tex)
+	if (!m_spBack1Tex)
 	{
-		m_back1Tex = std::make_shared<KdTexture>();
-		m_back1Tex->Load("Asset/Textures/GameUI/Item/PlayerInventory/BagBackTex1.png");
+		m_spBack1Tex = std::make_shared<KdTexture>();
+		m_spBack1Tex->Load("Asset/Textures/GameUI/Item/PlayerInventory/BagBackTex1.png");
 		m_back1Tex2DPos = { -100,0 };
 
 	}
 
 
-	if (!m_inventoryTypeTex)
+	if (!m_spInventoryTypeTex)
 	{
-		m_inventoryTypeTex = std::make_shared<KdTexture>();
-		m_inventoryTypeTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/inventoryType.png");
-		m_inventoryTypeSiz = { (float)m_inventoryTypeTex->GetWidth(),(float)m_inventoryTypeTex->GetHeight() / 3 };
-		m_inventoryType2DPos.x = m_back1Tex2DPos.x - m_back1Tex->GetWidth() / 2;
+		m_spInventoryTypeTex = std::make_shared<KdTexture>();
+		m_spInventoryTypeTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/inventoryType.png");
+		m_inventoryTypeSiz = { (float)m_spInventoryTypeTex->GetWidth(),(float)m_spInventoryTypeTex->GetHeight() / 3 };
+		m_inventoryType2DPos.x = m_back1Tex2DPos.x - m_spBack1Tex->GetWidth() / 2;
 		m_inventoryType2DPos.y = m_back1Tex2DPos.y + 150;
 
 	}
 
 
-	if (!m_notSelsect)
+	if (!m_spNotSelect)
 	{
-		m_notSelsect = std::make_shared<KdTexture>();
-		m_notSelsect->Load("Asset/Textures/GameUI/Item/PlayerInventory/BagBackTex2.png");
-		m_back2Tex = m_notSelsect;
-		m_back2Tex2DPos = m_back1Tex2DPos + Math::Vector2{ (float)m_back1Tex->GetWidth() / 2,0 } + Math::Vector2{ (float)m_back2Tex->GetWidth(),0 };
-		m_back2Tex2DSiz = { (float)m_back2Tex->GetWidth() , (float)m_back2Tex->GetHeight() };
+		m_spNotSelect = std::make_shared<KdTexture>();
+		m_spNotSelect->Load("Asset/Textures/GameUI/Item/PlayerInventory/BagBackTex2.png");
+		m_spBack2Tex = m_spNotSelect;
+		m_back2Tex2DPos = m_back1Tex2DPos + Math::Vector2{ (float)m_spBack1Tex->GetWidth() / 2,0 } + Math::Vector2{ (float)m_spBack2Tex->GetWidth(),0 };
+		m_back2Tex2DSiz = { (float)m_spBack2Tex->GetWidth() , (float)m_spBack2Tex->GetHeight() };
 	}
 
 
-	if (!m_spContext->notSelectNameTex)
+	if (!m_spContext->m_spNotSelectNameTex)
 	{
-		m_spContext->notSelectNameTex = std::make_shared<KdTexture>();
-		m_spContext->notSelectNameTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/SelectNameBase.png");
-		m_spContext->selectNameTex = m_spContext->notSelectNameTex;
+		m_spContext->m_spNotSelectNameTex = std::make_shared<KdTexture>();
+		m_spContext->m_spNotSelectNameTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/SelectNameBase.png");
+		m_spContext->m_spSelectNameTex = m_spContext->m_spNotSelectNameTex;
 		m_selectNameTexPos = m_back2Tex2DPos;
 		m_selectNameTexPos.y = 223;
 	}
 
 
-	if (!m_spContext->selectExplanationTex)
+	if (!m_spContext->m_spSelectExplanationTex)
 	{
-		m_spContext->notSelectExplanationTex = std::make_shared<KdTexture>();
-		m_spContext->notSelectExplanationTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/SelectExplanationBase.png");
-		m_spContext->selectExplanationTex = m_spContext->notSelectExplanationTex;
+		m_spContext->m_spNotSelectExplanationTex = std::make_shared<KdTexture>();
+		m_spContext->m_spNotSelectExplanationTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/SelectExplanationBase.png");
+		m_spContext->m_spSelectExplanationTex = m_spContext->m_spNotSelectExplanationTex;
 		m_selectExplanationTexPos = m_back2Tex2DPos;
 		m_selectExplanationTexPos.y = 50;
 	}
 
-	if (!m_spContext->useTex)
+	if (!m_spContext->m_spUseTex)
 	{
-		m_spContext->useTex = std::make_shared<KdTexture>();
-		m_spContext->useTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/UseTex.png");
+		m_spContext->m_spUseTex = std::make_shared<KdTexture>();
+		m_spContext->m_spUseTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/UseTex.png");
 
 		float x = m_back2Tex2DPos.x;
-		float y = m_back2Tex2DPos.y - m_back2Tex->GetHeight() / 2 + m_spContext->useTex->GetHeight() / 2 + 20;
-		m_spContext->useTex2DPos = { x,y };
+		float y = m_back2Tex2DPos.y - m_spBack2Tex->GetHeight() / 2 + m_spContext->m_spUseTex->GetHeight() / 2 + 20;
+		m_spContext->m_useTex2DPos = { x,y };
 	}
 
-	if (!m_spContext->potionSelectTex)
+	if (!m_spContext->m_spPotionSelectTex)
 	{
-		m_spContext->potionSelectTex = std::make_shared<KdTexture>();
-		m_spContext->potionSelectTex->Load("Asset/Textures/GameUI/Item/Potion/PotionSelect.png");
+		m_spContext->m_spPotionSelectTex = std::make_shared<KdTexture>();
+		m_spContext->m_spPotionSelectTex->Load("Asset/Textures/GameUI/Item/Potion/PotionSelect.png");
 	}
 
 	m_layerPriority = 1;
 
 	// 各タブで使う位置
-	m_spContext->back1Tex2DPos = m_back1Tex2DPos;
-	m_spContext->back1TexWidth = (float)m_back1Tex->GetWidth();
-	m_spContext->back2Tex2DPos = m_back2Tex2DPos;
+	m_spContext->m_back1Tex2DPos = m_back1Tex2DPos;
+	m_spContext->m_back1TexWidth = (float)m_spBack1Tex->GetWidth();
+	m_spContext->m_back2Tex2DPos = m_back2Tex2DPos;
 
 
 	Math::Vector2 basePos = { -420, 225 };
 	for (int i = 0; i < InventoryTypeSiz; i++)
 	{
-		if (m_inventoryTypeChange[i].m_IconTex)
+		if (m_inventoryTypeChange[i].m_spIconTex)
 		{
 			continue;
 		}
 
-		m_inventoryTypeChange[i].m_IconTex = std::make_shared<KdTexture>();
+		m_inventoryTypeChange[i].m_spIconTex = std::make_shared<KdTexture>();
 
 
 		switch (i)
 		{
 		case PlayerInventoryUI::PotionInventory:
-			m_inventoryTypeChange[i].m_IconTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/Potion.png");
+			m_inventoryTypeChange[i].m_spIconTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/Potion.png");
 			m_inventoryTypeChange[i].m_ID = PotionInventory;
 			break;
-		case PlayerInventoryUI::WeponInventory:
-			m_inventoryTypeChange[i].m_IconTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/Wepon.png");
-			m_inventoryTypeChange[i].m_ID = WeponInventory;
+		case PlayerInventoryUI::WeaponInventory:
+			m_inventoryTypeChange[i].m_spIconTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/Wepon.png");
+			m_inventoryTypeChange[i].m_ID = WeaponInventory;
 			break;
 		case PlayerInventoryUI::PlayerStatus:
-			m_inventoryTypeChange[i].m_IconTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/PlayerStatus.png");
+			m_inventoryTypeChange[i].m_spIconTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/PlayerStatus.png");
 			m_inventoryTypeChange[i].m_ID = PlayerStatus;
 			break;
 		default:
@@ -158,9 +158,9 @@ void PlayerInventoryUI::Init()
 		}
 
 
-		float w = m_inventoryTypeChange[i].m_IconTex->GetWidth();
-		float h = m_inventoryTypeChange[i].m_IconTex->GetHeight();
-		m_inventoryTypeChange[i].m_IconTexSiz = { w,h };
+		float w = m_inventoryTypeChange[i].m_spIconTex->GetWidth();
+		float h = m_inventoryTypeChange[i].m_spIconTex->GetHeight();
+		m_inventoryTypeChange[i].m_iconTexSiz = { w,h };
 
 
 		m_inventoryTypeChange[i].m_2DPos = basePos;
@@ -184,12 +184,12 @@ void PlayerInventoryUI::Init()
 	}
 	m_spPlayerStatusInventoryUI->Init();
 
-	if (!m_spWeponInventoryUI)
+	if (!m_spWeaponInventoryUI)
 	{
-		m_spWeponInventoryUI = std::make_shared<WeponInventoryUI>();
-		m_spWeponInventoryUI->SetContext(m_spContext);
+		m_spWeaponInventoryUI = std::make_shared<WeponInventoryUI>();
+		m_spWeaponInventoryUI->SetContext(m_spContext);
 	}
-	m_spWeponInventoryUI->Init();
+	m_spWeaponInventoryUI->Init();
 }
 
 void PlayerInventoryUI::PreUpdate()
@@ -201,10 +201,10 @@ void PlayerInventoryUI::Update()
 {
 	PlayerInventoryOpen();
 
-	if (m_spContext->useEffectTimer > 0.0f)
+	if (m_spContext->m_useEffectTimer > 0.0f)
 	{
-		m_spContext->useEffectTimer -= DeltaTime::Instance().GetRealDeltaTime();
-		if (m_spContext->useEffectTimer < 0.0f) { m_spContext->useEffectTimer = 0.0f; }
+		m_spContext->m_useEffectTimer -= DeltaTime::Instance().GetRealDeltaTime();
+		if (m_spContext->m_useEffectTimer < 0.0f) { m_spContext->m_useEffectTimer = 0.0f; }
 	}
 
 
@@ -226,7 +226,7 @@ void PlayerInventoryUI::Update()
 	{
 		//if (!flg)
 		{
-			std::shared_ptr<PlayerBase>spPlayer = m_spContext->wpPlayer.lock();
+			std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
 			if (spPlayer)
 			{
 				std::shared_ptr<PlayerInventory> spPlayerInventory = spPlayer->GetPlayerInventory();
@@ -265,22 +265,22 @@ void PlayerInventoryUI::DrawSprite()
 	if (!m_playerInventoryUIFlg) { return; }
 
 
-	if (m_back1Tex)
+	if (m_spBack1Tex)
 	{
-		Math::Color Color = { 1,1,1,1 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_back1Tex, m_back1Tex2DPos.x, m_back1Tex2DPos.y, nullptr, &Color);
+		Math::Color color = { 1,1,1,1 };
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spBack1Tex, m_back1Tex2DPos.x, m_back1Tex2DPos.y, nullptr, &color);
 	}
 
-	if (m_inventoryTypeTex)
+	if (m_spInventoryTypeTex)
 	{
-		Math::Vector2 pivo = { 0,0.5 };
+		Math::Vector2 pivot = { 0,0.5 };
 		Math::Rectangle rec = { 0,(long)(m_inventoryTypeSiz.y * m_nowInventoryType),(long)(m_inventoryTypeSiz.x),(long)(m_inventoryTypeSiz.y) };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_inventoryTypeTex, m_inventoryType2DPos.x, m_inventoryType2DPos.y, m_inventoryTypeSiz.x, m_inventoryTypeSiz.y, &rec, nullptr, pivo);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spInventoryTypeTex, m_inventoryType2DPos.x, m_inventoryType2DPos.y, m_inventoryTypeSiz.x, m_inventoryTypeSiz.y, &rec, nullptr, pivot);
 	}
 
-	if (m_back2Tex && m_nowInventoryType != PlayerInventoryUI::PlayerStatus)
+	if (m_spBack2Tex && m_nowInventoryType != PlayerInventoryUI::PlayerStatus)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_back2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y, m_back2Tex2DSiz.x, m_back2Tex2DSiz.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spBack2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y, m_back2Tex2DSiz.x, m_back2Tex2DSiz.y);
 
 		Math::Vector2 pos = m_back2Tex2DPos;
 		pos.y += 147;	// 右の枠の上の暗い帯（数字の枠）の真ん中
@@ -289,11 +289,11 @@ void PlayerInventoryUI::DrawSprite()
 		// 数字が変わるときはちょっと跳ねる(色も変わる)
 		Math::Color numColor = kWhiteColor;
 		float numScale = 2.5f;	// 数字の枠（高さ50）に収まる大きさ（14 × 2.5 = 35）
-		if (m_spContext->useEffectTimer > 0.0f && (m_nowInventoryType == PotionInventory || m_nowInventoryType == WeponInventory))
+		if (m_spContext->m_useEffectTimer > 0.0f && (m_nowInventoryType == PotionInventory || m_nowInventoryType == WeaponInventory))
 		{
 			
 			float t = m_spContext->UseEffectT();
-			switch (m_spContext->useEffectType)
+			switch (m_spContext->m_useEffectType)
 			{
 			// 上に跳ねる
 			case UseEffectType::Bounce:
@@ -306,7 +306,7 @@ void PlayerInventoryUI::DrawSprite()
 				case PlayerInventoryUI::PotionInventory:
 					numColor = { 1.0f, 1.0f - 0.6f * t, 1.0f - 0.6f * t, 1.0f };   // 白→赤→白
 					break;
-				case PlayerInventoryUI::WeponInventory:
+				case PlayerInventoryUI::WeaponInventory:
 					numColor = { 1.0f, 1.0f - 0.15f * t, 1.0f - 0.7f * t, 1.0f };   // 白→金→白
 					break;
 				default:
@@ -318,7 +318,7 @@ void PlayerInventoryUI::DrawSprite()
 				// 横に震える
 			case UseEffectType::Shake:
 				// 0 → 1 とまっすぐ進む値（演出の進み具合）
-				float p = 1.0f - m_spContext->useEffectTimer / m_spContext->useEffectTime;
+				float p = 1.0f - m_spContext->m_useEffectTimer / m_spContext->m_useEffectTime;
 
 				// だんだん弱くなる揺れ幅（最初が一番大きい）
 				float amp = 6.0f * (1.0f - p);
@@ -330,17 +330,17 @@ void PlayerInventoryUI::DrawSprite()
 			}
 		}
 		// 右の枠の幅に収める(縦は跳ねる演出で大きくなるので制限しない)
-		NumDraw::GetInstance().Drow(m_spContext->num, RAligned, pos, numColor, numScale, false, -1, { 170.0f, 0.0f });
+		NumDraw::GetInstance().Draw(m_spContext->m_num, RAligned, pos, numColor, numScale, false, -1, { 170.0f, 0.0f });
 
-		if (m_spContext->selectExplanationTex)
+		if (m_spContext->m_spSelectExplanationTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->selectExplanationTex, m_selectExplanationTexPos.x, m_selectExplanationTexPos.y);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->m_spSelectExplanationTex, m_selectExplanationTexPos.x, m_selectExplanationTexPos.y);
 		}
 
 
-		if (m_spContext->selectNameTex)
+		if (m_spContext->m_spSelectNameTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->selectNameTex, m_selectNameTexPos.x, m_selectNameTexPos.y);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->m_spSelectNameTex, m_selectNameTexPos.x, m_selectNameTexPos.y);
 		}
 	}
 
@@ -351,12 +351,12 @@ void PlayerInventoryUI::DrawSprite()
 
 	for (int i = 0; i < InventoryTypeSiz; i++)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_inventoryTypeChange[i].m_IconTex, m_inventoryTypeChange[i].m_2DPos.x, m_inventoryTypeChange[i].m_2DPos.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_inventoryTypeChange[i].m_spIconTex, m_inventoryTypeChange[i].m_2DPos.x, m_inventoryTypeChange[i].m_2DPos.y);
 
 
 		if (i == m_nowInventoryType)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->potionSelectTex, m_inventoryTypeChange[i].m_2DPos.x, m_inventoryTypeChange[i].m_2DPos.y);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->m_spPotionSelectTex, m_inventoryTypeChange[i].m_2DPos.x, m_inventoryTypeChange[i].m_2DPos.y);
 
 		}
 	}
@@ -378,14 +378,14 @@ void PlayerInventoryUI::DrawSprite()
 void PlayerInventoryUI::DrawMoney()
 {
 	// 金貨
-	if (m_coinTex)
+	if (m_spCoinTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_coinTex, (int)kCoinPos.x, (int)kCoinPos.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spCoinTex, (int)kCoinPos.x, (int)kCoinPos.y);
 	}
 
 	// 所持金はプレイヤーのインベントリから読む
 	long money = 0;
-	if (std::shared_ptr<PlayerBase> spPlayer = m_spContext->wpPlayer.lock())
+	if (std::shared_ptr<PlayerBase> spPlayer = m_spContext->m_wpPlayer.lock())
 	{
 		if (std::shared_ptr<PlayerInventory> spInventory = spPlayer->GetPlayerInventory())
 		{
@@ -395,19 +395,19 @@ void PlayerInventoryUI::DrawMoney()
 
 	// 数字(右揃え・3桁区切り)
 	// 桁が多くて金貨にかぶるときは、横を縮めて収める
-	NumDraw::GetInstance().Drow(money, RAligned, kMoneyNumPos, kWhiteColor, kMoneyNumSiz, true, -1, kMoneyNumMaxSiz);
+	NumDraw::GetInstance().Draw(money, RAligned, kMoneyNumPos, kWhiteColor, kMoneyNumSiz, true, -1, kMoneyNumMaxSiz);
 
 	// 「G」
-	if (m_goldTex)
+	if (m_spGoldTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_goldTex, (int)kGoldPos.x, (int)kGoldPos.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spGoldTex, (int)kGoldPos.x, (int)kGoldPos.y);
 	}
 }
 
 void PlayerInventoryUI::PlayerInventoryOpen()
 {
 
-	std::shared_ptr<PlayerBase>spPlayer = m_spContext->wpPlayer.lock();
+	std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
 	if (spPlayer)
 	{
 		if (spPlayer->GetIsDead())
@@ -426,15 +426,15 @@ void PlayerInventoryUI::PlayerInventoryOpen()
 		if (m_playerInventoryUIFlg)
 		{
 			{
-				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/BagOpen.wav", false);
-				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+				std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/BagOpen.wav", false);
+				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 			}
 		}
 		else
 		{
 			{
-				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/BagClose.wav", false);
-				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+				std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/BagClose.wav", false);
+				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 			}
 		}
 
@@ -459,7 +459,7 @@ void PlayerInventoryUI::PlayerInventoryOpen()
 			// アイテムがなければ「選択なし」の表示にする
 			if (!m_spPotionInventoryUI->OnInventoryOpen())
 			{
-				m_Changeback2Tex = m_notSelsect;
+				m_spChangeBack2Tex = m_spNotSelect;
 			}
 		}
 	}
@@ -471,31 +471,31 @@ void PlayerInventoryUI::InventoryTypeChangeUpdate()
 
 	POINT mousePos = MouseInfo::Instance().m_windowPos;
 
-	for (auto& Icon : m_inventoryTypeChange)
+	for (auto& icon : m_inventoryTypeChange)
 	{
-		float Left = Icon.m_2DPos.x - Icon.m_IconTexSiz.x / 2;
-		float Right = Icon.m_2DPos.x + Icon.m_IconTexSiz.x / 2;
-		float Top = Icon.m_2DPos.y + Icon.m_IconTexSiz.y / 2;
-		float Bot = Icon.m_2DPos.y - Icon.m_IconTexSiz.y / 2;
+		float left = icon.m_2DPos.x - icon.m_iconTexSiz.x / 2;
+		float right = icon.m_2DPos.x + icon.m_iconTexSiz.x / 2;
+		float top = icon.m_2DPos.y + icon.m_iconTexSiz.y / 2;
+		float bot = icon.m_2DPos.y - icon.m_iconTexSiz.y / 2;
 
 
-		if (mousePos.x >= Left && mousePos.x <= Right &&
-			mousePos.y >= Bot && mousePos.y <= Top)
+		if (mousePos.x >= left && mousePos.x <= right &&
+			mousePos.y >= bot && mousePos.y <= top)
 		{
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-			Icon.m_hit = true;
+			icon.m_hit = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
 				// 違うタブに切り替えたときだけ、ページをめくる音
-				if (m_nowInventoryType != Icon.m_ID)
+				if (m_nowInventoryType != icon.m_ID)
 				{
 					{
-						std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
-						if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+						std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
+						if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 					}
 				}
 
-				m_nowInventoryType = Icon.m_ID;
+				m_nowInventoryType = icon.m_ID;
 
 				// ステータスは選んだときの処理なし（以前と同じ）
 				switch (m_nowInventoryType)
@@ -503,8 +503,8 @@ void PlayerInventoryUI::InventoryTypeChangeUpdate()
 				case PlayerInventoryUI::PotionInventory:
 					m_spPotionInventoryUI->OnSelect();
 					break;
-				case PlayerInventoryUI::WeponInventory:
-					m_spWeponInventoryUI->OnSelect();
+				case PlayerInventoryUI::WeaponInventory:
+					m_spWeaponInventoryUI->OnSelect();
 					break;
 				default:
 					break;
@@ -513,7 +513,7 @@ void PlayerInventoryUI::InventoryTypeChangeUpdate()
 		}
 		else
 		{
-			Icon.m_hit = false;
+			icon.m_hit = false;
 		}
 	}
 }
@@ -523,7 +523,7 @@ InventoryTabBase* PlayerInventoryUI::GetTab(InventoryType _type)
 	switch (_type)
 	{
 	case PlayerInventoryUI::PotionInventory:	return m_spPotionInventoryUI.get();
-	case PlayerInventoryUI::WeponInventory:		return m_spWeponInventoryUI.get();
+	case PlayerInventoryUI::WeaponInventory:		return m_spWeaponInventoryUI.get();
 	case PlayerInventoryUI::PlayerStatus:		return m_spPlayerStatusInventoryUI.get();
 	default:									return nullptr;
 	}

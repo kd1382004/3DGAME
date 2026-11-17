@@ -6,10 +6,10 @@
 
 TitleSceneEditor::TitleSceneEditor()
 {
-	g_factory.RegisterCreateFunction("GameButton", []() {
-		std::shared_ptr<GameButton>obj = std::make_shared<GameButton>();
-		obj->Init();
-		return obj;
+	m_factory.RegisterCreateFunction("GameButton", []() {
+		std::shared_ptr<GameButton>spObj = std::make_shared<GameButton>();
+		spObj->Init();
+		return spObj;
 		});
 }
 
@@ -20,9 +20,9 @@ TitleSceneEditor::~TitleSceneEditor()
 
 void TitleSceneEditor::ImGui()
 {
-	std::list< std::shared_ptr<KdGameObject>>ObjeClassCamera;
-	std::list< std::shared_ptr<KdGameObject>>ObjeClassBotton;
-	std::list< std::shared_ptr<KdGameObject>>ObjeClassTerrains;
+	std::list< std::shared_ptr<KdGameObject>>objeClassCamera;
+	std::list< std::shared_ptr<KdGameObject>>objeClassButton;
+	std::list< std::shared_ptr<KdGameObject>>objeClassTerrains;
 
 
 	for (auto obj : SceneManager::Instance().GetObjList())
@@ -30,15 +30,15 @@ void TitleSceneEditor::ImGui()
 		switch (obj->GetGameObjectClass())
 		{
 		case KdGameObject::GameObjectClass::GameObjectClass_Camera:
-			ObjeClassCamera.push_back(obj);
+			objeClassCamera.push_back(obj);
 			break;
 
 		case  KdGameObject::GameObjectClass::GameObjectClass_Botton:
-			ObjeClassBotton.push_back(obj);
+			objeClassButton.push_back(obj);
 			break;
 
 		case KdGameObject::GameObjectClass::GameObjectClass_Terrains:
-			ObjeClassTerrains.push_back(obj);
+			objeClassTerrains.push_back(obj);
 			break;
 		default:
 			break;
@@ -69,15 +69,15 @@ void TitleSceneEditor::ImGui()
 
 		ImGui::Separator();
 
-		CameraImGUI(ObjeClassCamera);
+		CameraImGUI(objeClassCamera);
 
 		ImGui::Separator();
 
-		ButtonImGUI(ObjeClassBotton);
+		ButtonImGUI(objeClassButton);
 
 		ImGui::Separator();
 
-		TerrainsImGUI(ObjeClassTerrains);
+		TerrainsImGUI(objeClassTerrains);
 	}
 
 	ImGui::End();
@@ -119,8 +119,8 @@ void TitleSceneEditor::ButtonImGUI(std::list<std::shared_ptr<KdGameObject>> _obj
 		{
 			if (ImGui::Button("GameButton"))
 			{
-				auto gameBotton = g_factory.CreateGameObject("GameButton");
-				SceneManager::Instance().AddObject(gameBotton);
+				auto gameButton = m_factory.CreateGameObject("GameButton");
+				SceneManager::Instance().AddObject(gameButton);
 			}
 
 			ImGui::TreePop();
@@ -155,7 +155,7 @@ void TitleSceneEditor::TerrainsImGUI(std::list<std::shared_ptr<KdGameObject>> _o
 		{
 			if (ImGui::Button("Ground"))
 			{
-				auto ground = g_factory.CreateGameObject("Ground");;
+				auto ground = m_factory.CreateGameObject("Ground");;
 				SceneManager::Instance().AddObject(ground);
 			}
 

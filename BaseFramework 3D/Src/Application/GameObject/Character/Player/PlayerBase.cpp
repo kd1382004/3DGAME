@@ -94,15 +94,15 @@ void PlayerBase::Init()
 	SaveKeyConfig(m_keyConfigFilePath);
 
 
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveRight);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveLeft);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveForward);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.moveBackward);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.jump);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.dash);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.evasion);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.interact);
-	KeyInfo::Instance().SetKeyValid(m_keyConfig.attack);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_moveRight);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_moveLeft);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_moveForward);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_moveBackward);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_jump);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_dash);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_evasion);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_interact);
+	KeyInfo::Instance().SetKeyValid(m_keyConfig.m_attack);
 
 
 	m_pos = {};
@@ -113,8 +113,8 @@ void PlayerBase::Init()
 		m_spCharaModel->SetModelData("Asset/Models/Character/Player/Rogue.gltf");
 
 		//アニメータの準備
-		m_spAnimetor = std::make_shared<KdAnimator>();
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.IdleAnime), true);
+		m_spAnimator = std::make_shared<KdAnimator>();
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_idleAnime), true);
 
 	}
 
@@ -122,7 +122,7 @@ void PlayerBase::Init()
 	{
 		m_spNextFloorAction = std::make_shared<NextFloorAction>();
 		m_spNextFloorAction->Init();
-		m_spNextFloorAction->SetActionKey(m_keyConfig.interact);
+		m_spNextFloorAction->SetActionKey(m_keyConfig.m_interact);
 	}
 
 	if (!m_spPlayerInventory)
@@ -137,7 +137,7 @@ void PlayerBase::Init()
 		m_pCollider = std::make_unique<KdCollider>();
 
 		// 歩きのポーズでノード行列を計算してから読む（基本姿勢だと腕を広げた形のため）
-		m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes());
+		m_spAnimator->AdvanceTime(m_spCharaModel->WorkNodes());
 		m_spCharaModel->CalcNodeMatrices();
 
 		// エンプティの位置 = 球の中心、エンプティのスケール = 半径
@@ -150,9 +150,9 @@ void PlayerBase::Init()
 		m_spPlayerBuffManager = std::make_shared<PlayerBuffManager>();
 	}
 
-	if (!m_spPlayreLV)
+	if (!m_spPlayerLV)
 	{
-		m_spPlayreLV = std::make_shared<PlayreLV>();
+		m_spPlayerLV = std::make_shared<PlayreLV>();
 	}
 
 	if (!m_pDebugWire)
@@ -206,9 +206,9 @@ void PlayerBase::PreUpdate()
 		}
 	}
 
-	m_IsDetectedByEnemyNum = 0;
+	m_isDetectedByEnemyNum = 0;
 
-	m_status.stamina.staminaRegenFlg = true;
+	m_status.m_stamina.m_staminaRegenFlg = true;
 
 
 	//デバック
@@ -224,10 +224,10 @@ void PlayerBase::Update()
 	if (m_isDead && m_isDeadAnime)
 	{
 		std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
-		if (spGameScene && !m_isGameScenouto)
+		if (spGameScene && !m_isGameSceneOut)
 		{
 			spGameScene->PlayerDefeat();
-			m_isGameScenouto = true;
+			m_isGameSceneOut = true;
 		}
 	}
 
@@ -264,7 +264,7 @@ void PlayerBase::Update()
 
 	WeaponUpdate();
 
-	AngeleUpdate();
+	AngleUpdate();
 
 
 
@@ -309,17 +309,17 @@ void PlayerBase::PostUpdate()
 	StaminaManager();
 
 
-	if (m_IsDetectedByEnemyNum == 0)
+	if (m_isDetectedByEnemyNum == 0)
 	{
-		m_IsDetectedByEnemy = false;
+		m_isDetectedByEnemy = false;
 	}
 
 
 	{
-		auto effect = m_wpHeelEffect.lock();
-		if (effect && effect->IsPlaying())
+		auto spEffect = m_wpHealEffect.lock();
+		if (spEffect && spEffect->IsPlaying())
 		{
-			effect->SetPos(m_pos);
+			spEffect->SetPos(m_pos);
 		}
 	}
 
@@ -328,39 +328,39 @@ void PlayerBase::PostUpdate()
 	{
 		Math::Vector3 pos = m_pos + Math::Vector3{ 0, 0.5f, 0 };
 
-		auto effect = m_wpAttackBoostEffect.lock();
-		if (!effect || !effect->IsPlaying())
+		auto spEffect = m_wpAttackBoostEffect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
 		{
 			// 1周終わったら自分で再生し直す（毎回新しいオブジェクトを受け取る）
 			m_wpAttackBoostEffect = KdEffekseerManager::GetInstance().Play(
 				"AttackBoost/AttackBoost.efkefc", pos, 1.0f, 1.0f, false);
-			effect = m_wpAttackBoostEffect.lock();
+			spEffect = m_wpAttackBoostEffect.lock();
 		}
 
-		if (effect) { effect->SetPos(pos); }
+		if (spEffect) { spEffect->SetPos(pos); }
 	}
 
 	if (m_isDashActive && m_groundHit)
 	{
 		Math::Vector3 pos = m_pos;
 
-		auto effect = m_wpDashEffect.lock();
-		if (!effect || !effect->IsPlaying())
+		auto spEffect = m_wpDashEffect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
 		{
 			// 1周終わったら自分で再生し直す（毎回新しいオブジェクトを受け取る）
 			m_wpDashEffect = KdEffekseerManager::GetInstance().Play(
 				"Dash/Dash.efkefc", pos, 1.0f, 1.0f, false);
-			effect = m_wpDashEffect.lock();
+			spEffect = m_wpDashEffect.lock();
 		}
 
-		if (effect) { effect->SetPos(pos); }
+		if (spEffect) { spEffect->SetPos(pos); }
 	}
 	else
 	{
-		auto effect = m_wpDashEffect.lock();
-		if (effect && effect->IsPlaying())
+		auto spEffect = m_wpDashEffect.lock();
+		if (spEffect && spEffect->IsPlaying())
 		{
-			effect->StopEffect();
+			spEffect->StopEffect();
 		}
 	}
 }
@@ -369,39 +369,39 @@ void PlayerBase::GenerateDepthMapFromLight()
 {}
 
 
-void PlayerBase::SetGameScene(const std::shared_ptr<GameScene>& _GameScene)
+void PlayerBase::SetGameScene(const std::shared_ptr<GameScene>& _spGameScene)
 {
-	m_wpGameScene = _GameScene;
+	m_wpGameScene = _spGameScene;
 
 	if (m_spNextFloorAction)
 	{
-		m_spNextFloorAction->SetGameScene(_GameScene);
+		m_spNextFloorAction->SetGameScene(_spGameScene);
 	}
 
 }
 
-void PlayerBase::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _NextFloorGaugeUI)
+void PlayerBase::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _spNextFloorGaugeUI)
 {
 	if (m_spNextFloorAction)
 	{
-		m_spNextFloorAction->SetNextFloorGaugeUI(_NextFloorGaugeUI);
+		m_spNextFloorAction->SetNextFloorGaugeUI(_spNextFloorGaugeUI);
 	}
 }
 
-void PlayerBase::SetWepon(const std::shared_ptr<WeaponBase>& _wepon)
+void PlayerBase::SetWeapon(const std::shared_ptr<WeaponBase>& _spWeapon)
 {
-	m_wpWepon = _wepon;
+	m_wpWeapon = _spWeapon;
 
 	// コンボファイルのパスは「持ち主のフォルダー + 武器のファイル名」で決めて、武器に読ませる
-	m_comboFilePath = m_comboFolder + _wepon->GetComboFileName();
-	_wepon->LoadCombo(m_comboFilePath);
+	m_comboFilePath = m_comboFolder + _spWeapon->GetComboFileName();
+	_spWeapon->LoadCombo(m_comboFilePath);
 
-	m_attackCombo = _wepon->GetComboList();
+	m_attackCombo = _spWeapon->GetComboList();
 }
 
 void PlayerBase::ReloadCombo()
 {
-	std::shared_ptr<WeaponBase> spWeapon = m_wpWepon.lock();
+	std::shared_ptr<WeaponBase> spWeapon = m_wpWeapon.lock();
 	if (!spWeapon) { return; }
 
 	// 段の数や中身が変わるので、コンボの途中なら止めてから入れ替える
@@ -414,9 +414,9 @@ void PlayerBase::ReloadCombo()
 	}
 }
 
-void PlayerBase::SetPos(const Math::Vector3& pos)
+void PlayerBase::SetPos(const Math::Vector3& _pos)
 {
-	m_pos = pos;
+	m_pos = _pos;
 	m_mWorld.Translation(m_pos);
 
 	std::shared_ptr<UIMap_Player>spUIMap_Player = m_wpUIMap_Player.lock();
@@ -438,8 +438,8 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		spHPBar->SetSiz(2);
 		spHPBar->Set2DPos({ 0,-260 });
 		spHPBar->SetDrawFlg(true);
-		spHPBar->SetLV(m_status.LV);
-		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		spHPBar->SetLV(m_status.m_LV);
+		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
 		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
@@ -447,18 +447,18 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		m_wpUIMap_Player = _spUIManager->GetUIMapManager()->GetUIMap_Player();
 
 
-		std::shared_ptr<StaminaGage>spStaminaGage = std::make_shared<StaminaGage>();
-		spStaminaGage->Init();
-		spStaminaGage->SetSiz(2);
-		spStaminaGage->Set2DPos({ 0,-290 });
-		m_wpStaminaGage = spStaminaGage;
-		_spUIManager->AddUIObj(spStaminaGage);
+		std::shared_ptr<StaminaGage>spStaminaGauge = std::make_shared<StaminaGage>();
+		spStaminaGauge->Init();
+		spStaminaGauge->SetSiz(2);
+		spStaminaGauge->Set2DPos({ 0,-290 });
+		m_wpStaminaGauge = spStaminaGauge;
+		_spUIManager->AddUIObj(spStaminaGauge);
 
-		std::shared_ptr<SkillGage>spSkillGage = std::make_shared<SkillGage>();
-		spSkillGage->Init();
-		spSkillGage->Set2DPos({ 500,-330 });
-		m_wpSkillGage = spSkillGage;
-		_spUIManager->AddUIObj(spSkillGage);
+		std::shared_ptr<SkillGage>spSkillGauge = std::make_shared<SkillGage>();
+		spSkillGauge->Init();
+		spSkillGauge->Set2DPos({ 500,-330 });
+		m_wpSkillGauge = spSkillGauge;
+		_spUIManager->AddUIObj(spSkillGauge);
 
 
 
@@ -493,7 +493,7 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 
 	if (m_spDamageOverlay)
 	{
-		m_spDamageOverlay->OnDamaged(_damage, m_status.HP.maxHP);
+		m_spDamageOverlay->OnDamaged(_damage, m_status.m_HP.m_maxHP);
 	}
 
 	if (m_spDamageSE)
@@ -508,43 +508,43 @@ void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math
 	CameraShake(0.2f, 0.15f);
 }
 
-void PlayerBase::HPHeal(int _Heal)
+void PlayerBase::HPHeal(int _heal)
 {
-	m_status.HP.nowHP += _Heal;
-	if (m_status.HP.nowHP >= m_status.HP.maxHP)
+	m_status.m_HP.m_nowHP += _heal;
+	if (m_status.m_HP.m_nowHP >= m_status.m_HP.m_maxHP)
 	{
-		m_status.HP.nowHP = m_status.HP.maxHP;
+		m_status.m_HP.m_nowHP = m_status.m_HP.m_maxHP;
 	}
 
 
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
-		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
 		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
 	}
 
 
-	if (_Heal > 0)
+	if (_heal > 0)
 	{
-		m_wpHeelEffect = KdEffekseerManager::GetInstance().Play("Heel/HealEffect.efkefc", m_pos, 1.0f, 1.0f, false);
+		m_wpHealEffect = KdEffekseerManager::GetInstance().Play("Heel/HealEffect.efkefc", m_pos, 1.0f, 1.0f, false);
 	}
 }
 
-void PlayerBase::AddMaxHP(int _Bosst, bool flg)
+void PlayerBase::AddMaxHP(int _boost, bool _flg)
 {
 
-	m_status.HP.maxHP += _Bosst;
+	m_status.m_HP.m_maxHP += _boost;
 
-	if (flg)
+	if (_flg)
 	{
-		m_status.HP.nowHP += _Bosst;
+		m_status.m_HP.m_nowHP += _boost;
 	}
 
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
-		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
 		spHPBar->SetHPBarTexPercent(percent);
 	}
 }
@@ -552,13 +552,13 @@ void PlayerBase::AddMaxHP(int _Bosst, bool flg)
 void PlayerBase::SetDead()
 {
 	m_nowPlayerAnimeMode = PlayerAnimeMode::DeathAnime;
-	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.DeathAnime), false);
+	m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_deathAnime), false);
 
 	// 倒れた音（2回呼ばれても1回だけ鳴らす）
 	if (!m_isDead)
 	{
-		std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Dead.wav", false);
-		if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol()); }
+		std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Dead.wav", false);
+		if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol()); }
 	}
 
 	m_isDead = true;
@@ -566,30 +566,30 @@ void PlayerBase::SetDead()
 
 void PlayerBase::SetLV(int _LV)
 {
-	m_status.LV = _LV;
+	m_status.m_LV = _LV;
 
-	m_status.attck.baseAttckPowe += 5;
-	m_status.defense.baseDefensePowe += 5;
-	m_status.defense.nowDefense = m_status.defense.baseDefensePowe;
+	m_status.m_attack.m_baseAttackPower += 5;
+	m_status.m_defense.m_baseDefensePower += 5;
+	m_status.m_defense.m_nowDefense = m_status.m_defense.m_baseDefensePower;
 	AddMaxHP(10, true);
 
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
-		spHPBar->SetLV(m_status.LV);
+		spHPBar->SetLV(m_status.m_LV);
 	}
 
-	if (m_spPlayreLV)
+	if (m_spPlayerLV)
 	{
-		m_spPlayreLV->CalcNextLevelExp(_LV);
+		m_spPlayerLV->CalcNextLevelExp(_LV);
 	}
 }
 
 void PlayerBase::AddExp(int _gainedExp)
 {
-	if (!m_spPlayreLV) { return; }
+	if (!m_spPlayerLV) { return; }
 
-	m_spPlayreLV->AddExp(_gainedExp, this);
+	m_spPlayerLV->AddExp(_gainedExp, this);
 }
 
 Math::Vector3 PlayerBase::GetBonePosition(std::string _boneName)
@@ -598,9 +598,9 @@ Math::Vector3 PlayerBase::GetBonePosition(std::string _boneName)
 
 
 	//
-	auto* Node = m_spCharaModel->FindNode(_boneName);
-	Math::Vector3 Pos = Node->m_worldTransform.Translation();
-	return Pos;
+	auto* node = m_spCharaModel->FindNode(_boneName);
+	Math::Vector3 pos = node->m_worldTransform.Translation();
+	return pos;
 }
 
 void PlayerBase::SetAccessoryManager(std::shared_ptr<AccessoryManager> _spAccessoryManager)
@@ -643,20 +643,20 @@ void PlayerBase::WeaponUpdate()
 	if (m_isDead) { return; }
 
 	//攻撃力の更新
-	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
+	m_status.m_attack.m_nowAttack = m_status.m_attack.m_baseAttackPower + m_status.m_attack.m_addAttack;
 
 
 	ComboUpdate();
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack) && m_normalAttack)
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_attack) && m_normalAttack)
 	{
 		m_nowPlayerAnimeMode = PlayerBase::SwordAttackAnime;
 		m_normalAttackWaitNow = 0;
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.AttackAnime), false);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_attackAnime), false);
 
-		m_chargeAttacFlg = true;
-		m_status.stamina.staminaRegenFlg = false;
-		std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+		m_chargeAttackFlg = true;
+		m_status.m_stamina.m_staminaRegenFlg = false;
+		std::shared_ptr<WeaponBase > spWeapon = m_wpWeapon.lock();
 		if (spWeapon)
 		{
 			float cost = spWeapon->GetChargeAttackMaxCost() * DeltaTime::Instance().GetGameDeltaTime();
@@ -664,7 +664,7 @@ void PlayerBase::WeaponUpdate()
 			{
 				if (ConsumeStamina(cost))
 				{
-					m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime() * spWeapon->GetAddCargeTime();
+					m_chargeAttackCount += DeltaTime::Instance().GetGameDeltaTime() * spWeapon->GetAddChargeTime();
 				}
 			}
 
@@ -673,13 +673,13 @@ void PlayerBase::WeaponUpdate()
 	}
 	else
 	{
-		m_chargeAttacFlg = false;
+		m_chargeAttackFlg = false;
 		if (m_chargeAttackCount != 0)
 		{
-			m_NowNormalAttack = true;
+			m_nowNormalAttack = true;
 			m_normalAttack = false;
 			m_chargeAttackCount = 0;
-			std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+			std::shared_ptr<WeaponBase > spWeapon = m_wpWeapon.lock();
 			if (spWeapon)
 			{
 				m_attackCombo = spWeapon->GetComboList();
@@ -704,7 +704,7 @@ void PlayerBase::WeaponUpdate()
 				}
 
 				spWeapon->SetAngle(m_angle);
-				spWeapon->ChargAttackPlay();
+				spWeapon->ChargeAttackPlay();
 			}
 		}
 
@@ -715,7 +715,7 @@ void PlayerBase::WeaponUpdate()
 	//  ・溜め中でない
 	//  ・攻撃アニメ再生中でない
 	//  ・コンボの途中でない
-	const bool isAttacking = m_chargeAttacFlg || m_NowNormalAttack || (m_comboStep >= 0);
+	const bool isAttacking = m_chargeAttackFlg || m_nowNormalAttack || (m_comboStep >= 0);
 	if (!isAttacking)
 	{
 		m_normalAttackWaitNow += 1 * DeltaTime::Instance().GetGameDeltaTime();
@@ -727,10 +727,10 @@ void PlayerBase::WeaponUpdate()
 		}
 	}
 
-	std::shared_ptr<SkillGage>spSkillGage = m_wpSkillGage.lock();
-	if (spSkillGage)
+	std::shared_ptr<SkillGage>spSkillGauge = m_wpSkillGauge.lock();
+	if (spSkillGauge)
 	{
-		spSkillGage->SetGaugePercent(m_normalAttackWaitNow / m_normalAttackWaitMax);
+		spSkillGauge->SetGaugePercent(m_normalAttackWaitNow / m_normalAttackWaitMax);
 	}
 }
 
@@ -756,66 +756,66 @@ void PlayerBase::LoadKeyConfig(std::string _filePath)
 	}
 
 	// 安全に読み込む（存在チェック付き）
-	auto getInt = [&](const char* key, int defaultValue = -999)
+	auto getInt = [&](const char* _key, int _defaultValue = -999)
 		{
-			if (data.contains(key) && data[key].is_number())
-				return data[key].get<int>();
-			return defaultValue;
+			if (data.contains(_key) && data[_key].is_number())
+				return data[_key].get<int>();
+			return _defaultValue;
 		};
 
 
 	int ans = getInt("moveForward");
 	if (ans != -999)
 	{
-		cfg.moveForward = ans;
+		cfg.m_moveForward = ans;
 	}
 
 	ans = getInt("moveBackward");
 	if (ans != -999)
 	{
-		cfg.moveBackward = ans;
+		cfg.m_moveBackward = ans;
 	}
 
 	ans = getInt("moveRight");
 	if (ans != -999)
 	{
-		cfg.moveRight = ans;
+		cfg.m_moveRight = ans;
 	}
 
 	ans = getInt("moveLeft");
 	if (ans != -999)
 	{
-		cfg.moveLeft = ans;
+		cfg.m_moveLeft = ans;
 	}
 
 	ans = getInt("jump");
 	if (ans != -999)
 	{
-		cfg.jump = ans;
+		cfg.m_jump = ans;
 	}
 
 	ans = getInt("dash");
 	if (ans != -999)
 	{
-		cfg.dash = ans;
+		cfg.m_dash = ans;
 	}
 
 	ans = getInt("evasion");
 	if (ans != -999)
 	{
-		cfg.evasion = ans;
+		cfg.m_evasion = ans;
 	}
 
 	ans = getInt("attack");
 	if (ans != -999)
 	{
-		cfg.attack = ans;
+		cfg.m_attack = ans;
 	}
 
 	ans = getInt("interact");
 	if (ans != -999)
 	{
-		cfg.interact = ans;
+		cfg.m_interact = ans;
 	}
 
 	m_keyConfig = cfg;
@@ -825,15 +825,15 @@ void PlayerBase::SaveKeyConfig(std::string _filePath)
 {
 	nlohmann::json data;
 
-	data["moveForward"] = m_keyConfig.moveForward;
-	data["moveBackward"] = m_keyConfig.moveBackward;
-	data["moveRight"] = m_keyConfig.moveRight;
-	data["moveLeft"] = m_keyConfig.moveLeft;
-	data["jump"] = m_keyConfig.jump;
-	data["dash"] = m_keyConfig.dash;
-	data["evasion"] = m_keyConfig.evasion;
-	data["attack"] = m_keyConfig.attack;
-	data["interact"] = m_keyConfig.interact;
+	data["moveForward"] = m_keyConfig.m_moveForward;
+	data["moveBackward"] = m_keyConfig.m_moveBackward;
+	data["moveRight"] = m_keyConfig.m_moveRight;
+	data["moveLeft"] = m_keyConfig.m_moveLeft;
+	data["jump"] = m_keyConfig.m_jump;
+	data["dash"] = m_keyConfig.m_dash;
+	data["evasion"] = m_keyConfig.m_evasion;
+	data["attack"] = m_keyConfig.m_attack;
+	data["interact"] = m_keyConfig.m_interact;
 
 	std::ofstream ofs(_filePath);
 	ofs << data.dump(4);
@@ -858,22 +858,22 @@ void PlayerBase::Move()
 	//どの方向に行きたいかベクトルを取る
 	m_moveVec = Math::Vector3::Zero;
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveRight))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_moveRight))
 	{
 		m_moveVec.x += 1.0f;
 	}
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveLeft))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_moveLeft))
 	{
 		m_moveVec.x += -1.0f;
 	}
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveForward))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_moveForward))
 	{
 		m_moveVec.z += 1.0f;
 	}
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.moveBackward))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_moveBackward))
 	{
 		m_moveVec.z += -1.0f;
 	}
@@ -890,10 +890,10 @@ void PlayerBase::Move()
 
 		//////////////////////////////////////////////////////////////
 		//動いてるならベクトルをカメラの向きに合わせる
-		std::shared_ptr<CameraBase>camera = m_wpCamera.lock();
-		if (camera)
+		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+		if (spCamera)
 		{
-			m_moveVec = Math::Vector3::TransformNormal(m_moveVec, camera->GetRotationYMatrix());
+			m_moveVec = Math::Vector3::TransformNormal(m_moveVec, spCamera->GetRotationYMatrix());
 		}
 		//////////////////////////////////////////////////////////////
 
@@ -904,7 +904,7 @@ void PlayerBase::Move()
 		//移動状態から移動速度を求める
 		MoveNowSpeedDecision();
 
-		m_moveVec *= m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+		m_moveVec *= m_status.m_moveSpeed.m_nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 		m_pos += m_moveVec;
 
 
@@ -980,30 +980,30 @@ void PlayerBase::Move()
 
 void PlayerBase::MoveNowSpeedDecision()
 {
-	if (m_chargeAttacFlg || m_nowPlayerAnimeMode == SwordAttackAnime)
+	if (m_chargeAttackFlg || m_nowPlayerAnimeMode == SwordAttackAnime)
 	{
 		m_moveMode = MoveStop;
 	}
 	else
 	{
 		//移動モードの切り替え
-		if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.dash, true))
+		if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_dash, true))
 		{
-			m_IsDash = !m_IsDash;
+			m_isDash = !m_isDash;
 		}
 
-		if (m_IsDash)
+		if (m_isDash)
 		{
-			if (m_IsDetectedByEnemy)
+			if (m_isDetectedByEnemy)
 			{
-				if (ConsumeStamina(m_status.stamina.dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
+				if (ConsumeStamina(m_status.m_stamina.m_dashStaminaDrainPerSec * DeltaTime::Instance().GetGameDeltaTime()))
 				{
 					m_moveMode = MoveRun;
 				}
 				else
 				{
 					m_moveMode = MoveWalk;
-					m_IsDash = false;
+					m_isDash = false;
 				}
 
 			}
@@ -1025,15 +1025,15 @@ void PlayerBase::MoveNowSpeedDecision()
 	switch (m_moveMode)
 	{
 	case PlayerBase::MoveWalk:
-		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
+		m_status.m_moveSpeed.m_nowSpeed = m_status.m_moveSpeed.m_baseSpeed + m_status.m_moveSpeed.m_walkMovePower;
 		m_nowPlayerAnimeMode = PlayerBase::WalkAnime;
 		break;
 	case PlayerBase::MoveRun:
-		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
+		m_status.m_moveSpeed.m_nowSpeed = m_status.m_moveSpeed.m_baseSpeed + m_status.m_moveSpeed.m_runMovePower;
 		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
 		break;
 	case PlayerBase::MoveStop:
-		m_status.moveSpeed.nowSpeed = 0.00000001;
+		m_status.m_moveSpeed.m_nowSpeed = 0.00000001;
 		m_nowPlayerAnimeMode = PlayerBase::RunAnime;
 		break;
 	default:
@@ -1060,12 +1060,12 @@ void PlayerBase::JumpAndGravity()
 	m_jumpFlg = true;
 	//////////////////////////////////////////////////////////////
 	//ジャンプ処理
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.jump, true, true))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_jump, true, true))
 	{
 		if (m_jumpFlg)
 		{
 			m_jumpPower = 60;
-			m_Gravity = -m_jumpPower;
+			m_gravity = -m_jumpPower;
 			m_jumpFlg = false;
 
 			if (m_spJumpSE)
@@ -1093,7 +1093,7 @@ void PlayerBase::PlayerAnimeModeUpdate()
 {
 
 
-	if (!m_spAnimetor) { return; }
+	if (!m_spAnimator) { return; }
 	if (!m_spCharaModel) { return; }
 
 	switch (m_oldPlayerAnimeMode)
@@ -1103,7 +1103,7 @@ void PlayerBase::PlayerAnimeModeUpdate()
 	case PlayerBase::PunchAttackAnime:
 	case PlayerBase::RollAnime:
 
-		if (!m_spAnimetor->IsAnimationEnd())
+		if (!m_spAnimator->IsAnimationEnd())
 		{
 			m_nowPlayerAnimeMode = m_oldPlayerAnimeMode;
 		}
@@ -1115,11 +1115,11 @@ void PlayerBase::PlayerAnimeModeUpdate()
 				m_evasionAnimeFlg = false;
 			}
 
-			std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+			std::shared_ptr<WeaponBase > spWeapon = m_wpWeapon.lock();
 			if (spWeapon)
 			{
 				spWeapon->SetAttackFlg(false);
-				m_NowNormalAttack = false;
+				m_nowNormalAttack = false;
 			}
 		}
 
@@ -1133,28 +1133,28 @@ void PlayerBase::PlayerAnimeModeUpdate()
 		switch (m_nowPlayerAnimeMode)
 		{
 		case PlayerBase::IdleAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.IdleAnime), true);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_idleAnime), true);
 			break;
 		case PlayerBase::WalkAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.WalkAnime), true);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_walkAnime), true);
 			break;
 		case PlayerBase::RunAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.RunAnime), true);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_runAnime), true);
 			break;
 		case PlayerBase::PickUpAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.PickUpAnime), false);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_pickUpAnime), false);
 			break;
 		case PlayerBase::SwordAttackAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.AttackAnime), false);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_attackAnime), false);
 			break;
 		case PlayerBase::PunchAttackAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.PunchAttackAnime), false);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_punchAttackAnime), false);
 			break;
 		case PlayerBase::RollAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.EvasionAnime), false);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_evasionAnime), false);
 			break;
 		case PlayerBase::DeathAnime:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.DeathAnime), false);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_deathAnime), false);
 			break;
 		default:
 			break;
@@ -1163,7 +1163,7 @@ void PlayerBase::PlayerAnimeModeUpdate()
 
 
 
-	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 100 * m_animeSpeedRate);
+	m_spAnimator->AdvanceTime(m_spCharaModel->WorkNodes(), 100 * m_animeSpeedRate);
 	m_spCharaModel->CalcNodeMatrices();
 
 
@@ -1181,18 +1181,18 @@ void PlayerBase::PlayerAnimeModeUpdate()
 		DirectX::XMConvertToRadians(rot.x),
 		DirectX::XMConvertToRadians(rot.z));
 
-	m_weponParentMatrix = rMat * handNode->m_worldTransform * modelWorld;
+	m_weaponParentMatrix = rMat * handNode->m_worldTransform * modelWorld;
 
 	//武器の親行列を設定
-	std::shared_ptr<WeaponBase > spWeapon = m_wpWepon.lock();
+	std::shared_ptr<WeaponBase > spWeapon = m_wpWeapon.lock();
 	if (spWeapon)
 	{
-		spWeapon->SetParentMatrix(m_weponParentMatrix);
+		spWeapon->SetParentMatrix(m_weaponParentMatrix);
 		spWeapon->SetParentRotation(rot);
 		switch (m_nowPlayerAnimeMode)
 		{
 		case PlayerBase::SwordAttackAnime:
-			spWeapon->SetAnimePercentNow(m_spAnimetor->GetAnimeProgress());
+			spWeapon->SetAnimePercentNow(m_spAnimator->GetAnimeProgress());
 		}
 
 	}
@@ -1200,7 +1200,7 @@ void PlayerBase::PlayerAnimeModeUpdate()
 
 	if (m_nowPlayerAnimeMode == PlayerBase::DeathAnime)
 	{
-		if (m_spAnimetor->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
 			m_isDeadAnime = true;
 		}
@@ -1215,39 +1215,39 @@ void PlayerBase::EvasionUpdate()
 	if (m_isDead) { return; }
 
 	//攻撃中は無理
-	if (m_chargeAttacFlg) { return; }
+	if (m_chargeAttackFlg) { return; }
 
 	// 攻撃中は、コンボのキャンセル可能な位置を過ぎるまで回避できない
 	bool cancelByEvasion = false;
-	if (m_NowNormalAttack)
+	if (m_nowNormalAttack)
 	{
 		if (m_comboStep < 0 || m_comboStep >= (int)m_attackCombo.size()) { return; }
 
-		float progress = m_spAnimetor->GetAnimeProgress();
-		if (progress < m_attackCombo[m_comboStep].evasionCancel) { return; }
+		float progress = m_spAnimator->GetAnimeProgress();
+		if (progress < m_attackCombo[m_comboStep].m_evasionCancel) { return; }
 
 		cancelByEvasion = true;
 	}
 
 	if (m_evasionAnimeFlg)
 	{
-		float t = m_spAnimetor->GetAnimeProgress();
+		float t = m_spAnimator->GetAnimeProgress();
 
 		// 回避の速度カーブ
 		float evasionSpeed = 0.0f;
 
-		if (t < m_kEvasionAccelEnd)
+		if (t < kEvasionAccelEnd)
 		{
-			evasionSpeed = 0.0f + (m_evasionSpeed - 0.0) * t / m_kEvasionAccelEnd;
+			evasionSpeed = 0.0f + (m_evasionSpeed - 0.0) * t / kEvasionAccelEnd;
 		}
-		else if (t < m_kEvasionMaxSpeedEnd)
+		else if (t < kEvasionMaxSpeedEnd)
 		{
 			evasionSpeed = m_evasionSpeed; // 最大速度
 		}
 		else
 		{
 			m_evasionFlg = false;
-			evasionSpeed = m_evasionSpeed + (0.0 - m_evasionSpeed) * (t - m_kEvasionMaxSpeedEnd) / (1.0 - m_kEvasionMaxSpeedEnd);
+			evasionSpeed = m_evasionSpeed + (0.0 - m_evasionSpeed) * (t - kEvasionMaxSpeedEnd) / (1.0 - kEvasionMaxSpeedEnd);
 		}
 
 		float dt = DeltaTime::Instance().GetGameDeltaTime();
@@ -1259,7 +1259,7 @@ void PlayerBase::EvasionUpdate()
 		}
 	}
 
-	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.evasion, true))
+	if (KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_evasion, true))
 	{
 
 		if (!m_evasionAnimeFlg && ConsumeStamina(m_evasionCost))
@@ -1269,7 +1269,7 @@ void PlayerBase::EvasionUpdate()
 				CancelCombo();
 
 				// 攻撃アニメが終わっていなくても、すぐに回避アニメへ切り替える
-				m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.EvasionAnime), false);
+				m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_evasionAnime), false);
 				m_oldPlayerAnimeMode = PlayerBase::RollAnime;
 			}
 
@@ -1312,14 +1312,14 @@ void PlayerBase::StopSound()
 	if (m_spJumpSE) { m_spJumpSE->Stop(); }
 	if (m_spDamageSE) { m_spDamageSE->Stop(); }
 
-	std::shared_ptr<WeaponBase> spWeapon = m_wpWepon.lock();
+	std::shared_ptr<WeaponBase> spWeapon = m_wpWeapon.lock();
 	if (spWeapon)
 	{
 		spWeapon->StopWeaponSE();
 	}
 
 	// チャージ中に開いた場合はチャージ状態も解除
-	m_chargeAttacFlg = false;
+	m_chargeAttackFlg = false;
 	m_chargeAttackCount = 0;
 }
 
@@ -1327,8 +1327,8 @@ void PlayerBase::PlayAttackBoostEffect()
 {
 	m_isAttackBoostActive = true;
 
-	auto effect = m_wpAttackBoostEffect.lock();
-	if (effect && effect->IsPlaying()) { return; }   // 再生中ならそのまま
+	auto spEffect = m_wpAttackBoostEffect.lock();
+	if (spEffect && spEffect->IsPlaying()) { return; }   // 再生中ならそのまま
 
 	m_wpAttackBoostEffect = KdEffekseerManager::GetInstance().Play(
 		"AttackBoost/AttackBoost.efkefc", m_pos + Math::Vector3{ 0, 0.5f, 0 }, 1.0f, 1.0f, false);
@@ -1345,22 +1345,22 @@ void PlayerBase::StopAttackBoostEffect()
 	m_wpAttackBoostEffect.reset();
 }
 
-void PlayerBase::SetPlayerWeaponInfo(int info)
+void PlayerBase::SetPlayerWeaponInfo(int _info)
 {
 	{
-		switch (info)
+		switch (_info)
 		{
 		case PlayerWeaponInfo::PlayerWeaponInfo_Dagger:
-			m_playerAnimeName.AttackAnime = m_playerAnimeName.DaggerAttackAnime;
+			m_playerAnimeName.m_attackAnime = m_playerAnimeName.m_daggerAttackAnime;
 			break;
 		case PlayerWeaponInfo::PlayerWeaponInfo_Sword:
-			m_playerAnimeName.AttackAnime = m_playerAnimeName.SwordAttackAnime;
+			m_playerAnimeName.m_attackAnime = m_playerAnimeName.m_swordAttackAnime;
 			break;
 
 		default:
 			break;
 		}
-		m_playerAnimeName.AttackAnime;
+		m_playerAnimeName.m_attackAnime;
 	}
 }
 
@@ -1375,14 +1375,14 @@ void PlayerBase::StartComboStep(int _step)
 
 	m_nowPlayerAnimeMode = SwordAttackAnime;
 	m_oldPlayerAnimeMode = SwordAttackAnime; // モード切替の処理でアニメを上書きされないように
-	m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(c.animeName), false);
-	m_animeSpeedRate = c.speed;
-	m_NowNormalAttack = true;
+	m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(c.m_animeName), false);
+	m_animeSpeedRate = c.m_speed;
+	m_nowNormalAttack = true;
 
-	if (auto spWeapon = m_wpWepon.lock())
+	if (auto spWeapon = m_wpWeapon.lock())
 	{
 		spWeapon->SetComboStep(c);            // ダメージ・ノックバック・ヒットストップ・判定と軌跡のタイミング
-		spWeapon->SetCharacterAttackPower(m_status.attck.nowAttck);
+		spWeapon->SetCharacterAttackPower(m_status.m_attack.m_nowAttack);
 		AimToNearestEnemy(spWeapon);          // 段ごとに一番近い敵の方を向き直す
 		spWeapon->SetAngle(m_angle);
 		spWeapon->SetAttackFlg(true);         // 当たった敵のリストもここで空になる
@@ -1409,13 +1409,13 @@ void PlayerBase::ComboUpdate()
 	if (m_comboStep < 0 || m_comboStep >= (int)m_attackCombo.size()) { return; }
 
 	const ComboStep& c = m_attackCombo[m_comboStep];
-	float progress = m_spAnimetor->GetAnimeProgress();
+	float progress = m_spAnimator->GetAnimeProgress();
 
 	// 踏み込み：段の最初から当たり判定が始まるまでに、stepForward だけ前へ進む
-	if (c.stepForward > 0.0f)
+	if (c.m_stepForward > 0.0f)
 	{
-		const float endRate = std::max(c.hitStart, 0.05f);
-		const float target = c.stepForward * std::clamp(progress / endRate, 0.0f, 1.0f);
+		const float endRate = std::max(c.m_hitStart, 0.05f);
+		const float target = c.m_stepForward * std::clamp(progress / endRate, 0.0f, 1.0f);
 		const float delta = target - m_stepForwardDone;
 		if (delta > 0.0f)
 		{
@@ -1434,19 +1434,19 @@ void PlayerBase::ComboUpdate()
 	}
 
 	// 入力の予約（押した瞬間だけ反応させる）
-	if (progress >= c.acceptStart &&
-		KeyInfo::Instance().GetValidKeyPush(m_keyConfig.attack, true))
+	if (progress >= c.m_acceptStart &&
+		KeyInfo::Instance().GetValidKeyPush(m_keyConfig.m_attack, true))
 	{
 		m_comboReserved = true;
 	}
 
 	// キャンセルポイントを過ぎていて予約があれば、次の段へ
-	if (m_comboReserved && progress >= c.cancelPoint &&
+	if (m_comboReserved && progress >= c.m_cancelPoint &&
 		m_comboStep + 1 < (int)m_attackCombo.size())
 	{
 		const ComboStep& next = m_attackCombo[m_comboStep + 1];
 
-		if (ConsumeStamina(next.staminaCost))
+		if (ConsumeStamina(next.m_staminaCost))
 		{
 			StartComboStep(m_comboStep + 1);
 			return;
@@ -1457,11 +1457,11 @@ void PlayerBase::ComboUpdate()
 	}
 
 	// 予約がないまま最後まで再生したら終了
-	if (m_spAnimetor->IsAnimationEnd())
+	if (m_spAnimator->IsAnimationEnd())
 	{
 		m_comboStep = -1;
 		m_animeSpeedRate = 1.0f;
-		if (auto spWeapon = m_wpWepon.lock())
+		if (auto spWeapon = m_wpWeapon.lock())
 		{
 			spWeapon->ClearComboStep();   // 武器の値をコンボ以外の攻撃用に戻す
 		}
@@ -1480,9 +1480,9 @@ void PlayerBase::CancelCombo()
 	m_comboStep = -1;
 	m_comboReserved = false;
 	m_animeSpeedRate = 1.0f;
-	m_NowNormalAttack = false;
+	m_nowNormalAttack = false;
 
-	if (auto spWeapon = m_wpWepon.lock())
+	if (auto spWeapon = m_wpWeapon.lock())
 	{
 		spWeapon->SetAttackFlg(false);   // 当たり判定と軌跡を止める
 		spWeapon->ClearComboStep();      // 武器の値をコンボ以外の攻撃用に戻す

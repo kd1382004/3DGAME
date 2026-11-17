@@ -7,26 +7,40 @@ class PrepareScene;
 class PrepareSceneDisplay :public UIBase
 {
 public:
+	//コンストラクタ
 	PrepareSceneDisplay() {};
+	//デストラクタ
 	~PrepareSceneDisplay() override {};
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//2Dの描画
 	void DrawSprite()override;
 
 	// 準備シーンをセット
+	// _spPrepareScene ... 準備シーン
 	void SetPrepareScene(std::shared_ptr<PrepareScene> _spPrepareScene) { m_wpPrepareScene = _spPrepareScene; }
 
 	// プレイ記録をセット(PrepareScene::Initから呼ばれる)
+	// _gameRecord ... プレイ記録
 	void SetGameRecord(const GameRecord& _gameRecord) { m_gameRecord = _gameRecord; }
 
 	// 特有の情報を表示する(true)・しない(false)
 	// PrepareScene::ChangeTabから呼ばれる
+	// _flg ... 表示するか
 	void SetActive(bool _flg) { m_activeFlg = _flg; }
+	//表示中かを返す
+	//戻り値 ... 表示中ならtrue
 	bool GetActive() const { return m_activeFlg; }
 
+	//持っているポーションの合計をセット
+	// _num ... ポーションの合計(0未満は0にする)
 	void SetPotionNum(int _num) { m_potionNum = std::max(0, _num); }
 
+	//所持金をセット
+	// _money ... 所持金
 	void SetMoney(long _money);
 private:
 
@@ -53,9 +67,13 @@ private:
 
 	// メニューボタンの画像
 	std::shared_ptr<KdTexture> m_spMenuTex[static_cast<int>(PrepareMenu::MenuSize)];
-	Math::Vector2 m_spMenuPos[static_cast<int>(PrepareMenu::MenuSize)];
-	Math::Vector2 m_spMenuSiz[static_cast<int>(PrepareMenu::MenuSize)];
-	Math::Vector2 m_spMenuDrawSiz[static_cast<int>(PrepareMenu::MenuSize)];
+	//メニューボタンの位置
+	Math::Vector2 m_menuPos[static_cast<int>(PrepareMenu::MenuSize)];
+	//メニューボタンの大きさ(画像)
+	Math::Vector2 m_menuSiz[static_cast<int>(PrepareMenu::MenuSize)];
+	//メニューボタンの描く大きさ
+	Math::Vector2 m_menuDrawSiz[static_cast<int>(PrepareMenu::MenuSize)];
+	//マウスが乗っているか
 	bool m_mouseHitFlg[static_cast<int>(PrepareMenu::MenuSize)];
 
 
@@ -119,7 +137,9 @@ private:
 
 	// 文字の画像
 	std::shared_ptr<KdTexture> m_spTextTex[static_cast<int>(InfoText::TextSize)];
-	Math::Vector2 m_spTextPos[static_cast<int>(InfoText::TextSize)];
+	//文字の位置
+	Math::Vector2 m_textPos[static_cast<int>(InfoText::TextSize)];
+	//パネルの位置
 	Math::Vector2 m_panelPos[static_cast<int>(InfoPanel::PanelSize)];
 
 	// 文字画像のパス(InfoTextの順)
@@ -147,12 +167,15 @@ private:
 	void LoadInfoTex();
 
 	// 画像をまとめて読み込む(_num枚分)
+	// _spTex ... 読み込んだ画像を入れる配列
+	// _path ... 画像のパスの配列
 	void LoadTexArray(std::shared_ptr<KdTexture>* _spTex, const std::string* _path, int _num);
 
 
 	// 武器アイコン(PlayerWeaponInfoの順)
 	std::shared_ptr<KdTexture> m_spWeaponIconTex[2];
 
+	//武器アイコンのパス(PlayerWeaponInfoの順)
 	const std::string m_weaponIconTexPath[2] =
 	{
 		"Asset/Textures/GameUI/Item/PlayerInventory/WeponStrengtheningIcon/Dagger/WeponStrengtheningIcon8.png",	// PlayerWeaponInfo_Dagger
@@ -161,12 +184,17 @@ private:
 
 	// 武器アイコンの位置と大きさ(左端・上下中央を基準)
 	Math::Vector2 m_weaponIconPos = { 440.0f, 146.0f };
+	//武器アイコンの大きさ
 	float         m_weaponIconSiz = 40.0f;
 
 
+	//情報パネルの描画
 	void Draw();
 
 	//マウスと当たってるかを返す
+	// _pos ... 四角の真ん中
+	// _w ... 四角の横幅
+	// _h ... 四角の高さ
 	bool MouseHit(Math::Vector2 _pos, float _w, float _h);
 
 
@@ -177,6 +205,7 @@ private:
 	void OnRecords();	// Play履歴(RECORDS) … 履歴画面を開く
 
 
+	//所持金
 	long m_money = 0;
 
 	// 持っているポーションの合計(PrepareScene::OnShopDataChanged から入る)

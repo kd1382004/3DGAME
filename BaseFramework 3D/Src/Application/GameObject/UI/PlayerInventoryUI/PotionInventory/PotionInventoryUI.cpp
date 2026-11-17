@@ -20,24 +20,24 @@ void PotionInventoryUI::Init()
 	//---------- スクロールバーの画像 ----------
 	const std::string scrollPath = "Asset/Textures/GameUI/Item/PlayerInventory/Scroll/";
 
-	auto loadTex = [](std::shared_ptr<KdTexture>& _tex, const std::string& _path)
+	auto loadTex = [](std::shared_ptr<KdTexture>& _spTex, const std::string& _path)
 		{
-			if (_tex) { return; }	// 読み込み済みなら何もしない
-			_tex = std::make_shared<KdTexture>();
-			_tex->Load(_path);
+			if (_spTex) { return; }	// 読み込み済みなら何もしない
+			_spTex = std::make_shared<KdTexture>();
+			_spTex->Load(_path);
 		};
 
-	loadTex(m_scrollTrackTex, scrollPath + "ScrollTrack.png");
+	loadTex(m_spScrollTrackTex, scrollPath + "ScrollTrack.png");
 
-	loadTex(m_scrollThumbTopTex, scrollPath + "ScrollThumbTop.png");
-	loadTex(m_scrollThumbMidTex, scrollPath + "ScrollThumbMid.png");
-	loadTex(m_scrollThumbBottomTex, scrollPath + "ScrollThumbBottom.png");
-	loadTex(m_scrollThumbGripTex, scrollPath + "ScrollThumbGrip.png");
+	loadTex(m_spScrollThumbTopTex, scrollPath + "ScrollThumbTop.png");
+	loadTex(m_spScrollThumbMidTex, scrollPath + "ScrollThumbMid.png");
+	loadTex(m_spScrollThumbBottomTex, scrollPath + "ScrollThumbBottom.png");
+	loadTex(m_spScrollThumbGripTex, scrollPath + "ScrollThumbGrip.png");
 
-	loadTex(m_scrollThumbTopHoverTex, scrollPath + "ScrollThumbTop_Hover.png");
-	loadTex(m_scrollThumbMidHoverTex, scrollPath + "ScrollThumbMid_Hover.png");
-	loadTex(m_scrollThumbBottomHoverTex, scrollPath + "ScrollThumbBottom_Hover.png");
-	loadTex(m_scrollThumbGripHoverTex, scrollPath + "ScrollThumbGrip_Hover.png");
+	loadTex(m_spScrollThumbTopHoverTex, scrollPath + "ScrollThumbTop_Hover.png");
+	loadTex(m_spScrollThumbMidHoverTex, scrollPath + "ScrollThumbMid_Hover.png");
+	loadTex(m_spScrollThumbBottomHoverTex, scrollPath + "ScrollThumbBottom_Hover.png");
+	loadTex(m_spScrollThumbGripHoverTex, scrollPath + "ScrollThumbGrip_Hover.png");
 
 	//---------- 種類の切り替えボタンの画像 ----------
 	const std::string categoryPath = "Asset/Textures/GameUI/Item/PlayerInventory/ItemCategory/";
@@ -54,8 +54,8 @@ void PotionInventoryUI::Init()
 		}
 		if (name.empty()) { continue; }
 
-		loadTex(m_categoryTex[i], categoryPath + name + ".png");
-		loadTex(m_categorySelectTex[i], categoryPath + name + "_Select.png");
+		loadTex(m_spCategoryTex[i], categoryPath + name + ".png");
+		loadTex(m_spCategorySelectTex[i], categoryPath + name + "_Select.png");
 
 		m_categorySiz = { 96,34 };
 	}
@@ -65,21 +65,21 @@ void PotionInventoryUI::Init()
 		// 右から何番目か（一番右 = 0）
 		const int fromRight = (ItemCategory_Num - 1) - i;
 
-		m_categoryPos[i].y = m_spContext->back1Tex2DPos.y + 150;
-		m_categoryPos[i].x = m_spContext->back1Tex2DPos.x + m_spContext->back1TexWidth / 2;
+		m_categoryPos[i].y = m_spContext->m_back1Tex2DPos.y + 150;
+		m_categoryPos[i].x = m_spContext->m_back1Tex2DPos.x + m_spContext->m_back1TexWidth / 2;
 		m_categoryPos[i].x += -m_categoryRightMargin - m_categorySiz.x / 2;
 		m_categoryPos[i].x -= fromRight * (m_categorySiz.x + m_categorySpacing);
 	}
 
 	//---------- 溝（レール） ----------
 	// 横幅は画像から、縦はマスの段数ぶん
-	const float step = m_iconDimensions.h + m_slotSpacing;
-	const float gridTop = m_slotBasePos.y + m_iconDimensions.h / 2;
+	const float step = m_iconDimensions.m_h + m_slotSpacing;
+	const float gridTop = m_slotBasePos.y + m_iconDimensions.m_h / 2;
 	const float gridBottom = gridTop - (m_slotRows * step - m_slotSpacing);
-	const float gridRight = m_slotBasePos.x - m_iconDimensions.w / 2 + m_slotCols * (m_iconDimensions.w + m_slotSpacing) - m_slotSpacing;
-	const float panelInnerRight = m_spContext->back1Tex2DPos.x + m_spContext->back1TexWidth / 2 - 26.0f;	// 鋲の内側の右端
+	const float gridRight = m_slotBasePos.x - m_iconDimensions.m_w / 2 + m_slotCols * (m_iconDimensions.m_w + m_slotSpacing) - m_slotSpacing;
+	const float panelInnerRight = m_spContext->m_back1Tex2DPos.x + m_spContext->m_back1TexWidth / 2 - 26.0f;	// 鋲の内側の右端
 
-	m_scrollTrackSiz.x = m_scrollTrackTex ? (float)m_scrollTrackTex->GetWidth() : 16.0f;
+	m_scrollTrackSiz.x = m_spScrollTrackTex ? (float)m_spScrollTrackTex->GetWidth() : 16.0f;
 	m_scrollTrackSiz.y = gridTop - gridBottom;
 
 	// マスの右端と、鋲の内側の右端の真ん中に置く
@@ -88,11 +88,11 @@ void PotionInventoryUI::Init()
 
 	//---------- つまみ ----------
 	// 横幅と上下の端の高さは画像から
-	m_scrollThumbSiz.x = m_scrollThumbTopTex ? (float)m_scrollThumbTopTex->GetWidth() : m_scrollTrackSiz.x;
-	m_scrollThumbCapH = m_scrollThumbTopTex ? (float)m_scrollThumbTopTex->GetHeight() : 6.0f;
+	m_scrollThumbSiz.x = m_spScrollThumbTopTex ? (float)m_spScrollThumbTopTex->GetWidth() : m_scrollTrackSiz.x;
+	m_scrollThumbCapH = m_spScrollThumbTopTex ? (float)m_spScrollThumbTopTex->GetHeight() : 6.0f;
 
 	// 一番短くても「上の端＋3本線＋下の端」が入る長さ
-	const float gripH = m_scrollThumbGripTex ? (float)m_scrollThumbGripTex->GetHeight() : 7.0f;
+	const float gripH = m_spScrollThumbGripTex ? (float)m_spScrollThumbGripTex->GetHeight() : 7.0f;
 	m_scrollThumbMinH = m_scrollThumbCapH * 2 + gripH + 2.0f;
 
 	// 最初は溝の内側いっぱい（ScrollBarCalcThumb で毎フレーム決め直す）
@@ -112,13 +112,13 @@ bool PotionInventoryUI::OnInventoryOpen()
 	AddPotionTexInfo();
 	if (m_itemIconInfo.size() > 0)
 	{
-		m_spContext->selectExplanationTex = m_itemIconInfo[0].m_ExplanationTex;
-		m_spContext->selectNameTex = m_itemIconInfo[0].m_NameTex;
-		m_selectPotionID = m_itemIconInfo[0].m_ItemID;
+		m_spContext->m_spSelectExplanationTex = m_itemIconInfo[0].m_spExplanationTex;
+		m_spContext->m_spSelectNameTex = m_itemIconInfo[0].m_spNameTex;
+		m_selectPotionID = m_itemIconInfo[0].m_itemID;
 		return true;
 	}
 
-	m_spContext->selectNameTex = m_spContext->notSelectNameTex;
+	m_spContext->m_spSelectNameTex = m_spContext->m_spNotSelectNameTex;
 	return false;
 }
 
@@ -126,15 +126,15 @@ void PotionInventoryUI::OnSelect()
 {
 	if (m_itemIconInfo.size() != 0)
 	{
-		m_spContext->selectExplanationTex = m_itemIconInfo[0].m_ExplanationTex;
-		m_spContext->selectNameTex = m_itemIconInfo[0].m_NameTex;
-		m_selectPotionID = m_itemIconInfo[0].m_ItemID;
+		m_spContext->m_spSelectExplanationTex = m_itemIconInfo[0].m_spExplanationTex;
+		m_spContext->m_spSelectNameTex = m_itemIconInfo[0].m_spNameTex;
+		m_selectPotionID = m_itemIconInfo[0].m_itemID;
 	}
 	else
 	{
 		m_selectPotionID = -999;
-		m_spContext->selectExplanationTex = m_spContext->notSelectExplanationTex;
-		m_spContext->selectNameTex = m_spContext->notSelectNameTex;
+		m_spContext->m_spSelectExplanationTex = m_spContext->m_spNotSelectExplanationTex;
+		m_spContext->m_spSelectNameTex = m_spContext->m_spNotSelectNameTex;
 	}
 }
 
@@ -155,7 +155,7 @@ void PotionInventoryUI::Update()
 	// ④ スクロール後の位置で当たり判定
 	IconHit();
 
-	PotionIUse();
+	PotionUse();
 }
 
 void PotionInventoryUI::DrawSprite()
@@ -163,7 +163,7 @@ void PotionInventoryUI::DrawSprite()
 
 	CategoryDraw();
 
-	const float step = m_iconDimensions.w + m_slotSpacing;       // アイコン ＋ すき間
+	const float step = m_iconDimensions.m_w + m_slotSpacing;       // アイコン ＋ すき間
 	Math::Color slotCol = { 0, 0, 0, 0.25f };         // うっすら暗いマス
 
 	for (int y = 0; y < m_slotRows; y++)
@@ -171,9 +171,9 @@ void PotionInventoryUI::DrawSprite()
 		for (int x = 0; x < m_slotCols; x++)
 		{
 			KdShaderManager::Instance().m_spriteShader.DrawTex(
-				m_spContext->potionSelectTex,
+				m_spContext->m_spPotionSelectTex,
 				m_slotBasePos.x + x * step, m_slotBasePos.y - y * step,
-				m_iconDimensions.w, m_iconDimensions.h, nullptr, &slotCol);
+				m_iconDimensions.m_w, m_iconDimensions.m_h, nullptr, &slotCol);
 		}
 	}
 
@@ -185,37 +185,37 @@ void PotionInventoryUI::DrawSprite()
 		// スクロールで見えない段のアイコンは描かない
 		if (!IsInSlotView(tex.m_2DPos.y)) { continue; }
 
-		float w = m_iconDimensions.w;
-		float h = m_iconDimensions.h;
+		float w = m_iconDimensions.m_w;
+		float h = m_iconDimensions.m_h;
 
-		bool isUseEffect = (t > 0.0f && tex.m_ItemID == m_spContext->useEffectItemID);
+		bool isUseEffect = (t > 0.0f && tex.m_itemID == m_spContext->m_useEffectItemID);
 		if (isUseEffect)
 		{
 			w *= 1.0f + 0.3f * t;
 			h *= 1.0f + 0.3f * t;
 		}
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_IconTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_spIconTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h);
 
 		// 白く光らせる（同じアイコンを加算で重ねる）
 		if (isUseEffect)
 		{
 			Math::Color flash = { 1,1,1,t * 0.8f };
 			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_IconTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h, nullptr, &flash);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_spIconTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h, nullptr, &flash);
 			KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
 		}
 
-		if (tex.m_ItemID == m_selectPotionID)
+		if (tex.m_itemID == m_selectPotionID)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->potionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->m_spPotionSelectTex, tex.m_2DPos.x, tex.m_2DPos.y, w, h);
 		}
 	}
 
 	//使用ボタン（消耗品のときだけ）
-	if (m_spContext->useTex && m_nowCategory == ItemCategory_Consumable)
+	if (m_spContext->m_spUseTex && m_nowCategory == ItemCategory_Consumable)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->useTex, m_spContext->useTex2DPos.x, m_spContext->useTex2DPos.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->m_spUseTex, m_spContext->m_useTex2DPos.x, m_spContext->m_useTex2DPos.y);
 	}
 
 	//スクロールバーの描画
@@ -224,13 +224,13 @@ void PotionInventoryUI::DrawSprite()
 
 void PotionInventoryUI::AddPotionTexInfo()
 {
-	std::shared_ptr<PlayerBase >spPlayer = m_spContext->wpPlayer.lock();
+	std::shared_ptr<PlayerBase >spPlayer = m_spContext->m_wpPlayer.lock();
 	if (!spPlayer) { return; }
 
 	std::shared_ptr<PlayerInventory> spPlayerInventory = spPlayer->GetPlayerInventory();
 	if (!spPlayerInventory) { return; }
 
-	std::shared_ptr<PotionTexInfo> spTexInfo = m_spContext->wpPotionTexInfo.lock();
+	std::shared_ptr<PotionTexInfo> spTexInfo = m_spContext->m_wpPotionTexInfo.lock();
 
 	//---------- 種類ごとの元のリスト ----------
 	std::vector<Inventory> list;
@@ -250,7 +250,7 @@ void PotionInventoryUI::AddPotionTexInfo()
 		if (item.m_num > 0)
 		{
 			ItemIconInfo itemIconInfo;
-			itemIconInfo.m_ItemID = item.m_ID;
+			itemIconInfo.m_itemID = item.m_ID;
 
 			if (i >= m_slotCols)
 			{
@@ -258,9 +258,9 @@ void PotionInventoryUI::AddPotionTexInfo()
 				i = 0;
 			}
 
-			float x = m_slotBasePos.x + i * m_iconDimensions.w + i * m_slotSpacing;
+			float x = m_slotBasePos.x + i * m_iconDimensions.m_w + i * m_slotSpacing;
 			// スクロールした段数(m_scrollRow)だけ上にずらす
-			float y = m_slotBasePos.y - (j - m_scrollRow) * (m_iconDimensions.h + m_slotSpacing);
+			float y = m_slotBasePos.y - (j - m_scrollRow) * (m_iconDimensions.m_h + m_slotSpacing);
 			itemIconInfo.m_2DPos = { x,y };
 			itemIconInfo.m_num = item.m_num;
 			itemIconInfo.m_name = item.m_name;
@@ -271,14 +271,14 @@ void PotionInventoryUI::AddPotionTexInfo()
 				switch (m_nowCategory)
 				{
 				case ItemCategory_Consumable:
-					itemIconInfo.m_IconTex = spTexInfo->GetPotionIcon(item.m_ID);
-					itemIconInfo.m_ExplanationTex = spTexInfo->GetPotionExplanation(item.m_ID);
-					itemIconInfo.m_NameTex = spTexInfo->GetPotionName(item.m_ID);
+					itemIconInfo.m_spIconTex = spTexInfo->GetPotionIcon(item.m_ID);
+					itemIconInfo.m_spExplanationTex = spTexInfo->GetPotionExplanation(item.m_ID);
+					itemIconInfo.m_spNameTex = spTexInfo->GetPotionName(item.m_ID);
 					break;
 				case ItemCategory_Material:
-					itemIconInfo.m_IconTex = spTexInfo->GetWeaponsStrengtheningItemIcon(item.m_ID);
-					itemIconInfo.m_ExplanationTex = spTexInfo->GetWeaponsStrengtheningItemExplanation(item.m_ID);
-					itemIconInfo.m_NameTex = spTexInfo->GetWeaponsStrengtheningItemName(item.m_ID);
+					itemIconInfo.m_spIconTex = spTexInfo->GetWeaponsStrengtheningItemIcon(item.m_ID);
+					itemIconInfo.m_spExplanationTex = spTexInfo->GetWeaponsStrengtheningItemExplanation(item.m_ID);
+					itemIconInfo.m_spNameTex = spTexInfo->GetWeaponsStrengtheningItemName(item.m_ID);
 					break;
 				default:
 					break;
@@ -301,7 +301,7 @@ void PotionInventoryUI::AddPotionTexInfo()
 	bool flg = false;
 	for (auto& icon : m_itemIconInfo)
 	{
-		if (m_selectPotionID == icon.m_ItemID)
+		if (m_selectPotionID == icon.m_itemID)
 		{
 			flg = true;
 		}
@@ -309,9 +309,9 @@ void PotionInventoryUI::AddPotionTexInfo()
 
 	if (!flg && m_itemIconInfo.size() != 0)
 	{
-		m_spContext->selectExplanationTex = m_itemIconInfo[0].m_ExplanationTex;
-		m_selectPotionID = m_itemIconInfo[0].m_ItemID;
-		m_spContext->selectNameTex = m_itemIconInfo[0].m_NameTex;
+		m_spContext->m_spSelectExplanationTex = m_itemIconInfo[0].m_spExplanationTex;
+		m_selectPotionID = m_itemIconInfo[0].m_itemID;
+		m_spContext->m_spSelectNameTex = m_itemIconInfo[0].m_spNameTex;
 	}
 }
 
@@ -319,8 +319,8 @@ void PotionInventoryUI::IconHit()
 {
 	if (m_itemIconInfo.size() <= 0)
 	{
-		m_spContext->selectExplanationTex = m_spContext->notSelectExplanationTex;
-		m_spContext->selectNameTex = m_spContext->notSelectNameTex;
+		m_spContext->m_spSelectExplanationTex = m_spContext->m_spNotSelectExplanationTex;
+		m_spContext->m_spSelectNameTex = m_spContext->m_spNotSelectNameTex;
 		return;
 	}
 
@@ -336,22 +336,22 @@ void PotionInventoryUI::IconHit()
 			continue;
 		}
 
-		float Left = potion.m_2DPos.x - m_iconDimensions.w / 2;
-		float Right = potion.m_2DPos.x + m_iconDimensions.w / 2;
-		float Top = potion.m_2DPos.y + m_iconDimensions.h / 2;
-		float Bot = potion.m_2DPos.y - m_iconDimensions.h / 2;
+		float left = potion.m_2DPos.x - m_iconDimensions.m_w / 2;
+		float right = potion.m_2DPos.x + m_iconDimensions.m_w / 2;
+		float top = potion.m_2DPos.y + m_iconDimensions.m_h / 2;
+		float bot = potion.m_2DPos.y - m_iconDimensions.m_h / 2;
 
 
-		if (mousePos.x >= Left && mousePos.x <= Right &&
-			mousePos.y >= Bot && mousePos.y <= Top)
+		if (mousePos.x >= left && mousePos.x <= right &&
+			mousePos.y >= bot && mousePos.y <= top)
 		{
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			potion.m_hit = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
-				m_spContext->selectExplanationTex = potion.m_ExplanationTex;
-				m_selectPotionID = potion.m_ItemID;
-				m_spContext->selectNameTex = potion.m_NameTex;
+				m_spContext->m_spSelectExplanationTex = potion.m_spExplanationTex;
+				m_selectPotionID = potion.m_itemID;
+				m_spContext->m_spSelectNameTex = potion.m_spNameTex;
 			}
 		}
 		else
@@ -361,9 +361,9 @@ void PotionInventoryUI::IconHit()
 	}
 }
 
-void PotionInventoryUI::PotionIUse()
+void PotionInventoryUI::PotionUse()
 {
-	std::shared_ptr<PlayerBase>spPlayer = m_spContext->wpPlayer.lock();
+	std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
 	if (!spPlayer) { return; }
 
 	std::shared_ptr<PlayerInventory> spPlayerInventory = spPlayer->GetPlayerInventory();
@@ -373,10 +373,10 @@ void PotionInventoryUI::PotionIUse()
 	switch (m_nowCategory)
 	{
 	case ItemCategory_Consumable:
-		m_spContext->num = spPlayerInventory->GetPotionsInventoryNum(m_selectPotionID);
+		m_spContext->m_num = spPlayerInventory->GetPotionsInventoryNum(m_selectPotionID);
 		break;
 	case ItemCategory_Material:
-		m_spContext->num = spPlayerInventory->GetWeaponsStrengtheningInventoryNum(m_selectPotionID);
+		m_spContext->m_num = spPlayerInventory->GetWeaponsStrengtheningInventoryNum(m_selectPotionID);
 		break;
 	default:
 		break;
@@ -385,37 +385,37 @@ void PotionInventoryUI::PotionIUse()
 	//---------- 使用ボタンは消耗品のときだけ ----------
 	if (m_nowCategory != ItemCategory_Consumable) { return; }
 
-	const std::shared_ptr<KdTexture>& useTex = m_spContext->useTex;
-	if (!useTex) { return; }
-	const Math::Vector2& useTex2DPos = m_spContext->useTex2DPos;
+	const std::shared_ptr<KdTexture>& spUseTex = m_spContext->m_spUseTex;
+	if (!spUseTex) { return; }
+	const Math::Vector2& useTex2DPos = m_spContext->m_useTex2DPos;
 
 	POINT mousePos = MouseInfo::Instance().m_windowPos;
 
-	float Left = useTex2DPos.x - useTex->GetWidth() / 2;
-	float Right = useTex2DPos.x + useTex->GetWidth() / 2;
-	float Top = useTex2DPos.y + useTex->GetHeight() / 2;
-	float Bot = useTex2DPos.y - useTex->GetHeight() / 2;
+	float left = useTex2DPos.x - spUseTex->GetWidth() / 2;
+	float right = useTex2DPos.x + spUseTex->GetWidth() / 2;
+	float top = useTex2DPos.y + spUseTex->GetHeight() / 2;
+	float bot = useTex2DPos.y - spUseTex->GetHeight() / 2;
 
-	if (mousePos.x >= Left && mousePos.x <= Right &&
-		mousePos.y >= Bot && mousePos.y <= Top)
+	if (mousePos.x >= left && mousePos.x <= right &&
+		mousePos.y >= bot && mousePos.y <= top)
 	{
 		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 		if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 		{
 			if (m_itemIconInfo.size() <= 0 || m_selectPotionID == -999) { return; }
-			std::shared_ptr<PotionUseController >spPotionUseController = m_spContext->wpPotionUseController.lock();
+			std::shared_ptr<PotionUseController >spPotionUseController = m_spContext->m_wpPotionUseController.lock();
 			if (!spPotionUseController) { return; }
 
 			spPotionUseController->SetPlayer(spPlayer);
 			spPotionUseController->PotionUse(m_selectPotionID);
 			spPlayerInventory->UsePotionsInventory(m_selectPotionID);
 
-			m_spContext->useEffectType = UseEffectType::Bounce;
-			m_spContext->useEffectTimer = m_spContext->useEffectTime;
-			m_spContext->useEffectItemID = m_selectPotionID;
+			m_spContext->m_useEffectType = UseEffectType::Bounce;
+			m_spContext->m_useEffectTimer = m_spContext->m_useEffectTime;
+			m_spContext->m_useEffectItemID = m_selectPotionID;
 
 			// 使った後の数にすぐ合わせる
-			m_spContext->num = spPlayerInventory->GetPotionsInventoryNum(m_selectPotionID);
+			m_spContext->m_num = spPlayerInventory->GetPotionsInventoryNum(m_selectPotionID);
 		}
 	}
 }
@@ -427,14 +427,14 @@ void PotionInventoryUI::CategoryUpdate()
 	for (int i = 0; i < ItemCategory_Num; i++)
 	{
 		// ボタンの四角（m_categoryPos[i] が中心）
-		float Left = m_categoryPos[i].x - m_categorySiz.x / 2;
-		float Right = m_categoryPos[i].x + m_categorySiz.x / 2;
-		float Top = m_categoryPos[i].y + m_categorySiz.y / 2;
-		float Bot = m_categoryPos[i].y - m_categorySiz.y / 2;
+		float left = m_categoryPos[i].x - m_categorySiz.x / 2;
+		float right = m_categoryPos[i].x + m_categorySiz.x / 2;
+		float top = m_categoryPos[i].y + m_categorySiz.y / 2;
+		float bot = m_categoryPos[i].y - m_categorySiz.y / 2;
 
 		// マウスがボタンの上にあるか
-		bool isOnButton = (mousePos.x >= Left && mousePos.x <= Right &&
-			mousePos.y >= Bot && mousePos.y <= Top);
+		bool isOnButton = (mousePos.x >= left && mousePos.x <= right &&
+			mousePos.y >= bot && mousePos.y <= top);
 
 		if (isOnButton)
 		{
@@ -449,8 +449,8 @@ void PotionInventoryUI::CategoryUpdate()
 
 					// ページをめくる音
 					{
-						std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
-						if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+						std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
+						if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 					}
 				}
 			}
@@ -467,10 +467,10 @@ void PotionInventoryUI::CategoryDraw()
 	for (int i = 0; i < ItemCategory_Num; i++)
 	{
 		// 選ばれている種類は明るい画像、それ以外は通常の画像
-		const std::shared_ptr<KdTexture>& tex = (i == m_nowCategory) ? m_categorySelectTex[i] : m_categoryTex[i];
-		if (!tex) { continue; }
+		const std::shared_ptr<KdTexture>& spTex = (i == m_nowCategory) ? m_spCategorySelectTex[i] : m_spCategoryTex[i];
+		if (!spTex) { continue; }
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(tex, m_categoryPos[i].x, m_categoryPos[i].y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spTex, m_categoryPos[i].x, m_categoryPos[i].y);
 	}
 
 	KdShaderManager::Instance().m_spriteShader.End();
@@ -488,16 +488,16 @@ void PotionInventoryUI::OnCategoryChange()
 	if (m_itemIconInfo.size() > 0)
 	{
 		// 先頭のアイテムを選ぶ
-		m_selectPotionID = m_itemIconInfo[0].m_ItemID;
-		m_spContext->selectExplanationTex = m_itemIconInfo[0].m_ExplanationTex;
-		m_spContext->selectNameTex = m_itemIconInfo[0].m_NameTex;
+		m_selectPotionID = m_itemIconInfo[0].m_itemID;
+		m_spContext->m_spSelectExplanationTex = m_itemIconInfo[0].m_spExplanationTex;
+		m_spContext->m_spSelectNameTex = m_itemIconInfo[0].m_spNameTex;
 	}
 	else
 	{
 		// 何も持っていなければ「選択なし」の表示
 		m_selectPotionID = -999;
-		m_spContext->selectExplanationTex = m_spContext->notSelectExplanationTex;
-		m_spContext->selectNameTex = m_spContext->notSelectNameTex;
+		m_spContext->m_spSelectExplanationTex = m_spContext->m_spNotSelectExplanationTex;
+		m_spContext->m_spSelectNameTex = m_spContext->m_spNotSelectNameTex;
 	}
 }
 
@@ -507,44 +507,44 @@ void PotionInventoryUI::ScrollBarDraw()
 	KdShaderManager::Instance().m_spriteShader.Begin(false);
 
 	//溝
-	if (m_scrollTrackTex)
+	if (m_spScrollTrackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_scrollTrackTex, m_scrollTrackPos.x, m_scrollTrackPos.y, m_scrollTrackSiz.x, m_scrollTrackSiz.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spScrollTrackTex, m_scrollTrackPos.x, m_scrollTrackPos.y, m_scrollTrackSiz.x, m_scrollTrackSiz.y);
 	}
 
 	// マウスが乗っているときは明るい画像を使う
-	const std::shared_ptr<KdTexture>& topTex = m_scrollThumbHoverFlg ? m_scrollThumbTopHoverTex : m_scrollThumbTopTex;
-	const std::shared_ptr<KdTexture>& midTex = m_scrollThumbHoverFlg ? m_scrollThumbMidHoverTex : m_scrollThumbMidTex;
-	const std::shared_ptr<KdTexture>& bottomTex = m_scrollThumbHoverFlg ? m_scrollThumbBottomHoverTex : m_scrollThumbBottomTex;
-	const std::shared_ptr<KdTexture>& gripTex = m_scrollThumbHoverFlg ? m_scrollThumbGripHoverTex : m_scrollThumbGripTex;
+	const std::shared_ptr<KdTexture>& spTopTex = m_scrollThumbHoverFlg ? m_spScrollThumbTopHoverTex : m_spScrollThumbTopTex;
+	const std::shared_ptr<KdTexture>& spMidTex = m_scrollThumbHoverFlg ? m_spScrollThumbMidHoverTex : m_spScrollThumbMidTex;
+	const std::shared_ptr<KdTexture>& spBottomTex = m_scrollThumbHoverFlg ? m_spScrollThumbBottomHoverTex : m_spScrollThumbBottomTex;
+	const std::shared_ptr<KdTexture>& spGripTex = m_scrollThumbHoverFlg ? m_spScrollThumbGripHoverTex : m_spScrollThumbGripTex;
 
 	// つまみの上端・下端の y（y は上がプラス）
 	const float thumbTop = m_scrollThumbPos.y + m_scrollThumbSiz.y / 2;
 	const float thumbBottom = m_scrollThumbPos.y - m_scrollThumbSiz.y / 2;
 
 	//つまみ(上の端)
-	if (topTex)
+	if (spTopTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(topTex, m_scrollThumbPos.x, thumbTop - m_scrollThumbCapH / 2, m_scrollThumbSiz.x, m_scrollThumbCapH);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spTopTex, m_scrollThumbPos.x, thumbTop - m_scrollThumbCapH / 2, m_scrollThumbSiz.x, m_scrollThumbCapH);
 	}
 
 	//つまみ(真ん中) … 上の端と下端を除いた長さに伸ばす
 	const float midH = m_scrollThumbSiz.y - m_scrollThumbCapH * 2;
-	if (midTex && midH > 0.0f)
+	if (spMidTex && midH > 0.0f)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(midTex, m_scrollThumbPos.x, m_scrollThumbPos.y, m_scrollThumbSiz.x, midH);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spMidTex, m_scrollThumbPos.x, m_scrollThumbPos.y, m_scrollThumbSiz.x, midH);
 	}
 
 	//つまみ(下の端)
-	if (bottomTex)
+	if (spBottomTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(bottomTex, m_scrollThumbPos.x, thumbBottom + m_scrollThumbCapH / 2, m_scrollThumbSiz.x, m_scrollThumbCapH);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spBottomTex, m_scrollThumbPos.x, thumbBottom + m_scrollThumbCapH / 2, m_scrollThumbSiz.x, m_scrollThumbCapH);
 	}
 
 	//つまみ(中央の3本線) … 画像そのままの大きさで真ん中に
-	if (gripTex)
+	if (spGripTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(gripTex, m_scrollThumbPos.x, m_scrollThumbPos.y, gripTex->GetWidth(), gripTex->GetHeight());
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spGripTex, m_scrollThumbPos.x, m_scrollThumbPos.y, spGripTex->GetWidth(), spGripTex->GetHeight());
 	}
 
 	KdShaderManager::Instance().m_spriteShader.End();
@@ -660,8 +660,8 @@ void PotionInventoryUI::ScrollBarUpdate()
 	//---------- マウスホイール ----------
 
 	// 左の大きい枠の上にマウスがあるときだけホイールを効かせる
-	const float panelLeft = m_spContext->back1Tex2DPos.x - m_spContext->back1TexWidth / 2;
-	const float panelRight = m_spContext->back1Tex2DPos.x + m_spContext->back1TexWidth / 2;
+	const float panelLeft = m_spContext->m_back1Tex2DPos.x - m_spContext->m_back1TexWidth / 2;
+	const float panelRight = m_spContext->m_back1Tex2DPos.x + m_spContext->m_back1TexWidth / 2;
 	bool isOnPanel = (mousePos.x >= panelLeft && mousePos.x <= panelRight);
 
 
@@ -727,7 +727,7 @@ void PotionInventoryUI::ScrollBarCalcThumb()
 bool PotionInventoryUI::IsInSlotView(float _y) const
 {
 	// 見えている一番上の段・一番下の段の中心y（少し余裕を持たせて判定）
-	const float step = m_iconDimensions.h + m_slotSpacing;
+	const float step = m_iconDimensions.m_h + m_slotSpacing;
 	const float topY = m_slotBasePos.y + step * 0.5f;
 	const float botY = m_slotBasePos.y - (m_slotRows - 1) * step - step * 0.5f;
 	return (_y <= topY && _y >= botY);

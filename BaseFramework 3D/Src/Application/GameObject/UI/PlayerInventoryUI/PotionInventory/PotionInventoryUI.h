@@ -7,9 +7,12 @@
 class PotionInventoryUI :public InventoryTabBase
 {
 public:
+	//コンストラクタ
 	PotionInventoryUI() {}
+	//デストラクタ
 	~PotionInventoryUI()override {}
 
+	//初期化
 	void Init()override;
 	void OnSelect()override;		// = 旧 PotionInfoInit
 	void Update()override;			// = 旧 PotionUpdate
@@ -26,11 +29,13 @@ private:
 	void IconHit();
 
 	//使用
-	void PotionIUse();
+	void PotionUse();
 
 	using ItemIconInfo = InventoryItemIconInfo;
+	//表示するアイテムのアイコン一覧
 	std::vector<ItemIconInfo> m_itemIconInfo;
-	struct { int w; int h; } m_iconDimensions = { 40,40 };
+	//アイコンの大きさ
+	struct { int m_w; int m_h; } m_iconDimensions = { 40,40 };
 
 	//選ばれてるポーションのID
 	int m_selectPotionID = -999;
@@ -51,10 +56,10 @@ private:
 
 	//---------- 種類の切り替えボタン（消耗品／素材） ----------
 	// 通常（選ばれていないとき）の画像
-	std::shared_ptr<KdTexture> m_categoryTex[ItemCategory_Num];
+	std::shared_ptr<KdTexture> m_spCategoryTex[ItemCategory_Num];
 
 	// 選ばれているときの画像（明るい）
-	std::shared_ptr<KdTexture> m_categorySelectTex[ItemCategory_Num];
+	std::shared_ptr<KdTexture> m_spCategorySelectTex[ItemCategory_Num];
 
 
 	// 今選ばれている種類（開いたときは消耗品）
@@ -83,19 +88,23 @@ private:
 
 	//---------- スクロールバー ----------
 	// 溝（レール）
-	std::shared_ptr<KdTexture> m_scrollTrackTex;
+	std::shared_ptr<KdTexture> m_spScrollTrackTex;
 
 	// つまみ（上の端・真ん中・下の端・中央の3本線）
-	std::shared_ptr<KdTexture> m_scrollThumbTopTex;
-	std::shared_ptr<KdTexture> m_scrollThumbMidTex;		// 縦に伸ばして使う
-	std::shared_ptr<KdTexture> m_scrollThumbBottomTex;
-	std::shared_ptr<KdTexture> m_scrollThumbGripTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbTopTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbMidTex;		// 縦に伸ばして使う
+	std::shared_ptr<KdTexture> m_spScrollThumbBottomTex;
+	//つまみの中央の3本線の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbGripTex;
 
 	// マウスを乗せたときのつまみ
-	std::shared_ptr<KdTexture> m_scrollThumbTopHoverTex;
-	std::shared_ptr<KdTexture> m_scrollThumbMidHoverTex;
-	std::shared_ptr<KdTexture> m_scrollThumbBottomHoverTex;
-	std::shared_ptr<KdTexture> m_scrollThumbGripHoverTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbTopHoverTex;
+	//マウスを乗せたときのつまみの真ん中の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbMidHoverTex;
+	//マウスを乗せたときのつまみの下の端の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbBottomHoverTex;
+	//マウスを乗せたときのつまみの3本線の画像
+	std::shared_ptr<KdTexture> m_spScrollThumbGripHoverTex;
 
 
 
@@ -138,5 +147,8 @@ private:
 	// ドラッグ開始時に記録して、つまみの端をつかんでも中心にワープしないようにする
 	float m_scrollDragOffsetY = 0.0f;
 
+	//その高さのマスが今見えている範囲か
+	// _y ... マスの中心のy
+	//戻り値 ... 見えているならtrue
 	bool IsInSlotView(float _y) const;
 };

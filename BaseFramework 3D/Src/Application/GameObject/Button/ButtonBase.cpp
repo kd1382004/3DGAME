@@ -17,16 +17,16 @@ void ButtonBase::Update()
 	//マウスで座標変換(エディター用)
 	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
 	{
-		float Left = m_pos.x - (m_diameter.x / 2.0f) * m_scale;
-		float Right = m_pos.x + (m_diameter.x / 2.0f) * m_scale;
-		float Top = m_pos.y - (m_diameter.y / 2.0f) * m_scale;
-		float Bottom = m_pos.y + (m_diameter.y / 2.0f) * m_scale;
+		float left = m_pos.x - (m_diameter.x / 2.0f) * m_scale;
+		float right = m_pos.x + (m_diameter.x / 2.0f) * m_scale;
+		float top = m_pos.y - (m_diameter.y / 2.0f) * m_scale;
+		float bottom = m_pos.y + (m_diameter.y / 2.0f) * m_scale;
 
 		float mx = MouseInfo::Instance().m_windowPos.x;
 		float my = MouseInfo::Instance().m_windowPos.y;
 
-		if (Left <= mx && mx <= Right &&
-			Top <= my && my <= Bottom)
+		if (left <= mx && mx <= right &&
+			top <= my && my <= bottom)
 		{
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			m_editorChoseFlg = true;
@@ -53,13 +53,13 @@ void ButtonBase::DrawSprite()
 	if (!m_activeFlg) { return; }
 
 	Math::Color color = { 1,1,1,m_alpha };
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, m_pos.x, m_pos.y, m_diameter.x * m_scale, m_diameter.y * m_scale, nullptr, &color);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTex, m_pos.x, m_pos.y, m_diameter.x * m_scale, m_diameter.y * m_scale, nullptr, &color);
 }
 
-void ButtonBase::SetPos(const Math::Vector3& pos)
+void ButtonBase::SetPos(const Math::Vector3& _pos)
 {
-	m_pos.x = pos.x;
-	m_pos.y = pos.y;
+	m_pos.x = _pos.x;
+	m_pos.y = _pos.y;
 }
 
 void ButtonBase::KeyChosen(bool _choseFlg)
@@ -79,9 +79,9 @@ void ButtonBase::KeyChosen(bool _choseFlg)
 void ButtonBase::AlphaFlashing()
 {
 	m_alpha += m_alphaAdd;
-	if (m_alpha < m_alphaMine)
+	if (m_alpha < m_alphaMin)
 	{
-		m_alpha = m_alphaMine;
+		m_alpha = m_alphaMin;
 		m_alphaAdd *= -1;
 	}
 
@@ -157,16 +157,16 @@ void ButtonBase::ImGUI()
 void ButtonBase::MouseChosen()
 {
 
-	float Left = m_pos.x - (m_diameter.x / 2.0f) * m_scale;
-	float Right = m_pos.x + (m_diameter.x / 2.0f) * m_scale;
-	float Top = m_pos.y - (m_diameter.y / 2.0f) * m_scale;
-	float Bottom = m_pos.y + (m_diameter.y / 2.0f) * m_scale;
+	float left = m_pos.x - (m_diameter.x / 2.0f) * m_scale;
+	float right = m_pos.x + (m_diameter.x / 2.0f) * m_scale;
+	float top = m_pos.y - (m_diameter.y / 2.0f) * m_scale;
+	float bottom = m_pos.y + (m_diameter.y / 2.0f) * m_scale;
 
 	float mx = MouseInfo::Instance().m_windowPos.x;
 	float my = MouseInfo::Instance().m_windowPos.y;
 
-	if (Left <= mx && mx <= Right &&
-		Top <= my && my <= Bottom)
+	if (left <= mx && mx <= right &&
+		top <= my && my <= bottom)
 	{
 		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 		m_choseFlg = true;

@@ -20,9 +20,9 @@
 
 void PotionUseController::PotionUse(int _potionsID)
 {
-	PotionsType _potionsType = (PotionsType)_potionsID;
+	PotionsType potionsType = (PotionsType)_potionsID;
 
-	switch (_potionsType)
+	switch (potionsType)
 	{
 	case PotionsType_InstantHeal:
 		UseInstantHeal();
@@ -133,9 +133,9 @@ void PotionUseController::PlayStaminaEffect()
 
 void PotionUseController::PlayPotionSE(const std::string& _path)
 {
-	std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play(_path, false);
-	if (se)
+	std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play(_path, false);
+	if (spSE)
 	{
-		se->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		spSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 	}
 }

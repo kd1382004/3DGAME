@@ -2,7 +2,7 @@
 #include"../../Character/Player/PlayerBase.h"
 #include"../../Character/Player/PlayerBuffManager/PlayerBuffManager.h"
 
-void StaminaRegenBoostPotion::UseStaminaRegenBoostPotion(int ID)
+void StaminaRegenBoostPotion::UseStaminaRegenBoostPotion(int _ID)
 {
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
 	if (spPlayer)
@@ -14,7 +14,7 @@ void StaminaRegenBoostPotion::UseStaminaRegenBoostPotion(int ID)
 			buff.m_buffStaminaRegen = 3.0f;
 			buff.m_maxSeconds = 60.0f;
 			buff.m_nowSeconds = buff.m_maxSeconds;
-			buff.m_ID = ID;
+			buff.m_ID = _ID;
 			spPlayerBuffManager->AddStatusBuff(buff);
 		}
 	}

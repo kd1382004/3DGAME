@@ -49,11 +49,11 @@ void CameraBase::PreDraw()
 	m_spCamera->SetToShader();
 }
 
-void CameraBase::SetTarget(const std::shared_ptr<KdGameObject>& target)
+void CameraBase::SetTarget(const std::shared_ptr<KdGameObject>& _spTarget)
 {
-	if (!target) { return; }
+	if (!_spTarget) { return; }
 
-	m_wpTarget = target;
+	m_wpTarget = _spTarget;
 }
 
 void CameraBase::ResolveCameraOcclusion()
@@ -195,21 +195,21 @@ void CameraBase::UpdateRotateByMouse()
 
 
 	// マウスでカメラを回転させる処理
-	POINT _nowPos;
-	GetCursorPos(&_nowPos);
+	POINT nowPos;
+	GetCursorPos(&nowPos);
 
-	POINT _mouseMove{};
-	_mouseMove.x = _nowPos.x - MouseInfo::Instance().GetWindouMousePos().x;
-	_mouseMove.y = _nowPos.y - MouseInfo::Instance().GetWindouMousePos().y;
+	POINT mouseMove{};
+	mouseMove.x = nowPos.x - MouseInfo::Instance().GetWindowMousePos().x;
+	mouseMove.y = nowPos.y - MouseInfo::Instance().GetWindowMousePos().y;
 
 	MouseInfo::Instance().SetMousePosFixMousePos();
 
 	// 実際にカメラを回転させる処理(0.15はただの補正値)
-	m_DegAng.x += _mouseMove.y * 0.15f;
-	m_DegAng.y += _mouseMove.x * 0.15f;
+	m_degAng.x += mouseMove.y * 0.15f;
+	m_degAng.y += mouseMove.x * 0.15f;
 
 	// 回転制御
-	m_DegAng.x = std::clamp(m_DegAng.x, -45.f, 45.f);
+	m_degAng.x = std::clamp(m_degAng.x, -45.f, 45.f);
 }
 
 void CameraBase::ShakeUpdate()
@@ -243,23 +243,23 @@ void CameraBase::ShakeUpdate()
 
 	//---------- ずらす量 ----------
 	// -1 〜 1 のランダムな値
-	static std::mt19937 s_rand{ std::random_device{}() };
+	static std::mt19937 randEngine{ std::random_device{}() };
 	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 
-	m_shakeOffset.x = dist(s_rand) * nowPower;			// 横揺れ
-	m_shakeOffset.y = dist(s_rand) * nowPower * 0.7f;	// 縦揺れは少し弱く
+	m_shakeOffset.x = dist(randEngine) * nowPower;			// 横揺れ
+	m_shakeOffset.y = dist(randEngine) * nowPower * 0.7f;	// 縦揺れは少し弱く
 	m_shakeOffset.z = 0.0f;
 }
 
 
 
-bool CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
+bool CameraBase::RotateTowardsY(float _targetYawDeg, float _maxSpeedDegPerSec)
 {
 	bool isRotateFinished = false;
 
 
 	// 目標角度と現在角度の差分
-	float diff = targetYawDeg - m_DegAng.y;
+	float diff = _targetYawDeg - m_degAng.y;
 
 	// 許容誤差（度数法）
 	float toleranceDeg = 0.1f;
@@ -269,23 +269,23 @@ bool CameraBase::RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec)
 	while (diff < -180.0f) diff += 360.0f;
 
 	// 1フレームあたりの最大回転量
-	float maxStep = maxSpeedDegPerSec * DeltaTime::Instance().GetGameDeltaTime();
+	float maxStep = _maxSpeedDegPerSec * DeltaTime::Instance().GetGameDeltaTime();
 
 	// 残りが許容範囲内、または今フレームで届く → ぴったり合わせて完了
 	if (std::abs(diff) <= std::max(maxStep, toleranceDeg))
 	{
-		m_DegAng.y += diff;   // 目標にスナップ（誤差を残さない）
+		m_degAng.y += diff;   // 目標にスナップ（誤差を残さない）
 		isRotateFinished = true;
 	}
 	else
 	{
-		m_DegAng.y += (diff > 0.0f) ? maxStep : -maxStep;
+		m_degAng.y += (diff > 0.0f) ? maxStep : -maxStep;
 		isRotateFinished = false;
 	}
 
 	// 0 〜 360度に収める
-	if (m_DegAng.y >= 360.0f) m_DegAng.y -= 360.0f;
-	if (m_DegAng.y < 0.0f)    m_DegAng.y += 360.0f;
+	if (m_degAng.y >= 360.0f) m_degAng.y -= 360.0f;
+	if (m_degAng.y < 0.0f)    m_degAng.y += 360.0f;
 
 	return isRotateFinished;
 }

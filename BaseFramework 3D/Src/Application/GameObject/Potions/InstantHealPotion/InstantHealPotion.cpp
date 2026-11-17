@@ -6,8 +6,8 @@ void InstantHealPotion::UseInstantHeal()
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayerBase.lock();
 	if (spPlayer)
 	{
-		int MaxHP = spPlayer->GetMaxHP();
-		int heal = MaxHP * 0.1;
+		int maxHP = spPlayer->GetMaxHP();
+		int heal = maxHP * 0.1;
 		spPlayer->HPHeal(heal);
 	}
 }

@@ -10,7 +10,7 @@ void PlayerAccessory::Init()
 
 void PlayerAccessory::Update(PlayerBase * _player)
 {
-	std::shared_ptr<Flashlight> spFlashlight = m_spFlashlight.lock();
+	std::shared_ptr<Flashlight> spFlashlight = m_wpFlashlight.lock();
 	if (!spFlashlight) { return; }
 
 	// 腰ボーンのワールド行列（アニメーションの移動・回転込み）

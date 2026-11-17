@@ -6,7 +6,7 @@
 #include"../../../Scene/SceneManager.h"
 void Sword::Init()
 {
-	m_WeaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Sword/BaseWeaponStatus.json";
+	m_weaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Sword/BaseWeaponStatus.json";
 	m_comboFileName = "Sword.json";   // フォルダーは持ち主（PlayerBase）が決める
 	WeaponBase::Init();
 
@@ -21,13 +21,13 @@ void Sword::Init()
 
 
 		m_weaponLength = (swordtip - guard).Translation().Length();
-		tipLocalPos = swordtip.Translation();
-		baseLocalPos = guard.Translation();
+		m_tipLocalPos = swordtip.Translation();
+		m_baseLocalPos = guard.Translation();
 
 		// 切っ先の頂点
-		const float tipEnd = tipLocalPos.y;
-		m_hitBoxLocalOffset = { 0.0f, (baseLocalPos.y + tipEnd) * 0.5f, 0.0f };
-		m_hitBoxExtents = { 0.26f, (tipEnd - baseLocalPos.y) * 0.5f, 0.07f };
+		const float tipEnd = m_tipLocalPos.y;
+		m_hitBoxLocalOffset = { 0.0f, (m_baseLocalPos.y + tipEnd) * 0.5f, 0.0f };
+		m_hitBoxExtents = { 0.26f, (tipEnd - m_baseLocalPos.y) * 0.5f, 0.07f };
 	}
 
 	if (!m_pDebugWire)
@@ -35,13 +35,13 @@ void Sword::Init()
 		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 	}
 
-	if (!m_tPoly)
+	if (!m_spTPoly)
 	{
-		m_tPoly = std::make_shared<KdTrailPolygon>();
-		m_tPoly->SetMaterial("Asset/Textures/Weapon/Daerre/jet.png");
+		m_spTPoly = std::make_shared<KdTrailPolygon>();
+		m_spTPoly->SetMaterial("Asset/Textures/Weapon/Daerre/jet.png");
 
 		//トレイルポリゴンをビルボード(面をカメラに向ける)化
-		m_tPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
+		m_spTPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
 	}
 
 	m_chargeTimeMax = 3;
@@ -78,25 +78,25 @@ void Sword::Init()
 void Sword::Update()
 {
 	WeaponBase::Update();
-	Math::Vector3 currTipPos = Math::Vector3::Transform(tipLocalPos, m_weponParentMat);
-	Math::Vector3 currBasePos = Math::Vector3::Transform(baseLocalPos, m_weponParentMat);
+	Math::Vector3 currTipPos = Math::Vector3::Transform(m_tipLocalPos, m_weaponParentMat);
+	Math::Vector3 currBasePos = Math::Vector3::Transform(m_baseLocalPos, m_weaponParentMat);
 	if (!m_attackFlg)
 	{
 		m_isFirstFrame = true;
-		if (m_tPoly)
+		if (m_spTPoly)
 		{
 			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-			m_tPoly->AddPoint(mat);
+			m_spTPoly->AddPoint(mat);
 		}
 		return;
 	}
 
 	//最後段(終ノ一閃)
-	int finalSlashLv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].Lv;
+	int finalSlashLv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].m_lv;
 	if (finalSlashLv > 0 && !m_nowLvComboList.empty() &&
-		m_comboStepNow.comboIndex == m_nowLvComboList.back().comboIndex)
+		m_comboStepNow.m_comboIndex == m_nowLvComboList.back().m_comboIndex)
 	{
-		if (m_animePercentNow >= m_comboStepNow.hitEnd && !m_finalSlashDoneFlg)
+		if (m_animePercentNow >= m_comboStepNow.m_hitEnd && !m_finalSlashDoneFlg)
 		{
 			// ここに終ノ一閃の処理（1回だけ通る）
 			m_finalSlashDoneFlg = true;
@@ -108,10 +108,10 @@ void Sword::Update()
 	if (!IsInComboHitWindow())
 	{
 		m_isFirstFrame = true;   // 範囲に入ったフレームから掃引をやり直す
-		if (m_tPoly && m_tPolyFlg)
+		if (m_spTPoly && m_tPolyFlg)
 		{
 			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-			m_tPoly->AddPoint(mat);
+			m_spTPoly->AddPoint(mat);
 		}
 		return;
 	}
@@ -121,7 +121,7 @@ void Sword::Update()
 	{
 		m_prevTipPos = currTipPos;
 		m_prevBasePos = currBasePos;
-		m_prevWeponParentMat = m_weponParentMat; // 初回フレームの行列保持
+		m_prevWeaponParentMat = m_weaponParentMat; // 初回フレームの行列保持
 		m_isFirstFrame = false;
 	}
 	// ----------------------------------------------------
@@ -131,7 +131,7 @@ void Sword::Update()
 	Math::Vector3 minPos = m_hitBoxLocalOffset - m_hitBoxExtents;
 	Math::Vector3 maxPos = m_hitBoxLocalOffset + m_hitBoxExtents;
 
-	const Math::Matrix prevWorld = m_localMat * m_prevWeponParentMat;
+	const Math::Matrix prevWorld = m_localMat * m_prevWeaponParentMat;
 	const Math::Matrix prevToCurr = prevWorld * m_mWorld.Invert();
 
 	for (int i = 0; i < 8; ++i)
@@ -169,11 +169,11 @@ void Sword::Update()
 		std::list<KdCollider::CollisionResult> results;
 		if (spGameObj->Intersects(box, &results))
 		{
-			m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
+			m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].m_lv - 1);
 
 
 			m_hitCharactersList.push_back(spGameObj);
-			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower + (m_ChargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2) * 10;
+			float damage = m_characterAttackPower * (m_baseWeaponStatus.m_attackPower + (m_chargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2) * 10;
 			damage *= GetComboDamageRate();   // コンボの段のダメージ倍率
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
@@ -183,9 +183,9 @@ void Sword::Update()
 
 			spGameObj->OnAttackHit(
 				damage,
-				m_baseWeaponStatus.knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
+				m_baseWeaponStatus.m_knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
 				dir,
-				m_baseWeaponStatus.startup,
+				m_baseWeaponStatus.m_startup,
 				false,
 				m_defenseIgnore,
 				results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
@@ -193,14 +193,14 @@ void Sword::Update()
 
 			// ヒットストップ（段・チャージ・最後の段・とどめで強弱をつける）
 			const bool isKill = wasAlive && spGameObj->GetIsDead();
-			float hitStopTime = CalcHitStopTime(m_ChargeLV, isKill);
+			float hitStopTime = CalcHitStopTime(m_chargeLV, isKill);
 			DeltaTime::Instance().HitStop(hitStopTime);
 
 			// 画面を揺らす（ヒットストップが長い段・チャージ攻撃ほど強く）
 			if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
 			{
 				const float shakeTime = 0.08f + hitStopTime * 2.0f;
-				const float shakePower = hitStopTime * 1.6f + m_ChargeLV * 0.03f;
+				const float shakePower = hitStopTime * 1.6f + m_chargeLV * 0.03f;
 				spParent->CameraShake(shakeTime, shakePower);
 			}
 
@@ -214,8 +214,8 @@ void Sword::Update()
 			KdEffekseerManager::GetInstance().Play("Hit/Weapon/Sword/Hit_Sword.efkefc", results.begin()->m_hitPos, 3.0f, 1.0f, false);
 
 			//スタミナ回復
-			int Lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].Lv;
-			if (Lv > 0)
+			int lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].m_lv;
+			if (lv > 0)
 			{
 				auto spParentChara = m_wpParentChara.lock();
 				if (spParentChara)
@@ -223,7 +223,7 @@ void Sword::Update()
 					constexpr float kHealBase = 1.0f;     // Lv1のときの回復量
 					constexpr float kHealPerLv = 2.0f;    // Lvが1上がるごとに増える量
 
-					int healAmount = (int)(kHealBase + (Lv - 1) * kHealPerLv);
+					int healAmount = (int)(kHealBase + (lv - 1) * kHealPerLv);
 					spParentChara->StaminaHeal(healAmount);
 				}
 			}
@@ -245,12 +245,12 @@ void Sword::Update()
 	// 座標および行列の更新
 	m_prevTipPos = currTipPos;
 	m_prevBasePos = currBasePos;
-	m_prevWeponParentMat = m_weponParentMat;
+	m_prevWeaponParentMat = m_weaponParentMat;
 	// トレイルポイント追加
-	if (m_tPoly && m_tPolyFlg)
+	if (m_spTPoly && m_tPolyFlg)
 	{
 		Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-		m_tPoly->AddPoint(mat);
+		m_spTPoly->AddPoint(mat);
 	}
 }
 
@@ -260,19 +260,19 @@ void Sword::DrawLit()
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWeaponModel, m_mWorld);
 	if (m_attackFlg && m_tPolyFlg)
 	{
-		if (m_tPoly)
+		if (m_spTPoly)
 		{
-			KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_tPoly);
+			KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spTPoly);
 		}
 	}
 
 }
 
-void Sword::ChargAttackPlay()
+void Sword::ChargeAttackPlay()
 {
-	if (m_ChargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv > 0)
+	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
 	{
-		m_chargeAttackMaxdamage = m_characterAttackPower + (m_baseWeaponStatus.attackPower * (m_ChargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2);
+		m_chargeAttackMaxDamage = m_characterAttackPower + (m_baseWeaponStatus.m_attackPower * (m_chargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2);
 
 	}
 
@@ -308,7 +308,7 @@ void Sword::SetNowChargeTime(float _time)
 			spEffect->SetPos(m_mWorld.Translation());
 		}
 
-		m_ChargeLV = 0;
+		m_chargeLV = 0;
 	}
 	else if (m_chargeTime < m_chargeTimeMax / 3.0f * 2)
 	{
@@ -335,7 +335,7 @@ void Sword::SetNowChargeTime(float _time)
 			spEffect->SetPos(m_mWorld.Translation());
 		}
 
-		m_ChargeLV = 1;
+		m_chargeLV = 1;
 	}
 	else if (m_chargeTime < m_chargeTimeMax)
 	{
@@ -361,7 +361,7 @@ void Sword::SetNowChargeTime(float _time)
 			spEffect->SetPos(m_mWorld.Translation());
 		}
 
-		m_ChargeLV = 2;
+		m_chargeLV = 2;
 	}
 	else
 	{
@@ -384,7 +384,7 @@ void Sword::SetNowChargeTime(float _time)
 		//chargeレベルMAX
 		m_chargeTime = m_chargeTimeMax;
 
-		m_ChargeLV = 2;
+		m_chargeLV = 2;
 		m_chargeTimeMaxFlg = true;
 	}
 
@@ -392,7 +392,7 @@ void Sword::SetNowChargeTime(float _time)
 	if (m_spChargeSE)
 	{
 		// 1. チャージ速度強化(Lv)による速度倍率に応じた基本ピッチ (log2)
-		float speedRate = (m_addCargeTime > 0.0f) ? (GetAddCargeTime() / m_addCargeTime) : 1.0f;
+		float speedRate = (m_addChargeTime > 0.0f) ? (GetAddChargeTime() / m_addChargeTime) : 1.0f;
 		float basePitch = (speedRate > 0.0f) ? std::log2(speedRate) : 0.0f;
 
 		// 2. チャージ進行度 (0.0 ～ 1.0) に応じたピッチ上昇量 (最大 +0.4f)
@@ -493,8 +493,8 @@ const std::vector<ComboStep>& Sword::GetComboList()
 
 	m_nowLvComboList.assign(m_comboList.begin(), m_comboList.begin() + count);
 
-	int Lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].Lv;
-	if (Lv > 0)
+	int lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].m_lv;
+	if (lv > 0)
 	{
 		for (size_t i = 0; i < m_nowLvComboList.size(); i++)
 		{
@@ -503,17 +503,17 @@ const std::vector<ComboStep>& Sword::GetComboList()
 			// 元データが足りないときは最後の段を使う
 			const auto& base = m_comboList[std::min(i, m_comboList.size() - 1)];
 
-			step.damageRate = base.damageRate;
-			step.speed = base.speed;
-			if (Lv > 0)
+			step.m_damageRate = base.m_damageRate;
+			step.m_speed = base.m_speed;
+			if (lv > 0)
 			{
 				float fi = (float)i;
-				step.damageRate += (0.1f + 0.1f * Lv) * fi;
-				step.speed += (0.1f + 0.01f * Lv) * fi;
+				step.m_damageRate += (0.1f + 0.1f * lv) * fi;
+				step.m_speed += (0.1f + 0.01f * lv) * fi;
 
-				if (step.speed >= base.speed * 1.5)
+				if (step.m_speed >= base.m_speed * 1.5)
 				{
-					step.speed = base.speed * 1.5;
+					step.m_speed = base.m_speed * 1.5;
 				}
 			}
 		}
@@ -522,13 +522,13 @@ const std::vector<ComboStep>& Sword::GetComboList()
 	return m_nowLvComboList;
 }
 
-bool Sword::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)
+bool Sword::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)
 {
 	for (auto& wp : m_hitCharactersList)
 	{
 		if (auto sp = wp.lock())
 		{
-			if (sp == _chara) return true;
+			if (sp == _spChara) return true;
 		}
 	}
 	return false;
@@ -538,7 +538,7 @@ void Sword::SpawnFinalSlash(int _lv)
 {
 	//---------- コンボの段数で変わる値 ----------
 	// 今のコンボの段数（最後の段で出すので、出した段の番号 + 1）
-	const int comboCount = m_comboStepNow.comboIndex + 1;
+	const int comboCount = m_comboStepNow.m_comboIndex + 1;
 
 	// 基本の 3段からいくつ伸びているか（3段:0 〜 6段:3）
 	constexpr int kBaseComboCount = 3;
@@ -588,19 +588,19 @@ void Sword::SpawnFinalSlash(int _lv)
 	localOBB.Transform(worldOBB, slashMat);
 
 	//---------- ダメージ：通常の当たりと同じ式 × 倍率 ----------
-	float damage = m_characterAttackPower * m_baseWeaponStatus.attackPower
-		+ (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2f) * 10;
+	float damage = m_characterAttackPower * m_baseWeaponStatus.m_attackPower
+		+ (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2f) * 10;
 	damage *= damageRate;
 
 	// ノックバックの向き：プレイヤーの正面
 	const Math::Vector3 dir = forward;
 
-	m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
+	m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].m_lv - 1);
 
 	//---------- 作ってシーンに追加 ----------
 	auto spSlash = std::make_shared<Sword_FinalSlash>();
 	spSlash->Init();
-	spSlash->SetSlashStatus(worldOBB, damage, m_baseWeaponStatus.knockback * 2.0f, dir, m_defenseIgnore, chargeTime);
+	spSlash->SetSlashStatus(worldOBB, damage, m_baseWeaponStatus.m_knockback * 2.0f, dir, m_defenseIgnore, chargeTime);
 	spSlash->SetAttackHitCharacterList(m_attackHitCharacterList);
 	if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
 	{

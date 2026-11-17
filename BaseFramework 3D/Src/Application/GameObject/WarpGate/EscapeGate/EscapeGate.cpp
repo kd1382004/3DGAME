@@ -6,7 +6,7 @@
 #include"../WarpGateManager.h"
 EscapeGate::~EscapeGate()
 {
-	auto spEffect = m_wpWarpGatEffect.lock();
+	auto spEffect = m_wpWarpGateEffect.lock();
 	if (spEffect)
 	{
 		spEffect->StopEffect();
@@ -32,20 +32,20 @@ void EscapeGate::Init()
 
 void EscapeGate::Update()
 {
-	auto spEffect = m_wpWarpGatEffect.lock();
+	auto spEffect = m_wpWarpGateEffect.lock();
 	if (spEffect)
 	{
 
 		if (!spEffect->IsPlaying())
 		{
-			m_wpWarpGatEffect = KdEffekseerManager::GetInstance().Play(
+			m_wpWarpGateEffect = KdEffekseerManager::GetInstance().Play(
 				"WarpGate/Fine/Fine.efkefc", GetPos(), 1.0f, 1.0f, true
 			);
 		}
 	}
 	else
 	{
-		m_wpWarpGatEffect = KdEffekseerManager::GetInstance().Play(
+		m_wpWarpGateEffect = KdEffekseerManager::GetInstance().Play(
 			"WarpGate/Fine/Fine.efkefc", GetPos(), 1.0f, 1.0f, true
 		);
 	}
@@ -60,15 +60,15 @@ void EscapeGate::Update()
 
 		if (!spGameScene) { return; }
 
-		int key = spPlayer->GetActionKeyConfig().interact;
+		int key = spPlayer->GetActionKeyConfig().m_interact;
 		ShowGuideUI(key);
 
 		if (KeyInfo::Instance().GetValidKeyPush(key))
 		{
 			// ワープの音
 			{
-				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/WarpGate/Warp.wav", false);
-				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+				std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/WarpGate/Warp.wav", false);
+				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 			}
 
 			spGameScene->ChangeResultScene();

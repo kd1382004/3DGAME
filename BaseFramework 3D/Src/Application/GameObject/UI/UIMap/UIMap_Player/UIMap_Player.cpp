@@ -2,10 +2,10 @@
 
 void UIMap_Player::Init()
 {
-	if (!m_playerTex)
+	if (!m_spPlayerTex)
 	{
-		m_playerTex = std::make_shared<KdTexture>();
-		m_playerTex->Load("Asset/Textures/GameUI/Map/Player.png");
+		m_spPlayerTex = std::make_shared<KdTexture>();
+		m_spPlayerTex->Load("Asset/Textures/GameUI/Map/Player.png");
 
 		m_angle = 0;
 	}
@@ -16,11 +16,11 @@ void UIMap_Player::PreDraw()
 	Change2DPos();
 }
 
-void UIMap_Player::DrawSprit()
+void UIMap_Player::DrawSprite()
 {
-	if (!m_playerTex) { return; }
+	if (!m_spPlayerTex) { return; }
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerTex, m_basePos.x + m_player2DPos.x * m_siz, m_basePos.y + m_player2DPos.y * m_siz,nullptr,nullptr,{0.5,0.5}, m_angle);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayerTex, m_basePos.x + m_player2DPos.x * m_siz, m_basePos.y + m_player2DPos.y * m_siz,nullptr,nullptr,{0.5,0.5}, m_angle);
 }
 
 Math::Vector2 UIMap_Player::GetPos()

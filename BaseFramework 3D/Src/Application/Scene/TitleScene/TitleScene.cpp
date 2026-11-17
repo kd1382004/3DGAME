@@ -31,16 +31,16 @@ void TitleScene::Init()
 	m_spTitleSceneEditor = std::make_shared<TitleSceneEditor>();
 
 
-	g_factory.RegisterCreateFunction("GameButton", []() {
-		std::shared_ptr<GameButton>obj = std::make_shared<GameButton>();
-		obj->Init();
-		return obj;
+	m_factory.RegisterCreateFunction("GameButton", []() {
+		std::shared_ptr<GameButton>spObj = std::make_shared<GameButton>();
+		spObj->Init();
+		return spObj;
 		});
 
-	g_factory.RegisterCreateFunction("PrepareButton", []() {
-		std::shared_ptr<PrepareButton>obj = std::make_shared<PrepareButton>();
-		obj->Init();
-		return obj;
+	m_factory.RegisterCreateFunction("PrepareButton", []() {
+		std::shared_ptr<PrepareButton>spObj = std::make_shared<PrepareButton>();
+		spObj->Init();
+		return spObj;
 		});
 
 
@@ -79,8 +79,8 @@ void TitleScene::Init()
 	/////////////////////////////////////////
 	// TitelMove
 	/////////////////////////////////////////
-	m_spTitelMove = std::make_shared<TitelMove>();
-	m_objList.push_back(m_spTitelMove);
+	m_spTitleMove = std::make_shared<TitelMove>();
+	m_objList.push_back(m_spTitleMove);
 
 
 	/////////////////////////////////////////
@@ -104,11 +104,11 @@ void TitleScene::Init()
 	spVOLUI->SetVolPos({ 400,-300 });
 	spUIManager->AddUIObj(spVOLUI);
 	/////////////////////////////////////////
-	m_spTitelMove->SetMapManager(m_spMapManager);
-	m_spTitelMove->SetCamera(m_spCamera);
+	m_spTitleMove->SetMapManager(m_spMapManager);
+	m_spTitleMove->SetCamera(m_spCamera);
 
 
-	m_spCamera->SetTarget(m_spTitelMove);
+	m_spCamera->SetTarget(m_spTitleMove);
 	m_spMapManager->SetCamera(m_spCamera);
 	m_spMapManager->SetMapObjManager(m_spMapObjManager);
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
@@ -128,20 +128,20 @@ void TitleScene::Init()
 	m_spMapManager->GenerateMap(siz, 20, MapType_Grassland);
 
 	m_spCamera->SetPos(m_spMapManager->GetPlayerSpawnPos());
-	m_spTitelMove->SetPos(m_spMapManager->GetPlayerSpawnPos());
+	m_spTitleMove->SetPos(m_spMapManager->GetPlayerSpawnPos());
 
-	m_spTitelMove->SetNextPos(m_spMapManager->GetRandomPos());
-	m_spTitelMove->SetMoveFlg(true);
+	m_spTitleMove->SetNextPos(m_spMapManager->GetRandomPos());
+	m_spTitleMove->SetMoveFlg(true);
 
-	m_spMapManager->SetPlayerChanke(m_spMapManager->GetPlayerSpawnPos());
+	m_spMapManager->SetPlayerChunk(m_spMapManager->GetPlayerSpawnPos());
 
 	//音
-	if (!m_spTitelBGM)
+	if (!m_spTitleBGM)
 	{
-		m_spTitelBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Titel/TitelBGM.wav", true);
-		if (m_spTitelBGM)
+		m_spTitleBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Titel/TitelBGM.wav", true);
+		if (m_spTitleBGM)
 		{
-			m_spTitelBGM->SetVolume(VOLInfo::Instance().GetBGMVol());
+			m_spTitleBGM->SetVolume(VOLInfo::Instance().GetBGMVol());
 		}
 	}
 }
@@ -170,7 +170,7 @@ void TitleScene::SetObjeList()
 		std::string name = item["name"];
 		std::string dataPath = item["data_path"];
 
-		auto obj = g_factory.CreateGameObject(name);
+		auto obj = m_factory.CreateGameObject(name);
 		if (obj)
 		{
 			obj->SetFilePass(dataPath);
@@ -184,13 +184,13 @@ void TitleScene::SetObjeList()
 
 TitleScene::~TitleScene()
 {
-	if (m_spTitelBGM)
+	if (m_spTitleBGM)
 	{
-		m_spTitelBGM->Stop();
+		m_spTitleBGM->Stop();
 	}
 }
 
-void TitleScene::ImGUi()
+void TitleScene::ImGUI()
 {
 	if (ImGui::Begin(U8("TitleSceneEditor"), nullptr, ImGuiWindowFlags_MenuBar))
 	{
@@ -227,9 +227,9 @@ void TitleScene::ImGUi()
 
 void TitleScene::Event()
 {
-	if (m_spTitelBGM)
+	if (m_spTitleBGM)
 	{
-		m_spTitelBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.5);
+		m_spTitleBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.5);
 	}
 
 	MouseInfo::Instance().SetMouseFreeFlg(true);
@@ -239,10 +239,10 @@ void TitleScene::Event()
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
 	}
 
-	m_spMapManager->SetPlayerChanke(m_spTitelMove->GetPos());
+	m_spMapManager->SetPlayerChunk(m_spTitleMove->GetPos());
 
 	//プレイヤーのあたり判定リストを毎フレーム更新
-	m_spMapManager->MapHit(m_spTitelMove);
+	m_spMapManager->MapHit(m_spTitleMove);
 
 	if (m_spMapObjManager)
 	{

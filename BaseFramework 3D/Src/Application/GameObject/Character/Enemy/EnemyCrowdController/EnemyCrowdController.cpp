@@ -1,11 +1,11 @@
 ﻿#include "EnemyCrowdController.h"
 #include"../EnemyBase.h"
 #include"../EnemyManager.h"
-void EnemyCrowdController::Update(EnemyBase* enemy, float dt)
+void EnemyCrowdController::Update(EnemyBase* _enemy, float _dt)
 {
-	Math::Vector3 toPlayer = CalcToPlayer(enemy);
-	Math::Vector3 separation = CalcSeparation(enemy);
-	Math::Vector3 avoidance = CalcAvoidance(enemy);
+	Math::Vector3 toPlayer = CalcToPlayer(_enemy);
+	Math::Vector3 separation = CalcSeparation(_enemy);
+	Math::Vector3 avoidance = CalcAvoidance(_enemy);
 
 	Math::Vector3 desired =
 		toPlayer * 1.0f
@@ -15,26 +15,26 @@ void EnemyCrowdController::Update(EnemyBase* enemy, float dt)
 	if (desired.LengthSquared() > 0.0001f)
 		desired.Normalize();
 
-	enemy->SetMoveVec(desired);
+	_enemy->SetMoveVec(desired);
 }
 
-Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* enemy)
+Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* _enemy)
 {
 	Math::Vector3 force = Math::Vector3::Zero;
-	if (!enemy) return force;
+	if (!_enemy) return force;
 
-	auto spManager = enemy->GetEnemyManager();
+	auto spManager = _enemy->GetEnemyManager();
 	if (!spManager) return force;
 
 	const float avoidDist = 0.8f;
 	const float avoidDistSq = avoidDist * avoidDist;
 	const float maxForce = 1.0f;   // 押し出しの上限
 
-	const Math::Vector3 myPos = enemy->GetPos();
+	const Math::Vector3 myPos = _enemy->GetPos();
 
 	for (auto& other : spManager->GetEnemyUpdateList())
 	{
-		if (!other || other.get() == enemy) continue;
+		if (!other || other.get() == _enemy) continue;
 		// if (other->IsDead()) continue;   // 死亡判定がある場合
 
 		Math::Vector3 diff = myPos - other->GetPos();
@@ -53,7 +53,7 @@ Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* enemy)
 		else
 		{
 			// 完全に重なっている → アドレスの大小で方向を決めてお互い逆に押す
-			dir = (enemy < other.get()) ? Math::Vector3(1, 0, 0) : Math::Vector3(-1, 0, 0);
+			dir = (_enemy < other.get()) ? Math::Vector3(1, 0, 0) : Math::Vector3(-1, 0, 0);
 			dist = 0.0f;
 		}
 
@@ -74,18 +74,18 @@ Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* enemy)
 
 
 
-Math::Vector3 EnemyCrowdController::CalcSeparation(EnemyBase* enemy)
+Math::Vector3 EnemyCrowdController::CalcSeparation(EnemyBase* _enemy)
 {
 	Math::Vector3 force = { 0,0,0 };
 	float radius = 2.0f;
 
-	auto& enemies = enemy->GetEnemyManager()->GetEnemyUpdateList();
+	auto& enemies = _enemy->GetEnemyManager()->GetEnemyUpdateList();
 
 	for (auto& other : enemies)
 	{
-		if (other.get() == enemy) continue;
+		if (other.get() == _enemy) continue;
 
-		Math::Vector3 diff = enemy->GetPos() - other->GetPos();
+		Math::Vector3 diff = _enemy->GetPos() - other->GetPos();
 		diff.y = 0;
 
 		float dist = diff.Length();
@@ -100,9 +100,9 @@ Math::Vector3 EnemyCrowdController::CalcSeparation(EnemyBase* enemy)
 
 
 
-Math::Vector3 EnemyCrowdController::CalcToPlayer(EnemyBase* enemy)
+Math::Vector3 EnemyCrowdController::CalcToPlayer(EnemyBase* _enemy)
 {
-	Math::Vector3 toPlayer = enemy->GetPlayerPos() - enemy->GetPos();
+	Math::Vector3 toPlayer = _enemy->GetPlayerPos() - _enemy->GetPos();
 	toPlayer.y = 0;
 	if (toPlayer.LengthSquared() > 0.0001f)
 		toPlayer.Normalize();

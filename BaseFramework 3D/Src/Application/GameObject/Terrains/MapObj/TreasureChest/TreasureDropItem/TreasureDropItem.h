@@ -14,45 +14,69 @@ enum class DropState
 class TreasureDropItem :public KdGameObject
 {
 public:
+	//コンストラクタ
 	TreasureDropItem() {}
+	 //デストラクタ
 	 ~TreasureDropItem()override {};
 
+	 //初期化
 	 void Init()override;
+	 //更新前の処理
 	 void PreUpdate()override;
+	 //更新
 	 void Update()override;
+	 //エフェクトの描画
 	 void DrawEffect()override;
 	
+	 //ドロップテーブルの管理をセット
+	 // _spLootTableManager ... ドロップテーブルの管理
 	 void SetLootTableManager(std::shared_ptr<LootTableManager> _spLootTableManager) { m_wpLootTableManager = _spLootTableManager; };
+	 //プレイヤーをセット
+	 // _spPlayer ... プレイヤー
 	 void SetPlayer(std::shared_ptr<PlayerBase> _spPlayer) { m_wpPlayer = _spPlayer; };
 
-	void SetPos(const Math::Vector3& pos) override
+	//座標をセット
+	// _pos ... 座標
+	void SetPos(const Math::Vector3& _pos) override
 	{
-		m_mWorld.Translation(pos); 
-		m_pos = pos;
+		m_mWorld.Translation(_pos); 
+		m_pos = _pos;
 	}
 
-	void SetPath(std::string path) { m_path = path; }
+	//出すアイテムのモデルのパスをセット
+	// _path ... モデルのパス
+	void SetPath(std::string _path) { m_path = _path; }
 private:
-	std::shared_ptr<KdModelData>m_dropItemModel = nullptr;
+	//アイテムのモデル
+	std::shared_ptr<KdModelData>m_spDropItemModel = nullptr;
+	//プレイヤー
 	std::weak_ptr<PlayerBase>m_wpPlayer;
+	//ドロップテーブルの管理
 	std::weak_ptr<LootTableManager>m_wpLootTableManager;
 
 
+	//プレイヤーの座標
 	Math::Vector3 m_playerPos;
+	//座標
 	Math::Vector3 m_pos;
 
+	//拾える距離
 	float m_getRadius = 0.1;
 
 
 
+	//モデルのパス
 	std::string m_path;
 
 	//1秒あたりの進む距離
-	float m_spped=10;
+	float m_speed=10;
+	//最高速度
 	float m_maxSpeed = 1000;
 
+	//今の加速
 	float m_accel=0;
-	float m_AddAccel=100;
+	//1秒あたりに増やす加速
+	float m_addAccel=100;
 
 
 
@@ -80,6 +104,7 @@ private:
 	//-------- 吸い寄せ --------
 	float m_targetHeight = 1.0f;          // プレイヤーの足元ではなく胸あたりを狙う
 
+	//今の状態
 	DropState m_dropStateMode;
 
 

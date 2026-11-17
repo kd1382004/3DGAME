@@ -27,8 +27,8 @@ void HitDamage::PreUpdate()
 
 void HitDamage::Update()
 {
-	float Gdt = DeltaTime::Instance().GetGameDeltaTime();
-	float Rdt = DeltaTime::Instance().GetRealDeltaTime();
+	float gdt = DeltaTime::Instance().GetGameDeltaTime();
+	float rdt = DeltaTime::Instance().GetRealDeltaTime();
 
 	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 	if (spCamera)
@@ -40,7 +40,7 @@ void HitDamage::Update()
 			spCamera->GetCamera()->ConvertWorldToScreenDetail(set3DPos, set2DPos);
 			damage.m_2DPos = { set2DPos.x,set2DPos.y };
 
-			damage.m_timer += Rdt;
+			damage.m_timer += rdt;
 
 			//---------- 出た直後（0 〜 m_popTime）：大きく出て縮む ----------
 			if (damage.m_timer < m_popTime)
@@ -129,9 +129,9 @@ void HitDamage::DrawSprite()
 		// ずらす量は文字の 1 ドット分（大きい数字でも影が見えるように）
 		float shadowOff = size;
 		Math::Color shadowColor = { 0.0f, 0.0f, 0.0f, damage.m_alpha * 0.6f };
-		NumDraw::GetInstance().Drow(damage.m_Damage, CAligned, { pos.x + shadowOff, pos.y - shadowOff }, shadowColor, size);
+		NumDraw::GetInstance().Draw(damage.m_damage, CAligned, { pos.x + shadowOff, pos.y - shadowOff }, shadowColor, size);
 
 		//---------- 本体 ----------
-		NumDraw::GetInstance().Drow(damage.m_Damage, CAligned, pos, color, size);
+		NumDraw::GetInstance().Draw(damage.m_damage, CAligned, pos, color, size);
 	}
 }

@@ -4,54 +4,79 @@
 class  VOLUI :public UIBase
 {
 public:
+	//コンストラクタ
 	VOLUI() {};
+	//デストラクタ
 	~VOLUI() {};
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//2Dの描画
 	void DrawSprite()override;
 
+	//音量UIの位置をセット
+	// _pos ... 位置(画面)
 	void SetVolPos(Math::Vector2 _pos);
 
 private:
 
-	std::shared_ptr<KdTexture>m_volTex;
+	//音量アイコンの画像
+	std::shared_ptr<KdTexture>m_spVolTex;
+	//音量アイコンの位置
 	Math::Vector2 m_volPos;
+	//音量アイコンの大きさ
 	Math::Vector2 m_volSiz;
 
 
-	bool m_VolChangeOpenFlg = false;
+	//音量の設定を開いているか
+	bool m_volChangeOpenFlg = false;
 
-	std::shared_ptr<KdTexture>m_volBackTex;
+	//背景の画像
+	std::shared_ptr<KdTexture>m_spVolBackTex;
+	//背景の位置
 	Math::Vector2 m_volBackPos;
+	//背景の大きさ
 	Math::Vector2 m_volBackSiz;
 
 
 	struct VolInfo
 	{
-		std::shared_ptr<KdTexture>m_volTex;
+		//項目の名前の画像
+		std::shared_ptr<KdTexture>m_spVolTex;
+		//項目の名前の位置
 		Math::Vector2 m_volPos;
+		//項目の名前の大きさ
 		Math::Vector2 m_volSiz;
 
-		std::shared_ptr<KdTexture>m_volValTex;
+		//音量バーの画像
+		std::shared_ptr<KdTexture>m_spVolValTex;
+		//音量バーの位置
 		Math::Vector2 m_volValPos;
-		Math::Vector2 m_volVaSiz;
+		//音量バーの大きさ
+		Math::Vector2 m_volValSiz;
 
-		float vol = 0;
+		//音量(0〜1)
+		float m_vol = 0;
 
 		// つまみにマウスが乗っているか（明るい画像にする）
-		bool thumbHoverFlg = false;
+		bool m_thumbHoverFlg = false;
 	};
 
 
 
-	static const int m_volInfoSiz = 3;
-	VolInfo m_volInfo[m_volInfoSiz];
+	//音量の項目の数
+	static const int kVolInfoSiz = 3;
+	//音量の項目
+	VolInfo m_volInfo[kVolInfoSiz];
 
 	//---------- つまみ（インベントリのスクロールバーと同じ操作） ----------
 	// つまみの画像（通常・マウスを乗せたとき）
-	std::shared_ptr<KdTexture> m_volThumbTex;
-	std::shared_ptr<KdTexture> m_volThumbHoverTex;
+	std::shared_ptr<KdTexture> m_spVolThumbTex;
+	//つまみの画像(マウスを乗せたとき)
+	std::shared_ptr<KdTexture> m_spVolThumbHoverTex;
+	//つまみの大きさ
 	Math::Vector2 m_volThumbSiz;
 
 	// ドラッグしているバーの番号（-1 = ドラッグしていない）
@@ -69,9 +94,12 @@ private:
 	const float m_volWheelStep = 0.05f;
 
 	// 音量 → つまみの中心のy
+	// _index ... 音量の項目の番号
 	float VolToThumbY(int _index) const;
 
 	// つまみの中心のy → 音量（0〜1）
+	// _index ... 音量の項目の番号
+	// _y ... つまみの中心のy
 	float ThumbYToVol(int _index, float _y) const;
 
 	// つまみの更新（ドラッグ・バーのクリック・ホイール）

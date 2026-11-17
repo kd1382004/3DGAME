@@ -18,8 +18,8 @@ void Giant::Init()
 		m_spCharaModel = std::make_shared<KdModelWork>();
 		m_spCharaModel->SetModelData("Asset/Models/Character/Enemy/Boss/Giant/Giantblend.gltf");
 
-		m_spAnimetor = std::make_shared<KdAnimator>();
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.RunAnime), true);
+		m_spAnimator = std::make_shared<KdAnimator>();
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_runAnime), true);
 
 		m_angle = 0;
 
@@ -34,7 +34,7 @@ void Giant::Init()
 		EnemyBase::Init();
 		m_playerChaseFlg = true;
 		m_attackFlg = false;
-		m_PlayerChaseDir = 4;
+		m_playerChaseDir = 4;
 
 		if (!m_spRun3DSE)
 		{
@@ -92,19 +92,19 @@ void Giant::Update()
 	{
 		if (m_spRun3DSE) { m_spRun3DSE->Stop(); }
 		if (m_spCrying3DSE) { m_spCrying3DSE->Stop(); }
-		if (!m_spAnimetor) { return; }
+		if (!m_spAnimator) { return; }
 		EnemyAnimeModeUpdate();
-		if (m_spAnimetor->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
 			std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
 			std::shared_ptr<MapManager>spMapManager = m_wpMapManager.lock();
 			if (spGameScene && spMapManager)
 			{
 				Math::Vector3 nextPos = spMapManager->GetNextWarpGatePos();
-				Math::Vector3 eacapePos = spMapManager->GetEscapeWarpGatePos();
+				Math::Vector3 escapePos = spMapManager->GetEscapeWarpGatePos();
 
 
-				spGameScene->WarpGateInit(nextPos, eacapePos);
+				spGameScene->WarpGateInit(nextPos, escapePos);
 			}
 			m_isExpired = true;
 		}
@@ -127,7 +127,7 @@ void Giant::Update()
 	}
 
 	//角度更新
-	AngeleUpdate();
+	AngleUpdate();
 
 	//アニメーション更新
 	EnemyAnimeModeUpdate();
@@ -182,13 +182,13 @@ void Giant::PreDraw()
 	}
 
 
-	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
-	if (spAttackGage)
+	std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
+	if (spAttackGauge)
 	{
 		Math::Vector2 pos = { 0,250 };
-		spAttackGage->Set2DPos(pos);
-		spAttackGage->SetSiz(3);
-		spAttackGage->SetDrawFlg(true);
+		spAttackGauge->Set2DPos(pos);
+		spAttackGauge->SetSiz(3);
+		spAttackGauge->SetDrawFlg(true);
 	}
 }
 
@@ -234,10 +234,10 @@ void Giant::AttackMode()
 		{
 			m_attackCoolTime -= DeltaTime::Instance().GetGameDeltaTime();
 
-			std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
-			if (spAttackGage)
+			std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
+			if (spAttackGauge)
 			{
-				spAttackGage->SetAttackGageTexPercent(m_attackCoolTime / m_attackCoolTimeMax);
+				spAttackGauge->SetAttackGaugeTexPercent(m_attackCoolTime / m_attackCoolTimeMax);
 			}
 
 			return;
@@ -262,18 +262,18 @@ void Giant::AttackMode()
 		switch (m_giantAttackMode)
 		{
 		case Giant::LeftPunchAttack:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.LeftPunchAttackAnime), false);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_leftPunchAttackAnime), false);
 			m_attackFlg = true;
 			m_attackCoolTime = m_attackCoolTimeMax;
 			break;
 		case Giant::RightAttack:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.RightAttackAnime), false);
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_rightAttackAnime), false);
 			break;
 		case Giant::JumpSlamAttack:
-			m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.JumpSlamAttackAnime), false);
-			m_IsAttackJumpSlamHITFlg = false;
-			m_jnpStartPos = m_pos;
-			m_JumpSlamAttackMode = JumpSlamAttackMode_JumpSlamAttack;
+			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_jumpSlamAttackAnime), false);
+			m_isAttackJumpSlamHITFlg = false;
+			m_jumpStartPos = m_pos;
+			m_jumpSlamAttackMode = JumpSlamAttackMode_JumpSlamAttack;
 			m_attackFlg = true;
 			m_attackCoolTime = m_attackCoolTimeMax;
 
@@ -285,8 +285,8 @@ void Giant::AttackMode()
 			}
 
 
-			m_JumpSlam_StartEfkefcFlg = true;
-			m_JumpSlam_EndEfkefcFlg = true;
+			m_jumpSlam_StartEfkefcFlg = true;
+			m_jumpSlam_EndEfkefcFlg = true;
 			break;
 		default:
 			break;
@@ -304,13 +304,13 @@ void Giant::ChangeAttackAnime()
 	switch (m_giantAttackMode)
 	{
 	case Giant::LeftPunchAttack:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.LeftPunchAttackAnime), false);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_leftPunchAttackAnime), false);
 		break;
 	case Giant::RightAttack:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.RightAttackAnime), false);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_rightAttackAnime), false);
 		break;
 	case Giant::JumpSlamAttack:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.JumpSlamAttackAnime), false);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_jumpSlamAttackAnime), false);
 		break;
 	default:
 		break;
@@ -336,16 +336,16 @@ void Giant::AttackUpdate()
 
 void Giant::LeftAttackUpdate()
 {
-	std::shared_ptr<AttackLeftPunch>spleftAttack = m_leftAttack.lock();
-	if (spleftAttack)
+	std::shared_ptr<AttackLeftPunch>spLeftAttack = m_wpLeftAttack.lock();
+	if (spLeftAttack)
 	{
-		float p = m_spAnimetor->GetAnimeProgress();
-		if (!m_IsAttackleftHITFlg)
+		float p = m_spAnimator->GetAnimeProgress();
+		if (!m_isAttackleftHITFlg)
 		{
 			if (p >= m_leftAttackHitStart)
 			{
-				spleftAttack->SetAttckFlg(true);
-				m_IsAttackleftHITFlg = true;
+				spLeftAttack->SetAttackFlg(true);
+				m_isAttackleftHITFlg = true;
 
 				if (m_spPunch3DSE)
 				{
@@ -373,7 +373,7 @@ void Giant::LeftAttackUpdate()
 		{
 			if (p >= m_leftAttackHitEnd)
 			{
-				spleftAttack->SetAttckFlg(false);
+				spLeftAttack->SetAttackFlg(false);
 			}
 		}
 
@@ -386,20 +386,20 @@ void Giant::LeftAttackUpdate()
 		dir.z = cosf(yawRad);
 		Math::Vector3 attackPos = m_pos + dir * 5;
 
-		spleftAttack->SetTargetCenterPos(attackPos);
-		spleftAttack->SetAngleY(m_angle);
-		spleftAttack->SetKnockbackDir(m_mWorld.Backward());
-		spleftAttack->AttackLeftPunchUpdate();
+		spLeftAttack->SetTargetCenterPos(attackPos);
+		spLeftAttack->SetAngleY(m_angle);
+		spLeftAttack->SetKnockbackDir(m_mWorld.Backward());
+		spLeftAttack->AttackLeftPunchUpdate();
 
 
-		if (!m_spAnimetor) { return; }
+		if (!m_spAnimator) { return; }
 
-		if (m_spAnimetor->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
 			m_attackFlg = false;
 			m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Run;
-			m_AnimeChangeFlg = true;
-			m_IsAttackleftHITFlg = false;
+			m_animeChangeFlg = true;
+			m_isAttackleftHITFlg = false;
 			m_playerChaseFlg = true;
 		}
 
@@ -408,9 +408,9 @@ void Giant::LeftAttackUpdate()
 	{
 
 		std::shared_ptr<AttackLeftPunch>spAttackJumpSlam = std::make_shared<AttackLeftPunch>();
-		m_leftAttack = spAttackJumpSlam;
+		m_wpLeftAttack = spAttackJumpSlam;
 		spAttackJumpSlam->SetPlayer(m_wpPlayer.lock());
-		spAttackJumpSlam->SetAttckPower(m_status.attck.baseAttckPowe);
+		spAttackJumpSlam->SetAttackPower(m_status.m_attack.m_baseAttackPower);
 		SceneManager::Instance().AddObject(spAttackJumpSlam);
 	}
 }
@@ -421,11 +421,11 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 
 	//モデルのアニメーション事態に動きがあるためそれをなくす(x.z成分)
 	AttackJumpSlamAnimeUpdate();
-	float p = m_spAnimetor->GetAnimeProgress();
+	float p = m_spAnimator->GetAnimeProgress();
 	if (p == 1)
 	{
-		m_JumpSlamAttackMode = JumpSlamAttackMode_Idle;
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.IdleAnime), true);
+		m_jumpSlamAttackMode = JumpSlamAttackMode_Idle;
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_idleAnime), true);
 		m_attackJumpSlamIdleNow = m_attackJumpSlamIdleMax;
 		return;
 	}
@@ -439,32 +439,32 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 			m_attackJumpSlamTargetPos = m_playerPos;
 		}
 
-		if (m_JumpSlam_StartEfkefcFlg && p >= 0.14)
+		if (m_jumpSlam_StartEfkefcFlg && p >= 0.14)
 		{
-			m_JumpSlam_StartEfkefcFlg = false;
+			m_jumpSlam_StartEfkefcFlg = false;
 			KdEffekseerManager::GetInstance().Play("AttackJumpSlam/Start/JumpSlam_Start.efkefc", m_pos, 2.0f, 1.0f, false);
 		}
 
 
 
-		if (m_JumpSlam_EndEfkefcFlg && p >= 0.4)
+		if (m_jumpSlam_EndEfkefcFlg && p >= 0.4)
 		{
-			m_JumpSlam_EndEfkefcFlg = false;
-			auto efe= KdEffekseerManager::GetInstance().Play("AttackJumpSlam/End/JumpSlam_End.efkefc", m_pos, 2.0f, 1.0f, false);
-			int i = efe.lock()->GetHandle();
+			m_jumpSlam_EndEfkefcFlg = false;
+			auto effect= KdEffekseerManager::GetInstance().Play("AttackJumpSlam/End/JumpSlam_End.efkefc", m_pos, 2.0f, 1.0f, false);
+			int i = effect.lock()->GetHandle();
 			KdEffekseerManager::GetInstance().SetRotation(i, Math::Vector3(0, 1, 0), DirectX::XMConvertToRadians(m_angle));
 
 
 		}
 
 		spAttackJumpSlam->SetRadiusDrawFlg(true);
-		if (!m_IsAttackJumpSlamHITFlg)
+		if (!m_isAttackJumpSlamHITFlg)
 		{
 
-			if (p >= m_JumpSlamHitStart)
+			if (p >= m_jumpSlamHitStart)
 			{
-				spAttackJumpSlam->SetAttckFlg(true);
-				m_IsAttackJumpSlamHITFlg = true;
+				spAttackJumpSlam->SetAttackFlg(true);
+				m_isAttackJumpSlamHITFlg = true;
 
 				if (m_spDon3DSE)
 				{
@@ -483,7 +483,7 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 				//0.0 ~ 1.0 に正規化
 				float t = std::clamp(p / 0.3f, 0.0f, 1.0f);
 
-				Math::Vector3 startPos = m_jnpStartPos;   // ジャンプ開始地点
+				Math::Vector3 startPos = m_jumpStartPos;   // ジャンプ開始地点
 
 				Math::Vector3 pos = startPos + (m_attackJumpSlamTargetPos - startPos) * t;  // t=0でstart, t=1でplayer
 				m_pos = pos;
@@ -495,14 +495,14 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 
 				m_moveVec = (m_attackJumpSlamTargetPos - startPos);
 				m_moveVec.Normalize();
-				AngeleUpdate();
+				AngleUpdate();
 			}
 		}
 		else
 		{
-			if (p >= m_JumpSlamHitEnd)
+			if (p >= m_jumpSlamHitEnd)
 			{
-				spAttackJumpSlam->SetAttckFlg(false);
+				spAttackJumpSlam->SetAttackFlg(false);
 				m_playerChaseFlg = false;
 
 
@@ -523,9 +523,9 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 	{
 		std::shared_ptr<AttackJumpSlam>spAttackJumpSlam = std::make_shared<AttackJumpSlam>();
 		m_wpAttackJumpSlam = spAttackJumpSlam;
-		m_IsAttackJumpSlamHITFlg = false;
-		spAttackJumpSlam->SetAttckFlg(m_IsAttackJumpSlamHITFlg);
-		spAttackJumpSlam->SetAttckPower(m_status.attck.baseAttckPowe);
+		m_isAttackJumpSlamHITFlg = false;
+		spAttackJumpSlam->SetAttackFlg(m_isAttackJumpSlamHITFlg);
+		spAttackJumpSlam->SetAttackPower(m_status.m_attack.m_baseAttackPower);
 
 
 		spAttackJumpSlam->SetPlayer(m_wpPlayer.lock());
@@ -540,7 +540,7 @@ void Giant::JumpSlamAttackMode_IdleUpdate()
 	{
 		m_attackFlg = false;
 		m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Run;
-		m_AnimeChangeFlg = true;
+		m_animeChangeFlg = true;
 		m_playerChaseFlg = true;
 	}
 
@@ -549,7 +549,7 @@ void Giant::JumpSlamAttackMode_IdleUpdate()
 void Giant::AttackJumpSlamUpdate()
 {
 
-	switch (m_JumpSlamAttackMode)
+	switch (m_jumpSlamAttackMode)
 	{
 	case Giant::JumpSlamAttackMode_JumpSlamAttack:
 		JumpSlamAttackMode_JumpSlamAttackUpdate();
@@ -566,8 +566,8 @@ void Giant::AttackJumpSlamUpdate()
 
 void Giant::AttackJumpSlamAnimeUpdate()
 {
-	const std::string BONE_HIPS = "mixamorigHips";
-	auto* hips = m_spCharaModel->FindWorkNode(BONE_HIPS);
+	const std::string kBoneHips = "mixamorigHips";
+	auto* hips = m_spCharaModel->FindWorkNode(kBoneHips);
 	if (hips)
 	{
 		Math::Vector3 t = hips->m_localTransform.Translation();
@@ -584,33 +584,33 @@ void Giant::AttackJumpSlamAnimeUpdate()
 
 void Giant::ChangeAnime()
 {
-	if (!m_spAnimetor) { return; }
-	if (!m_AnimeChangeFlg) { return; }
+	if (!m_spAnimator) { return; }
+	if (!m_animeChangeFlg) { return; }
 
 	//攻撃中は変更しない
 	if (m_attackFlg && !m_isDead) { return; }
 
 	switch (m_enemyAnimeMode)
 	{
-	case EnemyBase::EnemyAnimeMode_Idel:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.IdleAnime), true);
+	case EnemyBase::EnemyAnimeMode_Idle:
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_idleAnime), true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Walk:
 	case EnemyBase::EnemyAnimeMode_Run:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.RunAnime), true);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_runAnime), true);
 		break;
-	case EnemyBase::EnemyAnimeMode_Attck:
+	case EnemyBase::EnemyAnimeMode_Attack:
 		ChangeAttackAnime();
 		m_attackFlg = true;
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.DieAnime), false);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_dieAnime), false);
 		break;
 	default:
 		break;
 	}
 
-	m_AnimeChangeFlg = false;
+	m_animeChangeFlg = false;
 }
 
 Math::Matrix Giant::GetBoneWorldMatrix(std::string _nodeName)
@@ -653,10 +653,10 @@ void Giant::Release()
 		m_spDon3DSE = nullptr;
 	}
 
-	auto sp = m_wpGameScene.lock();
-	if (sp)
+	auto spGameScene = m_wpGameScene.lock();
+	if (spGameScene)
 	{
-		sp->AddEnemyKill();
+		spGameScene->AddEnemyKill();
 	}
 }
 

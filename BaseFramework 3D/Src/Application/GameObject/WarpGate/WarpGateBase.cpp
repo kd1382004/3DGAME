@@ -56,8 +56,8 @@ void WarpGateBase::UpdateMagicCircleAnime()
 	// パーツ名（ノード名に含まれる文字列）と回転速度（度/秒）
 	struct Part
 	{
-		const char* key;
-		float degPerSec;
+		const char* m_key;
+		float m_degPerSec;
 	};
 	static const Part parts[] =
 	{
@@ -72,13 +72,13 @@ void WarpGateBase::UpdateMagicCircleAnime()
 	{
 		for (const auto& part : parts)
 		{
-			if (node.m_name.find(part.key) == std::string::npos) { continue; }
+			if (node.m_name.find(part.m_key) == std::string::npos) { continue; }
 
 			Math::Matrix mat = Math::Matrix::CreateRotationY(
-				DirectX::XMConvertToRadians(part.degPerSec * m_animTime));
+				DirectX::XMConvertToRadians(part.m_degPerSec * m_animTime));
 
 			// 浮いている輪は上下にふわふわ
-			if (std::string_view(part.key) == "Halo")
+			if (std::string_view(part.m_key) == "Halo")
 			{
 				float y = 0.45f + 0.08f * std::sin(m_animTime * 1.6f);
 				mat *= Math::Matrix::CreateTranslation(0.0f, y, 0.0f);
@@ -111,7 +111,7 @@ bool WarpGateBase::PlayerHit()
 	return false;
 }
 
-void WarpGateBase::ShowGuideUI(int key)
+void WarpGateBase::ShowGuideUI(int _key)
 {
 	if (!m_spGuideUITex) { return; }
 
@@ -137,6 +137,6 @@ void WarpGateBase::ShowGuideUI(int key)
 		spUI->SetDrawFlg(true);
 		spUI->Set2DPos({ set2DPos.x, set2DPos.y });
 		spUI->SetTex(m_spGuideUITex);
-		spUI->SetDrawKey(key);
+		spUI->SetDrawKey(_key);
 	}
 }

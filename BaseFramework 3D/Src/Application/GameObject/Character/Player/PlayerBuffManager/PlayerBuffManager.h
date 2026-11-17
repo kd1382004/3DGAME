@@ -5,6 +5,7 @@ class PlayerBase;
 
 struct StatusBuff
 {
+	//バフの種類の番号(-999は未設定)
 	int m_ID = -999;
 
 	//効果時間(秒)(現在時間)
@@ -14,7 +15,7 @@ struct StatusBuff
 	float m_maxSeconds = 0;
 
 	//上げる攻撃力の量(数値)
-	int m_buffAttck = 0;
+	int m_buffAttack = 0;
 
 	//上げる防御力の量(数値)
 	int m_buffDefense = 0;
@@ -30,26 +31,40 @@ struct StatusBuff
 class PlayerBuffManager
 {
 public:
+	//コンストラクタ
 	PlayerBuffManager() {};
+	//デストラクタ
 	~PlayerBuffManager() {};
 
+	//バフの残り時間を減らし、時間切れのバフを終わらせる
 	void Update();
 
 
+	//バフをかけるプレイヤーをセット
+	// _spPlayer ... プレイヤー
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayer) { m_wpPlayer = _spPlayer; }
 
+	//バフの効果を終わらせる(上げた分を元に戻す)
+	// _statusBuff ... 終わらせるバフ
 	void BuffFinish(const StatusBuff& _statusBuff);
 
+	//バフを追加してプレイヤーに効果をかける
+	// _statusBuff ... 追加するバフ
 	void AddStatusBuff(StatusBuff _statusBuff);
 
+	//今かかっているバフの一覧を返す
+	//戻り値 ... バフの一覧(コピー)
 	std::list<StatusBuff> GetStatusBuff() { return m_statusBuffList; }
 
 
+	//全部のバフを終わらせて消す
 	void ClearAllBuffs();
 private:
 
+	//バフをかけるプレイヤー
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 
+	//今かかっているバフの一覧
 	std::list<StatusBuff> m_statusBuffList;
 
 };

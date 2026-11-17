@@ -14,71 +14,113 @@ struct Inventory;
 class ResultDisplay :public UIBase
 {
 public:
+	//コンストラクタ
 	ResultDisplay() {};
+	//デストラクタ
 	~ResultDisplay() {};
 
+	//初期化
 	void Init()override;
 
+	//更新
 	void Update()override;
 
+	//描画前の処理
 	void PreDraw()override;
+	//2Dの描画
 	void DrawSprite()override;
 
 
-	void SetPath(std::string path);
+	//パスをセット(今は何もしない)
+	// _path ... パス
+	void SetPath(std::string _path);
 
+	//各階の結果をセット
+	// _displayFloorInfo ... 各階の結果
 	void SetDisplayFloorInfo(std::vector<DisplayFloorInfo>_displayFloorInfo);
 
 
+	//持ち物の一覧をセット
+	// _playerInventoryList ... 持ち物の一覧([0]ポーション/[1]武器強化素材)
 	void SetPlayerInventoryList(std::vector<std::vector<Inventory>> _playerInventoryList);
 
+	//ゲーム終了時のステータスのファイルのパスをセット
+	// _path ... ファイルのパス
 	void SetPlayerStatusGameResultFilePath(std::string _path);
 
-	void SetSpWeaponBase(std::shared_ptr<WeaponBase> spWeaponBase);
+	//ゲーム終了時の武器をセット
+	// _spWeaponBase ... 武器
+	void SetSpWeaponBase(std::shared_ptr<WeaponBase> _spWeaponBase);
 
 
+	//プレイヤーが死んだかをセット
+	// _flg ... 死んだか
 	void SetPlayerDead(bool _flg);
 private:
-	std::shared_ptr<KdTexture>m_ResultBackTex;
-	std::shared_ptr<KdTexture>m_ResultBack2Tex;
-	std::shared_ptr<ResultDisplay_Score>m_ResultDisplay_Score;
-	std::shared_ptr<ResultDisplay_PlayerStatus>m_ResultDisplay_PlayerStatus;
-	std::shared_ptr<ResultDisplay_WeponInventory>m_ResultDisplay_WeponInventory;
+	//背景の画像
+	std::shared_ptr<KdTexture>m_spResultBackTex;
+	//背景2の画像
+	std::shared_ptr<KdTexture>m_spResultBack2Tex;
+	//スコアのページ
+	std::shared_ptr<ResultDisplay_Score>m_spResultDisplay_Score;
+	//ステータスのページ
+	std::shared_ptr<ResultDisplay_PlayerStatus>m_spResultDisplay_PlayerStatus;
+	//武器強化のページ
+	std::shared_ptr<ResultDisplay_WeponInventory>m_spResultDisplay_WeaponInventory;
 
-	std::shared_ptr<ResultDisplay_PotionInventory>m_ResultDisplay_PotionInventory;
+	//ポーションのページ
+	std::shared_ptr<ResultDisplay_PotionInventory>m_spResultDisplay_PotionInventory;
 
-	std::vector<std::shared_ptr<ResultDisplayBase>>m_ResultDisplayList;
-	int m_CurrentDisplayIndex = 0;
+	//ページの一覧
+	std::vector<std::shared_ptr<ResultDisplayBase>>m_resultDisplayList;
+	//今のページの番号
+	int m_currentDisplayIndex = 0;
 
 
 
-	std::shared_ptr<KdTexture>m_ArrowTex;
-	Math::Vector2 m_ArrowLPos;
-	Math::Vector2 m_ArrowRPos;
-	Math::Vector2 m_ArrowSiz;
+	//矢印の画像
+	std::shared_ptr<KdTexture>m_spArrowTex;
+	//左の矢印の位置
+	Math::Vector2 m_arrowLPos;
+	//右の矢印の位置
+	Math::Vector2 m_arrowRPos;
+	//矢印の大きさ
+	Math::Vector2 m_arrowSiz;
 
-	bool m_ArrowRHiFlg = false;
-	bool m_ArrowLHiFlg = false;
+	//右の矢印にマウスが乗っているか
+	bool m_arrowRHitFlg = false;
+	//左の矢印にマウスが乗っているか
+	bool m_arrowLHitFlg = false;
 
-	float m_AroowHitScale = 1.1;
+	//マウスが乗っているときの矢印の倍率
+	float m_arrowHitScale = 1.1;
 
-	float m_AroowAlpha = 1;
-	float m_AddAroowAlpha = 1;
+	//矢印のアルファ
+	float m_arrowAlpha = 1;
+	//1秒あたりの矢印のアルファの増減
+	float m_addArrowAlpha = 1;
 
+	//矢印の更新(クリックでページを変える)
 	void ArrowUpdate();
+	//矢印の描画
 	void ArrowDrawSprite();
 
 
+	//持ち物の一覧
 	std::vector<std::vector<Inventory>> m_playerInventoryList;
 
+	//プレイヤーが死んだか
 	bool m_playerDead = false;
 
 
 
 
 
-	std::shared_ptr<KdTexture>m_lostTex;
+	//「LOST」のハンコの画像
+	std::shared_ptr<KdTexture>m_spLostTex;
+	//ハンコの位置
 	Math::Vector2 m_lostTexPos;
+	//ハンコの大きさ
 	Math::Vector2 m_lostTexSiz;
 	//---------- Lost（失敗のハンコ）の演出 ----------
 	// ハンコを表示してからの経過時間（秒）

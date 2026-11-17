@@ -3,55 +3,55 @@
 #include"../../../../../Scene/SceneManager.h"
 void ResultDisplay_Score::Init()
 {
-	if (!m_backTex)
+	if (!m_spBackTex)
 	{
-		m_backTex = std::make_shared<KdTexture>();
-		m_backTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/back.png");
+		m_spBackTex = std::make_shared<KdTexture>();
+		m_spBackTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/back.png");
 	}
 
 
-	m_OverallResultPos = { 0,250 };
+	m_overallResultPos = { 0,250 };
 
-	m_base2DPos = { -300,m_OverallResultPos.y - 200 };
+	m_base2DPos = { -300,m_overallResultPos.y - 200 };
 	m_baseNumPos = m_base2DPos;
 	m_baseNumPos.x += 600;
 
-	if (!m_DisplayFloorTex)
+	if (!m_spDisplayFloorTex)
 	{
-		m_DisplayFloorTex = std::make_shared<KdTexture>();
-		m_DisplayFloorTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/floorReached.png");
+		m_spDisplayFloorTex = std::make_shared<KdTexture>();
+		m_spDisplayFloorTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/floorReached.png");
 	}
-	if (!m_enemyKillTex)
+	if (!m_spEnemyKillTex)
 	{
-		m_enemyKillTex = std::make_shared<KdTexture>();
-		m_enemyKillTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/EnemyKill.png");
+		m_spEnemyKillTex = std::make_shared<KdTexture>();
+		m_spEnemyKillTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/EnemyKill.png");
 	}
-	if (!m_playTimeScTex)
+	if (!m_spPlayTimeScTex)
 	{
-		m_playTimeScTex = std::make_shared<KdTexture>();
-		m_playTimeScTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/Time.png");
+		m_spPlayTimeScTex = std::make_shared<KdTexture>();
+		m_spPlayTimeScTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/Time.png");
 	}
-	if (!m_TimeColonTex)
+	if (!m_spTimeColonTex)
 	{
-		m_TimeColonTex = std::make_shared<KdTexture>();
-		m_TimeColonTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/TimeColon.png");
+		m_spTimeColonTex = std::make_shared<KdTexture>();
+		m_spTimeColonTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/TimeColon.png");
 	}
-	if (!m_TreasureChestsNumTex)
+	if (!m_spTreasureChestsNumTex)
 	{
-		m_TreasureChestsNumTex = std::make_shared<KdTexture>();
-		m_TreasureChestsNumTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/TreasureChestsNum.png");
-	}
-
-	if (!m_OverallResultTex)
-	{
-		m_OverallResultTex = std::make_shared<KdTexture>();
-		m_OverallResultTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/OverallResult.png");
+		m_spTreasureChestsNumTex = std::make_shared<KdTexture>();
+		m_spTreasureChestsNumTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/TreasureChestsNum.png");
 	}
 
-	if (!m_HierarchyTex)
+	if (!m_spOverallResultTex)
 	{
-		m_HierarchyTex = std::make_shared<KdTexture>();
-		m_HierarchyTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/HierarchyTex.png");
+		m_spOverallResultTex = std::make_shared<KdTexture>();
+		m_spOverallResultTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/OverallResult.png");
+	}
+
+	if (!m_spHierarchyTex)
+	{
+		m_spHierarchyTex = std::make_shared<KdTexture>();
+		m_spHierarchyTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_Score/HierarchyTex.png");
 	}
 }
 
@@ -69,48 +69,48 @@ void ResultDisplay_Score::DrawSprite()
 	if (m_displayFloorInfo.empty()) { return; }
 	const DisplayFloorInfo& overall = m_displayFloorInfo[0];
 
-	int floorNum = overall.DisplayFloor;
-	int enemykill = overall.enemyKillCount;
-	int TreasureChestsNum = overall.TreasureChestsNum;
-	int timeSc = overall.playTimeSc;
+	int floorNum = overall.m_displayFloor;
+	int enemykill = overall.m_enemyKillCount;
+	int treasureChestsNum = overall.m_treasureChestsNum;
+	int timeSc = overall.m_playTimeSc;
 
 	//タイトル（総合結果）
-	if (m_OverallResultTex)
+	if (m_spOverallResultTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_OverallResultTex, m_OverallResultPos.x, m_OverallResultPos.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spOverallResultTex, m_overallResultPos.x, m_overallResultPos.y);
 	}
 
 
-	int Num = 0;
-	Math::Vector2 pivo = { 0,0.5 };
+	int num = 0;
+	Math::Vector2 pivot = { 0,0.5 };
 
 	// 数字が超えてはいけない大きさ(項目の文字「最高階層」などの右端 〜 数字の右端)
 	const Math::Vector2 kScoreNumMaxSiz = { 330.0f, 0.0f };
 
-	if (m_DisplayFloorTex)
+	if (m_spDisplayFloorTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_DisplayFloorTex, m_base2DPos.x, m_base2DPos.y, nullptr, nullptr, pivo);
-		NumDraw::GetInstance().Drow(floorNum, Aligned::RAligned, m_baseNumPos, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
-		Num++;
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spDisplayFloorTex, m_base2DPos.x, m_base2DPos.y, nullptr, nullptr, pivot);
+		NumDraw::GetInstance().Draw(floorNum, Aligned::RAligned, m_baseNumPos, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
+		num++;
 	}
 
-	if (m_enemyKillTex)
+	if (m_spEnemyKillTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_enemyKillTex, m_base2DPos.x, m_base2DPos.y - Num * 100, nullptr, nullptr, pivo);
-		NumDraw::GetInstance().Drow(enemykill, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
-		Num++;
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spEnemyKillTex, m_base2DPos.x, m_base2DPos.y - num * 100, nullptr, nullptr, pivot);
+		NumDraw::GetInstance().Draw(enemykill, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
+		num++;
 	}
 
-	if (m_TreasureChestsNumTex)
+	if (m_spTreasureChestsNumTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_TreasureChestsNumTex, m_base2DPos.x, m_base2DPos.y - Num * 100, nullptr, nullptr, pivo);
-		NumDraw::GetInstance().Drow(TreasureChestsNum, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
-		Num++;
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTreasureChestsNumTex, m_base2DPos.x, m_base2DPos.y - num * 100, nullptr, nullptr, pivot);
+		NumDraw::GetInstance().Draw(treasureChestsNum, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
+		num++;
 	}
 
-	if (m_playTimeScTex)
+	if (m_spPlayTimeScTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_playTimeScTex, m_base2DPos.x, m_base2DPos.y - Num * 100, nullptr, nullptr, pivo);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayTimeScTex, m_base2DPos.x, m_base2DPos.y - num * 100, nullptr, nullptr, pivot);
 
 
 		int sc = timeSc % 60;       // 秒
@@ -118,21 +118,21 @@ void ResultDisplay_Score::DrawSprite()
 		int hour = timeSc / 3600;      // 時
 
 
-		NumDraw::GetInstance().Drow(sc, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true, 2);
+		NumDraw::GetInstance().Draw(sc, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, 2);
 
-		if (m_TimeColonTex)
+		if (m_spTimeColonTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_TimeColonTex, m_baseNumPos.x - 78, m_base2DPos.y - Num * 100);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_TimeColonTex, m_baseNumPos.x - 158, m_base2DPos.y - Num * 100);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTimeColonTex, m_baseNumPos.x - 78, m_base2DPos.y - num * 100);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTimeColonTex, m_baseNumPos.x - 158, m_base2DPos.y - num * 100);
 		}
 
 
-		NumDraw::GetInstance().Drow(mine, Aligned::RAligned, { m_baseNumPos.x - 82,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true, 2);
-		NumDraw::GetInstance().Drow(hour, Aligned::RAligned, { m_baseNumPos.x - 162,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true, 2);
-		Num++;
+		NumDraw::GetInstance().Draw(mine, Aligned::RAligned, { m_baseNumPos.x - 82,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, 2);
+		NumDraw::GetInstance().Draw(hour, Aligned::RAligned, { m_baseNumPos.x - 162,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, 2);
+		num++;
 	}
 
-	for (int i = 0; i < Num; i++)
+	for (int i = 0; i < num; i++)
 	{
 		// 文字（左端）と数字（右端）がしっかり入るよう、左右に余白をとって広げる
 		const float padX = 40.0f;
@@ -148,7 +148,7 @@ void ResultDisplay_Score::DrawSprite()
 			color = { 0.5,0.5,0.5,0.3f };
 		}
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_backTex, m_base2DPos.x - padX, m_base2DPos.y - i * 100, sizX, sizY, nullptr, &color, pivo);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spBackTex, m_base2DPos.x - padX, m_base2DPos.y - i * 100, sizX, sizY, nullptr, &color, pivot);
 	}
 
 }

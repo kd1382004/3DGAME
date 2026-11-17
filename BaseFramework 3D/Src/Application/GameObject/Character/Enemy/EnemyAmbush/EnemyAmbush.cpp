@@ -3,7 +3,7 @@
 #include"../../Player/PlayerBase.h"
 void EnemyAmbush::Init()
 {
-	wanderRadius = 15;
+	m_wanderRadius = 15;
 
 	m_isMovingToTarget = false;
 }
@@ -20,7 +20,7 @@ void EnemyAmbush::Update()
 
 	if (!m_playerChaseFlg)
 	{
-		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe;
+		m_status.m_moveSpeed.m_nowSpeed = m_status.m_moveSpeed.m_baseSpeed + m_status.m_moveSpeed.m_walkMovePower;
 		if (m_returnSpawnPosFlg)
 		{
 			//スポーン地点に戻る
@@ -37,13 +37,13 @@ void EnemyAmbush::Update()
 	}
 	else
 	{
-		m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe;
+		m_status.m_moveSpeed.m_nowSpeed = m_status.m_moveSpeed.m_baseSpeed + m_status.m_moveSpeed.m_runMovePower;
 		PlayerChase();
 	}
 
 
 
-	AngeleUpdate();
+	AngleUpdate();
 
 	//座標行列を作る
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
@@ -55,7 +55,7 @@ void EnemyAmbush::Update()
 	if (m_pDebugWire)
 	{
 		m_pDebugWire->AddDebugSphere(GetPos(), 1.0f);
-		m_pDebugWire->AddDebugSphere(m_spawnPos, wanderRadius, { 1,1,1,1 });
+		m_pDebugWire->AddDebugSphere(m_spawnPos, m_wanderRadius, { 1,1,1,1 });
 	}
 
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
@@ -105,11 +105,11 @@ void EnemyAmbush::Wander()
 				nextDir.Normalize();
 			}
 
-			float distance = KdRandom::GetFloat(0.0f, wanderRadius);
+			float distance = KdRandom::GetFloat(0.0f, m_wanderRadius);
 			Math::Vector3 candidatePos = m_spawnPos + (nextDir * distance);
 
 			Node* node = spMapManager->WorldToNode(candidatePos);
-			if (node && node->walkable)
+			if (node && node->m_walkable)
 			{
 				goalNode = node;
 				break;
@@ -127,7 +127,7 @@ void EnemyAmbush::Wander()
 				m_moveTimeoutTimer = m_moveTimeoutMax;
 
 				// アニメーション
-				m_AnimeChangeFlg = true;
+				m_animeChangeFlg = true;
 				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Walk;
 				return;
 			}
@@ -170,7 +170,7 @@ void EnemyAmbush::Wander()
 			{
 				toNode.Normalize();
 				m_moveVec = toNode;
-				m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+				m_pos += m_moveVec * m_status.m_moveSpeed.m_nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 			}
 		}
 
@@ -185,8 +185,8 @@ void EnemyAmbush::Wander()
 			m_stayTime = m_arrivalWaitTime;
 
 			// アニメーション
-			m_AnimeChangeFlg = true;
-			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
+			m_animeChangeFlg = true;
+			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idle;
 		}
 
 		// デバッグ描画

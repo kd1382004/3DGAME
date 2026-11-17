@@ -4,18 +4,26 @@
 class HPBar :public UIBase
 {
 public:
+	//コンストラクタ
 	HPBar() {};
+	//デストラクタ
 	~HPBar()override {};
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//描画前の処理
 	void PreDraw()override;
 
+	//2Dの描画
 	void DrawSprite()override;
 
 
-	void Set2DPos(const Math::Vector2& pos) {
-		m_2DPos = pos;
+	//画面上の座標をセット(バーの左端の位置も計算する)
+	// _pos ... 画面上の座標(バーの中心)
+	void Set2DPos(const Math::Vector2& _pos) {
+		m_2DPos = _pos;
 		m_HPBarBackTex2DPos = { m_2DPos.x - m_HPBarBackTexLength.x / 2.0f * m_siz ,m_2DPos.y };
 		m_HPBarTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_siz ,m_2DPos.y };
 		m_HPBarDelayTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_siz ,m_2DPos.y };
@@ -24,22 +32,32 @@ public:
 
 	//パーセント(0.0f～1.0f)
 
-	//okureteruennsyutuari
+	//遅れて減る演出あり
+	// _percent ... HPの割合(0〜1)
 	void SetHPBarTexPercent(float _percent);
 
-	//okureteruennsyutunasi
+	//遅れて減る演出なし
+	// _percent ... HPの割合(0〜1)
 	void SetHPBarTexPercentNODelayOffset(float _percent);
 
+	//表示するかをセット
+	// _flg ... 表示するか
 	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
 
+	//大きさの倍率をセット
+	// _siz ... 倍率
 	void SetSiz(float _siz) { m_siz = _siz; }
 
+	//消すときの処理(今は何もしない)
 	void Delete();
 
 
+	//表示するレベルをセット
+	// _LV ... レベル
 	void SetLV(int _LV);
 private:
 
+	//表示するか
 	bool m_drawFlg = false;
 
 	//サイズ
@@ -47,7 +65,8 @@ private:
 
 	/////////////////////////////////////////////
 	//HPバー背景
-	std::shared_ptr<KdTexture>m_HPBarBackTex = nullptr;
+	std::shared_ptr<KdTexture>m_spHPBarBackTex = nullptr;
+	//背景の描画位置
 	Math::Vector2 m_HPBarBackTex2DPos = Math::Vector2::Zero;
 
 	//画像の立て横の長さ
@@ -58,7 +77,8 @@ private:
 
 	/////////////////////////////////////////////
 	//HPバー本体
-	std::shared_ptr<KdTexture>m_HPBarTex = nullptr;
+	std::shared_ptr<KdTexture>m_spHPBarTex = nullptr;
+	//本体の描画位置
 	Math::Vector2 m_HPBarTex2DPos = Math::Vector2::Zero;
 
 	//画像の立て横の長さ
@@ -74,16 +94,18 @@ private:
 	float m_HPBarTexPercent = 1;
 
 	//進捗度
-	float m_HPBarTexProgres = 0;
+	float m_HPBarTexProgress = 0;
 
 	//進捗を終わらせる秒数
-	float m_HPBarDelayTexPercentDownSped = 1;
+	float m_HPBarDelayTexPercentDownSpeed = 1;
 
 	////////////////////
 	//HPバー遅延
 
+	//遅れて減るバーの描画前の処理
 	void HPBarDelayPreDraw();
 
+	//遅れて減るバーの描画位置
 	Math::Vector2 m_HPBarDelayTex2DPos = Math::Vector2::Zero;
 
 	//色
@@ -97,7 +119,8 @@ private:
 
 	/////////////////////////////////////////////
 	//アイコン用フレーム
-	std::shared_ptr<KdTexture>m_HPBarIconFrameTex = nullptr;
+	std::shared_ptr<KdTexture>m_spHPBarIconFrameTex = nullptr;
+	//アイコン用フレームの描画位置
 	Math::Vector2 m_HPBarIconFrameTex2DPos = Math::Vector2::Zero;
 
 	//画像の立て横の長さ

@@ -62,7 +62,7 @@ void Torch::Init()
 	m_effectLocalPos = { 0.0f, 1.0f,-0.7f };
 
 
-	m_effectLocalColoer = { 20,8,0 };
+	m_effectLocalColor = { 20,8,0 };
 
 	m_radius = 25;
 }
@@ -90,7 +90,7 @@ void Torch::PostUpdate()
 	{
 		// 画面内に映っている時：一時停止解除（再生）
 		KdShaderManager::Instance().WorkAmbientController().AddPointLight(
-			m_effectLocalColoer,								//色
+			m_effectLocalColor,								//色
 			radius,										//半径	
 			worldEffectPos		//座標
 		);
@@ -156,10 +156,10 @@ void Torch::GenerateDepthMapFromLight()
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTorchModel, m_mWorld);
 }
 
-void Torch::SetPos(const Math::Vector3& pos)
+void Torch::SetPos(const Math::Vector3& _pos)
 {
-	m_pos = pos;
-	m_mWorld.Translation(pos);
+	m_pos = _pos;
+	m_mWorld.Translation(_pos);
 }
 
 

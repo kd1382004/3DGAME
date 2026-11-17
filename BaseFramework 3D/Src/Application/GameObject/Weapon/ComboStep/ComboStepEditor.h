@@ -7,17 +7,21 @@ class ComboStepEditor
 {
 public:
 	// 毎フレーム呼ぶ（画面を描く）
+	// _open ... ウィンドウを開いているか
 	void Draw(bool* _open);
 
+	//コンストラクタ
 	ComboStepEditor();
 
 	// プレビュー用モデル（シーンの m_objList に入れてもらう）
 	std::shared_ptr<ComboPreviewObject> GetPreviewObject() const { return m_spPreviewObj; }
 
 	// 保存に成功したときに呼ばれる（ゲームに読み直させるため）
+	// _func ... 保存したときに呼ぶ関数(引数は保存したパス)
 	void SetOnSaved(const std::function<void(const std::string&)>& _func) { m_onSaved = _func; }
 
 	// ゲームのカメラ（プレビューを描いた後、元に戻すため）
+	// _spCamera ... ゲームのカメラ
 	void SetPreviewMainCamera(const std::shared_ptr<KdGameObject>& _spCamera) { m_spPreviewObj->SetMainCamera(_spCamera); }
 
 private:
@@ -47,10 +51,12 @@ private:
 	int  m_fileListSelected = -1;
 	bool m_requestOpenPopup = false;              // 次のフレームでポップアップを開く
 	bool m_requestSaveAsPopup = false;
+	//次のフレームで新規作成のポップアップを開く
 	bool m_requestNewPopup = false;
 	std::string m_saveAsOwner = "Player";         // 名前を付けて保存：持ち主
 	std::string m_saveAsWeapon = "Sword";         // 名前を付けて保存：武器名
 
+	//保存したときに呼ぶ関数
 	std::function<void(const std::string&)> m_onSaved;
 
 	//==============================
@@ -59,6 +65,8 @@ private:
 
 	// 変更する前に呼ぶ（今の m_steps を履歴に積む）。ボタンやメニューの操作用
 	void PushUndo() { PushUndoState(m_steps); }
+	//指定した状態を履歴に積む
+	// _state ... 積む状態
 	void PushUndoState(const std::vector<ComboStep>& _state);
 
 	// 詳細の部品で値を変えたときに呼ぶ（未保存の印＋操作が終わったら履歴に積む）
@@ -73,18 +81,20 @@ private:
 	//==============================
 
 	// 検査のエラーがあれば確認してから保存する
+	// _path ... 保存するパス
 	void RequestSave(const std::string& _path);
 
 	// 検査のエラーの数
 	int CountErrors() const
 	{
 		int n = 0;
-		for (const ComboStepIssue& issue : m_issues) { if (issue.isError) { ++n; } }
+		for (const ComboStepIssue& issue : m_issues) { if (issue.m_isError) { ++n; } }
 		return n;
 	}
 
 	std::string m_pendingSavePath;            // エラー確認のあとに保存するパス
 	bool m_requestSaveErrorPopup = false;
+	//次のフレームで閉じる確認のポップアップを開く
 	bool m_requestClosePopup = false;
 	bool m_closeNow = false;                  // 次の End の前にウィンドウを閉じる
 
@@ -100,13 +110,18 @@ private:
 
 	// ファイル
 	void NewFile();
+	//ファイルを開く
 	void OpenFile();
+	//上書き保存
 	void Save();
+	//名前を付けて保存
 	void SaveAs();
 
 	// 編集
 	void Undo();
+	//やり直す
 	void Redo();
+	//comboIndexを上から順に振り直す
 	void RenumberComboIndex();
 
 	// 一覧の操作
@@ -121,6 +136,7 @@ private:
 	void DeleteStep();           
 
 	// 選んだ段を上(-1)／下(+1)に動かす
+	// _dir ... 動かす向き(-1:上 / +1:下)
 	void MoveStep(int _dir);     
 
 	//==============================
@@ -144,14 +160,18 @@ private:
 	// 元に戻す／やり直す
 	//==============================
 
+	//元に戻す用の履歴
 	std::vector<std::vector<ComboStep>> m_undoStack;
+	//やり直す用の履歴
 	std::vector<std::vector<ComboStep>> m_redoStack;
 
 	//==============================
 	// 表示の切り替え（「表示」メニュー）
 	//==============================
 
+	//プレビューを出すか
 	bool m_showPreview = true;
+	//検査の結果を出すか
 	bool m_showValidation = true;
 
 
@@ -163,12 +183,12 @@ private:
 	const std::string kTestPath = "Asset/Data/ObjeData/Combo/Player/Sword.json";
 
 	//モデルのパス
-	std::string m_CharaModelPath;
+	std::string m_charaModelPath;
 
 	//武器モデルのパス（プレビューで手に持たせる）
-	std::string m_WeaponModelPath;
+	std::string m_weaponModelPath;
 
-	// m_WeaponModelPath の武器をプレビューに持たせる
+	// m_weaponModelPath の武器をプレビューに持たせる
 	void LoadPreviewWeapon();
 
 	//==============================
@@ -178,16 +198,19 @@ private:
 	// アニメーション1つ分の情報
 	struct AnimeInfo
 	{
-		std::string name;
-		float       length = 0.0f;   // KdAnimationData::m_maxLength と同じ単位
+		//アニメーション名
+		std::string m_name;
+		float       m_length = 0.0f;   // KdAnimationData::m_maxLength と同じ単位
 	};
 
-	// m_CharaModelPath のモデルを読み込んで、アニメーション一覧を作り直す
+	// m_charaModelPath のモデルを読み込んで、アニメーション一覧を作り直す
 	void LoadPreviewModel();
 
 	// 詳細の「アニメーション名」を描く（一覧があればコンボボックス、なければ InputText）
+	// _step ... 編集する段
 	void DrawAnimeNameSelect(ComboStep& _step);
 
+	//プレビュー用のモデル
 	std::shared_ptr<KdModelData>    m_spPreviewModel = nullptr;
 	std::vector<AnimeInfo>          m_animeList;    // 表示用（名前順）
 	std::unordered_set<std::string> m_animeNames;   // 検査用（名前だけ）
@@ -209,31 +232,36 @@ private:
 
 	struct PreviewState
 	{
-		bool  playing = false;   // 再生中か
-		int   stepIdx = -1;      // 再生中の段（m_steps の添字）。-1 = 止まっている
-		float time = 0.0f;       // 経過フレーム（KdAnimator::m_time と同じ単位）
-		bool  reserved = false;  // 次の段の予約があるか
-		float hitStopTimer = 0.0f;   // ヒットストップの残り（秒）
-		bool  hitStopDone = false;   // この段のヒットストップを出したか
-		std::string lastEvent;       // 最後に起きたこと（画面に出す）
+		bool  m_playing = false;   // 再生中か
+		int   m_stepIdx = -1;      // 再生中の段（m_steps の添字）。-1 = 止まっている
+		float m_time = 0.0f;       // 経過フレーム（KdAnimator::m_time と同じ単位）
+		bool  m_reserved = false;  // 次の段の予約があるか
+		float m_hitStopTimer = 0.0f;   // ヒットストップの残り（秒）
+		bool  m_hitStopDone = false;   // この段のヒットストップを出したか
+		std::string m_lastEvent;       // 最後に起きたこと（画面に出す）
 	};
 
 	// プレビューの画面（下の領域の中身）
 	void DrawPreview();
 
 	// 毎フレーム進める（ゲームの PlayerBase::ComboUpdate と同じルール）
+	// _dt ... 経過時間(秒)
 	void UpdatePreview(float _dt);
 
 	// 指定した段から再生を始める
+	// _stepIdx ... 始める段の番号
 	void StartPreviewStep(int _stepIdx);
 
 	// 全段を横に並べたタイムラインを描く
 	void DrawComboTimeline();
 
 	// アニメーションの長さ（フレーム）。見つからなければ 0
+	// _name ... アニメーション名
 	float GetAnimeLength(const std::string& _name) const;
 
+	//プレビューの再生状態
 	PreviewState m_preview;
+	//入力の真似方
 	int   m_previewInputMode = PreviewInput_Fastest;
 	float m_previewPlaySpeed = 1.0f;     // プレビューだけの倍速（スロー確認用）
 	bool  m_previewLoop = false;         // 最後まで行ったら1段目から
@@ -244,6 +272,7 @@ private:
 	void UpdatePreviewObject();          // 今の再生位置の姿勢をモデルに入れる
 	void DrawPreviewWindow();            // モデルを映す専用ウィンドウ
 
+	//モデルを映すオブジェクト
 	std::shared_ptr<ComboPreviewObject> m_spPreviewObj = std::make_shared<ComboPreviewObject>();
 	bool m_showPreviewModel = true;      // 「モデル」ウィンドウを出すか
 

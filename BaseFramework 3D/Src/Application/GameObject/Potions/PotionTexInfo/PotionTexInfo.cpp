@@ -3,11 +3,11 @@
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetPotionIcon(int _ID)
 {
-	for (auto& tex : m_PotionTexs)
+	for (auto& tex : m_potionTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Icon;
+			return tex.m_spIcon;
 		}
 	}
 
@@ -16,11 +16,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetPotionIcon(int _ID)
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetPotionExplanation(int _ID)
 {
-	for (auto& tex : m_PotionTexs)
+	for (auto& tex : m_potionTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Explanation;
+			return tex.m_spExplanation;
 		}
 	}
 
@@ -29,11 +29,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetPotionExplanation(int _ID)
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetPotionName(int _ID)
 {
-	for (auto& tex : m_PotionTexs)
+	for (auto& tex : m_potionTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Name;
+			return tex.m_spName;
 		}
 	}
 	return nullptr;
@@ -41,11 +41,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetPotionName(int _ID)
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningIcon(int _ID)
 {
-	for (auto& tex : m_WeaponsStrengtheningTexs)
+	for (auto& tex : m_weaponsStrengtheningTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Icon;
+			return tex.m_spIcon;
 		}
 	}
 
@@ -54,11 +54,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningIcon(int _ID)
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningExplanation(int _ID)
 {
-	for (auto& tex : m_WeaponsStrengtheningTexs)
+	for (auto& tex : m_weaponsStrengtheningTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Explanation;
+			return tex.m_spExplanation;
 		}
 	}
 
@@ -67,11 +67,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningExplanation(int
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningName(int _ID)
 {
-	for (auto& tex : m_WeaponsStrengtheningTexs)
+	for (auto& tex : m_weaponsStrengtheningTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Name;
+			return tex.m_spName;
 		}
 	}
 	return nullptr;
@@ -79,11 +79,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningName(int _ID)
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemIcon(int _ID)
 {
-	for (auto& tex : m_WeaponsStrengtheningItemTexs)
+	for (auto& tex : m_weaponsStrengtheningItemTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Icon;
+			return tex.m_spIcon;
 		}
 	}
 
@@ -92,11 +92,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemIcon(int _I
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemName(int _ID)
 {
-	for (auto& tex : m_WeaponsStrengtheningItemTexs)
+	for (auto& tex : m_weaponsStrengtheningItemTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Name;
+			return tex.m_spName;
 		}
 	}
 
@@ -105,11 +105,11 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemName(int _I
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemExplanation(int _ID)
 {
-	for (auto& tex : m_WeaponsStrengtheningItemTexs)
+	for (auto& tex : m_weaponsStrengtheningItemTexs)
 	{
-		if (tex.ID == _ID)
+		if (tex.m_ID == _ID)
 		{
-			return tex.m_Explanation;
+			return tex.m_spExplanation;
 		}
 	}
 
@@ -127,37 +127,37 @@ void PotionTexInfo::Load()
 		for (auto& item : jsonData["inventory"])
 		{
 			Texs inv;
-			inv.ID = item["id"].get<int>();
+			inv.m_ID = item["id"].get<int>();
 			inv.m_name = item["name"].get<std::string>();
 			inventoryList.push_back(inv);
 		}
 
 		// ID順にソート
 		std::sort(inventoryList.begin(), inventoryList.end(),
-			[](const Texs& a, const Texs& b)
+			[](const Texs& _a, const Texs& _b)
 			{
-				return a.ID < b.ID;
+				return _a.m_ID < _b.m_ID;
 			});
 
-		m_PotionTexs = inventoryList;
+		m_potionTexs = inventoryList;
 
-		for (auto& tex : m_PotionTexs)
+		for (auto& tex : m_potionTexs)
 		{
-			std::shared_ptr<KdTexture>icon = std::make_shared<KdTexture>();
-			std::shared_ptr<KdTexture>explanation = std::make_shared<KdTexture>();
-			std::shared_ptr<KdTexture>name = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spIcon = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spExplanation = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spName = std::make_shared<KdTexture>();
 
-			std::string iconPath = m_potionPath + tex.m_name + m_Icom;
-			std::string explanationPath = m_potionPath + tex.m_name + m_Explanation;
-			std::string namePath = m_potionPath + tex.m_name + m_Name;
+			std::string iconPath = m_potionPath + tex.m_name + m_icon;
+			std::string explanationPath = m_potionPath + tex.m_name + m_explanation;
+			std::string namePath = m_potionPath + tex.m_name + m_name;
 
-			icon->Load(iconPath);
-			explanation->Load(explanationPath);
-			name->Load(namePath);
+			spIcon->Load(iconPath);
+			spExplanation->Load(explanationPath);
+			spName->Load(namePath);
 
-			tex.m_Icon = icon;
-			tex.m_Explanation = explanation;
-			tex.m_Name = name;
+			tex.m_spIcon = spIcon;
+			tex.m_spExplanation = spExplanation;
+			tex.m_spName = spName;
 		}
 	}
 
@@ -170,39 +170,39 @@ void PotionTexInfo::Load()
 		for (auto& item : jsonData["inventory"])
 		{
 			Texs inv;
-			inv.ID = item["id"].get<int>();
+			inv.m_ID = item["id"].get<int>();
 			inv.m_name = item["name"].get<std::string>();
 			inventoryList.push_back(inv);
 		}
 
 		// ID順にソート
 		std::sort(inventoryList.begin(), inventoryList.end(),
-			[](const Texs& a, const Texs& b)
+			[](const Texs& _a, const Texs& _b)
 			{
-				return a.ID < b.ID;
+				return _a.m_ID < _b.m_ID;
 			});
 
-		m_WeaponsStrengtheningTexs = inventoryList;
+		m_weaponsStrengtheningTexs = inventoryList;
 
-		for (auto& tex : m_WeaponsStrengtheningTexs)
+		for (auto& tex : m_weaponsStrengtheningTexs)
 		{
-			std::shared_ptr<KdTexture>icon = std::make_shared<KdTexture>();
-			std::shared_ptr<KdTexture>explanation = std::make_shared<KdTexture>();
-			std::shared_ptr<KdTexture>name = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spIcon = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spExplanation = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spName = std::make_shared<KdTexture>();
 
 			std::string iconPath;
 			std::string explanationPath;
 			std::string namePath;
-			std::string PlayerWeapon;
-			if (tex.ID >= 4)
+			std::string playerWeapon;
+			if (tex.m_ID >= 4)
 			{
 				switch (SceneManager::Instance().GetPlayerWeaponInfo())
 				{
 				case PlayerWeaponInfo::PlayerWeaponInfo_Dagger:
-					PlayerWeapon = "/Dagger/";
+					playerWeapon = "/Dagger/";
 					break;
 				case PlayerWeaponInfo::PlayerWeaponInfo_Sword:
-					PlayerWeapon = "/Sword/";
+					playerWeapon = "/Sword/";
 					break;
 
 				default:
@@ -210,27 +210,27 @@ void PotionTexInfo::Load()
 				}
 
 
-				iconPath = m_weaponsStrengtheningPath + PlayerWeapon + tex.m_name + m_Icom;
-				explanationPath = m_weaponsStrengtheningPath + PlayerWeapon + tex.m_name + m_Explanation;
-				namePath = m_weaponsStrengtheningPath + PlayerWeapon + tex.m_name + m_Name;
+				iconPath = m_weaponsStrengtheningPath + playerWeapon + tex.m_name + m_icon;
+				explanationPath = m_weaponsStrengtheningPath + playerWeapon + tex.m_name + m_explanation;
+				namePath = m_weaponsStrengtheningPath + playerWeapon + tex.m_name + m_name;
 			}
 			else
 			{
-				iconPath = m_weaponsStrengtheningPath + tex.m_name + m_Icom;
-				explanationPath = m_weaponsStrengtheningPath + tex.m_name + m_Explanation;
-				namePath = m_weaponsStrengtheningPath + tex.m_name + m_Name;
+				iconPath = m_weaponsStrengtheningPath + tex.m_name + m_icon;
+				explanationPath = m_weaponsStrengtheningPath + tex.m_name + m_explanation;
+				namePath = m_weaponsStrengtheningPath + tex.m_name + m_name;
 			}
 
 
 
 
-			icon->Load(iconPath);
-			explanation->Load(explanationPath);
-			name->Load(namePath);
+			spIcon->Load(iconPath);
+			spExplanation->Load(explanationPath);
+			spName->Load(namePath);
 
-			tex.m_Icon = icon;
-			tex.m_Explanation = explanation;
-			tex.m_Name = name;
+			tex.m_spIcon = spIcon;
+			tex.m_spExplanation = spExplanation;
+			tex.m_spName = spName;
 		}
 	}
 
@@ -244,41 +244,41 @@ void PotionTexInfo::Load()
 		for (auto& item : jsonData["inventory"])
 		{
 			Texs inv;
-			inv.ID = item["id"].get<int>();
+			inv.m_ID = item["id"].get<int>();
 			inv.m_name = item["name"].get<std::string>();
 			inventoryList.push_back(inv);
 		}
 
 		// ID順にソート
 		std::sort(inventoryList.begin(), inventoryList.end(),
-			[](const Texs& a, const Texs& b)
+			[](const Texs& _a, const Texs& _b)
 			{
-				return a.ID < b.ID;
+				return _a.m_ID < _b.m_ID;
 			});
 
-		m_WeaponsStrengtheningItemTexs = inventoryList;
+		m_weaponsStrengtheningItemTexs = inventoryList;
 
-		for (auto& tex : m_WeaponsStrengtheningItemTexs)
+		for (auto& tex : m_weaponsStrengtheningItemTexs)
 		{
-			std::shared_ptr<KdTexture>icon = std::make_shared<KdTexture>();
-			std::shared_ptr<KdTexture>explanation = std::make_shared<KdTexture>();
-			std::shared_ptr<KdTexture>name = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spIcon = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spExplanation = std::make_shared<KdTexture>();
+			std::shared_ptr<KdTexture>spName = std::make_shared<KdTexture>();
 
 			// アイコンの画像（Icon.png）
-			std::string iconPath = m_weaponsStrengtheningItemPath + tex.m_name + m_Icom;
-			icon->Load(iconPath);
+			std::string iconPath = m_weaponsStrengtheningItemPath + tex.m_name + m_icon;
+			spIcon->Load(iconPath);
 
 			// 説明の画像（SelectExplanationBase.png）
-			std::string explanationPath = m_weaponsStrengtheningItemPath + tex.m_name + m_Explanation;
-			explanation->Load(explanationPath);
+			std::string explanationPath = m_weaponsStrengtheningItemPath + tex.m_name + m_explanation;
+			spExplanation->Load(explanationPath);
 
 			// 名前の画像（SelectNameBase.png）
-			std::string namePath = m_weaponsStrengtheningItemPath + tex.m_name + m_Name;
-			name->Load(namePath);
+			std::string namePath = m_weaponsStrengtheningItemPath + tex.m_name + m_name;
+			spName->Load(namePath);
 
-			tex.m_Icon = icon;
-			tex.m_Explanation = explanation;
-			tex.m_Name = name;
+			tex.m_spIcon = spIcon;
+			tex.m_spExplanation = spExplanation;
+			tex.m_spName = spName;
 		}
 	}
 }

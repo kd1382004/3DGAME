@@ -44,27 +44,27 @@ void TreasureChest::Init()
 		m_wpLootTableManager = LootTableManager::GetShared();
 	}
 
-	if (!m_treasureChestModel)
+	if (!m_spTreasureChestModel)
 	{
-		m_treasureChestModel = std::make_shared<KdModelWork>();
-		m_treasureChestModel->SetModelData("Asset/Models/TreasureChest/TreasureBox.gltf");
+		m_spTreasureChestModel = std::make_shared<KdModelWork>();
+		m_spTreasureChestModel->SetModelData("Asset/Models/TreasureChest/TreasureBox.gltf");
 
-		m_treasureChestAnimetor = std::make_shared<KdAnimator>();
+		m_spTreasureChestAnimator = std::make_shared<KdAnimator>();
 	}
 
 
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape("TreasureChest", m_treasureChestModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion | KdCollider::TypeGround);
+		m_pCollider->RegisterCollisionShape("TreasureChest", m_spTreasureChestModel, KdCollider::TypeBump | KdCollider::TypeCameraOcclusion | KdCollider::TypeGround);
 	}
 
 
 
 
-	if (!m_treasureChestModel) { return; }
+	if (!m_spTreasureChestModel) { return; }
 
-	auto spData = m_treasureChestModel->GetData();
+	auto spData = m_spTreasureChestModel->GetData();
 
 	if (!spData) { return; }
 
@@ -118,11 +118,11 @@ void TreasureChest::Update()
 	}
 
 
-	if (m_IsOpen)
+	if (m_isOpen)
 	{
-		m_treasureChestAnimetor->AdvanceTime(m_treasureChestModel->WorkNodes(), 100);
-		m_treasureChestModel->CalcNodeMatrices();
-		if (m_treasureChestAnimetor->IsAnimationEnd())
+		m_spTreasureChestAnimator->AdvanceTime(m_spTreasureChestModel->WorkNodes(), 100);
+		m_spTreasureChestModel->CalcNodeMatrices();
+		if (m_spTreasureChestAnimator->IsAnimationEnd())
 		{
 			auto spUIMap_TreasureChest = m_wpUIMap_TreasureChest.lock();
 			if (spUIMap_TreasureChest)
@@ -142,27 +142,27 @@ void TreasureChest::Update()
 
 
 
-		float aniemPercent = m_treasureChestAnimetor->GetAnimeProgress();
-		if (!m_dropItemIintFlg && aniemPercent >= m_dropItemInitPercent)
+		float animePercent = m_spTreasureChestAnimator->GetAnimeProgress();
+		if (!m_dropItemInitFlg && animePercent >= m_dropItemInitPercent)
 		{
 			std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
 			if (spPlayer)
 			{
 
 
-				std::shared_ptr<TreasureDropItem>treasureDropItem = std::make_shared<TreasureDropItem>();
-				treasureDropItem->Init();
-				std::string path = m_TreasureChestGetItnLootpath + std::to_string(m_TreasureChestTableNum);
-				treasureDropItem->SetPath(path);
-				treasureDropItem->SetPlayer(spPlayer);
-				std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
-				treasureDropItem->SetLootTableManager(m_spLootTableManager);
-				treasureDropItem->SetPos(GetPos());
+				std::shared_ptr<TreasureDropItem>spTreasureDropItem = std::make_shared<TreasureDropItem>();
+				spTreasureDropItem->Init();
+				std::string path = m_treasureChestGetItemLootPath + std::to_string(m_treasureChestTableNum);
+				spTreasureDropItem->SetPath(path);
+				spTreasureDropItem->SetPlayer(spPlayer);
+				std::shared_ptr<LootTableManager>spLootTableManager = m_wpLootTableManager.lock();
+				spTreasureDropItem->SetLootTableManager(spLootTableManager);
+				spTreasureDropItem->SetPos(GetPos());
 
-				SceneManager::Instance().AddObject(treasureDropItem);
+				SceneManager::Instance().AddObject(spTreasureDropItem);
 			}
 
-			m_dropItemIintFlg = true;
+			m_dropItemInitFlg = true;
 		}
 		return;
 	}
@@ -170,14 +170,14 @@ void TreasureChest::Update()
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
 	if (spPlayer)
 	{
-		Math::Vector3 PlayerPos = spPlayer->GetPos();
-		Math::Vector3 Pos = GetPos();
+		Math::Vector3 playerPos = spPlayer->GetPos();
+		Math::Vector3 pos = GetPos();
 
-		float dist = (PlayerPos - Pos).Length();
+		float dist = (playerPos - pos).Length();
 
 		if (dist < m_openSiz)
 		{
-			int key = spPlayer->GetActionKeyConfig().interact;
+			int key = spPlayer->GetActionKeyConfig().m_interact;
 
 			auto spUIMapManager = m_wpUIManager.lock();
 			std::shared_ptr<UIBase2>spUI = nullptr;
@@ -199,14 +199,14 @@ void TreasureChest::Update()
 
 				spUI->SetDrawFlg(true);
 				spUI->Set2DPos({ set2DPos.x,set2DPos.y });
-				spUI->SetTex(m_uiTex);
+				spUI->SetTex(m_spUiTex);
 				spUI->SetDrawKey(key);
 			}
 
 			if (KeyInfo::Instance().GetValidKeyPush(key, true))
 			{
-				m_IsOpen = true;
-				m_treasureChestAnimetor->SetAnimation(m_treasureChestModel->GetAnimation("Open"), false);
+				m_isOpen = true;
+				m_spTreasureChestAnimator->SetAnimation(m_spTreasureChestModel->GetAnimation("Open"), false);
 				if (m_spTreasureChestSE)
 				{
 					m_spTreasureChestSE->Stop();
@@ -217,8 +217,8 @@ void TreasureChest::Update()
 
 				// 宝箱が開く音
 				{
-					std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/TreasureChest/Open.wav", false);
-					if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+					std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/TreasureChest/Open.wav", false);
+					if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 				}
 			}
 		}
@@ -255,9 +255,9 @@ void TreasureChest::GenerateDepthMapFromLight()
 {
 	if (!m_isInView) { return; }
 
-	if (m_treasureChestModel)
+	if (m_spTreasureChestModel)
 	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_treasureChestModel, m_mWorld);
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTreasureChestModel, m_mWorld);
 	}
 }
 
@@ -277,9 +277,9 @@ void TreasureChest::DrawLit()
 	if (!m_isInView) { return; }
 
 
-	if (m_treasureChestModel)
+	if (m_spTreasureChestModel)
 	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_treasureChestModel, m_mWorld);
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTreasureChestModel, m_mWorld);
 	}
 }
 

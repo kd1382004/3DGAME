@@ -41,7 +41,7 @@ void SmashAttack::Update()
 		{
 			m_hitFlg = false;
 
-			float damage = m_attckPower * m_attckMagnification;
+			float damage = m_attackPower * m_attackMagnification;
 			spPlayerBase->OnAttackHit(damage, m_knockbackDistance, m_knockbackDir, m_hitStunTime, false, 0);
 		}
 	}
@@ -52,7 +52,7 @@ void SmashAttack::Update()
 void SmashAttack::SetAttackStatus()
 {
 	//攻撃力倍率
-	m_attckMagnification = 1.3;
+	m_attackMagnification = 1.3;
 
 	//ふっとばし距離	
 	m_knockbackDistance = 3;

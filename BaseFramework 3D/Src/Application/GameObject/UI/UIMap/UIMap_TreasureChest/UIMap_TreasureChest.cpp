@@ -2,10 +2,10 @@
 #include"../UIMap_Map/UIMap_Map.h"
 void UIMap_TreasureChest::Init()
 {
-	if (!m_treasureChestTex)
+	if (!m_spTreasureChestTex)
 	{
-		m_treasureChestTex = std::make_shared<KdTexture>();
-		m_treasureChestTex->Load("Asset/Textures/GameUI/Map/TreasureChest.png");
+		m_spTreasureChestTex = std::make_shared<KdTexture>();
+		m_spTreasureChestTex->Load("Asset/Textures/GameUI/Map/TreasureChest.png");
 		m_basePos = {};
 	}
 
@@ -14,7 +14,7 @@ void UIMap_TreasureChest::Init()
 void UIMap_TreasureChest::DrawSprite()
 {
 
-	if (!m_treasureChestTex) { return; }
+	if (!m_spTreasureChestTex) { return; }
 
 	DiscoverTile(&m_posList);
 
@@ -23,7 +23,7 @@ void UIMap_TreasureChest::DrawSprite()
 	float drawX = m_basePos.x + m_2DPos.x * m_siz;
 	float drawY = m_basePos.y + m_2DPos.y * m_siz;
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_treasureChestTex, drawX, drawY);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTreasureChestTex, drawX, drawY);
 }
 
 void UIMap_TreasureChest::SetPos(Math::Vector3 _3DPos, float _worldTileSize)
@@ -53,7 +53,7 @@ void UIMap_TreasureChest::DiscoverTile(List* _info)
 	int treasureChestTileY = (int)((_info->m_pos.z - m_base3DPos.z) / m_tileSiz);
 
 
-	const auto& tileList = spUIMap_Map->GetMineMapInfo();
+	const auto& tileList = spUIMap_Map->GetMiniMapInfo();
 	for (const auto& tile : tileList)
 	{
 		if ((int)tile.m_tileIndex.x == treasureChestTileX && (int)tile.m_tileIndex.y == treasureChestTileY)

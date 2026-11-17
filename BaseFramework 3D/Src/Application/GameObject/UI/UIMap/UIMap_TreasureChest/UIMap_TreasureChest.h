@@ -5,63 +5,102 @@ class UIMap_Map;
 class UIMap_TreasureChest:public KdGameObject
 {
 public:
+	//コンストラクタ
 	UIMap_TreasureChest() {};
+	//デストラクタ
 	~UIMap_TreasureChest()override {};
 
+	//初期化
 	void Init()override;
+	//2Dの描画
 	void DrawSprite()override;
 
-	void SetBase3DPos(Math::Vector3 _3dPos)
+	//マップの基準位置(ワールド)をセット
+	// _3DPos ... 基準位置(ワールド)
+	void SetBase3DPos(Math::Vector3 _3DPos)
 	{
-		m_base3DPos = _3dPos;
+		m_base3DPos = _3DPos;
 	}
 
+	//ミニマップの基準位置(画面)をセット
+	// _basePos ... 基準位置(画面)
 	void SetBasePos(Math::Vector2 _basePos) { m_basePos = _basePos; }
-	void SetMinMapPlayerPos(Math::Vector2 _minMapPlayerPos) { m_minMapPlayerPos = _minMapPlayerPos; }
+	//ミニマップ上のプレイヤーの位置をセット
+	// _miniMapPlayerPos ... プレイヤーの位置(画面)
+	void SetMiniMapPlayerPos(Math::Vector2 _miniMapPlayerPos) { m_miniMapPlayerPos = _miniMapPlayerPos; }
 
+	//宝箱の座標をセット
+	// _3DPos ... 宝箱の座標(ワールド)
+	// _worldTileSize ... 1タイルの大きさ
 	void SetPos(Math::Vector3 _3DPos, float _worldTileSize);
 
+	//1タイルの大きさをセット
+	// _siz ... 1タイルの大きさ
 	void SetTileSiz(float _siz) { m_tileSiz = _siz; }
 
+	//ミニマップ上の位置を返す
+	//戻り値 ... 画面座標
 	Math::Vector2 GetPos();
 
+	//ミニマップの1マスの画像の大きさをセット
+	// _siz ... 画像の大きさ
 	void SetMapTexSiz(Math::Vector2 _siz) { m_mapTexSiz = _siz; }
 
-	void SetUIMap_Map(std::shared_ptr<UIMap_Map> _UIMap_Map) { m_wpUIMap_Map = _UIMap_Map; }
+	//マップのUIをセット
+	// _spUIMap_Map ... マップのUI
+	void SetUIMap_Map(std::shared_ptr<UIMap_Map> _spUIMap_Map) { m_wpUIMap_Map = _spUIMap_Map; }
 
+	//もう表示しない(開けた)かをセット
+	// _flg ... もう表示しないか
 	void SetExpired(bool _flg) { m_isExpired = _flg; }
 private:
 
+	//マップのUI
 	std::weak_ptr<UIMap_Map>m_wpUIMap_Map;
 
-	Math::Vector2 m_minMapPlayerPos;
+	//ミニマップ上のプレイヤーの位置
+	Math::Vector2 m_miniMapPlayerPos;
 
+	//プレイヤーから何マス以内なら見つけたことにするか
 	int m_discoverTileNum = 2;
 
 	struct List
 	{
+		//宝箱の座標(ワールド)
 		Math::Vector3 m_pos;
+		//表示するか
 		bool m_drawFlg = false;
 	};
 
 
+	//宝箱の位置
 	List m_posList;
 
+	//プレイヤーの近くなら表示するようにする
+	// _info ... 調べる宝箱
 	void DiscoverTile(List* _info);
 
+	//ミニマップの1マスの画像の大きさ
 	Math::Vector2 m_mapTexSiz = { };
 
+	//大きさの倍率
 	float m_siz = 1.0f;
 
+	//1タイルの大きさ
 	float m_tileSiz;
 
+	//ミニマップの基準位置(画面)
 	Math::Vector2 m_basePos;
 
-	std::shared_ptr<KdTexture>m_treasureChestTex;
+	//宝箱のアイコン
+	std::shared_ptr<KdTexture>m_spTreasureChestTex;
 
+	//画面上の座標
 	Math::Vector3 m_2DPos;
 
+	//マップの基準位置(ワールド)
 	Math::Vector3 m_base3DPos;
 
+	//表示するか
 	bool m_drawFlg=false;
 };

@@ -18,13 +18,13 @@ void UIManager::Init()
 {
 	m_pauseStop = false;
 
-	m_UIBase2 = std::make_shared<UIBase2>();
-	m_spUIList.push_back(m_UIBase2);
+	m_spUIBase2 = std::make_shared<UIBase2>();
+	m_spUIList.push_back(m_spUIBase2);
 
-	if (!m_tresureChestUiTex)
+	if (!m_spTreasureChestUiTex)
 	{
-		m_tresureChestUiTex = std::make_shared<KdTexture>();
-		m_tresureChestUiTex->Load("Asset/Textures/GameUI/TreasureChest/TreasureChestOpenUI.png");
+		m_spTreasureChestUiTex = std::make_shared<KdTexture>();
+		m_spTreasureChestUiTex->Load("Asset/Textures/GameUI/TreasureChest/TreasureChestOpenUI.png");
 	}
 }
 
@@ -48,51 +48,51 @@ void UIManager::PreUpdate()
 	}
 
 	//ソートする(描画優先数字が大きいほど後に)
-	if (m_spUIListOldSiz != m_spUIList.size())
+	if (m_uiListOldSiz != m_spUIList.size())
 	{
 		m_spUIList.sort(
-			[](const std::shared_ptr<UIBase>& a, const std::shared_ptr<UIBase>& b)
+			[](const std::shared_ptr<UIBase>& _spA, const std::shared_ptr<UIBase>& _spB)
 			{
-				return a->GetLayerPriority() > b->GetLayerPriority();
+				return _spA->GetLayerPriority() > _spB->GetLayerPriority();
 			}
 		);
 
-		m_spUIListOldSiz = m_spUIList.size();
+		m_uiListOldSiz = m_spUIList.size();
 	}
 
-	if (m_UIBase2)
+	if (m_spUIBase2)
 	{
-		m_UIBase2->SetDrawFlg(false);
+		m_spUIBase2->SetDrawFlg(false);
 	}
 
 
-	for (auto UI : m_spUIList)
+	for (auto ui : m_spUIList)
 	{
-		UI->PreUpdate();
+		ui->PreUpdate();
 	}
 }
 
 void UIManager::Update()
 {
-	for (auto UI : m_spUIList)
+	for (auto ui : m_spUIList)
 	{
-		UI->Update();
+		ui->Update();
 	}
 }
 
 void UIManager::PreDraw()
 {
-	for (auto UI : m_spUIList)
+	for (auto ui : m_spUIList)
 	{
-		UI->PreDraw();
+		ui->PreDraw();
 	}	
 }
 
 void UIManager::DrawSprite()
 {
-	for (auto UI : m_spUIList)
+	for (auto ui : m_spUIList)
 	{
-		UI->DrawSprite();
+		ui->DrawSprite();
 	}
 }
 
@@ -145,7 +145,7 @@ void UIManager::AddPlayerInventoryUI()
 	m_spUIList.push_back(m_spPlayerInventoryUI);
 }
 
-void UIManager::SetpPotionTexInfo()
+void UIManager::SetPotionTexInfo()
 {
 	if (!m_spPotionTexInfo)
 	{
@@ -153,12 +153,12 @@ void UIManager::SetpPotionTexInfo()
 	}
 }
 
-void UIManager::SetMinimapRevealAll(bool enable)
+void UIManager::SetMinimapRevealAll(bool _enable)
 {
 	std::shared_ptr<UIMapManager>spUIMap = m_wpUIMapManager.lock();
 	if (spUIMap)
 	{
-		spUIMap->SetMinimapRevealAll(enable);
+		spUIMap->SetMinimapRevealAll(_enable);
 	}
 }
 

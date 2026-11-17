@@ -8,28 +8,28 @@ void UIMapManager::Init()
 	m_basePos = { -600,350 };
 
 
-	if (!m_UIMap_Map)
+	if (!m_spUIMap_Map)
 	{
-		m_UIMap_Map = std::make_shared<UIMap_Map>();
-		m_UIMap_Map->Init();
-		m_UIMap_Map->SetBasePos(m_basePos);
+		m_spUIMap_Map = std::make_shared<UIMap_Map>();
+		m_spUIMap_Map->Init();
+		m_spUIMap_Map->SetBasePos(m_basePos);
 
 
-		if (!m_UIMap_Player)
+		if (!m_spUIMap_Player)
 		{
-			m_UIMap_Player = std::make_shared<UIMap_Player>();
-			m_UIMap_Player->Init();
-			m_UIMap_Player->SetBasePos(m_basePos);
-			m_UIMap_Player->SetMapTexSiz(m_UIMap_Map->GetMapTexSiz());
+			m_spUIMap_Player = std::make_shared<UIMap_Player>();
+			m_spUIMap_Player->Init();
+			m_spUIMap_Player->SetBasePos(m_basePos);
+			m_spUIMap_Player->SetMapTexSiz(m_spUIMap_Map->GetMapTexSiz());
 		}
 
-		if (!m_UIMap_Enemy)
+		if (!m_spUIMap_Enemy)
 		{
-			m_UIMap_Enemy = std::make_shared<UIMap_EnemyManage>();
-			m_UIMap_Enemy->Init();
-			m_UIMap_Enemy->SetBasePos(m_basePos);
-			m_UIMap_Enemy->SetUIMap_Map(m_UIMap_Map);
-			m_UIMap_Enemy->SetMapTexSiz(m_UIMap_Map->GetMapTexSiz());
+			m_spUIMap_Enemy = std::make_shared<UIMap_EnemyManage>();
+			m_spUIMap_Enemy->Init();
+			m_spUIMap_Enemy->SetBasePos(m_basePos);
+			m_spUIMap_Enemy->SetUIMap_Map(m_spUIMap_Map);
+			m_spUIMap_Enemy->SetMapTexSiz(m_spUIMap_Map->GetMapTexSiz());
 		}
 
 	}
@@ -57,38 +57,38 @@ void UIMapManager::PreUpdate()
 
 void UIMapManager::PreDraw()
 {
-	if (m_UIMap_Player)
+	if (m_spUIMap_Player)
 	{
-		m_UIMap_Player->PreDraw();
+		m_spUIMap_Player->PreDraw();
 	}
 
-	if (m_UIMap_Map)
+	if (m_spUIMap_Map)
 	{
-		m_UIMap_Map->SetMinMapPlayerPos(m_UIMap_Player->GetPos());
-		m_UIMap_Map->PreDraw();
+		m_spUIMap_Map->SetMiniMapPlayerPos(m_spUIMap_Player->GetPos());
+		m_spUIMap_Map->PreDraw();
 	}
 }
 
 void UIMapManager::DrawSprite()
 {
-	if (m_UIMap_Map)
+	if (m_spUIMap_Map)
 	{
-		m_UIMap_Map->DrawSprit();
+		m_spUIMap_Map->DrawSprite();
 	}
 
-	if (m_UIMap_Enemy)
+	if (m_spUIMap_Enemy)
 	{
-		m_UIMap_Enemy->DrawSprit();
+		m_spUIMap_Enemy->DrawSprite();
 	}
 
-	if (m_UIMap_Player)
+	if (m_spUIMap_Player)
 	{
-		m_UIMap_Player->DrawSprit();
+		m_spUIMap_Player->DrawSprite();
 	}
 
-	for (auto Map_TreasureChest : m_UIMap_TreasureChest)
+	for (auto mapTreasureChest : m_UIMap_TreasureChest)
 	{
-		Map_TreasureChest->DrawSprite();
+		mapTreasureChest->DrawSprite();
 	}
 }
 
@@ -96,19 +96,19 @@ void UIMapManager::SetBase3DPos(Math::Vector3 _base3DPos)
 {
 	m_base3DPos = _base3DPos;
 
-	if (m_UIMap_Player)
+	if (m_spUIMap_Player)
 	{
-		m_UIMap_Player->SetBase3DPos(m_base3DPos);
+		m_spUIMap_Player->SetBase3DPos(m_base3DPos);
 	}
 
-	if (m_UIMap_Map)
+	if (m_spUIMap_Map)
 	{
-		m_UIMap_Map->SetBase3DPos(m_base3DPos);
+		m_spUIMap_Map->SetBase3DPos(m_base3DPos);
 	}
 
-	if (m_UIMap_Enemy)
+	if (m_spUIMap_Enemy)
 	{
-		m_UIMap_Enemy->SetBase3DPos(m_base3DPos);
+		m_spUIMap_Enemy->SetBase3DPos(m_base3DPos);
 	}
 }
 
@@ -116,33 +116,33 @@ void UIMapManager::SetTileSiz(float _siz)
 {
 	{ m_tileSiz = _siz; }
 
-	if (m_UIMap_Player)
+	if (m_spUIMap_Player)
 	{
-		m_UIMap_Player->SetTileSiz(m_tileSiz);
+		m_spUIMap_Player->SetTileSiz(m_tileSiz);
 	}
 
-	if (m_UIMap_Enemy)
+	if (m_spUIMap_Enemy)
 	{
-		m_UIMap_Enemy->SetTileSiz(m_tileSiz);
+		m_spUIMap_Enemy->SetTileSiz(m_tileSiz);
 	}
 }
 
-void UIMapManager::AddUIMap_TreasureChest(std::shared_ptr<UIMap_TreasureChest> _TreasureChest,Math::Vector3 _3Dpos)
+void UIMapManager::AddUIMap_TreasureChest(std::shared_ptr<UIMap_TreasureChest> _spTreasureChest,Math::Vector3 _3DPos)
 {
-	_TreasureChest->Init();
-	_TreasureChest->SetMapTexSiz(m_UIMap_Map->GetMapTexSiz());
-	_TreasureChest->SetUIMap_Map(m_UIMap_Map);
-	_TreasureChest->SetBase3DPos(m_base3DPos);
-	_TreasureChest->SetBasePos(m_basePos);
-	_TreasureChest->SetTileSiz(m_tileSiz);
-	_TreasureChest->SetPos(_3Dpos, m_tileSiz);
-	m_UIMap_TreasureChest.push_back(_TreasureChest);
+	_spTreasureChest->Init();
+	_spTreasureChest->SetMapTexSiz(m_spUIMap_Map->GetMapTexSiz());
+	_spTreasureChest->SetUIMap_Map(m_spUIMap_Map);
+	_spTreasureChest->SetBase3DPos(m_base3DPos);
+	_spTreasureChest->SetBasePos(m_basePos);
+	_spTreasureChest->SetTileSiz(m_tileSiz);
+	_spTreasureChest->SetPos(_3DPos, m_tileSiz);
+	m_UIMap_TreasureChest.push_back(_spTreasureChest);
 }
 
-void UIMapManager::SetMinimapRevealAll(bool enable)
+void UIMapManager::SetMinimapRevealAll(bool _enable)
 {
-	if (m_UIMap_Map)
+	if (m_spUIMap_Map)
 	{
-		m_UIMap_Map->SetMinimapRevealAll(enable);
+		m_spUIMap_Map->SetMinimapRevealAll(_enable);
 	}
 }

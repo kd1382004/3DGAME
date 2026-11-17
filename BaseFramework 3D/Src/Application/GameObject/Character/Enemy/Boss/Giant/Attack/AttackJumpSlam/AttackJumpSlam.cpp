@@ -7,40 +7,40 @@ void AttackJumpSlam::AttackJumpSlamUpdate()
 	if (m_radiusDrawFlg)
 	{
 
-		UAEffectShaderManager::Instance().WriteCBCircleEffect(m_Rpos, m_radius, { 0.5,0,0 });
+		UAEffectShaderManager::Instance().WriteCBCircleEffect(m_rPos, m_radius, { 0.5,0,0 });
 		m_radiusPercent += 2 * DeltaTime::Instance().GetGameDeltaTime();
 		if (m_radiusPercent > 1)
 		{
 			m_radiusPercent = 0;
 		}
 
-		UAEffectShaderManager::Instance().WriteCBCircleEffect(m_Rpos, m_radius * m_radiusPercent, { 1,0,0 });
+		UAEffectShaderManager::Instance().WriteCBCircleEffect(m_rPos, m_radius * m_radiusPercent, { 1,0,0 });
 	}
 
 
 
 	if (!m_hitFlg) { return; }
 
-	KdCollider::SphereInfo spherRInfo;
+	KdCollider::SphereInfo sphereRInfo;
 
-	spherRInfo.m_sphere.Center = m_Rpos;
-	spherRInfo.m_sphere.Radius = m_radius;
-	spherRInfo.m_type = KdCollider::Type::TypeDamage;
+	sphereRInfo.m_sphere.Center = m_rPos;
+	sphereRInfo.m_sphere.Radius = m_radius;
+	sphereRInfo.m_type = KdCollider::Type::TypeDamage;
 	std::shared_ptr<PlayerBase>spPlayerBase = m_wpPlayerBase.lock();
 	if (spPlayerBase)
 	{
-		if (spPlayerBase->Intersects(spherRInfo, nullptr))
+		if (spPlayerBase->Intersects(sphereRInfo, nullptr))
 		{
 			m_hitFlg = false;
 
-			float dmage = m_attckPower * m_attckMagnification;
-			spPlayerBase->OnAttackHit(dmage, m_knockbackDistance, m_knockbackDir, m_hitStunTime, false, 0);
+			float damage = m_attackPower * m_attackMagnification;
+			spPlayerBase->OnAttackHit(damage, m_knockbackDistance, m_knockbackDir, m_hitStunTime, false, 0);
 		}
 	}
 
 	if (m_pDebugWire)
 	{
-		m_pDebugWire->AddDebugSphere(spherRInfo.m_sphere.Center, spherRInfo.m_sphere.Radius);
+		m_pDebugWire->AddDebugSphere(sphereRInfo.m_sphere.Center, sphereRInfo.m_sphere.Radius);
 	}
 
 
@@ -50,7 +50,7 @@ void AttackJumpSlam::AttackJumpSlamUpdate()
 void AttackJumpSlam::SetAttackStatus()
 {
 	//攻撃力倍率
-	m_attckMagnification = 1.5;
+	m_attackMagnification = 1.5;
 
 	//ふっとばし距離
 	m_knockbackDistance = 10;

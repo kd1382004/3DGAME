@@ -10,28 +10,38 @@ class CameraBase;
 class Sword_FinalSlash :public KdGameObject
 {
 public:
+	//コンストラクタ
 	Sword_FinalSlash() {}
+	//デストラクタ
 	~Sword_FinalSlash()override
 	{
 		// 溜めの音が鳴りっぱなしにならないように止める
 		if (m_spChargeSE) { m_spChargeSE->Stop(); }
 	}
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//エフェクトの描画
 	void DrawEffect()override;
 
 	// 出すときに Sword から呼ぶ
 	// _obb    : 斬撃の跡の判定（ワールド）
 	// _damage : 弾けたときのダメージ
 	// _dir    : ノックバックの向き
+	// _knockback ... ノックバックの強さ
+	// _defenseIgnore ... 防御無視の割合
+	// _chargeTime ... 溜めた時間
 	void SetSlashStatus(const DirectX::BoundingOrientedBox& _obb, float _damage,
 		float _knockback, const Math::Vector3& _dir, float _defenseIgnore, float _chargeTime);
 
 	// 弾けたときに揺らすカメラ
-	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
+	// _spCamera ... カメラ
+	void SetCamera(const std::shared_ptr<CameraBase>& _spCamera) { m_wpCamera = _spCamera; }
 
 	// 当たり判定をする敵のリスト（Sword が持っているものを渡す）
+	// _list ... 当たり判定をするキャラのリスト
 	void SetAttackHitCharacterList(const std::list<std::weak_ptr<CharacterBase>>& _list)
 	{
 		m_attackHitCharacterList = _list;
@@ -52,6 +62,7 @@ private:
 		Burst,		// 弾け：このフレームで判定
 		Fade,		// 消える
 	};
+	//今の段階
 	State m_state = State::Charge;
 
 	// 弾けたときに揺らすカメラ
@@ -105,26 +116,27 @@ private:
 	//////////////////////////////////////////////////////////////
 
 	// 板ポリゴン（1枚を使い回して、描くたびに画像を差し替える）
-	std::shared_ptr<KdSquarePolygon> m_Poly = nullptr;
+	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
 
 	// 斬撃の線（白。描くときに赤を掛ける、加算）
-	std::shared_ptr<KdTexture> m_lineTex = nullptr;
+	std::shared_ptr<KdTexture> m_spLineTex = nullptr;
 
 	// 線のまわりのぼんやりした光（白。描くときに赤を掛ける、加算）
-	std::shared_ptr<KdTexture> m_glowTex = nullptr;
+	std::shared_ptr<KdTexture> m_spGlowTex = nullptr;
 
 	// 弾けたときに後ろを暗くする黒いもや（Alpha）
-	std::shared_ptr<KdTexture> m_darkHaloTex = nullptr;
+	std::shared_ptr<KdTexture> m_spDarkHaloTex = nullptr;
 
 	// 黒い稲妻（形違いを3枚。切り替えてバチバチさせる、Alpha）
 	static constexpr int kBoltTexNum = 3;
-	std::shared_ptr<KdTexture> m_boltTex[kBoltTexNum];
+	//黒い稲妻の画像
+	std::shared_ptr<KdTexture> m_spBoltTex[kBoltTexNum];
 
 	// 衝撃波の黒い輪（Alpha）
-	std::shared_ptr<KdTexture> m_ringTex = nullptr;
+	std::shared_ptr<KdTexture> m_spRingTex = nullptr;
 
 	// 衝撃波の輪のぼんやりした光（白。赤を掛けて加算）
-	std::shared_ptr<KdTexture> m_ringGlowTex = nullptr;
+	std::shared_ptr<KdTexture> m_spRingGlowTex = nullptr;
 
 	//////////////////////////////////////////////////////////////
 	// 演出：色
@@ -228,5 +240,6 @@ private:
 	// 輪の最後の大きさ（m）
 	const float m_ringEndSize = 4.0f;
 
+	//稲妻の向きと形をランダムに決め直す
 	void RandomizeBolts();
 };

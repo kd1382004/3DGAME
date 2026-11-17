@@ -30,41 +30,41 @@ void TreasureChestManager::PreUpdate()
 
 void TreasureChestManager::Update()
 {
-	for (auto TreasureChest : m_treasureChestList)
+	for (auto treasureChest : m_treasureChestList)
 	{
-		TreasureChest->Update();
+		treasureChest->Update();
 	}
 }
 
 void TreasureChestManager::PostUpdate()
 {
-	for (auto TreasureChest : m_treasureChestList)
+	for (auto treasureChest : m_treasureChestList)
 	{
-		TreasureChest->PostUpdate();
+		treasureChest->PostUpdate();
 	}
 }
 
 void TreasureChestManager::GenerateDepthMapFromLight()
 {
-	for (auto TreasureChest : m_treasureChestList)
+	for (auto treasureChest : m_treasureChestList)
 	{
-		TreasureChest->GenerateDepthMapFromLight();
+		treasureChest->GenerateDepthMapFromLight();
 	}
 }
 
 void TreasureChestManager::DrawLit()
 {
-	for (auto TreasureChest : m_treasureChestList)
+	for (auto treasureChest : m_treasureChestList)
 	{
-		TreasureChest->DrawLit();
+		treasureChest->DrawLit();
 	}
 }
 
 void TreasureChestManager::PreDraw()
 {
-	for (auto TreasureChest : m_treasureChestList)
+	for (auto treasureChest : m_treasureChestList)
 	{
-		TreasureChest->PreDraw();
+		treasureChest->PreDraw();
 	}
 }
 
@@ -89,12 +89,12 @@ void TreasureChestManager::GenerateTreasureChest(std::list<Math::Vector3> _treas
 	int a = 0;
 }
 
-void TreasureChestManager::TreasureChestHit(const std::shared_ptr<KdGameObject>& obj)
+void TreasureChestManager::TreasureChestHit(const std::shared_ptr<KdGameObject>& _spObj)
 {
-	if (!obj) { return; }
+	if (!_spObj) { return; }
 
 	// 当たり判定リストをクリア
-	const Math::Vector3 objPos = obj->GetPos();
+	const Math::Vector3 objPos = _spObj->GetPos();
 	constexpr float hitCheckDistSq = 15.0f * 15.0f;
 
 	// 近くにあるオブジェクトだけを新たに登録
@@ -104,7 +104,7 @@ void TreasureChestManager::TreasureChestHit(const std::shared_ptr<KdGameObject>&
 		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
 		if (distSq <= hitCheckDistSq)
 		{
-			obj->RegistHitObject(mapObj);
+			_spObj->RegistHitObject(mapObj);
 		}
 	}
 }

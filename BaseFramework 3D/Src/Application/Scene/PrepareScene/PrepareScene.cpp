@@ -173,7 +173,7 @@ void PrepareScene::ApplyEquip()
 	SceneManager::Instance().SetPlayerWeaponInfo(m_selectWeapon);
 }
 
-void PrepareScene::ImGUi()
+void PrepareScene::ImGUI()
 {
 	if (ImGui::Begin(U8("PrepareScene")))
 	{

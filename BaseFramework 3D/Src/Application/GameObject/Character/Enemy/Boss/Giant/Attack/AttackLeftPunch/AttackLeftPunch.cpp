@@ -29,8 +29,8 @@ void AttackLeftPunch::AttackLeftPunchUpdate()
 		{
 			m_hitFlg = false;
 
-			float dmage = m_attckPower * m_attckMagnification;
-			spPlayerBase->OnAttackHit(dmage, m_knockbackDistance, m_knockbackDir, m_hitStunTime, false, 0);
+			float damage = m_attackPower * m_attackMagnification;
+			spPlayerBase->OnAttackHit(damage, m_knockbackDistance, m_knockbackDir, m_hitStunTime, false, 0);
 		}
 	}
 
@@ -49,7 +49,7 @@ void AttackLeftPunch::DrawLit()
 void AttackLeftPunch::SetAttackStatus()
 {
 	//攻撃力倍率
-	m_attckMagnification = 1.2;
+	m_attackMagnification = 1.2;
 
 	//ふっとばし距離
 	m_knockbackDistance = 1;

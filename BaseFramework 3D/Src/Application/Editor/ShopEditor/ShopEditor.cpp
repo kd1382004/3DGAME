@@ -5,6 +5,7 @@ namespace
 	// タブの順番(ショップ画面と同じ)
 	const char* kCategoryKey[]   = { "potions", "materials", "weapons" };
 	const char* kCategoryLabel[] = { U8("消耗品"), U8("素材"), U8("武器") };
+	//ショップの商品の種類の数(消耗品・素材・武器)
 	constexpr int kCategoryNum = 3;
 
 	constexpr float kIconSiz = 40.0f;	// 表に出すアイコンの大きさ
@@ -99,7 +100,7 @@ void ShopEditor::DrawCategory(const Category& _category)
 	constexpr ImGuiTableFlags flags =
 		ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit;
 
-	if (!ImGui::BeginTable(_category.key, 6, flags)) return;
+	if (!ImGui::BeginTable(_category.m_key, 6, flags)) return;
 
 	ImGui::TableSetupColumn(U8("アイコン"));
 	ImGui::TableSetupColumn(U8("名前"));
@@ -109,7 +110,7 @@ void ShopEditor::DrawCategory(const Category& _category)
 	ImGui::TableSetupColumn(U8("規定数"));
 	ImGui::TableHeadersRow();
 
-	nlohmann::json& items = m_data[_category.key];
+	nlohmann::json& items = m_data[_category.m_key];
 	for (auto& item : items)
 	{
 		const int id = item.value("id", -1);
@@ -120,7 +121,7 @@ void ShopEditor::DrawCategory(const Category& _category)
 
 		// ---- アイコン ----
 		ImGui::TableNextColumn();
-		std::shared_ptr<KdTexture> spIcon = GetTex(GetIconPath(_category.key, name));
+		std::shared_ptr<KdTexture> spIcon = GetTex(GetIconPath(_category.m_key, name));
 		if (spIcon && spIcon->WorkSRView())
 		{
 			ImGui::Image((ImTextureID)spIcon->WorkSRView(), ImVec2(kIconSiz, kIconSiz));
@@ -132,7 +133,7 @@ void ShopEditor::DrawCategory(const Category& _category)
 
 		// ---- 名前(ゲーム内の名前画像 + JSONの名前) ----
 		ImGui::TableNextColumn();
-		std::shared_ptr<KdTexture> spName = GetTex(GetNamePath(_category.key, name));
+		std::shared_ptr<KdTexture> spName = GetTex(GetNamePath(_category.m_key, name));
 		if (spName && spName->WorkSRView())
 		{
 			ImGui::Image((ImTextureID)spName->WorkSRView(), ImVec2(kNameW, kNameH));

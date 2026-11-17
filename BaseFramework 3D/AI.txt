@@ -1,0 +1,16 @@
+決めたルール以外にそろえたこと
+定数：static const / constexpr と、元が大文字だった定数（CHUNK_SIZE → kChunkSize、BONE_HIPS → kBoneHips など）は k + 大文字始まりにしました。
+例外として、ふつうの const メンバは見本どおり m_ のままです（m_detectRange など）。
+メンバ：m_ + 小文字始まりにしました（m_Name → m_name）。HP / UI / LV / SE のような略語は大文字のままです（m_HPBarTex）。
+ローカル変数：小文字始まりにしました（Left → left、PotionInventoryList → potionInventoryList）。
+shared_ptr / weak_ptr の引数とローカル変数にも sp / wp を付けました（_obj → _spObj、se → spSE）。
+関数の中で作った構造体のフィールドにも m_ を付けました。
+関数名の大文字小文字：ImGUi → ImGUI、fCost → FCost、setDrawFlg → SetDrawFlg にそろえました。
+今回の打ち間違い修正の例
+関数：SerRoomID → SetRoomID、ChargAttackPlay → ChargeAttackPlay、SetpPotionTexInfo → SetPotionTexInfo、PotionIUse → PotionUse
+変数：m_m_chargeAttackMaxCost → m_chargeAttackMaxCost、m_arrowRHiFlg → m_arrowRHitFlg、dmage → damage
+名前の付け方：MineMapInfo → MiniMapInfo、RoomType_Stars → RoomType_Stairs
+変えていないもの
+クラス名・ファイル名（TitelMove、PlayreLV、WeponInventoryUI、AttackGage など）。変えるとプロジェクトファイルの書き換えが必要になるためです。
+フレームワーク側の名前と main.h / main.cpp（今回の対象外のため）。
+m_isStairsMine：「Mine」が何の意味か判断できなかったので、そのままにしています。

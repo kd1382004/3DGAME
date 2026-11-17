@@ -23,7 +23,7 @@ void SceneManager::PreUpdate()
 		return;
 	}
 
-	m_currentScene->PreUpdate();
+	m_spCurrentScene->PreUpdate();
 }
 
 void SceneManager::Update()
@@ -43,7 +43,7 @@ void SceneManager::Update()
 		while (ShowCursor(false) >= 0) {}  // カウンターが負になるまで下げる＝必ず非表示
 	}
 
-	m_currentScene->Update();
+	m_spCurrentScene->Update();
 }
 
 void SceneManager::PostUpdate()
@@ -53,40 +53,40 @@ void SceneManager::PostUpdate()
 		return;
 	}
 
-	m_currentScene->PostUpdate();
+	m_spCurrentScene->PostUpdate();
 }
 
 void SceneManager::PreDraw()
 {
-	m_currentScene->PreDraw();
+	m_spCurrentScene->PreDraw();
 }
 
 void SceneManager::Draw()
 {
-	m_currentScene->Draw();
+	m_spCurrentScene->Draw();
 }
 
 void SceneManager::DrawSprite()
 {
 
-	m_currentScene->DrawSprite();
+	m_spCurrentScene->DrawSprite();
 
 	MouseInfo::Instance().DrawSprite();
 }
 
 void SceneManager::DrawDebug()
 {
-	m_currentScene->DrawDebug();
+	m_spCurrentScene->DrawDebug();
 }
 
 const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()
 {
-	return m_currentScene->GetObjList();
+	return m_spCurrentScene->GetObjList();
 }
 
-void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _obj)
+void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _spObj)
 {
-	m_currentScene->AddObject(_obj);
+	m_spCurrentScene->AddObject(_spObj);
 }
 
 void SceneManager::ImGUI()
@@ -129,7 +129,7 @@ void SceneManager::ImGUI()
 		{
 			KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 
-			m_defaultSmbient = m_ambient;
+			m_defaultAmbient = m_ambient;
 		}
 
 		if (ImGui::Button(U8("保存")))
@@ -139,7 +139,7 @@ void SceneManager::ImGUI()
 
 	}
 
-	m_currentScene->ImGUi();
+	m_spCurrentScene->ImGUI();
 
 
 	if (ImGui::Button(U8("ImGuiを閉じる")))
@@ -182,7 +182,7 @@ void SceneManager::Init()
 		//height ...高さ
 		KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
 
-		FogAmbientJsonLode();
+		FogAmbientJsonLoad();
 
 		//距離フォグの設定
 		//col...色
@@ -196,10 +196,10 @@ void SceneManager::Init()
 
 void SceneManager::ChangeScene(SceneType _sceneType)
 {
-	if (m_currentScene)
+	if (m_spCurrentScene)
 	{
 		//ゲーム結果の保存
-		m_currentScene->SetGameResult();
+		m_spCurrentScene->SetGameResult();
 	}
 
 
@@ -207,16 +207,16 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	switch (_sceneType)
 	{
 	case SceneType::Title:
-		m_currentScene = std::make_shared<TitleScene>();
+		m_spCurrentScene = std::make_shared<TitleScene>();
 		break;
 	case SceneType::Prepare:
-		m_currentScene = std::make_shared<PrepareScene>();
+		m_spCurrentScene = std::make_shared<PrepareScene>();
 		break;
 	case SceneType::Game:
-		m_currentScene = std::make_shared<GameScene>();
+		m_spCurrentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::Result:
-		m_currentScene = std::make_shared<ResultScene>();
+		m_spCurrentScene = std::make_shared<ResultScene>();
 		break;
 	}
 
@@ -242,7 +242,7 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	//エフェクシアリセット
 	KdEffekseerManager::GetInstance().StopAllEffect();
 
-	m_currentScene->Init();
+	m_spCurrentScene->Init();
 
 	// 現在のシーン情報を更新
 	m_currentSceneType = _sceneType;
@@ -257,18 +257,18 @@ void SceneManager::FogAmbientJsonSave()
 	data["Fog"]["Density"] = m_FOGdensity;
 
 	// Ambient
-	data["Ambient"]["Color"] = { m_defaultSmbient.x, m_defaultSmbient.y, m_defaultSmbient.z, m_defaultSmbient.w };
+	data["Ambient"]["Color"] = { m_defaultAmbient.x, m_defaultAmbient.y, m_defaultAmbient.z, m_defaultAmbient.w };
 
-	std::ofstream ofs(m_FogAmbientJsonFilePath);
+	std::ofstream ofs(m_fogAmbientJsonFilePath);
 	ofs << data.dump(4);
 }
 
-void SceneManager::FogAmbientJsonLode()
+void SceneManager::FogAmbientJsonLoad()
 {
-	std::ifstream ifs(m_FogAmbientJsonFilePath);
+	std::ifstream ifs(m_fogAmbientJsonFilePath);
 	if (!ifs.is_open())
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] FogAmbientファイルが見つかりません : %s\n"), m_FogAmbientJsonFilePath.c_str());
+		KdDebugGUI::Instance().AddLog(U8("[Error] FogAmbientファイルが見つかりません : %s\n"), m_fogAmbientJsonFilePath.c_str());
 		return;
 	}
 
@@ -276,39 +276,39 @@ void SceneManager::FogAmbientJsonLode()
 
 	if (data.is_discarded())
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] FogAmbientファイルの読み込みに失敗しました : %s\n"), m_FogAmbientJsonFilePath.c_str());
+		KdDebugGUI::Instance().AddLog(U8("[Error] FogAmbientファイルの読み込みに失敗しました : %s\n"), m_fogAmbientJsonFilePath.c_str());
 		return;
 	}
 
-	auto getFloat = [&](const nlohmann::json& j, const char* key, float def = 0.0f)
+	auto getFloat = [&](const nlohmann::json& _j, const char* _key, float _def = 0.0f)
 		{
-			if (j.contains(key) && j[key].is_number())
-				return j[key].get<float>();
-			return def;
+			if (_j.contains(_key) && _j[_key].is_number())
+				return _j[_key].get<float>();
+			return _def;
 		};
 
-	auto getArray = [&](const nlohmann::json& j, const char* key, int count)
+	auto getArray = [&](const nlohmann::json& _j, const char* _key, int _count)
 		{
 			Math::Vector4 v = { 0,0,0,0 };
-			if (j.contains(key) && j[key].is_array())
+			if (_j.contains(_key) && _j[_key].is_array())
 			{
-				for (int i = 0; i < count; i++)
+				for (int i = 0; i < _count; i++)
 				{
-					if (j[key].size() > i && j[key][i].is_number())
+					if (_j[_key].size() > i && _j[_key][i].is_number())
 					{
 						switch (i)
 						{
 						case 0:
-							v.x = j[key][i].get<float>();
+							v.x = _j[_key][i].get<float>();
 							break;
 						case 1:
-							v.y = j[key][i].get<float>();
+							v.y = _j[_key][i].get<float>();
 							break;
 						case 2:
-							v.z = j[key][i].get<float>();
+							v.z = _j[_key][i].get<float>();
 							break;
 						case 3:
-							v.w = j[key][i].get<float>();
+							v.w = _j[_key][i].get<float>();
 							break;
 						default:
 							break;
@@ -332,8 +332,8 @@ void SceneManager::FogAmbientJsonLode()
 	{
 		auto amb = data["Ambient"];
 		Math::Vector4 col = getArray(amb, "Color", 4);
-		m_defaultSmbient = col;
-		m_ambient = m_defaultSmbient;
+		m_defaultAmbient = col;
+		m_ambient = m_defaultAmbient;
 	}
 
 	//距離フォグの設定

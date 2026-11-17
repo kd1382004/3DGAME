@@ -6,11 +6,11 @@
 StairsBase::~StairsBase()
 {
 
-	std::shared_ptr<PlayerBase>spPalyerBase = m_wpPlayerBase.lock();
+	std::shared_ptr<PlayerBase>spPlayerBase = m_wpPlayerBase.lock();
 
-	if (spPalyerBase)
+	if (spPlayerBase)
 	{
-		spPalyerBase->SetNextFloorActionFlg(false);
+		spPlayerBase->SetNextFloorActionFlg(false);
 	}
 
 
@@ -75,11 +75,11 @@ void StairsBase::Init()
 
 void StairsBase::Update()
 {
-	std::shared_ptr<PlayerBase>spPalyerBase = m_wpPlayerBase.lock();
+	std::shared_ptr<PlayerBase>spPlayerBase = m_wpPlayerBase.lock();
 
-	if (spPalyerBase)
+	if (spPlayerBase)
 	{
-		Math::Vector3 playerPos = spPalyerBase->GetPos();
+		Math::Vector3 playerPos = spPlayerBase->GetPos();
 
 		KdCollider::RayInfo rayInfo;
 		rayInfo.m_pos = playerPos;
@@ -98,7 +98,7 @@ void StairsBase::Update()
 		}
 
 
-		spPalyerBase->SetNextFloorActionFlg(m_playerHit);
+		spPlayerBase->SetNextFloorActionFlg(m_playerHit);
 	}
 }
 

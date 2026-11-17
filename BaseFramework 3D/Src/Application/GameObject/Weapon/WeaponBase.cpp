@@ -9,12 +9,12 @@
 #include"ComboStep/ComboStepValidator.h"
 void WeaponBase::Init()
 {
-	LoadWeaponStatus(m_WeaponStatusFilePath);
+	LoadWeaponStatus(m_weaponStatusFilePath);
 }
 
 void WeaponBase::Update()
 {
-	m_mWorld = m_localMat * m_weponParentMat;
+	m_mWorld = m_localMat * m_weaponParentMat;
 
 	const bool prevPolyFlg = m_tPolyFlg;
 
@@ -29,9 +29,9 @@ void WeaponBase::Update()
 
 	// 軌跡が始まった・途切れたら、それまでの点を全部消す
 	//（前の軌跡の最後の点と、次の軌跡の最初の点がつながらないように）
-	if (prevPolyFlg != m_tPolyFlg && m_tPoly)
+	if (prevPolyFlg != m_tPolyFlg && m_spTPoly)
 	{
-		m_tPoly->ClearPoints();
+		m_spTPoly->ClearPoints();
 	}
 }
 
@@ -56,19 +56,19 @@ void WeaponBase::SetAttackFlg(bool _flg)
 
 }
 
-void WeaponBase::AddAttackHitCharacterList(std::shared_ptr<CharacterBase> _character)
+void WeaponBase::AddAttackHitCharacterList(std::shared_ptr<CharacterBase> _spCharacter)
 {
 	//あたり判定リストにいれる
-	m_attackHitCharacterList.push_back(_character);
+	m_attackHitCharacterList.push_back(_spCharacter);
 }
 
-void WeaponBase::AddObjList(std::shared_ptr<MapBase> _obj)
+void WeaponBase::AddObjList(std::shared_ptr<MapBase> _spObj)
 {
-	m_objList.push_back(_obj);
+	m_objList.push_back(_spObj);
 }
 
 // origin: 判定の基準位置（通常はキャラの位置）
-std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3& origin) const
+std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3& _origin) const
 {
 	std::optional<Math::Vector3> result;
 	float nearestDistSq = m_aimAssistRadius * m_aimAssistRadius;
@@ -78,7 +78,7 @@ std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3
 		auto spObj = wpObj.lock();
 		if (!spObj || spObj->GetIsDead()) { continue; }
 
-		Math::Vector3 diff = spObj->GetPos() - origin;
+		Math::Vector3 diff = spObj->GetPos() - _origin;
 		diff.y = 0.0f; // XZ平面で判定
 		const float distSq = diff.LengthSquared();
 
@@ -93,17 +93,17 @@ std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3
 
 int WeaponBase::GetAttack()
 {
-	return (m_baseWeaponStatus.attackPower + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2));
+	return (m_baseWeaponStatus.m_attackPower + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2));
 }
 
-void WeaponBase::LoadWeaponStatus(const std::string& filePath)
+void WeaponBase::LoadWeaponStatus(const std::string& _filePath)
 {
 	WeaponStatus ws;
 
-	std::ifstream ifs(filePath);
+	std::ifstream ifs(_filePath);
 	if (!ifs.is_open())
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] 武器ステータスファイルが見つかりません : %s\n"), filePath.c_str());
+		KdDebugGUI::Instance().AddLog(U8("[Error] 武器ステータスファイルが見つかりません : %s\n"), _filePath.c_str());
 		return;
 	}
 
@@ -111,61 +111,61 @@ void WeaponBase::LoadWeaponStatus(const std::string& filePath)
 
 	if (data.is_discarded())
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] 武器ステータスファイルの読み込みに失敗しました : %s\n"), filePath.c_str());
+		KdDebugGUI::Instance().AddLog(U8("[Error] 武器ステータスファイルの読み込みに失敗しました : %s\n"), _filePath.c_str());
 		return;
 	}
 
-	auto getFloat = [&](const nlohmann::json& j, const char* key, float def = 0.0f)
+	auto getFloat = [&](const nlohmann::json& _j, const char* _key, float _def = 0.0f)
 		{
-			if (j.contains(key) && j[key].is_number())
-				return j[key].get<float>();
-			return def;
+			if (_j.contains(_key) && _j[_key].is_number())
+				return _j[_key].get<float>();
+			return _def;
 		};
 
 	// --- 基本ステータス ---
-	ws.attackPower = getFloat(data, "attackPower");
-	ws.attackSpeed = getFloat(data, "attackSpeed", 1.0f);
-	ws.critRate = getFloat(data, "critRate");
-	ws.critDamage = getFloat(data, "critDamage");
+	ws.m_attackPower = getFloat(data, "attackPower");
+	ws.m_attackSpeed = getFloat(data, "attackSpeed", 1.0f);
+	ws.m_critRate = getFloat(data, "critRate");
+	ws.m_critDamage = getFloat(data, "critDamage");
 
 	// --- 武器の性質 ---
-	ws.range = getFloat(data, "range", 1.0f);
-	ws.weight = getFloat(data, "weight", 1.0f);
-	ws.knockback = getFloat(data, "knockback");
-	ws.poiseBreak = getFloat(data, "poiseBreak");
-	ws.stunPower = getFloat(data, "stunPower");
+	ws.m_range = getFloat(data, "range", 1.0f);
+	ws.m_weight = getFloat(data, "weight", 1.0f);
+	ws.m_knockback = getFloat(data, "knockback");
+	ws.m_poiseBreak = getFloat(data, "poiseBreak");
+	ws.m_stunPower = getFloat(data, "stunPower");
 
 	// --- モーション補正 ---
-	ws.startup = getFloat(data, "startup");
-	ws.recovery = getFloat(data, "recovery");
-	ws.cancelWindow = getFloat(data, "cancelWindow");
+	ws.m_startup = getFloat(data, "startup");
+	ws.m_recovery = getFloat(data, "recovery");
+	ws.m_cancelWindow = getFloat(data, "cancelWindow");
 
 	m_baseWeaponStatus = ws;
 }
 
-void WeaponBase::SaveWeaponStatus(const std::string& filePath)
+void WeaponBase::SaveWeaponStatus(const std::string& _filePath)
 {
 	nlohmann::json data;
 
 	// --- 基本ステータス ---
-	data["attackPower"] = m_baseWeaponStatus.attackPower;
-	data["attackSpeed"] = m_baseWeaponStatus.attackSpeed;
-	data["critRate"] = m_baseWeaponStatus.critRate;
-	data["critDamage"] = m_baseWeaponStatus.critDamage;
+	data["attackPower"] = m_baseWeaponStatus.m_attackPower;
+	data["attackSpeed"] = m_baseWeaponStatus.m_attackSpeed;
+	data["critRate"] = m_baseWeaponStatus.m_critRate;
+	data["critDamage"] = m_baseWeaponStatus.m_critDamage;
 
 	// --- 武器の性質 ---
-	data["range"] = m_baseWeaponStatus.range;
-	data["weight"] = m_baseWeaponStatus.weight;
-	data["knockback"] = m_baseWeaponStatus.knockback;
-	data["poiseBreak"] = m_baseWeaponStatus.poiseBreak;
-	data["stunPower"] = m_baseWeaponStatus.stunPower;
+	data["range"] = m_baseWeaponStatus.m_range;
+	data["weight"] = m_baseWeaponStatus.m_weight;
+	data["knockback"] = m_baseWeaponStatus.m_knockback;
+	data["poiseBreak"] = m_baseWeaponStatus.m_poiseBreak;
+	data["stunPower"] = m_baseWeaponStatus.m_stunPower;
 
 	// --- モーション補正 ---
-	data["startup"] = m_baseWeaponStatus.startup;
-	data["recovery"] = m_baseWeaponStatus.recovery;
-	data["cancelWindow"] = m_baseWeaponStatus.cancelWindow;
+	data["startup"] = m_baseWeaponStatus.m_startup;
+	data["recovery"] = m_baseWeaponStatus.m_recovery;
+	data["cancelWindow"] = m_baseWeaponStatus.m_cancelWindow;
 
-	std::ofstream ofs(filePath);
+	std::ofstream ofs(_filePath);
 	ofs << data.dump(4);
 }
 
@@ -179,12 +179,12 @@ bool WeaponBase::LoadCombo(const std::string& _path)
 	}
 
 	// 読み込んだ直後に検査して、問題があればログに出す（ゲームは止めない）
-	for (const ComboStepIssue& issue : ComboStepValidator::Validate(data.steps))
+	for (const ComboStepIssue& issue : ComboStepValidator::Validate(data.m_steps))
 	{
 		KdDebugGUI::Instance().AddLog(U8("[%s] %s : %s\n"),
-			issue.isError ? "Error" : "Warning", _path.c_str(), issue.message.c_str());
+			issue.m_isError ? "Error" : "Warning", _path.c_str(), issue.m_message.c_str());
 	}
 
-	m_comboList = std::move(data.steps);
+	m_comboList = std::move(data.m_steps);
 	return true;
 }

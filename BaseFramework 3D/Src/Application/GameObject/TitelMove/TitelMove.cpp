@@ -18,8 +18,8 @@ void TitelMove::Update()
 	//========================
 	// 重力
 	//========================
-	m_pos.y -= m_Gravity * dt;
-	m_Gravity += m_gravityPower * dt;
+	m_pos.y -= m_gravity * dt;
+	m_gravity += m_gravityPower * dt;
 
 	if (m_moveFlg)
 	{
@@ -57,7 +57,7 @@ void TitelMove::Update()
 			if (m_path.empty())
 			{
 				m_moveFlg = false;
-				m_nowWati = m_watiMax;
+				m_nowWait = m_waitMax;
 				m_moveVec = Math::Vector3::Zero;
 				return;
 			}
@@ -139,7 +139,7 @@ void TitelMove::Update()
 			// 到着
 			//--------------------------------------
 			m_moveFlg = false;
-			m_nowWati = m_watiMax;
+			m_nowWait = m_waitMax;
 
 			m_moveVec = Math::Vector3::Zero;
 
@@ -151,9 +151,9 @@ void TitelMove::Update()
 	{
 		m_moveVec = Math::Vector3::Zero;
 
-		m_nowWati -= dt;
+		m_nowWait -= dt;
 
-		if (m_nowWati <= 0.0f)
+		if (m_nowWait <= 0.0f)
 		{
 			m_moveFlg = true;
 
@@ -165,9 +165,9 @@ void TitelMove::Update()
 		}
 	}
 
-	auto spcamera = m_wpCamera.lock();
+	auto spCamera = m_wpCamera.lock();
 	bool isFacing = false;
-	if (spcamera)
+	if (spCamera)
 	{
 		const Math::Vector3& moveVec = m_moveVec;
 		// 移動ベクトルがある時のみ回転（停止時は直前の向きをキープ）
@@ -176,7 +176,7 @@ void TitelMove::Update()
 			// XZ平面の進行方向からYaw角度(度数法)を算出
 			float targetYaw = DirectX::XMConvertToDegrees(std::atan2(moveVec.x, moveVec.z));
 			// 第2引数で最大回転速度（度/秒）を指定して回転
-			isFacing = spcamera->RotateTowardsY(targetYaw, 60.0f);
+			isFacing = spCamera->RotateTowardsY(targetYaw, 60.0f);
 		}
 	}
 

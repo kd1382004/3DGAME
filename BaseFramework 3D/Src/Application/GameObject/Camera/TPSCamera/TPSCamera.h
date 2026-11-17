@@ -4,9 +4,13 @@
 class TPSCamera : public CameraBase
 {
 public:
+	//コンストラクタ
 	TPSCamera()							{}
+	//デストラクタ
 	~TPSCamera()			override	{}
 
+	//初期化
 	void Init()				override;
+	//更新後の処理(三人称視点の位置を決める)
 	void PostUpdate()		override;
 };

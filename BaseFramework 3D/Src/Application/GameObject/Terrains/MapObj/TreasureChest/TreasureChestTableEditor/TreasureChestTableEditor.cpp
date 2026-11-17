@@ -159,8 +159,8 @@ std::vector<TreasureChestTableEditor::MasterItem> TreasureChestTableEditor::Load
 	for (const auto& itemData : data["inventory"])
 	{
 		MasterItem item;
-		item.id = itemData.value("id", 0);
-		item.name = itemData.value("name", std::string{});
+		item.m_id = itemData.value("id", 0);
+		item.m_name = itemData.value("name", std::string{});
 		list.push_back(item);
 	}
 	return list;
@@ -178,7 +178,7 @@ std::string TreasureChestTableEditor::FindItemName(int _type, int _id) const
 
 	for (const MasterItem& item : GetMaster(_type))
 	{
-		if (item.id == _id) { return item.name; }
+		if (item.m_id == _id) { return item.m_name; }
 	}
 	return {};
 }
@@ -366,8 +366,8 @@ void TreasureChestTableEditor::DrawTable(const std::string& _tableName, nlohmann
 		const std::vector<MasterItem>& master = GetMaster(_type);
 		nlohmann::json item;
 		item["type"] = _type;
-		item["id"] = master.empty() ? 0 : master[0].id;
-		item["name"] = master.empty() ? std::string{} : master[0].name;
+		item["id"] = master.empty() ? 0 : master[0].m_id;
+		item["name"] = master.empty() ? std::string{} : master[0].m_name;
 		item["weight"] = 10.0;
 		items.push_back(item);
 		m_dirty = true;
@@ -432,8 +432,8 @@ bool TreasureChestTableEditor::DrawItemRow(nlohmann::json& _item, int _index, fl
 		// 種類を変えたら、その種類の先頭のアイテムにする
 		const std::vector<MasterItem>& master = GetMaster(selectType);
 		_item["type"] = selectType;
-		_item["id"] = master.empty() ? 0 : master[0].id;
-		_item["name"] = master.empty() ? std::string{} : master[0].name;
+		_item["id"] = master.empty() ? 0 : master[0].m_id;
+		_item["name"] = master.empty() ? std::string{} : master[0].m_name;
 		type = selectType;
 		id = _item.value("id", 0);
 		m_dirty = true;
@@ -449,11 +449,11 @@ bool TreasureChestTableEditor::DrawItemRow(nlohmann::json& _item, int _index, fl
 	{
 		for (const MasterItem& master : GetMaster(type))
 		{
-			const bool selected = (master.id == id);
-			if (ImGui::Selectable((std::to_string(master.id) + ": " + master.name).c_str(), selected))
+			const bool selected = (master.m_id == id);
+			if (ImGui::Selectable((std::to_string(master.m_id) + ": " + master.m_name).c_str(), selected))
 			{
-				_item["id"] = master.id;
-				_item["name"] = master.name;
+				_item["id"] = master.m_id;
+				_item["name"] = master.m_name;
 				m_dirty = true;
 			}
 			if (selected) { ImGui::SetItemDefaultFocus(); }
@@ -580,8 +580,8 @@ nlohmann::json TreasureChestTableEditor::MakeDefaultTable() const
 		{
 			nlohmann::json item;
 			item["type"] = type;
-			item["id"] = master.id;
-			item["name"] = master.name;
+			item["id"] = master.m_id;
+			item["name"] = master.m_name;
 			item["weight"] = 10.0;
 			table["items"].push_back(item);
 		}

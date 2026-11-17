@@ -7,7 +7,7 @@
 #include"../../../Scene/SceneManager.h"
 void Dagger::Init()
 {
-	m_WeaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Dagger/BaseWeaponStatus.json";
+	m_weaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Dagger/BaseWeaponStatus.json";
 	m_comboFileName = "Dagger.json";   // フォルダーは持ち主（PlayerBase）が決める
 	WeaponBase::Init();
 
@@ -22,8 +22,8 @@ void Dagger::Init()
 
 
 		m_weaponLength = (swordtip - guard).Translation().Length();
-		tipLocalPos = swordtip.Translation();
-		baseLocalPos = guard.Translation();
+		m_tipLocalPos = swordtip.Translation();
+		m_baseLocalPos = guard.Translation();
 	}
 
 	if (!m_pDebugWire)
@@ -31,13 +31,13 @@ void Dagger::Init()
 		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 	}
 
-	if (!m_tPoly)
+	if (!m_spTPoly)
 	{
-		m_tPoly = std::make_shared<KdTrailPolygon>();
-		m_tPoly->SetMaterial("Asset/Textures/Weapon/Daerre/jet.png");
+		m_spTPoly = std::make_shared<KdTrailPolygon>();
+		m_spTPoly->SetMaterial("Asset/Textures/Weapon/Daerre/jet.png");
 
 		//トレイルポリゴンをビルボード(面をカメラに向ける)化
-		m_tPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
+		m_spTPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
 	}
 
 	m_chargeTimeMax = 3;
@@ -74,15 +74,15 @@ void Dagger::Init()
 void Dagger::Update()
 {
 	WeaponBase::Update();
-	Math::Vector3 currTipPos = Math::Vector3::Transform(tipLocalPos, m_weponParentMat);
-	Math::Vector3 currBasePos = Math::Vector3::Transform(baseLocalPos, m_weponParentMat);
+	Math::Vector3 currTipPos = Math::Vector3::Transform(m_tipLocalPos, m_weaponParentMat);
+	Math::Vector3 currBasePos = Math::Vector3::Transform(m_baseLocalPos, m_weaponParentMat);
 	if (!m_attackFlg)
 	{
 		m_isFirstFrame = true;
-		if (m_tPoly)
+		if (m_spTPoly)
 		{
 			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-			m_tPoly->AddPoint(mat);
+			m_spTPoly->AddPoint(mat);
 		}
 		return;
 	}
@@ -91,10 +91,10 @@ void Dagger::Update()
 	if (!IsInComboHitWindow())
 	{
 		m_isFirstFrame = true;   // 範囲に入ったフレームから掃引をやり直す
-		if (m_tPoly && m_tPolyFlg)
+		if (m_spTPoly && m_tPolyFlg)
 		{
 			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-			m_tPoly->AddPoint(mat);
+			m_spTPoly->AddPoint(mat);
 		}
 		return;
 	}
@@ -102,7 +102,7 @@ void Dagger::Update()
 	{
 		m_prevTipPos = currTipPos;
 		m_prevBasePos = currBasePos;
-		m_prevWeponParentMat = m_weponParentMat; // 初回フレームの行列保持
+		m_prevWeaponParentMat = m_weaponParentMat; // 初回フレームの行列保持
 		m_isFirstFrame = false;
 	}
 	// ----------------------------------------------------
@@ -112,7 +112,7 @@ void Dagger::Update()
 	Math::Vector3 minPos = m_hitBoxLocalOffset - m_hitBoxExtents;
 	Math::Vector3 maxPos = m_hitBoxLocalOffset + m_hitBoxExtents;
 
-	const Math::Matrix prevWorld = m_localMat * m_prevWeponParentMat;
+	const Math::Matrix prevWorld = m_localMat * m_prevWeaponParentMat;
 	const Math::Matrix prevToCurr = prevWorld * m_mWorld.Invert();
 
 	for (int i = 0; i < 8; ++i)
@@ -150,11 +150,11 @@ void Dagger::Update()
 		std::list<KdCollider::CollisionResult> results;
 		if (spGameObj->Intersects(box, &results))
 		{
-			m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].Lv - 1);
+			m_defenseIgnore = 1.0f - std::pow(0.85f, m_weaponsStrengtheningInfo[WeaponsStrengthening_DefenseIgnore].m_lv - 1);
 
 
 			m_hitCharactersList.push_back(spGameObj);
-			float damage = m_characterAttackPower * (m_baseWeaponStatus.attackPower + (m_ChargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2) * 10;
+			float damage = m_characterAttackPower * (m_baseWeaponStatus.m_attackPower + (m_chargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2) * 10;
 			damage *= GetComboDamageRate();   // コンボの段のダメージ倍率
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
@@ -164,9 +164,9 @@ void Dagger::Update()
 
 			spGameObj->OnAttackHit(
 				damage,
-				m_baseWeaponStatus.knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
+				m_baseWeaponStatus.m_knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
 				dir,
-				m_baseWeaponStatus.startup,
+				m_baseWeaponStatus.m_startup,
 				false,
 				m_defenseIgnore,
 				results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
@@ -174,14 +174,14 @@ void Dagger::Update()
 
 			// ヒットストップ（段・チャージ・最後の段・とどめで強弱をつける）
 			const bool isKill = wasAlive && spGameObj->GetIsDead();
-			float hitStopTime = CalcHitStopTime(m_ChargeLV, isKill);
+			float hitStopTime = CalcHitStopTime(m_chargeLV, isKill);
 			DeltaTime::Instance().HitStop(hitStopTime);
 
 			// 画面を揺らす（ヒットストップが長い段・チャージ攻撃ほど強く）
 			if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
 			{
 				const float shakeTime = 0.08f + hitStopTime * 2.0f;
-				const float shakePower = hitStopTime * 1.6f + m_ChargeLV * 0.03f;
+				const float shakePower = hitStopTime * 1.6f + m_chargeLV * 0.03f;
 				spParent->CameraShake(shakeTime, shakePower);
 			}
 
@@ -210,12 +210,12 @@ void Dagger::Update()
 	// 座標および行列の更新
 	m_prevTipPos = currTipPos;
 	m_prevBasePos = currBasePos;
-	m_prevWeponParentMat = m_weponParentMat;
+	m_prevWeaponParentMat = m_weaponParentMat;
 	// トレイルポイント追加
-	if (m_tPoly && m_tPolyFlg)
+	if (m_spTPoly && m_tPolyFlg)
 	{
 		Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-		m_tPoly->AddPoint(mat);
+		m_spTPoly->AddPoint(mat);
 	}
 }
 
@@ -225,49 +225,49 @@ void Dagger::DrawLit()
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWeaponModel, m_mWorld);
 	if (m_attackFlg)
 	{
-		if (m_tPoly && m_tPolyFlg)
+		if (m_spTPoly && m_tPolyFlg)
 		{
-			KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_tPoly);
+			KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spTPoly);
 		}
 	}
 
 }
 
-void Dagger::ChargAttackPlay()
+void Dagger::ChargeAttackPlay()
 {
-	if (m_ChargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv > 0)
+	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
 	{
-		m_chargeAttackMaxdamage = m_characterAttackPower + (m_baseWeaponStatus.attackPower * (m_ChargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attck].Lv * 0.2);
+		m_chargeAttackMaxDamage = m_characterAttackPower + (m_baseWeaponStatus.m_attackPower * (m_chargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2);
 
 		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack;
 
-		for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv; i++)
+		for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv; i++)
 		{
 			spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
 			spDagger_ChargeAttack->Init();
 
-			float maxDistanceM = m_maxDistanceM * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].Lv * 0.3) * 10;
-			float chargeAttackSpeed = m_chargeAttackSpeed * (m_ChargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].Lv * 0.3);
+			float maxDistanceM = m_maxDistanceM * (m_chargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].m_lv * 0.3) * 10;
+			float chargeAttackSpeed = m_chargeAttackSpeed * (m_chargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].m_lv * 0.3);
 
-			int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].Lv * 1);
+			int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].m_lv * 1);
 
 
 
 			float spread = 30.0f; // 角度の広がり
 			float t;
-			if (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv - 1 == 0)
+			if (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv - 1 == 0)
 			{
 				t = 0;
 				spread = 0;
 			}
 			else
 			{
-				t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].Lv - 1); // 0～1
+				t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv - 1); // 0～1
 			}
 
 			float ang = m_attackAngle - spread * 0.5f + spread * t;
 
-			spDagger_ChargeAttack->SetShockwaveStatus(hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxdamage, m_mWorld.Translation(), ang);
+			spDagger_ChargeAttack->SetShockwaveStatus(hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxDamage, m_mWorld.Translation(), ang);
 			spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
 			spDagger_ChargeAttack->SetMapObjList(m_objList);
 
@@ -318,7 +318,7 @@ void Dagger::SetNowChargeTime(float _time)
 			spEffect->SetPos(m_mWorld.Translation());
 		}
 
-		m_ChargeLV = 0;
+		m_chargeLV = 0;
 	}
 	else if (m_chargeTime < m_chargeTimeMax / 3.0f * 2)
 	{
@@ -345,7 +345,7 @@ void Dagger::SetNowChargeTime(float _time)
 			spEffect->SetPos(m_mWorld.Translation());
 		}
 
-		m_ChargeLV = 1;
+		m_chargeLV = 1;
 	}
 	else if (m_chargeTime < m_chargeTimeMax)
 	{
@@ -371,7 +371,7 @@ void Dagger::SetNowChargeTime(float _time)
 			spEffect->SetPos(m_mWorld.Translation());
 		}
 
-		m_ChargeLV = 2;
+		m_chargeLV = 2;
 	}
 	else
 	{
@@ -394,7 +394,7 @@ void Dagger::SetNowChargeTime(float _time)
 		//chargeレベルMAX
 		m_chargeTime = m_chargeTimeMax;
 
-		m_ChargeLV = 2;
+		m_chargeLV = 2;
 		m_chargeTimeMaxFlg = true;
 	}
 
@@ -402,7 +402,7 @@ void Dagger::SetNowChargeTime(float _time)
 	if (m_spChargeSE)
 	{
 		// 1. チャージ速度強化(Lv)による速度倍率に応じた基本ピッチ (log2)
-		float speedRate = (m_addCargeTime > 0.0f) ? (GetAddCargeTime() / m_addCargeTime) : 1.0f;
+		float speedRate = (m_addChargeTime > 0.0f) ? (GetAddChargeTime() / m_addChargeTime) : 1.0f;
 		float basePitch = (speedRate > 0.0f) ? std::log2(speedRate) : 0.0f;
 
 		// 2. チャージ進行度 (0.0 ～ 1.0) に応じたピッチ上昇量 (最大 +0.4f)
@@ -495,13 +495,13 @@ void Dagger::StopWeaponSE()
 	}
 }
 
-bool Dagger::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _chara)
+bool Dagger::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)
 {
 	for (auto& wp : m_hitCharactersList)
 	{
 		if (auto sp = wp.lock())
 		{
-			if (sp == _chara) return true;
+			if (sp == _spChara) return true;
 		}
 	}
 	return false;

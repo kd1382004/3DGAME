@@ -4,21 +4,21 @@ void StaminaGage::Init()
 {
 
 
-	if (!m_staminaBarBackTex)
+	if (!m_spStaminaBarBackTex)
 	{
-		m_staminaBarBackTex = std::make_shared<KdTexture>();
-		m_staminaBarBackTex->Load("Asset/Textures/GameUI/StaminaGage/StaminaGageBackTex.png");
+		m_spStaminaBarBackTex = std::make_shared<KdTexture>();
+		m_spStaminaBarBackTex->Load("Asset/Textures/GameUI/StaminaGage/StaminaGageBackTex.png");
 
-		m_staminaBarTexBackLength = { (float)m_staminaBarBackTex->GetWidth(),	(float)m_staminaBarBackTex->GetHeight() };
+		m_staminaBarTexBackLength = { (float)m_spStaminaBarBackTex->GetWidth(),	(float)m_spStaminaBarBackTex->GetHeight() };
 		m_staminaBarTexBackRect = { 0,0,(long)m_staminaBarTexBackLength.x,(long)m_staminaBarTexBackLength.y };
 	}
 
-	if (!m_staminaBarTex)
+	if (!m_spStaminaBarTex)
 	{
-		m_staminaBarTex = std::make_shared<KdTexture>();
-		m_staminaBarTex->Load("Asset/Textures/GameUI/StaminaGage/StaminaGageTex.png");
+		m_spStaminaBarTex = std::make_shared<KdTexture>();
+		m_spStaminaBarTex->Load("Asset/Textures/GameUI/StaminaGage/StaminaGageTex.png");
 
-		m_staminaBarTexLength = { (float)m_staminaBarTex->GetWidth(),	(float)m_staminaBarTex->GetHeight() };
+		m_staminaBarTexLength = { (float)m_spStaminaBarTex->GetWidth(),	(float)m_spStaminaBarTex->GetHeight() };
 		m_staminaBarTexRect = { 0,0,(long)m_staminaBarTexLength.x,(long)m_staminaBarTexLength.y };
 	}
 
@@ -41,15 +41,15 @@ void StaminaGage::DrawSprite()
 	Math::Vector2 pivot = { 0.0f, 0.5f };
 
 	//スタミナゲージ背景
-	if (m_staminaBarBackTex)
+	if (m_spStaminaBarBackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_staminaBarBackTex, m_staminaBarTexBack2DPos.x, m_staminaBarTexBack2DPos.y, m_staminaBarTexBackLength.x * m_siz, m_staminaBarTexBackLength.y * m_siz, &m_staminaBarTexBackRect, &kWhiteColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spStaminaBarBackTex, m_staminaBarTexBack2DPos.x, m_staminaBarTexBack2DPos.y, m_staminaBarTexBackLength.x * m_siz, m_staminaBarTexBackLength.y * m_siz, &m_staminaBarTexBackRect, &kWhiteColor, pivot);
 	}
 
 	//スタミナゲージ本体
-	if (m_staminaBarTex)
+	if (m_spStaminaBarTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_staminaBarTex, m_staminaBarTex2DPos.x, m_staminaBarTex2DPos.y, m_staminaBarTexLength.x * m_siz * m_staminaBarTexPercent, m_staminaBarTexLength.y * m_siz, &m_staminaBarTexRect, &m_staminaBarTexColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spStaminaBarTex, m_staminaBarTex2DPos.x, m_staminaBarTex2DPos.y, m_staminaBarTexLength.x * m_siz * m_staminaBarTexPercent, m_staminaBarTexLength.y * m_siz, &m_staminaBarTexRect, &m_staminaBarTexColor, pivot);
 	}
 }
 

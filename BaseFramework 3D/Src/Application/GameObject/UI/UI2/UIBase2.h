@@ -12,34 +12,55 @@ enum DrawKeyPos
 class UIBase2 :public UIBase
 {
 public:
+	//コンストラクタ
 	UIBase2() {};
+	//デストラクタ
 	virtual ~UIBase2() {};
 
+	//更新(キーの点滅)
 	virtual void Update()override;
 
+	//2Dの描画
 	virtual void DrawSprite()override;
 
-	virtual void Set2DPos(const Math::Vector2& pos) { m_2DPos = pos; };
+	//画面上の座標をセット
+	// _pos ... 画面上の座標
+	virtual void Set2DPos(const Math::Vector2& _pos) { m_2DPos = _pos; };
 
+	//描画優先度を返す
+	//戻り値 ... 描画優先度(小さいほど優先)
 	int GetLayerPriority() { return m_layerPriority; };
 
-	void SetDrawKey(int _key) { m_DrawKey = _key; }
+	//表示するキーをセット
+	// _key ... キーの番号
+	void SetDrawKey(int _key) { m_drawKey = _key; }
 
-	void SetTex(std::shared_ptr<KdTexture>_tex) { m_tex = _tex; }
+	//一緒に出すテクスチャをセット
+	// _spTex ... テクスチャ
+	void SetTex(std::shared_ptr<KdTexture>_spTex) { m_spTex = _spTex; }
 
-	void SetDrawFlg(bool _flg) { m_drwaFlg = _flg; }
+	//表示するかをセット
+	// _flg ... 表示するか
+	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
 
-	void SetDrawKeyPos(DrawKeyPos _drawKeyPos) {m_DrawKeyPos = _drawKeyPos;}
+	//キーをテクスチャのどこに出すかをセット
+	// _drawKeyPos ... キーの位置
+	void SetDrawKeyPos(DrawKeyPos _drawKeyPos) {m_drawKeyPos = _drawKeyPos;}
 protected:
 
 
-	bool m_drwaFlg = false;
-	int m_DrawKey = 0;
-	std::shared_ptr<KdTexture>m_tex;
+	//表示するか
+	bool m_drawFlg = false;
+	//表示するキーの番号
+	int m_drawKey = 0;
+	//一緒に出すテクスチャ
+	std::shared_ptr<KdTexture>m_spTex;
 
+	//画面上の座標
 	Math::Vector2 m_2DPos;
 
-	DrawKeyPos m_DrawKeyPos = DrawKeyPos_Left;
+	//キーをテクスチャのどこに出すか
+	DrawKeyPos m_drawKeyPos = DrawKeyPos_Left;
 
 	//描画優先度
 	//数字が小さいほうが優先度高い
@@ -47,5 +68,6 @@ protected:
 
 	//アルファ
 	float m_alpha = 1;
+	//1秒あたりのアルファの増減(点滅の速さ)
 	float m_addAlpha = 0.5;
 };

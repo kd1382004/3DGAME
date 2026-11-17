@@ -3,17 +3,20 @@
 
 enum FadeType
 {
-	FedeIn,
-	FedeOut,
-	NoFede,
+	FadeIn,
+	FadeOut,
+	NoFade,
 };
 
 class FadeDraw
 {
 public:
+	//デストラクタ
 	~FadeDraw() {};
 	
+	//フェードを進める
 	void Update();
+	//フェードの画像を画面全体に描く
 	void DrawSprite();
 
 	//_type  ... フェードの種類
@@ -27,27 +30,38 @@ public:
 		m_nowTime = 0.0f;
 	}
 
+	//フェード中か
+	//戻り値 ... フェード中ならtrue
 	bool GetFadeFlg() { return m_fadeFlg; }
 
 private:
 
+	//初期化(画像の読み込み)
 	void Init();
 
 
-	std::shared_ptr<KdTexture>m_tex;
+	//画面全体に描くフェード用の画像
+	std::shared_ptr<KdTexture>m_spTex;
 
-	FadeType m_fadeType = NoFede;
+	//今のフェードの種類
+	FadeType m_fadeType = NoFade;
 
+	//フェード中か
 	bool m_fadeFlg = false;
+	//フェードが終わったか
 	bool m_fadeFineFlg = false;
 
+	//フェードの色
 	Math::Color m_color;
 
+	//フェードにかける時間(秒)
 	float m_time;
 
+	//フェードを始めてからの時間(秒)
 	float m_nowTime;
 
 
+	//コンストラクタ(シングルトンなので外から作れない)
 	FadeDraw() { Init(); };
 public:
 

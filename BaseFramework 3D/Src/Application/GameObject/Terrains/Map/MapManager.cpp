@@ -16,7 +16,7 @@ void MapManager::Init()
 {
 	m_spMapGenerate = std::make_shared<MapGenerate>();
 
-	CHUNK_SIZE = m_spMapGenerate->GetCHUNK_SIZE();
+	m_chunkSize = m_spMapGenerate->GetChunkSize();
 
 
 	if (!m_spBoxModel)
@@ -28,7 +28,7 @@ void MapManager::Init()
 
 void MapManager::Update()
 {
-	for (const auto& mapObj : m_updateChankes)
+	for (const auto& mapObj : m_updateChunks)
 	{
 		mapObj->Update();
 	}
@@ -36,7 +36,7 @@ void MapManager::Update()
 
 void MapManager::PostUpdate()
 {
-	for (const auto& mapObj : m_updateChankes)
+	for (const auto& mapObj : m_updateChunks)
 	{
 		mapObj->PostUpdate();
 	}
@@ -44,7 +44,7 @@ void MapManager::PostUpdate()
 
 void MapManager::DrawLit()
 {
-	for (const auto& mapObj : m_darawChankes)
+	for (const auto& mapObj : m_drawChunks)
 	{
 		mapObj->DrawLit();
 	}
@@ -62,10 +62,10 @@ void MapManager::DrawLit()
 
 		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_boxPos);
 		Math::Matrix sMat = Math::Matrix::CreateScale(m_boxSiz / 2);
-		Math::Matrix Mat = sMat * tMat;
+		Math::Matrix mat = sMat * tMat;
 
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullNone);
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spBoxModel, Mat);
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spBoxModel, mat);
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
 	}
 
@@ -73,7 +73,7 @@ void MapManager::DrawLit()
 
 void MapManager::PreDraw()
 {
-	for (const auto& mapObj : m_darawChankes)
+	for (const auto& mapObj : m_drawChunks)
 	{
 		mapObj->PreDraw();
 	}
@@ -81,35 +81,35 @@ void MapManager::PreDraw()
 
 void MapManager::GenerateDepthMapFromLight()
 {
-	for (const auto& mapObj : m_darawChankes)
+	for (const auto& mapObj : m_drawChunks)
 	{
 		mapObj->GenerateDepthMapFromLight();
 	}
 }
 
-void MapManager::MapHit(const std::shared_ptr<KdGameObject>& obj)
+void MapManager::MapHit(const std::shared_ptr<KdGameObject>& _spObj)
 {
-	if (!obj) return;
+	if (!_spObj) return;
 
-	obj->ClearHitObjectList();
+	_spObj->ClearHitObjectList();
 
-	Math::Vector3 pos = obj->GetPos();
+	Math::Vector3 pos = _spObj->GetPos();
 
 	// ワールド座標 → タイル座標へ変換
 	int tileX = static_cast<int>(pos.x / m_mapTileSiz);
 	int tileY = static_cast<int>(-pos.z / m_mapTileSiz);
 
 	// タイル座標 → チャンク番号へ変換
-	int cx = tileX / CHUNK_SIZE;
-	int cy = tileY / CHUNK_SIZE;
+	int cx = tileX / m_chunkSize;
+	int cy = tileY / m_chunkSize;
 
 	constexpr float hitCheckDistSq = 15.0f * 15.0f;
 
 	// チャンク範囲チェック
-	auto inRange = [&](int x, int y)
+	auto inRange = [&](int _x, int _y)
 		{
-			return y >= 0 && y < m_chunks.size() &&
-				x >= 0 && x < m_chunks[y].size();
+			return _y >= 0 && _y < m_chunks.size() &&
+				_x >= 0 && _x < m_chunks[_y].size();
 		};
 
 	// 中心＋周囲チャンクだけ判定
@@ -133,36 +133,36 @@ void MapManager::MapHit(const std::shared_ptr<KdGameObject>& obj)
 
 				if (distSq <= hitCheckDistSq)
 				{
-					obj->RegistHitObject(spMapObj);
+					_spObj->RegistHitObject(spMapObj);
 				}
 			}
 		}
 	}
 }
 
-void MapManager::MapHitEnemy(const std::shared_ptr<EnemyBase>& obj)
+void MapManager::MapHitEnemy(const std::shared_ptr<EnemyBase>& _spObj)
 {
-	MapHit(obj);
+	MapHit(_spObj);
 }
 
-void MapManager::SetCamera(const std::shared_ptr<CameraBase>& spCamera)
+void MapManager::SetCamera(const std::shared_ptr<CameraBase>& _spCamera)
 {
-	m_wpCamera = spCamera;
+	m_wpCamera = _spCamera;
 
 	for (const auto& mapObj : m_mapObj)
 	{
-		mapObj->SetCamera(spCamera);
-		spCamera->ResolveCameraOcclusionObject(mapObj);
+		mapObj->SetCamera(_spCamera);
+		_spCamera->ResolveCameraOcclusionObject(mapObj);
 	}
 
-	m_spMapGenerate->SetCamera(spCamera);
+	m_spMapGenerate->SetCamera(_spCamera);
 }
 
-void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapType)
+void MapManager::GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _mapType)
 {
 	m_chunks.clear();
 	m_mapObj.clear();
-	m_chankeNum = { -999,-999 };
+	m_chunkNum = { -999,-999 };
 
 	if (!m_spMapGenerate) { return; }
 
@@ -172,7 +172,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 	//敵が歩ける一覧
 	std::vector<std::vector<bool>> mapData;
 	Math::Vector3 basePos;
-	mapData = m_spMapGenerate->Generate(_mapSiz, roomNum, m_mapTileSiz, _MapType, &m_mapObj, &m_playerSpawnPos, &basePos);
+	mapData = m_spMapGenerate->Generate(_mapSiz, _roomNum, m_mapTileSiz, _mapType, &m_mapObj, &m_playerSpawnPos, &basePos);
 	auto mapRoomList = m_spMapGenerate->GetRoomInfoList();
 
 
@@ -245,9 +245,9 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 			struct EnemySpawnList {
 				Math::Vector3 m_pos;
-				int roomID = 0;
-				int floorNum = 0;
-				EnemyType enemyType = EnemyType::RoomEnemy;
+				int m_roomID = 0;
+				int m_floorNum = 0;
+				EnemyType m_enemyType = EnemyType::RoomEnemy;
 			};
 
 			std::vector<EnemySpawnList> enemySpawnList;
@@ -256,25 +256,25 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			for (size_t j = 0; j < mapRoomList[i].size(); j++)
 			{
 				//何か設置されてたらスキップ
-				if (mapRoomList[i][j].m_Installation) { continue; }
+				if (mapRoomList[i][j].m_installation) { continue; }
 
 				EnemySpawnList enemySpawn;
 				enemySpawn.m_pos = mapRoomList[i][j].m_pos;
-				enemySpawn.roomID = mapRoomList[i][j].m_roomID;
-				enemySpawn.floorNum = j;
+				enemySpawn.m_roomID = mapRoomList[i][j].m_roomID;
+				enemySpawn.m_floorNum = j;
 
-				if (mapRoomList[i][j].m_roomType == RoomType::RoomType_Stars)
+				if (mapRoomList[i][j].m_roomType == RoomType::RoomType_Stairs)
 				{
-					enemySpawn.enemyType = EnemyType::RoomStarsEnemy;
+					enemySpawn.m_enemyType = EnemyType::RoomStarsEnemy;
 
 					int y = mapRoomList[i].size() / 2;
 
 					enemySpawn.m_pos = mapRoomList[i][y].m_pos;
-					mapRoomList[i][y].m_Installation = true;
+					mapRoomList[i][y].m_installation = true;
 				}
 				else
 				{
-					enemySpawn.enemyType = EnemyType::RoomEnemy;
+					enemySpawn.m_enemyType = EnemyType::RoomEnemy;
 				}
 
 				enemySpawnList.push_back(enemySpawn);
@@ -291,8 +291,8 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			// 先頭から必要数だけスポーン
 			for (int n = 0; n < roomEnemyNum; n++)
 			{
-				spEnemyManager->SpawnEnemy(enemySpawnList[n].enemyType, enemySpawnList[n].m_pos);
-				mapRoomList[enemySpawnList[n].roomID][enemySpawnList[n].floorNum].m_Installation = true;
+				spEnemyManager->SpawnEnemy(enemySpawnList[n].m_enemyType, enemySpawnList[n].m_pos);
+				mapRoomList[enemySpawnList[n].m_roomID][enemySpawnList[n].m_floorNum].m_installation = true;
 			}
 		}
 	}
@@ -303,19 +303,19 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 	std::shared_ptr<MapObjManager> spMapObjManager = m_wpMapObjManager.lock();
 	if (spMapObjManager)
 	{
-		std::list<Math::Vector3> TreasureChestPosList;
+		std::list<Math::Vector3> treasureChestPosList;
 
 		for (size_t i = 0; i < mapRoomList.size(); i++)
 		{
 			if (mapRoomList[i].empty()) { continue; }
-			int chestNum = mapRoomList[i][0].m_roomTreasuerChestNum;
+			int chestNum = mapRoomList[i][0].m_roomTreasureChestNum;
 			int roomType = mapRoomList[i][0].m_roomType;
 
 			// 宝箱を置ける床（Installation == false）が存在するかチェック
 			int freeTileCount = 0;
 			for (const auto& r : mapRoomList[i])
 			{
-				if (!r.m_Installation) { freeTileCount++; }
+				if (!r.m_installation) { freeTileCount++; }
 			}
 			if (freeTileCount == 0) { continue; }
 
@@ -325,8 +325,8 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			while (chestNum > 0 && tryCount < maxTry)
 			{
 				tryCount++;
-				int LoomNum = KdRandom::GetInt(0, static_cast<int>(mapRoomList[i].size()) - 1);
-				if (mapRoomList[i][LoomNum].m_Installation)
+				int roomNum = KdRandom::GetInt(0, static_cast<int>(mapRoomList[i].size()) - 1);
+				if (mapRoomList[i][roomNum].m_installation)
 				{
 					continue;
 				}
@@ -335,20 +335,20 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 				if (KdRandom::GetFloat(0.0f, 1.0f) <= spawnRate)
 				{
-					Math::Vector3 pos = mapRoomList[i][LoomNum].m_pos;
-					mapRoomList[i][LoomNum].m_Installation = true;
+					Math::Vector3 pos = mapRoomList[i][roomNum].m_pos;
+					mapRoomList[i][roomNum].m_installation = true;
 
-					int x = static_cast<int>(mapRoomList[i][LoomNum].m_xy.x);
-					int y = static_cast<int>(mapRoomList[i][LoomNum].m_xy.y);
+					int x = static_cast<int>(mapRoomList[i][roomNum].m_xy.x);
+					int y = static_cast<int>(mapRoomList[i][roomNum].m_xy.y);
 					mapData[y][x] = false;
-					TreasureChestPosList.push_back(pos);
+					treasureChestPosList.push_back(pos);
 				}
 
 				chestNum--;
 			}
 		}
 
-		for (const auto& pos : TreasureChestPosList)
+		for (const auto& pos : treasureChestPosList)
 		{
 			std::shared_ptr<TreasureChest> spTreasureChest = std::make_shared<TreasureChest>();
 			spTreasureChest->Init();
@@ -357,8 +357,8 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			// チャンク番号の計算とセット
 			int tileX = static_cast<int>(pos.x / m_mapTileSiz);
 			int tileY = static_cast<int>(-pos.z / m_mapTileSiz);
-			int cx = tileX / CHUNK_SIZE;
-			int cy = tileY / CHUNK_SIZE;
+			int cx = tileX / m_chunkSize;
+			int cy = tileY / m_chunkSize;
 			spTreasureChest->SetChunkNum(Math::Vector2(static_cast<float>(cx), static_cast<float>(cy)));
 
 
@@ -370,7 +370,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 			spTreasureChest->SetCamera(m_wpCamera.lock());
 			if (spUIManage)
 			{
-				spTreasureChest->SetUITex(spUIManage->GetTresureChestUiTex());
+				spTreasureChest->SetUITex(spUIManage->GetTreasureChestUiTex());
 			}
 
 			spMapObjManager->AddMapObj(spTreasureChest);
@@ -397,7 +397,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int roomNum, MapType _MapTyp
 
 void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 {
-	m_chankeNum = { -999,-999 };
+	m_chunkNum = { -999,-999 };
 	m_mapObj.clear();
 	m_chunks.clear();
 
@@ -406,11 +406,11 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	//敵が歩ける一覧
 	std::vector<std::vector<bool>> mapData;
 
-	Math::Vector3 m_mapBasePos = {};
-	mapData = m_spMapGenerate->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &m_mapBasePos);
+	Math::Vector3 mapBasePos = {};
+	mapData = m_spMapGenerate->GenerateBoss(_mapSiz, m_mapTileSiz, (int)_type, &m_mapObj, &m_playerSpawnPos, &mapBasePos);
 
-	m_NextWarpGatePos = m_spMapGenerate->GetNextWarpGatePos();
-	m_EscapeWarpGatePos = m_spMapGenerate->GetEscapeWarpGatePos();
+	m_nextWarpGatePos = m_spMapGenerate->GetNextWarpGatePos();
+	m_escapeWarpGatePos = m_spMapGenerate->GetEscapeWarpGatePos();
 
 	m_chunks = m_spMapGenerate->GetChunks();
 
@@ -445,7 +445,7 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 		std::shared_ptr<UIMapManager> spUIMapManager = spUIManager->GetUIMapManager();
 		if (spUIMapManager)
 		{
-			spUIMapManager->SetBase3DPos(m_mapBasePos);
+			spUIMapManager->SetBase3DPos(mapBasePos);
 			spUIMapManager->SetTileSiz(m_mapTileSiz);
 			spUIMapManager->GetUIMap_Map()->PosListReset();
 			spUIMapManager->ResetTreasureChest();
@@ -468,33 +468,33 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	}
 }
 
-void MapManager::SetPlayerChanke(Math::Vector3 _pos)
+void MapManager::SetPlayerChunk(Math::Vector3 _pos)
 {
 	// ワールド座標 → タイル座標へ変換
 	int tileX = static_cast<int>(_pos.x / m_mapTileSiz);
 	int tileY = static_cast<int>(-_pos.z / m_mapTileSiz);
 
 	// タイル座標 → チャンク番号へ変換
-	int cx = tileX / CHUNK_SIZE;
-	int cy = tileY / CHUNK_SIZE;
+	int cx = tileX / m_chunkSize;
+	int cy = tileY / m_chunkSize;
 
 	//今までと同じなら変えなくてOK
-	if (m_chankeNum.x == cx && m_chankeNum.y == cy)
+	if (m_chunkNum.x == cx && m_chunkNum.y == cy)
 	{
 		m_isChunkChanged = false;
 		return;
 	}
 
 	m_isChunkChanged = true;
-	m_updateChankes.clear();
-	m_darawChankes.clear();
-	m_chankeNum = { static_cast<float>(cx),static_cast<float>(cy) };
+	m_updateChunks.clear();
+	m_drawChunks.clear();
+	m_chunkNum = { static_cast<float>(cx),static_cast<float>(cy) };
 
 	// チャンク範囲チェック
-	auto inRange = [&](int x, int y)
+	auto inRange = [&](int _x, int _y)
 		{
-			return y >= 0 && y < m_chunks.size() &&
-				x >= 0 && x < m_chunks[y].size();
+			return _y >= 0 && _y < m_chunks.size() &&
+				_x >= 0 && _x < m_chunks[_y].size();
 		};
 
 	if (m_updateChunkRadius.x <= 0)
@@ -508,7 +508,7 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	}
 
 	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
-	std::unordered_set<std::shared_ptr<MapBase>> uniqueDarweSet;
+	std::unordered_set<std::shared_ptr<MapBase>> uniqueDrawSet;
 
 
 
@@ -530,7 +530,7 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 					{
 						uniqueUpdateSet.insert(spMapObj);
 					}
-					uniqueDarweSet.insert(spMapObj);
+					uniqueDrawSet.insert(spMapObj);
 				}
 			}
 		}
@@ -539,8 +539,8 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 	int num = 1;
 
 	// 最後に push_back
-	m_updateChankes.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
-	m_darawChankes.assign(uniqueDarweSet.begin(), uniqueDarweSet.end());
+	m_updateChunks.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
+	m_drawChunks.assign(uniqueDrawSet.begin(), uniqueDrawSet.end());
 
 	int drawMinChunkX =
 		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
@@ -555,19 +555,19 @@ void MapManager::SetPlayerChanke(Math::Vector3 _pos)
 		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
 
 	// ワールド座標に変換
-	float worldMinX = drawMinChunkX * CHUNK_SIZE * m_mapTileSiz;
+	float worldMinX = drawMinChunkX * m_chunkSize * m_mapTileSiz;
 
-	float worldMaxX = (drawMaxChunkX + 1) * CHUNK_SIZE * m_mapTileSiz;
+	float worldMaxX = (drawMaxChunkX + 1) * m_chunkSize * m_mapTileSiz;
 
-	float worldMinZ = -(drawMinChunkY * CHUNK_SIZE * m_mapTileSiz);
+	float worldMinZ = -(drawMinChunkY * m_chunkSize * m_mapTileSiz);
 
-	float worldMaxZ = -((drawMaxChunkY + 1) * CHUNK_SIZE * m_mapTileSiz);
+	float worldMaxZ = -((drawMaxChunkY + 1) * m_chunkSize * m_mapTileSiz);
 
 	float sizeX = fabsf(worldMaxX - worldMinX);
 	float sizeZ = fabsf(worldMaxZ - worldMinZ);
 	float sizeY = m_mapTileSiz * m_spMapGenerate->GetHeightLevelMax();
 
-	m_boxPos = GetCHUNKCenterPos();
+	m_boxPos = GetChunkCenterPos();
 	m_boxSiz = { sizeX, sizeY * 2.0f, sizeZ };
 }
 
@@ -578,8 +578,8 @@ bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
 	int tileY = static_cast<int>(std::floor(-_pos.z / m_mapTileSiz));
 
 	// タイル座標 → チャンク番号へ変換
-	int cx = static_cast<int>(std::floor(static_cast<float>(tileX) / CHUNK_SIZE));
-	int cy = static_cast<int>(std::floor(static_cast<float>(tileY) / CHUNK_SIZE));
+	int cx = static_cast<int>(std::floor(static_cast<float>(tileX) / m_chunkSize));
+	int cy = static_cast<int>(std::floor(static_cast<float>(tileY) / m_chunkSize));
 
 	// チャンク配列が存在する場合、配列の範囲内に安全に収める（クランプ）
 	if (!m_chunks.empty())
@@ -598,16 +598,16 @@ bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
 bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 {
 	// チャンク範囲チェック
-	auto inRange = [&](int x, int y)
+	auto inRange = [&](int _x, int _y)
 		{
-			return y >= 0 && y < static_cast<int>(m_chunks.size()) &&
-				x >= 0 && x < static_cast<int>(m_chunks[y].size());
+			return _y >= 0 && _y < static_cast<int>(m_chunks.size()) &&
+				_x >= 0 && _x < static_cast<int>(m_chunks[_y].size());
 		};
 	// float から int へ正確に変換（誤差防止）
 	int targetCx = static_cast<int>(std::round(_chunkNum.x));
 	int targetCy = static_cast<int>(std::round(_chunkNum.y));
-	int playerCx = static_cast<int>(std::round(m_chankeNum.x));
-	int playerCy = static_cast<int>(std::round(m_chankeNum.y));
+	int playerCx = static_cast<int>(std::round(m_chunkNum.x));
+	int playerCy = static_cast<int>(std::round(m_chunkNum.y));
 
 	// 修正：dy に .y、dx に .x を使用
 	for (int dy = -static_cast<int>(m_updateChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y); dy++)
@@ -630,16 +630,16 @@ bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 bool MapManager::GetChunksDraw(Math::Vector2 _chunkNum)
 {
 	// チャンク範囲チェック
-	auto inRange = [&](int x, int y)
+	auto inRange = [&](int _x, int _y)
 		{
-			return y >= 0 && y < static_cast<int>(m_chunks.size()) &&
-				x >= 0 && x < static_cast<int>(m_chunks[y].size());
+			return _y >= 0 && _y < static_cast<int>(m_chunks.size()) &&
+				_x >= 0 && _x < static_cast<int>(m_chunks[_y].size());
 		};
 	// float から int へ正確に変換（誤差防止）
 	int targetCx = static_cast<int>(std::round(_chunkNum.x));
 	int targetCy = static_cast<int>(std::round(_chunkNum.y));
-	int playerCx = static_cast<int>(std::round(m_chankeNum.x));
-	int playerCy = static_cast<int>(std::round(m_chankeNum.y));
+	int playerCx = static_cast<int>(std::round(m_chunkNum.x));
+	int playerCy = static_cast<int>(std::round(m_chunkNum.y));
 
 	// 修正：dy に .y、dx に .x を使用
 	for (int dy = -static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy++)
@@ -678,14 +678,14 @@ Math::Vector3 MapManager::GetRandomPos()
 	return retPos;
 }
 
-Math::Vector3 MapManager::GetCHUNKCenterPos()
+Math::Vector3 MapManager::GetChunkCenterPos()
 {
 	// チャンク番号（float なので int にキャスト）
-	int cx = static_cast<int>(m_chankeNum.x);
-	int cy = static_cast<int>(m_chankeNum.y);
+	int cx = static_cast<int>(m_chunkNum.x);
+	int cy = static_cast<int>(m_chunkNum.y);
 
 	// チャンクのワールド座標サイズ
-	float chunkWorldSize = CHUNK_SIZE * m_mapTileSiz;
+	float chunkWorldSize = m_chunkSize * m_mapTileSiz;
 
 	// チャンクの左上（minX, minZ）
 	float minX = cx * chunkWorldSize;
@@ -702,11 +702,11 @@ Math::Vector3 MapManager::GetCHUNKCenterPos()
 
 
 
-void MapManager::CreateNodeGrid(int width, int height, float tileSize)
+void MapManager::CreateNodeGrid(int _width, int _height, float _tileSize)
 {
 	// 1タイルあたり 3x3（中央＋周囲8マス = 全9ノード）に分割
-	int gridWidth = width;
-	int gridHeight = height;
+	int gridWidth = _width;
+	int gridHeight = _height;
 
 	m_nodes.resize(gridHeight);
 	for (int y = 0; y < gridHeight; y++)
@@ -718,36 +718,36 @@ void MapManager::CreateNodeGrid(int width, int height, float tileSize)
 			Node& node = m_nodes[y][x];
 
 			// グリッド座標
-			node.pos = Math::Vector2(static_cast<float>(x), static_cast<float>(y));
+			node.m_pos = Math::Vector2(static_cast<float>(x), static_cast<float>(y));
 
 			// 初期値(通れないで初期化)
-			node.walkable = false;
+			node.m_walkable = false;
 
 			// A* 用の初期化
-			node.gCost = FLT_MAX;
-			node.hCost = 0;
-			node.parent = nullptr;
+			node.m_gCost = FLT_MAX;
+			node.m_hCost = 0;
+			node.m_parent = nullptr;
 		}
 	}
 }
 
-void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapData)
+void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& _mapData)
 {
-	int height = static_cast<int>(mapData.size());
+	int height = static_cast<int>(_mapData.size());
 	if (height == 0) return;
-	int width = static_cast<int>(mapData[0].size());
+	int width = static_cast<int>(_mapData[0].size());
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++)
 		{
 			// 床ではない（壁/空きマス）場合はスキップ
-			if (!mapData[y][x]) continue;
+			if (!_mapData[y][x]) continue;
 			// 隣接マス（上下左右）が「マップ外」または「床ではない（＝壁がある）」かを判定
-			bool wallNorth = (y == 0) || !mapData[y - 1][x];          // 上側（Y-1）に壁
-			bool wallSouth = (y == height - 1) || !mapData[y + 1][x];  // 下側（Y+1）に壁
-			bool wallWest = (x == 0) || !mapData[y][x - 1];          // 左側（X-1）に壁
-			bool wallEast = (x == width - 1) || !mapData[y][x + 1];  // 右側（X+1）に壁
-			m_nodes[y][x].walkable = mapData[y][x];
+			bool wallNorth = (y == 0) || !_mapData[y - 1][x];          // 上側（Y-1）に壁
+			bool wallSouth = (y == height - 1) || !_mapData[y + 1][x];  // 下側（Y+1）に壁
+			bool wallWest = (x == 0) || !_mapData[y][x - 1];          // 左側（X-1）に壁
+			bool wallEast = (x == width - 1) || !_mapData[y][x + 1];  // 右側（X+1）に壁
+			m_nodes[y][x].m_walkable = _mapData[y][x];
 			//// タイル内の 3x3 サブノードに対してフラグを設定
 			//for (int dy = 0; dy < 3; dy++)
 			//{
@@ -773,26 +773,26 @@ void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& mapD
 	}
 }
 
-Math::Vector3 MapManager::NodeToWorld(const Node* node) const
+Math::Vector3 MapManager::NodeToWorld(const Node* _node) const
 {
-	if (!node) return Math::Vector3::Zero;
+	if (!_node) return Math::Vector3::Zero;
 
 	float subTileSize = m_mapTileSiz;
-	float worldX = subTileSize * node->pos.x + subTileSize * 0.5f;
-	float worldZ = -(subTileSize * node->pos.y + subTileSize * 0.5f);
+	float worldX = subTileSize * _node->m_pos.x + subTileSize * 0.5f;
+	float worldZ = -(subTileSize * _node->m_pos.y + subTileSize * 0.5f);
 
 	return Math::Vector3(worldX, 0.0f, worldZ);
 }
 
-Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
+Node* MapManager::WorldToNode(const Math::Vector3& _worldPos)
 {
 	float subTileSize = m_mapTileSiz;
 
 	// X は右へプラス
-	int x = static_cast<int>(floor(worldPos.x / subTileSize));
+	int x = static_cast<int>(floor(_worldPos.x / subTileSize));
 
 	// Z は下へマイナス → -Z がノード番号
-	int y = static_cast<int>(floor((-worldPos.z) / subTileSize));
+	int y = static_cast<int>(floor((-_worldPos.z) / subTileSize));
 
 	if (m_nodes.empty() || m_nodes[0].empty()) { return nullptr; }
 
@@ -809,21 +809,27 @@ Node* MapManager::WorldToNode(const Math::Vector3& worldPos)
 
 struct PathQueueItem
 {
-	float fCost;
-	float hCost;
-	Node* node;
+	//合計のコスト
+	float m_fCost;
+	//ゴールまでの推定コスト
+	float m_hCost;
+	//ノード
+	Node* m_node;
 
-	bool operator>(const PathQueueItem& other) const
+	//優先度付きキューで小さい順に並べるための比較(fCostが同じならhCostで比べる)
+	// _other ... 比べる相手
+	//戻り値 ... 自分の方が大きければtrue
+	bool operator>(const PathQueueItem& _other) const
 	{
-		if (fCost == other.fCost) return hCost > other.hCost;
-		return fCost > other.fCost;
+		if (m_fCost == _other.m_fCost) return m_hCost > _other.m_hCost;
+		return m_fCost > _other.m_fCost;
 	}
 };
 
-std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
+std::vector<Node*> MapManager::FindPath(Node* _start, Node* _goal)
 {
-	if (!start || !goal || !start->walkable || !goal->walkable) return {};
-	if (start == goal) return { start };
+	if (!_start || !_goal || !_start->m_walkable || !_goal->m_walkable) return {};
+	if (_start == _goal) return { _start };
 
 	// 探索IDをインクリメント（全ノードループ初期化を不要にする）
 	m_currentSearchId++;
@@ -834,7 +840,7 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 		{
 			for (auto& node : row)
 			{
-				node.searchId = 0;
+				node.m_searchId = 0;
 			}
 		}
 		m_currentSearchId = 1;
@@ -843,63 +849,63 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 	std::priority_queue<PathQueueItem, std::vector<PathQueueItem>, std::greater<PathQueueItem>> openQueue;
 
 	// 開始ノードの初期化
-	start->searchId = m_currentSearchId;
-	start->gCost = 0.0f;
-	start->hCost = Heuristic(start, goal);
-	start->parent = nullptr;
-	start->inClosed = false;
+	_start->m_searchId = m_currentSearchId;
+	_start->m_gCost = 0.0f;
+	_start->m_hCost = Heuristic(_start, _goal);
+	_start->m_parent = nullptr;
+	_start->m_inClosed = false;
 
-	openQueue.push({ start->fCost(), start->hCost, start });
+	openQueue.push({ _start->FCost(), _start->m_hCost, _start });
 
 	while (!openQueue.empty())
 	{
 		PathQueueItem item = openQueue.top();
 		openQueue.pop();
-		Node* current = item.node;
+		Node* current = item.m_node;
 
 		// 既にクローズドリストに入っている（より良い経路で処理済み）ならスキップ
-		if (current->inClosed && current->searchId == m_currentSearchId)
+		if (current->m_inClosed && current->m_searchId == m_currentSearchId)
 		{
 			continue;
 		}
 
 		// ゴールに到達したら経路復元
-		if (current == goal)
+		if (current == _goal)
 		{
-			return BuildPath(goal);
+			return BuildPath(_goal);
 		}
 
-		current->inClosed = true;
+		current->m_inClosed = true;
 
 		// 隣接ノードを取得 (周囲8方向)
 		auto neighbors = GetNeighbors(current);
 
 		for (auto* neighbor : neighbors)
 		{
-			if (!neighbor || !neighbor->walkable) continue;
+			if (!neighbor || !neighbor->m_walkable) continue;
 
 			// 初めて訪問したノードなら初期化
-			if (neighbor->searchId != m_currentSearchId)
+			if (neighbor->m_searchId != m_currentSearchId)
 			{
-				neighbor->searchId = m_currentSearchId;
-				neighbor->gCost = FLT_MAX;
-				neighbor->inClosed = false;
-				neighbor->parent = nullptr;
+				neighbor->m_searchId = m_currentSearchId;
+				neighbor->m_gCost = FLT_MAX;
+				neighbor->m_inClosed = false;
+				neighbor->m_parent = nullptr;
 			}
 
-			if (neighbor->inClosed) continue;
+			if (neighbor->m_inClosed) continue;
 
 			// 直交か斜めかで移動コストを設定 (直交=1.0, 斜め=1.414)
-			float stepCost = (current->pos.x != neighbor->pos.x && current->pos.y != neighbor->pos.y) ? 1.41421356f : 1.0f;
-			float newCost = current->gCost + stepCost;
+			float stepCost = (current->m_pos.x != neighbor->m_pos.x && current->m_pos.y != neighbor->m_pos.y) ? 1.41421356f : 1.0f;
+			float newCost = current->m_gCost + stepCost;
 
 			// 新しいルートの方が安いなら更新
-			if (newCost < neighbor->gCost)
+			if (newCost < neighbor->m_gCost)
 			{
-				neighbor->gCost = newCost;
-				neighbor->hCost = Heuristic(neighbor, goal);
-				neighbor->parent = current;
-				openQueue.push({ neighbor->fCost(), neighbor->hCost, neighbor });
+				neighbor->m_gCost = newCost;
+				neighbor->m_hCost = Heuristic(neighbor, _goal);
+				neighbor->m_parent = current;
+				openQueue.push({ neighbor->FCost(), neighbor->m_hCost, neighbor });
 			}
 		}
 	}
@@ -908,28 +914,28 @@ std::vector<Node*> MapManager::FindPath(Node* start, Node* goal)
 	return {};
 }
 
-std::vector<Node*> MapManager::BuildPath(Node* goal) const
+std::vector<Node*> MapManager::BuildPath(Node* _goal) const
 {
 	std::vector<Node*> path;
-	Node* current = goal;
+	Node* current = _goal;
 
 	while (current != nullptr)
 	{
 		path.push_back(current);
-		current = current->parent;
+		current = current->m_parent;
 	}
 
 	std::reverse(path.begin(), path.end());
 	return path;
 }
 
-std::vector<Node*> MapManager::GetNeighbors(Node* node)
+std::vector<Node*> MapManager::GetNeighbors(Node* _node)
 {
 	std::vector<Node*> neighbors;
-	if (!node) return neighbors;
+	if (!_node) return neighbors;
 
-	int x = static_cast<int>(node->pos.x);
-	int y = static_cast<int>(node->pos.y);
+	int x = static_cast<int>(_node->m_pos.x);
+	int y = static_cast<int>(_node->m_pos.y);
 	int width = static_cast<int>(m_nodes[0].size());
 	int height = static_cast<int>(m_nodes.size());
 
@@ -947,7 +953,7 @@ std::vector<Node*> MapManager::GetNeighbors(Node* node)
 			// 斜め移動時の角抜け防止チェック（直交する壁がある場合は斜め移動を許可しない）
 			if (dirX[i] != 0 && dirY[i] != 0)
 			{
-				if (!m_nodes[y][nx].walkable || !m_nodes[ny][x].walkable)
+				if (!m_nodes[y][nx].m_walkable || !m_nodes[ny][x].m_walkable)
 				{
 					continue;
 				}

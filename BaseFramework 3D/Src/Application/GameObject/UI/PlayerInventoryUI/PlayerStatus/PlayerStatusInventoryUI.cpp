@@ -34,42 +34,42 @@ void PlayerStatusInventoryUI::Init()
 
 	for (int i = 0; i < PlayerStatusInfoSiz; i++)
 	{
-		m_playerStatusInfo[i].num = 0;
-		m_playerStatusInfo[i].numPos = numBasePos;
+		m_playerStatusInfo[i].m_num = 0;
+		m_playerStatusInfo[i].m_numPos = numBasePos;
 
-		m_playerStatusInfo[i].numPos.y -= i * 65;
+		m_playerStatusInfo[i].m_numPos.y -= i * 65;
 
-		m_playerStatusInfo[i].namePos = nameBasePos;
-		m_playerStatusInfo[i].namePos.y = m_playerStatusInfo[i].numPos.y;
+		m_playerStatusInfo[i].m_namePos = nameBasePos;
+		m_playerStatusInfo[i].m_namePos.y = m_playerStatusInfo[i].m_numPos.y;
 
 
-		m_playerStatusInfo[i].iconPos = iconBasePos;
-		m_playerStatusInfo[i].iconPos.y = m_playerStatusInfo[i].numPos.y;
+		m_playerStatusInfo[i].m_iconPos = iconBasePos;
+		m_playerStatusInfo[i].m_iconPos.y = m_playerStatusInfo[i].m_numPos.y;
 
-		if (!m_playerStatusInfo[i].nameTex)
+		if (!m_playerStatusInfo[i].m_spNameTex)
 		{
-			m_playerStatusInfo[i].nameTex = std::make_shared<KdTexture>();
+			m_playerStatusInfo[i].m_spNameTex = std::make_shared<KdTexture>();
 
 			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/PlayerStatusName";
 			filePath += std::to_string(i) + ".png";
-			m_playerStatusInfo[i].nameTex->Load(filePath);
+			m_playerStatusInfo[i].m_spNameTex->Load(filePath);
 		}
 
-		if (!m_playerStatusInfo[i].iconTex)
+		if (!m_playerStatusInfo[i].m_spIconTex)
 		{
-			m_playerStatusInfo[i].iconTex = std::make_shared<KdTexture>();
+			m_playerStatusInfo[i].m_spIconTex = std::make_shared<KdTexture>();
 
 			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/PlayerStatusIcon";
 			filePath += std::to_string(i) + ".png";
-			m_playerStatusInfo[i].iconTex->Load(filePath);
+			m_playerStatusInfo[i].m_spIconTex->Load(filePath);
 		}
 
 	}
 
-	if (!m_playerStatusInfoBackTex)
+	if (!m_spPlayerStatusInfoBackTex)
 	{
-		m_playerStatusInfoBackTex = std::make_shared<KdTexture>();
-		m_playerStatusInfoBackTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/back.png");
+		m_spPlayerStatusInfoBackTex = std::make_shared<KdTexture>();
+		m_spPlayerStatusInfoBackTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/back.png");
 	}
 
 	if (!m_spStatusCamera)
@@ -91,7 +91,7 @@ void PlayerStatusInventoryUI::Update()
 void PlayerStatusInventoryUI::PreDraw()
 {
 	if (!m_spRtTargetPack) { return; }
-	std::shared_ptr<PlayerBase> spPlayer = m_spContext->wpPlayer.lock();
+	std::shared_ptr<PlayerBase> spPlayer = m_spContext->m_wpPlayer.lock();
 	if (spPlayer)
 	{
 
@@ -159,7 +159,7 @@ void PlayerStatusInventoryUI::PreDraw()
 				break;
 			}
 
-			m_playerStatusInfo[i].num = num;
+			m_playerStatusInfo[i].m_num = num;
 		}
 
 	}
@@ -175,20 +175,20 @@ void PlayerStatusInventoryUI::DrawSprite()
 	Math::Vector2 siz = { 1280 * scal ,720 * scal };
 
 
-	Math::Vector2 pos = { m_spContext->back1Tex2DPos.x - m_spContext->back1TexWidth / 2 + siz.x / 2,m_spContext->back1Tex2DPos.y };
+	Math::Vector2 pos = { m_spContext->m_back1Tex2DPos.x - m_spContext->m_back1TexWidth / 2 + siz.x / 2,m_spContext->m_back1Tex2DPos.y };
 
 
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, siz.x, siz.y);
 
 
 	//ステータス描画
-	Math::Vector2 pivo = { 0,0.5 };
+	Math::Vector2 pivot = { 0,0.5 };
 	for (int i = 0; i < PlayerStatusInfoSiz; i++)
 	{
 		Math::Color color;
-		Math::Vector2 backPos = m_playerStatusInfo[i].namePos;
+		Math::Vector2 backPos = m_playerStatusInfo[i].m_namePos;
 		Math::Vector2 backSiz = { 380,55 };
-		Math::Vector2 pivo = { 0,0.5 };
+		Math::Vector2 pivot = { 0,0.5 };
 		if (i % 2 == 0)
 		{
 			color = { 1,1,1,0.3f };
@@ -198,19 +198,19 @@ void PlayerStatusInventoryUI::DrawSprite()
 			color = { 0.5,0.5,0.5,0.3f };
 		}
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfoBackTex, backPos.x, backPos.y, backSiz.x, backSiz.y, nullptr, &color, pivo);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayerStatusInfoBackTex, backPos.x, backPos.y, backSiz.x, backSiz.y, nullptr, &color, pivot);
 
 
 
-		if (m_playerStatusInfo[i].nameTex)
+		if (m_playerStatusInfo[i].m_spNameTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].nameTex, m_playerStatusInfo[i].namePos.x, m_playerStatusInfo[i].namePos.y, nullptr, nullptr, pivo);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].m_spNameTex, m_playerStatusInfo[i].m_namePos.x, m_playerStatusInfo[i].m_namePos.y, nullptr, nullptr, pivot);
 		}
-		NumDraw::GetInstance().Drow(m_playerStatusInfo[i].num, RAligned, m_playerStatusInfo[i].numPos, kWhiteColor, 3, true);
+		NumDraw::GetInstance().Draw(m_playerStatusInfo[i].m_num, RAligned, m_playerStatusInfo[i].m_numPos, kWhiteColor, 3, true);
 
-		if (m_playerStatusInfo[i].iconTex)
+		if (m_playerStatusInfo[i].m_spIconTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].iconTex, m_playerStatusInfo[i].iconPos.x, m_playerStatusInfo[i].iconPos.y, nullptr, nullptr, pivo);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].m_spIconTex, m_playerStatusInfo[i].m_iconPos.x, m_playerStatusInfo[i].m_iconPos.y, nullptr, nullptr, pivot);
 		}
 	}
 }

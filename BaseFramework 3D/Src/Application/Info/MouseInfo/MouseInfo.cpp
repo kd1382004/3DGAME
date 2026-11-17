@@ -25,7 +25,7 @@ void MouseInfo::SetMouseType(MouseType _type)
 
 void MouseInfo::SetMousePosFixMousePos()
 {
-	if (!m_FocusWindowFlg)
+	if (!m_focusWindowFlg)
 	{
 		return;
 	}
@@ -39,7 +39,7 @@ void MouseInfo::SetMousePosFixMousePos()
 	}
 }
 
-POINT MouseInfo::GetWindouMousePos()
+POINT MouseInfo::GetWindowMousePos()
 {
 
 	POINT pos;
@@ -81,10 +81,10 @@ void MouseInfo::Init()
 	}
 
 
-	if (!m_mousePointer)
+	if (!m_spMousePointer)
 	{
-		m_mousePointer = std::make_shared<KdTexture>();
-		m_mousePointer->Load("Asset/Textures/Mouse/MousePointer.png");
+		m_spMousePointer = std::make_shared<KdTexture>();
+		m_spMousePointer->Load("Asset/Textures/Mouse/MousePointer.png");
 	}
 
 	if (!m_spClickSE)
@@ -105,7 +105,7 @@ void MouseInfo::Update()
 {
 	//************************************************
 	//ウィンドウ単位でのフォーカスがあるかどうか
-	m_FocusWindowFlg = (GetForegroundWindow() == Application::Instance().GetWindowHandle());
+	m_focusWindowFlg = (GetForegroundWindow() == Application::Instance().GetWindowHandle());
 
 	POINT mousePos;
 	GetCursorPos(&mousePos);
@@ -117,7 +117,7 @@ void MouseInfo::Update()
 	if (mousePos.x > -m_fixMousePos.x && mousePos.x < m_fixMousePos.x &&
 		mousePos.y > -m_fixMousePos.y && mousePos.y < m_fixMousePos.y)
 	{
-		if (!m_FocusWindowFlg)
+		if (!m_focusWindowFlg)
 		{
 			return;
 		}
@@ -147,7 +147,7 @@ void MouseInfo::Update()
 
 	if (m_mouseFreeFlg)
 	{
-		m_mouseType = MouseType::MouseType_Nomal;
+		m_mouseType = MouseType::MouseType_Normal;
 
 	}
 	else
@@ -181,18 +181,18 @@ void MouseInfo::Update()
 
 void MouseInfo::DrawSprite()
 {
-	if (!m_mousePointer) { return; }
+	if (!m_spMousePointer) { return; }
 
 	// NotFree のときは描かない
 	if (m_mouseType == MouseType::MouseType_NotFree) { return; }
 
 	// 1マスの大きさ（画像の高さと同じ正方形）
-	const long cell = (long)m_mousePointer->GetHeight();
+	const long cell = (long)m_spMousePointer->GetHeight();
 
 	// enum の番号 × 1マスの幅で切り出す（画像は enum と同じ順に並んでいる）
 	Math::Rectangle rec = { (long)m_mouseType * cell, 0, cell, cell };
 
 	Math::Vector2 piv = { 0,1 };
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_mousePointer, m_windowPos.x, m_windowPos.y, 24, 24, &rec, nullptr, piv);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spMousePointer, m_windowPos.x, m_windowPos.y, 24, 24, &rec, nullptr, piv);
 
 }

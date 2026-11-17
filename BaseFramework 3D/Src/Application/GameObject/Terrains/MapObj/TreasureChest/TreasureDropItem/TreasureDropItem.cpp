@@ -7,10 +7,10 @@
 #include"../../../../../Info/DeltaTime/DeltaTime.h"
 void TreasureDropItem::Init()
 {
-	if (!m_dropItemModel)
+	if (!m_spDropItemModel)
 	{
-		m_dropItemModel = std::make_shared<KdModelData>();
-		m_dropItemModel->Load("Asset/Models/TreasureChest/TreasureDropItem/TreasureDropItem.gltf");
+		m_spDropItemModel = std::make_shared<KdModelData>();
+		m_spDropItemModel->Load("Asset/Models/TreasureChest/TreasureDropItem/TreasureDropItem.gltf");
 	}
 
 	m_dropStateMode = DropState::Pop;
@@ -54,12 +54,12 @@ void TreasureDropItem::Update()
 
 void TreasureDropItem::DrawEffect()
 {
-	if (m_dropItemModel)
+	if (m_spDropItemModel)
 	{
 		// ふわっと明滅させて光らせる
 		float pulse = (sinf(m_time * 6.0f) + 1.0f) * 0.5f;
 		Math::Color emi = { 1.0f + pulse, 1.0f + pulse, 1.0f + pulse, 1.0f };
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_dropItemModel, m_mWorld, emi);
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spDropItemModel, m_mWorld, emi);
 	}
 }
 
@@ -124,27 +124,27 @@ void TreasureDropItem::GetItem()
 
 	// 拾った音
 	{
-		std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/Item/Get.wav", false);
-		if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+		std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Item/Get.wav", false);
+		if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 	}
 
 
-	std::shared_ptr<LootTableManager>m_spLootTableManager = m_wpLootTableManager.lock();
-	if (m_spLootTableManager)
+	std::shared_ptr<LootTableManager>spLootTableManager = m_wpLootTableManager.lock();
+	if (spLootTableManager)
 	{
 		// 出る個数はテーブルの dropMin〜dropMax
-		int itenNun = m_spLootTableManager->GetRandomDropNum(m_path);
-		for (int i = 0; i < itenNun; i++)
+		int itemNum = spLootTableManager->GetRandomDropNum(m_path);
+		for (int i = 0; i < itemNum; i++)
 		{
-			LootItem item = m_spLootTableManager->GetRandomLoot(m_path);
+			LootItem item = spLootTableManager->GetRandomLoot(m_path);
 
-			switch (item.type)
+			switch (item.m_type)
 			{
 			case Potion:
-				spPlayer->GetPlayerInventory()->AddPotionsInventory(item.id);
+				spPlayer->GetPlayerInventory()->AddPotionsInventory(item.m_id);
 				break;
 			case Weapon:
-				spPlayer->GetPlayerInventory()->AddWeaponsStrengtheningInventory(item.id);
+				spPlayer->GetPlayerInventory()->AddWeaponsStrengtheningInventory(item.m_id);
 				break;
 			default:
 				break;
@@ -173,7 +173,7 @@ void TreasureDropItem::AttractUpdate()
 
 
 	// このフレームで進む距離（だんだん速く、上限あり）
-	float speed = std::min(m_spped + m_accel, m_maxSpeed) * dt;
+	float speed = std::min(m_speed + m_accel, m_maxSpeed) * dt;
 
 	// 届く距離なら入手（行き過ぎ防止）
 	if (dist <= speed || dist < m_getRadius)
@@ -186,5 +186,5 @@ void TreasureDropItem::AttractUpdate()
 	toPlayer.Normalize();
 	m_pos += toPlayer * speed;
 
-	m_accel += m_AddAccel * dt;
+	m_accel += m_addAccel * dt;
 }

@@ -14,10 +14,10 @@ void NextFloorAction::Update(bool _nextFloorActionFlg)
 {
 
 	//ゲージを描画するかどうかのフラグをUIに渡す
-	std::shared_ptr<NextFloorGaugeUI> nextFloorGaugeUI = m_wpNextFloorGaugeUI.lock();
-	if (nextFloorGaugeUI)
+	std::shared_ptr<NextFloorGaugeUI> spNextFloorGaugeUI = m_wpNextFloorGaugeUI.lock();
+	if (spNextFloorGaugeUI)
 	{
-		nextFloorGaugeUI->setDrawFlg(_nextFloorActionFlg);
+		spNextFloorGaugeUI->SetDrawFlg(_nextFloorActionFlg);
 	}
 
 
@@ -36,36 +36,36 @@ void NextFloorAction::Update(bool _nextFloorActionFlg)
 	}
 
 	//UIにゲージの割合を渡す
-	if (nextFloorGaugeUI)
+	if (spNextFloorGaugeUI)
 	{
-		nextFloorGaugeUI->SetGaugePercent((float)m_nextFloorCount / (float)m_nextFloorCountMax);
+		spNextFloorGaugeUI->SetGaugePercent((float)m_nextFloorCount / (float)kNextFloorCountMax);
 	}
 
 
-	if (m_nextFloorCount >= m_nextFloorCountMax)
+	if (m_nextFloorCount >= kNextFloorCountMax)
 	{
 		//次の階に行く
-		auto gameScene = m_wpGameScene.lock();
-		if (gameScene)
+		auto spGameScene = m_wpGameScene.lock();
+		if (spGameScene)
 		{
 			// ワープの音
 			{
-				std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/WarpGate/Warp.wav", false);
-				if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+				std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/WarpGate/Warp.wav", false);
+				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 			}
 
-			gameScene->GenerateMap();
+			spGameScene->GenerateMap();
 		}
 
 		m_nextFloorCount = 0;
 	}
 }
 
-void NextFloorAction::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _NextFloorGaugeUI)
+void NextFloorAction::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _spNextFloorGaugeUI)
 {
-	m_wpNextFloorGaugeUI = _NextFloorGaugeUI;
-	if (_NextFloorGaugeUI)
+	m_wpNextFloorGaugeUI = _spNextFloorGaugeUI;
+	if (_spNextFloorGaugeUI)
 	{
-		_NextFloorGaugeUI->SetActionKey(m_actionKey);
+		_spNextFloorGaugeUI->SetActionKey(m_actionKey);
 	}
 }

@@ -3,15 +3,23 @@
 class CameraBase : public KdGameObject
 {
 public:
+	//コンストラクタ
 	CameraBase() {}
+	//デストラクタ
 	virtual ~CameraBase()	override {}
 
+	//初期化
 	void Init()				override;
+	//更新
 	void Update()				override;
+	//更新後の処理
 	void PostUpdate()			override;
+	//描画前の処理(カメラをセット)
 	void PreDraw()			override;
 
-	void SetTarget(const std::shared_ptr<KdGameObject>& target);
+	//追いかける相手をセット
+	// _spTarget ... 追いかける相手(プレイヤーなど)
+	void SetTarget(const std::shared_ptr<KdGameObject>& _spTarget);
 
 	// 「絶対変更しません！見るだけ！」な書き方
 	const std::shared_ptr<KdCamera>& GetCamera() const
@@ -25,23 +33,29 @@ public:
 		return m_spCamera;
 	}
 
+	//カメラの回転行列を取得
+	//戻り値 ... 回転行列
 	const Math::Matrix GetRotationMatrix()const
 	{
 		return Math::Matrix::CreateFromYawPitchRoll(
-			DirectX::XMConvertToRadians(m_DegAng.y),
-			DirectX::XMConvertToRadians(m_DegAng.x),
-			DirectX::XMConvertToRadians(m_DegAng.z));
+			DirectX::XMConvertToRadians(m_degAng.y),
+			DirectX::XMConvertToRadians(m_degAng.x),
+			DirectX::XMConvertToRadians(m_degAng.z));
 	}
 
+	//カメラのY軸回転だけの行列を取得
+	//戻り値 ... Y軸の回転行列
 	const Math::Matrix GetRotationYMatrix() const
 	{
 		return Math::Matrix::CreateRotationY(
-			DirectX::XMConvertToRadians(m_DegAng.y));
+			DirectX::XMConvertToRadians(m_degAng.y));
 	}
 
-	void RegistHitObject(const std::shared_ptr<KdGameObject>& object)
+	//カメラの当たり判定をするオブジェクトを追加
+	// _spObject ... 当たり判定をするオブジェクト
+	void RegistHitObject(const std::shared_ptr<KdGameObject>& _spObject)
 	{
-		m_wpHitObjectList.push_back(object);
+		m_wpHitObjectList.push_back(_spObject);
 	}
 
 
@@ -52,11 +66,14 @@ public:
 	void ResolveCameraOcclusion();
 
 	//ターゲットとカメラの間にあるかどうか確認したいものを入れる
-	void ResolveCameraOcclusionObject(const std::shared_ptr<KdGameObject>& object)
+	// _spObject ... 確認したいオブジェクト
+	void ResolveCameraOcclusionObject(const std::shared_ptr<KdGameObject>& _spObject)
 	{
-		m_cameraOcclusionObjects.push_back(object);
+		m_cameraOcclusionObjects.push_back(_spObject);
 	}
 
+	//カメラに映る範囲(視錐台)をワールド座標で取得
+	//戻り値 ... 視錐台
 	DirectX::BoundingFrustum GetBoundingFrustum()
 	{	
 		// プロジェクション行列からフラスタムを作成
@@ -75,11 +92,13 @@ public:
 	void SetEvasionCamera(float _time);
 
 	// 目標のYaw角度(度数法)に向けて制限付きで回転させる
-	// maxSpeedDegPerSec ... 1秒あたりの最大回転角度
-	//向き切ったかあ銅貨を返す
-	bool RotateTowardsY(float targetYawDeg, float maxSpeedDegPerSec);
+	// _maxSpeedDegPerSec ... 1秒あたりの最大回転角度
+	//向き切ったかどうかを返す
+	// _targetYawDeg ... 目標のYaw角度(度)
+	bool RotateTowardsY(float _targetYawDeg, float _maxSpeedDegPerSec);
 
 
+	//カメラとターゲットの間を調べるオブジェクトのリストを空にする
 	void ClearCameraOcclusionObject() { m_cameraOcclusionObjects.clear(); }
 
 
@@ -97,30 +116,42 @@ public:
 protected:
 
 
+	//ワールド座標での視錐台
 	DirectX::BoundingFrustum m_worldFrustum;
 
 	//回避成功
 	float m_evasionCamTime = 0.0f;
+	//回避成功のカメラの残り時間
 	float m_evasionCamTimer = 0.0f;
+	//回避成功のカメラ中か
 	bool  m_isEvasionCam = false;
+	//回避成功のときにカメラを動かす位置
 	Math::Vector3 m_cameraEvasionPos = { 0,0,0 };
 
+	//回避成功のカメラの更新
 	void EvasionCamera();
 
 	// カメラ回転用角度
-	Math::Vector3								m_DegAng = Math::Vector3::Zero;
+	Math::Vector3								m_degAng = Math::Vector3::Zero;
 
+	//マウスでカメラを回転させる
 	void UpdateRotateByMouse();
 
+	//カメラ本体
 	std::shared_ptr<KdCamera>					m_spCamera = nullptr;
+	//追いかける相手
 	std::weak_ptr<KdGameObject>					m_wpTarget;
+	//カメラの当たり判定をするオブジェクトのリスト
 	std::vector<std::weak_ptr<KdGameObject>>	m_wpHitObjectList{};
 
+	//ターゲットからのカメラの位置
 	Math::Matrix								m_mLocalPos = Math::Matrix::Identity;
+	//カメラの回転
 	Math::Matrix								m_mRotation = Math::Matrix::Identity;
 
 	//カメラの基準点・注視点
 	Math::Vector3 m_cameraPos = { 0,0,0 };
+	//カメラのデフォルトの位置
 	Math::Vector3 m_cameraDefaultPos = { 0,0,0 };
 
 
@@ -137,8 +168,11 @@ protected:
 	Math::Vector3 m_targetOldPos;
 
 
+	//今の視野角(度)
 	float m_fov = 60;
+	//通常の視野角(度)
 	float m_defaultFov = 60;
+	//回避成功したときの視野角(度)
 	float m_evasionFov = 80;
 
 	//---------- カメラの揺れ ----------
@@ -151,6 +185,7 @@ protected:
 	// 揺らす強さ（揺れ幅）
 	float m_shakePower = 0.0f;
 
+	//カメラの揺れの更新
 	void ShakeUpdate();
 
 	// 揺れで今ずらしている量（x：右方向、y：上方向）

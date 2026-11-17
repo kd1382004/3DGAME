@@ -35,9 +35,9 @@ void NextFloorGaugeUI::Update()
 			m_actionKeyPushAlpha *= -1;
 		}
 
-		if (m_actionKeyAlpha < m_actionKeyAlphaMine)
+		if (m_actionKeyAlpha < m_actionKeyAlphaMin)
 		{
-			m_actionKeyAlpha = m_actionKeyAlphaMine;
+			m_actionKeyAlpha = m_actionKeyAlphaMin;
 			m_actionKeyPushAlpha *= -1;
 		}
 	}

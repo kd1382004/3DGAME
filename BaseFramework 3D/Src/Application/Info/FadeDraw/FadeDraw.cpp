@@ -2,10 +2,10 @@
 
 void FadeDraw::Init()
 {
-	if (!m_tex)
+	if (!m_spTex)
 	{
-		m_tex = std::make_shared<KdTexture>();
-		m_tex->Load("Asset/Textures/FadeDraw/FadeDraw.png");
+		m_spTex = std::make_shared<KdTexture>();
+		m_spTex->Load("Asset/Textures/FadeDraw/FadeDraw.png");
 	}
 }
 
@@ -24,16 +24,16 @@ void FadeDraw::Update()
 	// -------------------------
 	switch (m_fadeType)
 	{
-	case FedeIn:
+	case FadeIn:
 		// 0 → 1 に上がる（画面が明るくなる）
 		m_color.w = t;
 		break;
 
-	case FedeOut:
+	case FadeOut:
 		// 1 → 0 に下がる（画面が暗くなる）
 		m_color.w = 1.0f - t;
 		break;
-	case NoFede:
+	case NoFade:
 		m_color.w = 0.0f;
 		break;
 	}
@@ -48,9 +48,9 @@ void FadeDraw::Update()
 void FadeDraw::DrawSprite()
 {
 	if (!m_fadeFlg) return;
-	if (!m_tex) { return; }
+	if (!m_spTex) { return; }
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, 0, 0, 1280, 720, nullptr, &m_color);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTex, 0, 0, 1280, 720, nullptr, &m_color);
 
 	if (m_fadeFineFlg)
 	{

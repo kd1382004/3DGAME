@@ -18,14 +18,18 @@ struct Key
 class KeyInfo
 {
 public:
+	//デストラクタ
 	~KeyInfo() {};
 
 	//keyを使用できるかどうかの設定
+	// _key ... キー番号('A'、VK_LEFTなど)
 	void SetKeyValid(int _key);
 
+	//全部のキーを使えない状態に戻す
 	void KeyvalidReset();
 
 
+	//キーの状態を更新する(毎フレーム呼ぶ)
 	void UpdateKey();
 
 
@@ -44,54 +48,71 @@ public:
 	bool GetValidKeyPush(int _key, bool _useFlg = false, bool _flg = false);
 private:
 
+	//このフレーム中にキーが押されたかどうか(Keyを直接渡す版)
+	// _key ... 調べるキー
+	// _useFlg ... 使われたかどうかを気にする(true:押しっぱなしでは反応しない)
+	// _flg ... 押された瞬間に使ったことにするか
+	//戻り値 ... 押されたらtrue
 	bool GetValidKeyPush(Key* _key, bool _useFlg = false, bool _flg = false);
 
+	//初期化(画像の読み込み)
 	void Init();
 
 	//大文字アルファベット
-	static const int AlphabetNum = 26;
-	Key KeyAlphabet[AlphabetNum];
+	static const int kAlphabetNum = 26;
+	//アルファベットのキーの状態('A'〜'Z')
+	Key m_keyAlphabet[kAlphabetNum];
 
 	//数字
-	static const int Num = 10;
-	Key KeyNum[Num];
+	static const int kNum = 10;
+	//数字のキーの状態('0'〜'9')
+	Key m_keyNum[kNum];
 
 	//矢印
-	static const int ArrowNum = 4;
-	Key KeyArrow[ArrowNum];
+	static const int kArrowNum = 4;
+	//矢印のキーの状態
+	Key m_keyArrow[kArrowNum];
 
 	//スペースキー
-	Key KeySpace;
+	Key m_keySpace;
 
 	//タブ
-	Key KeyTAB;
+	Key m_keyTAB;
 
 	//エンターキー
-	Key KeyEnter;
+	Key m_keyEnter;
 
 	//マウス
-	static const int MousebuttonNum = 2;
-	Key Mousebutton[MousebuttonNum];
+	static const int kMousebuttonNum = 2;
+	//マウスボタンの状態(左・右)
+	Key m_mousebutton[kMousebuttonNum];
 
 	//シフト
-	Key Shift;
+	Key m_shift;
 
-	static const int m_pushMax = 20;
+	//押しっぱなしで使えるようになるまでのフレーム数
+	static const int kPushMax = 20;
 
 
 	//////////////////////////////////////////
 	//Key描画用
 	std::shared_ptr<KdTexture> m_spKeyTexture;
+	//矢印などの特殊キーの画像
 	std::shared_ptr<KdTexture> m_spKeyTexture2;
 
 	//Key1つのテクスチャサイズ
 	Math::Vector2 m_keyTexSiz;
+	//特殊キーの画像1つ分のサイズ
 	Math::Vector2 m_keyTex2Siz;
 
 
+	//キー画像の中で、そのキーが描かれている範囲を返す
+	// _key ... キー番号
+	//戻り値 ... 画像の切り取り範囲
 	Math::Rectangle GetKeySrcRect(int _key);
 private:
 
+	//コンストラクタ(シングルトンなので外から作れない)
 	KeyInfo() { Init(); };
 
 

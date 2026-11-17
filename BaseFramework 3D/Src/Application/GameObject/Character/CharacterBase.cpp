@@ -64,32 +64,32 @@ void CharacterBase::ImGUI()
 
 		if (ImGui::TreeNode(U8("HP")))
 		{
-			ImGui::InputFloat(U8("基礎HP"), &m_status.HP.baseHP, 0.1f, 1.0f, "%.2f");
+			ImGui::InputFloat(U8("基礎HP"), &m_status.m_HP.m_baseHP, 0.1f, 1.0f, "%.2f");
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode(U8("Attck")))
 		{
-			ImGui::InputFloat(U8("基礎Attck"), &m_status.attck.baseAttckPowe, 0.1f, 1.0f, "%.2f");
+			ImGui::InputFloat(U8("基礎Attck"), &m_status.m_attack.m_baseAttackPower, 0.1f, 1.0f, "%.2f");
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode(U8("Defense")))
 		{
-			ImGui::InputFloat(U8("基礎Defense"), &m_status.defense.baseDefensePowe, 0.1f, 1.0f, "%.2f");
+			ImGui::InputFloat(U8("基礎Defense"), &m_status.m_defense.m_baseDefensePower, 0.1f, 1.0f, "%.2f");
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode(U8("MoveSpeed")))
 		{
-			ImGui::InputFloat(U8("基礎MoveSpeed"), &m_status.moveSpeed.baseSpeed, 0.01f, 1.0f, "%.2f");
-			ImGui::InputFloat(U8("歩くときに足す値"), &m_status.moveSpeed.walkMovePowe, 0.01f, 1.0f, "%.2f");
-			ImGui::Text(U8("歩く速度 : %f\n"), m_status.moveSpeed.baseSpeed + m_status.moveSpeed.walkMovePowe);
+			ImGui::InputFloat(U8("基礎MoveSpeed"), &m_status.m_moveSpeed.m_baseSpeed, 0.01f, 1.0f, "%.2f");
+			ImGui::InputFloat(U8("歩くときに足す値"), &m_status.m_moveSpeed.m_walkMovePower, 0.01f, 1.0f, "%.2f");
+			ImGui::Text(U8("歩く速度 : %f\n"), m_status.m_moveSpeed.m_baseSpeed + m_status.m_moveSpeed.m_walkMovePower);
 
 
 
-			ImGui::InputFloat(U8("走るときに足す値"), &m_status.moveSpeed.runMovePowe, 0.01f, 1.0f, "%.2f");
-			ImGui::Text(U8("走る速度 : %f\n"), m_status.moveSpeed.baseSpeed + m_status.moveSpeed.runMovePowe);
+			ImGui::InputFloat(U8("走るときに足す値"), &m_status.m_moveSpeed.m_runMovePower, 0.01f, 1.0f, "%.2f");
+			ImGui::Text(U8("走る速度 : %f\n"), m_status.m_moveSpeed.m_baseSpeed + m_status.m_moveSpeed.m_runMovePower);
 			ImGui::TreePop();
 		}
 
@@ -131,11 +131,11 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 	if (m_isDead) { return; }
 
 	// ダメージ処理
-	float Damage= DamagecClculationFormula(_damage, _ignoreRate);
-	m_status.HP.nowHP -= Damage;
+	float damage= DamageCalculationFormula(_damage, _ignoreRate);
+	m_status.m_HP.m_nowHP -= damage;
 
 
-	if (m_status.HP.nowHP <= 0)
+	if (m_status.m_HP.m_nowHP <= 0)
 	{
 		m_isDead = true;
 		SetDead();
@@ -154,14 +154,14 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 		// 出す位置：当たった位置。分からないときはキャラの頭の上
 		Math::Vector3 damagePos = _hitPos ? *_hitPos : m_pos + Math::Vector3(0.0f, 2.5f, 0.0f);
 
-		spHitDamage->SetDamage(Damage, damagePos, type);
+		spHitDamage->SetDamage(damage, damagePos, type);
 	}
 
 
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
-		float percent = m_status.HP.nowHP / m_status.HP.maxHP;
+		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
 		spHPBar->SetHPBarTexPercent(percent);
 	}
 
@@ -224,16 +224,16 @@ void CharacterBase::CollisionUpdate()
 	rayInfo.m_range = enableStepHigh;
 
 	// 階段・坂を下る際の吸着用に、下方向への到達距離を確保（接地中かつ上昇ジャンプ中でない場合）
-	if (m_groundHit && m_Gravity >= 0.0f)
+	if (m_groundHit && m_gravity >= 0.0f)
 	{
 		static float stepDown = 0.6f;
 		rayInfo.m_range += stepDown;
 	}
 
-	// 落下中（m_Gravity > 0）であれば、その移動分もレイを伸ばす
-	if (m_Gravity > 0.0f)
+	// 落下中（m_gravity > 0）であれば、その移動分もレイを伸ばす
+	if (m_gravity > 0.0f)
 	{
-		rayInfo.m_range += m_Gravity * DeltaTime::Instance().GetGameDeltaTime();
+		rayInfo.m_range += m_gravity * DeltaTime::Instance().GetGameDeltaTime();
 	}
 
 	// 当たり判定をしたいタイプを設定
@@ -275,7 +275,7 @@ void CharacterBase::CollisionUpdate()
 	{
 		// 地面に当たっている
 		SetPos(hitPos);
-		m_Gravity = 0;
+		m_gravity = 0;
 		m_groundHit = true;
 	}
 	else
@@ -292,7 +292,7 @@ void CharacterBase::CollisionUpdate()
 		sphere.Radius = 1.0f;
 		sphere.Center = GetPos() + Math::Vector3(0, sphere.Radius, 0);
 	
-		KdCollider::SphereInfo spherInfo(KdCollider::TypeBump, sphere);
+		KdCollider::SphereInfo sphereInfo(KdCollider::TypeBump, sphere);
 
 		Math::Vector3 maxPush = Math::Vector3::Zero;
 		float maxOverlap = 0.0f;
@@ -309,7 +309,7 @@ void CharacterBase::CollisionUpdate()
 			if (dist >= m_detectRange) { continue; }
 
 			std::list<KdCollider::CollisionResult> retBumpList;
-			if (spGameObj->Intersects(spherInfo, &retBumpList))
+			if (spGameObj->Intersects(sphereInfo, &retBumpList))
 			{
 				//Hit後処理
 				spGameObj->IsHit();
@@ -356,16 +356,16 @@ void CharacterBase::ApplyGravity()
 {
 	float deltaTime = DeltaTime::Instance().GetGameDeltaTime();
 
-	m_pos.y -= m_Gravity * deltaTime;
-	m_Gravity += m_gravityPower * deltaTime;
+	m_pos.y -= m_gravity * deltaTime;
+	m_gravity += m_gravityPower * deltaTime;
 }
 
-float CharacterBase::DamagecClculationFormula(float _damage, float _ignoreRate)
+float CharacterBase::DamageCalculationFormula(float _damage, float _ignoreRate)
 {
 	//100超えないようにクランプ
 	_ignoreRate = std::clamp(_ignoreRate, 0.0f, 1.0f);
 
-	float effectiveDefense = m_status.defense.nowDefense * (1.0f - _ignoreRate);
+	float effectiveDefense = m_status.m_defense.m_nowDefense * (1.0f - _ignoreRate);
 	float defense = 100.0f / (100.0f + effectiveDefense);
 	float returnDamage = _damage * defense;
 
@@ -391,22 +391,22 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 		return;
 	}
 
-	auto getFloat = [&](const nlohmann::json& j, const char* key, float def = 0.0f)
+	auto getFloat = [&](const nlohmann::json& _j, const char* _key, float _def = 0.0f)
 		{
-			if (j.contains(key) && j[key].is_number())
-				return j[key].get<float>();
-			return def;
+			if (_j.contains(_key) && _j[_key].is_number())
+				return _j[_key].get<float>();
+			return _def;
 		};
 
 	/////////////////////
 	
 	// HP
 	//基礎
-	status.HP.baseHP = getFloat(data["HP"], "baseHP");
+	status.m_HP.m_baseHP = getFloat(data["HP"], "baseHP");
 	//最大
-	status.HP.maxHP = getFloat(data["HP"], "maxHP", status.HP.baseHP);
+	status.m_HP.m_maxHP = getFloat(data["HP"], "maxHP", status.m_HP.m_baseHP);
 	//現体力
-	status.HP.nowHP = getFloat(data["HP"], "nowHP", status.HP.maxHP);
+	status.m_HP.m_nowHP = getFloat(data["HP"], "nowHP", status.m_HP.m_maxHP);
 
 	/////////////////////
 
@@ -414,57 +414,57 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 	/////////////////////
 	// 攻撃力
 	//基礎
-	status.attck.baseAttckPowe = getFloat(data["attck"], "baseAttckPowe");
+	status.m_attack.m_baseAttackPower = getFloat(data["attck"], "baseAttckPowe");
 
 	//増加攻撃力
-	status.attck.addAttack = getFloat(data["attck"], "addAttack");
+	status.m_attack.m_addAttack = getFloat(data["attck"], "addAttack");
 	/////////////////////
 
 	/////////////////////
 	// 防御力
-	status.defense.baseDefensePowe = getFloat(data["defense"], "baseDefensePowe");
+	status.m_defense.m_baseDefensePower = getFloat(data["defense"], "baseDefensePowe");
 
 	//増加防御力
-	status.defense.addDefense = getFloat(data["defense"], "addDefense");
+	status.m_defense.m_addDefense = getFloat(data["defense"], "addDefense");
 	/////////////////////
 
 
 	// 移動速度
-	status.moveSpeed.baseSpeed = getFloat(data["moveSpeed"], "baseSpeed");
-	status.moveSpeed.walkMovePowe = getFloat(data["moveSpeed"], "walkMovePowe");
-	status.moveSpeed.runMovePowe = getFloat(data["moveSpeed"], "runMovePowe");
+	status.m_moveSpeed.m_baseSpeed = getFloat(data["moveSpeed"], "baseSpeed");
+	status.m_moveSpeed.m_walkMovePower = getFloat(data["moveSpeed"], "walkMovePowe");
+	status.m_moveSpeed.m_runMovePower = getFloat(data["moveSpeed"], "runMovePowe");
 
 	// スタミナ
 	//最大
-	status.stamina.staminaMax = getFloat(data["stamina"], "staminaMax");
+	status.m_stamina.m_staminaMax = getFloat(data["stamina"], "staminaMax");
 	//現スタミナ（無ければ最大値）
-	status.stamina.staminaNow = getFloat(data["stamina"], "staminaNow", status.stamina.staminaMax);
+	status.m_stamina.m_staminaNow = getFloat(data["stamina"], "staminaNow", status.m_stamina.m_staminaMax);
 	//ダッシュ時の消費量(毎秒)
-	status.stamina.dashStaminaDrainPerSec = getFloat(data["stamina"], "dashStaminaDrainPerSec");
+	status.m_stamina.m_dashStaminaDrainPerSec = getFloat(data["stamina"], "dashStaminaDrainPerSec");
 	//回復量(毎秒)
-	status.stamina.staminaRegenPerSec = getFloat(data["stamina"], "staminaRegenPerSec");
+	status.m_stamina.m_staminaRegenPerSec = getFloat(data["stamina"], "staminaRegenPerSec");
 	//回復バフ
-	status.stamina.staminaRegenBuff = getFloat(data["stamina"], "staminaRegenBuff");
+	status.m_stamina.m_staminaRegenBuff = getFloat(data["stamina"], "staminaRegenBuff");
 
 
 	//LV
-	status.LV = getFloat(data["LV"], "LV");
+	status.m_LV = getFloat(data["LV"], "LV");
 
 	m_status = status;
 
 	// 攻撃力
-	m_status.attck.nowAttck = m_status.attck.baseAttckPowe;
+	m_status.m_attack.m_nowAttack = m_status.m_attack.m_baseAttackPower;
 
 	// 防御力
-	m_status.defense.nowDefense = m_status.defense.baseDefensePowe;
+	m_status.m_defense.m_nowDefense = m_status.m_defense.m_baseDefensePower;
 
 	// 移動速度
-	m_status.moveSpeed.nowSpeed = m_status.moveSpeed.baseSpeed;
+	m_status.m_moveSpeed.m_nowSpeed = m_status.m_moveSpeed.m_baseSpeed;
 
-	m_status.LV = std::max(1, m_status.LV);
+	m_status.m_LV = std::max(1, m_status.m_LV);
 }
 
-void CharacterBase::AngeleUpdate()
+void CharacterBase::AngleUpdate()
 {
 	if (m_moveVec.Length() == 0) { return; }
 	Math::Vector3 nowDir = m_mWorld.Backward();
@@ -563,8 +563,8 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 	// 複数のレイを設定（胴体中央、胴体左、胴体右、足元）
 	struct RayConfig
 	{
-		Math::Vector3 offset;
-		bool isCenter;
+		Math::Vector3 m_offset;
+		bool m_isCenter;
 	};
 
 	RayConfig rayConfigs[] = {
@@ -580,10 +580,10 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 	for (const auto& config : rayConfigs)
 	{
 		KdCollider::RayInfo rayInfo;
-		rayInfo.m_pos = m_pos + config.offset;
+		rayInfo.m_pos = m_pos + config.m_offset;
 		rayInfo.m_dir = moveDir;
 		// 中央レイはキャラ半径分先まで判定
-		rayInfo.m_range = config.isCenter ? (moveDist + charRadius) : moveDist;
+		rayInfo.m_range = config.m_isCenter ? (moveDist + charRadius) : moveDist;
 		rayInfo.m_type = KdCollider::TypeBump;
 
 		if (m_pDebugWire)
@@ -604,7 +604,7 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 					float hitDist = rayInfo.m_range - ret.m_overlapDistance;
 					float allowedDist = 0.0f;
 
-					if (config.isCenter)
+					if (config.m_isCenter)
 					{
 						allowedDist = hitDist - charRadius - margin;
 					}
@@ -687,33 +687,33 @@ void CharacterBase::SaveCharaStatus(std::string _filePath)
 	nlohmann::json data;
 
 	// HP
-	data["HP"]["baseHP"] = m_status.HP.baseHP;
-	data["HP"]["maxHP"] = m_status.HP.maxHP;
-	data["HP"]["nowHP"] = m_status.HP.nowHP;
+	data["HP"]["baseHP"] = m_status.m_HP.m_baseHP;
+	data["HP"]["maxHP"] = m_status.m_HP.m_maxHP;
+	data["HP"]["nowHP"] = m_status.m_HP.m_nowHP;
 
 	// 攻撃力
-	data["attck"]["baseAttckPowe"] = m_status.attck.baseAttckPowe;
-	data["attck"]["addAttack"] = m_status.attck.addAttack;
+	data["attck"]["baseAttckPowe"] = m_status.m_attack.m_baseAttackPower;
+	data["attck"]["addAttack"] = m_status.m_attack.m_addAttack;
 
 	// 防御力
-	data["defense"]["baseDefensePowe"] = m_status.defense.baseDefensePowe;
-	data["defense"]["addDefense"] = m_status.defense.addDefense;
+	data["defense"]["baseDefensePowe"] = m_status.m_defense.m_baseDefensePower;
+	data["defense"]["addDefense"] = m_status.m_defense.m_addDefense;
 
 	// 移動速度
-	data["moveSpeed"]["baseSpeed"] = m_status.moveSpeed.baseSpeed;
-	data["moveSpeed"]["walkMovePowe"] = m_status.moveSpeed.walkMovePowe;
-	data["moveSpeed"]["runMovePowe"] = m_status.moveSpeed.runMovePowe;
+	data["moveSpeed"]["baseSpeed"] = m_status.m_moveSpeed.m_baseSpeed;
+	data["moveSpeed"]["walkMovePowe"] = m_status.m_moveSpeed.m_walkMovePower;
+	data["moveSpeed"]["runMovePowe"] = m_status.m_moveSpeed.m_runMovePower;
 
 
 	// スタミナ
-	data["stamina"]["staminaMax"] = m_status.stamina.staminaMax;
-	data["stamina"]["staminaNow"] = m_status.stamina.staminaMax;
-	data["stamina"]["dashStaminaDrainPerSec"] = m_status.stamina.dashStaminaDrainPerSec;
-	data["stamina"]["staminaRegenPerSec"] = m_status.stamina.staminaRegenPerSec;
-	data["stamina"]["staminaRegenBuff"] = m_status.stamina.staminaRegenBuff;
+	data["stamina"]["staminaMax"] = m_status.m_stamina.m_staminaMax;
+	data["stamina"]["staminaNow"] = m_status.m_stamina.m_staminaMax;
+	data["stamina"]["dashStaminaDrainPerSec"] = m_status.m_stamina.m_dashStaminaDrainPerSec;
+	data["stamina"]["staminaRegenPerSec"] = m_status.m_stamina.m_staminaRegenPerSec;
+	data["stamina"]["staminaRegenBuff"] = m_status.m_stamina.m_staminaRegenBuff;
 
 	//LV
-	data["LV"]["LV"] = m_status.LV;
+	data["LV"]["LV"] = m_status.m_LV;
 
 	std::ofstream ofs(_filePath);
 	if (!ofs.is_open())
@@ -728,12 +728,12 @@ void CharacterBase::SaveCharaStatus(std::string _filePath)
 
 void CharacterBase::AddMaxStamina(float _boost)
 {
-	m_status.stamina.staminaMax += _boost;
+	m_status.m_stamina.m_staminaMax += _boost;
 
-	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
-	if (spStaminaGage)
+	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
+	if (spStaminaGauge)
 	{
-		spStaminaGage->SetStaminaBarTexPercent(m_status.stamina.staminaNow / m_status.stamina.staminaMax);
+		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
 	}
 }
 
@@ -741,45 +741,45 @@ void CharacterBase::AddMaxStamina(float _boost)
 bool CharacterBase::ConsumeStamina(float _amount)
 {
 
-	m_status.stamina.staminaRegenFlg = false;
+	m_status.m_stamina.m_staminaRegenFlg = false;
 
 	//今のスタミナが減少量未満なら減らせない
-	if (m_status.stamina.staminaNow < _amount) { return false; }
+	if (m_status.m_stamina.m_staminaNow < _amount) { return false; }
 
 
-	m_status.stamina.staminaNow = std::max(0.0f, m_status.stamina.staminaNow - _amount);
+	m_status.m_stamina.m_staminaNow = std::max(0.0f, m_status.m_stamina.m_staminaNow - _amount);
 	return true;
 }
 
 void CharacterBase::StaminaManager()
 {
 
-	if (m_status.stamina.staminaRegenFlg)
+	if (m_status.m_stamina.m_staminaRegenFlg)
 	{
-		float totalRegen = m_status.stamina.staminaRegenPerSec + m_status.stamina.staminaRegenBuff;
-		m_status.stamina.staminaNow += totalRegen * DeltaTime::Instance().GetGameDeltaTime();
+		float totalRegen = m_status.m_stamina.m_staminaRegenPerSec + m_status.m_stamina.m_staminaRegenBuff;
+		m_status.m_stamina.m_staminaNow += totalRegen * DeltaTime::Instance().GetGameDeltaTime();
 
-		if (m_status.stamina.staminaNow < 0.0f) { m_status.stamina.staminaNow = 0.0f; }
+		if (m_status.m_stamina.m_staminaNow < 0.0f) { m_status.m_stamina.m_staminaNow = 0.0f; }
 
-		if (m_status.stamina.staminaNow > m_status.stamina.staminaMax) { m_status.stamina.staminaNow = m_status.stamina.staminaMax; }
+		if (m_status.m_stamina.m_staminaNow > m_status.m_stamina.m_staminaMax) { m_status.m_stamina.m_staminaNow = m_status.m_stamina.m_staminaMax; }
 	}
 
 
 
-	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
-	if (spStaminaGage)
+	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
+	if (spStaminaGauge)
 	{
-		spStaminaGage->SetStaminaBarTexPercent(m_status.stamina.staminaNow / m_status.stamina.staminaMax);
+		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
 	}
 }
 
 void CharacterBase::StaminaHeal(float _amount)
 {
-	m_status.stamina.staminaNow = std::min(m_status.stamina.staminaMax, m_status.stamina.staminaNow + _amount);
-	std::shared_ptr<StaminaGage>spStaminaGage = m_wpStaminaGage.lock();
-	if (spStaminaGage)
+	m_status.m_stamina.m_staminaNow = std::min(m_status.m_stamina.m_staminaMax, m_status.m_stamina.m_staminaNow + _amount);
+	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
+	if (spStaminaGauge)
 	{
-		spStaminaGage->SetStaminaBarTexPercent(m_status.stamina.staminaNow / m_status.stamina.staminaMax);
+		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
 	}
 
 

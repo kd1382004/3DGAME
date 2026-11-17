@@ -53,11 +53,11 @@ void EnemyManager::PreUpdate()
 	}
 	
 
-	if (m_enemyBoss)
+	if (m_spEnemyBoss)
 	{
-		if (m_enemyBoss->IsExpired())
+		if (m_spEnemyBoss->IsExpired())
 		{
-			m_enemyBoss = nullptr;
+			m_spEnemyBoss = nullptr;
 		}
 	}
 
@@ -92,7 +92,7 @@ void EnemyManager::PreDraw()
 		if (spUIMapManager)
 		{
 
-			spUIMapManager->GetUIMap_Enemy()->PosListRiseto();
+			spUIMapManager->GetUIMap_Enemy()->PosListReset();
 			for (const auto& enemy : m_enemyList)
 			{
 				enemy->PreDraw();
@@ -102,13 +102,13 @@ void EnemyManager::PreDraw()
 	}
 
 
-	if (m_enemyBoss)
+	if (m_spEnemyBoss)
 	{
 		std::shared_ptr<UIMapManager>spUIMapManager = spUIManager->GetUIMapManager();
 		if (spUIMapManager)
 		{
-			m_enemyBoss->PreDraw();
-			spUIMapManager->GetUIMap_Enemy()->SetEnemyPosAngleList(m_enemyBoss->GetPos(), m_enemyBoss->GetAngle());
+			m_spEnemyBoss->PreDraw();
+			spUIMapManager->GetUIMap_Enemy()->SetEnemyPosAngleList(m_spEnemyBoss->GetPos(), m_spEnemyBoss->GetAngle());
 		}
 	}
 
@@ -139,9 +139,9 @@ void EnemyManager::DrawDebug()
 	}
 }
 
-void EnemyManager::SetPlayer(std::shared_ptr<PlayerBase> _spPalyer)
+void EnemyManager::SetPlayer(std::shared_ptr<PlayerBase> _spPlayer)
 {
-	m_wpPlayer = _spPalyer;
+	m_wpPlayer = _spPlayer;
 	for (const auto& enemy : m_enemyList)
 	{
 		enemy->SetPlayer(m_wpPlayer.lock());
@@ -175,11 +175,11 @@ void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 		spMapManager->MapHitEnemy(spBoss);
 	}
 
-	m_enemyBoss = spBoss;
+	m_spEnemyBoss = spBoss;
 
-	if (m_enemyBoss)
+	if (m_spEnemyBoss)
 	{
-		m_enemyUpdateList.push_back(m_enemyBoss);
+		m_enemyUpdateList.push_back(m_spEnemyBoss);
 	}
 
 }
@@ -199,9 +199,9 @@ void EnemyManager::SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager)
 	}
 
 
-	if (m_enemyBoss)
+	if (m_spEnemyBoss)
 	{
-		m_enemyUpdateList.push_back(m_enemyBoss);
+		m_enemyUpdateList.push_back(m_spEnemyBoss);
 	}
 }
 

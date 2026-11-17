@@ -36,31 +36,31 @@ class PlayreLV;
 struct ActionKeyConfig
 {
 	// Z+に移動
-	int moveForward = 'W';
+	int m_moveForward = 'W';
 
 	// Z-に移動
-	int moveBackward = 'S';
+	int m_moveBackward = 'S';
 
 	// X+に移動
-	int moveRight = 'D';
+	int m_moveRight = 'D';
 
 	// X-に移動
-	int moveLeft = 'A';
+	int m_moveLeft = 'A';
 
 	//ジャンプ
-	int jump = VK_SPACE;
+	int m_jump = VK_SPACE;
 
 	//ダッシュ
-	int dash = VK_SHIFT;
+	int m_dash = VK_SHIFT;
 
 	//回避
-	int evasion = VK_RBUTTON;
+	int m_evasion = VK_RBUTTON;
 
 	//攻撃
-	int attack = VK_LBUTTON;
+	int m_attack = VK_LBUTTON;
 
 	//インタラクト
-	int interact = 'E';
+	int m_interact = 'E';
 };
 
 struct Inventory;
@@ -75,30 +75,48 @@ public:
 	const std::vector<Inventory>& GetWeaponsStrengtheningInventoryList();
 
 	//ポーションのインベントリリストを設定
+	// _potions ... 設定するポーションのリスト
 	void SetPotionsInventoryList(const std::vector<Inventory>& _potions);
 	//武器強化素材のインベントリリストを設定
+	// _weapons ... 設定する武器強化素材のリスト
 	void SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons);
 
 
+	//かかっているバフを全部消す
 	void ClearAllBuffs();
 
+	//コンストラクタ
 	PlayerBase() {};
+	//デストラクタ
 	~PlayerBase() {};
 
+	//初期化
 	void Init()override;
+	//更新前の処理
 	void PreUpdate()override;
+	//更新
 	void Update()override;
+	//更新後の処理
 	void PostUpdate()override;
 
+	//影の描画
 	void GenerateDepthMapFromLight()override;
 
 
-	void SetGameScene(const std::shared_ptr<GameScene>& _GameScene);
+	//ゲームシーンをセット
+	// _spGameScene ... ゲームシーン
+	void SetGameScene(const std::shared_ptr<GameScene>& _spGameScene);
 
+	//次の階に行ける場所にいるかをセット
+	// _flg ... 次の階に行ける場所にいるか
 	void SetNextFloorActionFlg(bool _flg) { m_nextFloorActionFlg = _flg; }
-	void SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _NextFloorGaugeUI);
+	//次の階に行く長押しゲージのUIをセット
+	// _spNextFloorGaugeUI ... 長押しゲージのUI
+	void SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _spNextFloorGaugeUI);
 
-	void SetWepon(const std::shared_ptr<WeaponBase>& _wepon);
+	//武器を持たせる(コンボも読み込む)
+	// _spWeapon ... 持たせる武器
+	void SetWeapon(const std::shared_ptr<WeaponBase>& _spWeapon);
 
 	// 今使っているコンボファイルのパス
 	const std::string& GetComboFilePath() const { return m_comboFilePath; }
@@ -106,9 +124,13 @@ public:
 	// コンボファイルを読み直す（エディターで保存した直後に呼ぶ）
 	void ReloadCombo();
 
-	void SetPos(const Math::Vector3& pos)override;
+	//座標をセット
+	// _pos ... 座標
+	void SetPos(const Math::Vector3& _pos)override;
 
 
+	//UIの管理にプレイヤーのUIを登録する
+	// _spUIManager ... UIの管理
 	void AddUIList(std::shared_ptr<UIManager>_spUIManager);
 
 
@@ -118,21 +140,26 @@ public:
 	//_knockbackDir ... ふっとばし方向
 	// _hitStunTime ... のけぞり時間
 	//_isCritical ... クリティカルかどうか
-	//__ignoreRate ... 防御無視
+	//_ignoreRate ... 防御無視
+	// _hitPos ... 当たった位置(無ければnullptr)
 	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos = nullptr)override;
 
 	// プレイヤーかどうか（ダメージ数字の色分けに使う）
 	bool IsPlayer() const override { return true; }
 
+	//敵に見つかっているかをセット
+	// _flg ... 見つかっているか
 	void SetIsDetectedByEnemy(bool _flg)
 	{
-		m_IsDetectedByEnemy = _flg;
+		m_isDetectedByEnemy = _flg;
 		if (_flg)
 		{
-			m_IsDetectedByEnemyNum++;
+			m_isDetectedByEnemyNum++;
 		}
 	}
 
+	//キー設定を返す
+	//戻り値 ... キー設定
 	const ActionKeyConfig GetActionKeyConfig() { return m_keyConfig; }
 
 	//インベントリ
@@ -144,18 +171,27 @@ public:
 
 	//////////////////////////
 	//エフェクトマネージャー
+	// _spEffectManager ... エフェクトマネージャー
 	void SetEffectManager(std::shared_ptr<EffectManager>_spEffectManager);
 
 
 	//HPMax増加
-	//flg...増加分体力を回復するか
-	void AddMaxHP(int _Bosst, bool flg = false);
+	//_flg...増加分体力を回復するか
+	// _boost ... 増やす量
+	void AddMaxHP(int _boost, bool _flg = false);
 
-	void HPHeal(int _Heal);
+	//HPを回復する
+	// _heal ... 回復する量
+	void HPHeal(int _heal);
 
+	//死んだときの処理
 	void SetDead()override;
 
-	int GetLV() { return m_status.LV; }
+	//今のレベルを返す
+	//戻り値 ... 今のレベル
+	int GetLV() { return m_status.m_LV; }
+	//レベルをセット
+	// _LV ... レベル
 	void SetLV(int _LV)override;
 
 	//_gainedExp...経験値量
@@ -163,15 +199,20 @@ public:
 
 
 	//ボーンの位置(ワールド)を返す
+	// _boneName ... ボーンの名前
 	Math::Vector3 GetBonePosition(std::string _boneName);
 
 	//回転を返す
 	float GetAngle() { return m_angle; }
 
 
+	//アクセサリーの管理をセット
+	// _spAccessoryManager ... アクセサリーの管理
 	void SetAccessoryManager(std::shared_ptr<AccessoryManager>_spAccessoryManager)override;
 
-	std::weak_ptr<WeaponBase> GetWeapon() { return m_wpWepon; }
+	//持っている武器を返す
+	//戻り値 ... 持っている武器
+	std::weak_ptr<WeaponBase> GetWeapon() { return m_wpWeapon; }
 
 	// インベントリ表示時などのSE全停止処理
 	void StopSound();
@@ -179,21 +220,29 @@ public:
 
 	//Effect
 	void PlayAttackBoostEffect();
+	//攻撃力アップのエフェクトを止める
 	void StopAttackBoostEffect();
 
-	void SetPlayerWeaponInfo(int info);
+	//武器の種類に合わせて攻撃アニメーションを切り替える
+	// _info ... 武器の種類(PlayerWeaponInfo)
+	void SetPlayerWeaponInfo(int _info);
 
 
 
+	//ボーンのワールド行列を返す
+	// _boneName ... ボーンの名前
+	//戻り値 ... ボーンのワールド行列
 	Math::Matrix GetBoneWorldMatrix(const std::string& _boneName);
 protected:
 
-	std::shared_ptr<PlayreLV>m_spPlayreLV;
+	//レベルの管理
+	std::shared_ptr<PlayreLV>m_spPlayerLV;
 
 
 	//エフェクトマネージャー
 	std::weak_ptr<EffectManager> m_wpEffectManager;
 
+	//ダメージを受けたときの画面の演出
 	std::shared_ptr<DamageOverlay>m_spDamageOverlay;
 
 	//インベントリ
@@ -201,16 +250,18 @@ protected:
 
 
 	//敵に見つかってるか
-	bool m_IsDetectedByEnemy = false;
+	bool m_isDetectedByEnemy = false;
 	//今フレーム敵身見つかった数
-	int m_IsDetectedByEnemyNum = 0;
+	int m_isDetectedByEnemyNum = 0;
 
+	//ゲームシーン
 	std::weak_ptr<GameScene> m_wpGameScene;
 
 	///////////////////////////////////////
 	//武器
-	std::weak_ptr<WeaponBase> m_wpWepon;
+	std::weak_ptr<WeaponBase> m_wpWeapon;
 
+	//武器の更新
 	void WeaponUpdate();
 
 	///////////////////////////////////////////
@@ -219,11 +270,14 @@ protected:
 	//Keyの設定が入ってるファイル名
 	std::string m_keyConfigFilePath;
 
+	//キー設定
 	ActionKeyConfig m_keyConfig;
 
 	//_filePath ... ファイルパスを書く
 	void LoadKeyConfig(std::string _filePath);
 
+	//キー設定をファイルに保存する
+	// _filePath ... 保存するファイルのパス
 	void SaveKeyConfig(std::string _filePath);
 	///////////////////////////////////////////
 
@@ -245,6 +299,7 @@ protected:
 
 	};
 
+	//今の移動の状態
 	MoveMode m_moveMode;
 
 	//m_status.moveSpeed.nowSpeedを求める
@@ -283,23 +338,31 @@ protected:
 	//アニメーションモード
 	struct PlayerAnimeName
 	{
-		std::string IdleAnime = "Idle";
-		std::string WalkAnime = "Walk";
-		std::string RunAnime = "Run";
-		std::string PickUpAnime = "PickUp";
+		//待機アニメーション
+		std::string m_idleAnime = "Idle";
+		//歩きアニメーション
+		std::string m_walkAnime = "Walk";
+		//走りアニメーション
+		std::string m_runAnime = "Run";
+		//拾うアニメーション
+		std::string m_pickUpAnime = "PickUp";
 
-		std::string AttackAnime = "";
+		//今の武器の攻撃アニメーション
+		std::string m_attackAnime = "";
 
 		//ダガーの攻撃アニメーション
-		std::string DaggerAttackAnime = "Dagger_Attack";
+		std::string m_daggerAttackAnime = "Dagger_Attack";
 
 		//剣の攻撃アニメーション
-		std::string SwordAttackAnime = "Sword_Swing";
+		std::string m_swordAttackAnime = "Sword_Swing";
 
 
-		std::string PunchAttackAnime = "Punch";
-		std::string EvasionAnime = "Roll";
-		std::string DeathAnime = "Death";
+		//素手の攻撃アニメーション
+		std::string m_punchAttackAnime = "Punch";
+		//回避アニメーション
+		std::string m_evasionAnime = "Roll";
+		//死亡アニメーション
+		std::string m_deathAnime = "Death";
 	};
 
 	enum PlayerAnimeMode
@@ -314,42 +377,58 @@ protected:
 		DeathAnime
 	};
 
+	//アニメーションの名前
 	PlayerAnimeName m_playerAnimeName;
 
+	//今のアニメーションの状態
 	PlayerAnimeMode m_nowPlayerAnimeMode;
+	//前のアニメーションの状態
 	PlayerAnimeMode m_oldPlayerAnimeMode;
 
+	//アニメーションの状態が変わったらアニメーションを切り替える
 	void PlayerAnimeModeUpdate();
 
 
 	////////////////////////////////////////
 	//UI
 	std::weak_ptr<UIMap_Player>m_wpUIMap_Player;
-	std::weak_ptr<SkillGage>m_wpSkillGage;
+	//スキルゲージ
+	std::weak_ptr<SkillGage>m_wpSkillGauge;
 
 
 
 	///////////////////////////////////
 	//回避
 	bool m_evasionAnimeFlg = false;
+	//回避中か
 	bool m_evasionFlg = false;
+	//回避に使うスタミナ
 	float m_evasionCost = 10;
+	//回避の最高速度
 	float m_evasionSpeed = 10;
 
-	const float m_kEvasionAccelEnd = 0.3f;
-	const float m_kEvasionMaxSpeedEnd = 0.8f;
+	//回避の加速が終わる割合(0〜1)
+	const float kEvasionAccelEnd = 0.3f;
+	//回避の最高速度が終わる割合(0〜1)
+	const float kEvasionMaxSpeedEnd = 0.8f;
 
+	//回避の更新
 	void EvasionUpdate();
 
 	////////////////////////////////////
 	//通常攻撃
 	bool m_normalAttack = false;
-	bool m_NowNormalAttack = false;
+	//通常攻撃中か
+	bool m_nowNormalAttack = false;
+	//通常攻撃の待ち時間(最大)
 	float m_normalAttackWaitMax = 1;
+	//通常攻撃の待ち時間(今)
 	float m_normalAttackWaitNow = 0;
 
+	//溜め攻撃の溜めている時間
 	float m_chargeAttackCount = 0;
-	bool m_chargeAttacFlg = false;
+	//溜め攻撃中か
+	bool m_chargeAttackFlg = false;
 
 	/////////////////////////////////////
 	//バフ
@@ -363,44 +442,59 @@ protected:
 	bool m_isDeadAnime = false;
 
 	//ゲームシーンに死亡アニメーションが終わったかどうかを送ったかどうか
-	bool m_isGameScenouto = false;
+	bool m_isGameSceneOut = false;
 
 
+	//砂のエフェクトのファイル
 	std::string m_sunaNum = "Suna/Suna.efkefc";
 
 	//音
 	std::shared_ptr<KdSoundInstance> m_spDamageSE;
+	//回避の音
 	std::shared_ptr<KdSoundInstance> m_spRollSE;
+	//ジャンプの音
 	std::shared_ptr<KdSoundInstance> m_spJumpSE;
 
 
 	//Effect
-	std::weak_ptr<KdEffekseerObject> m_wpHeelEffect;
+	std::weak_ptr<KdEffekseerObject> m_wpHealEffect;
+	//攻撃力アップのエフェクト
 	std::weak_ptr<KdEffekseerObject> m_wpAttackBoostEffect;
+	//攻撃力アップのエフェクトが出ているか
 	bool m_isAttackBoostActive = false;
 
+	//ダッシュのエフェクト
 	std::weak_ptr<KdEffekseerObject> m_wpDashEffect;
+	//ダッシュのエフェクトが出ているか
 	bool m_isDashActive = false;
 
 	//ダッシュできる時はするかどうか
-	bool m_IsDash = false;
+	bool m_isDash = false;
 
 
 
 	////////////////////////////////////
 
+	//今の武器のコンボ
 	std::vector<ComboStep> m_attackCombo;
 
 	// コンボファイルのフォルダー（持ち主ごと）と、今使っているファイルのパス
 	std::string m_comboFolder = "Asset/Data/ObjeData/Combo/Player/";
+	//コンボのファイルのパス
 	std::string m_comboFilePath;
 	int   m_comboStep = -1;        // -1 = コンボしていない
 	bool  m_comboReserved = false;
 	float m_stepForwardDone = 0.0f;   // この段で踏み込んだ距離（m）
 	float m_animeSpeedRate = 1.0f;
 
+	//コンボの段を始める
+	// _step ... 始める段の番号
 	void StartComboStep(int _step);
+	//コンボの更新
 	void ComboUpdate();
+	//一番近い敵の方を向く
+	// _spWeapon ... 持っている武器
 	void AimToNearestEnemy(const std::shared_ptr<WeaponBase>& _spWeapon);
+	//コンボをやめる
 	void CancelCombo();
 };

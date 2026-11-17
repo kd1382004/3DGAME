@@ -3,22 +3,34 @@
 class UIBase :public KdGameObject
 {
 public:
+	//コンストラクタ
 	UIBase() {};
+	//デストラクタ
 	virtual ~UIBase() {};
 
+	//初期化
 	virtual void Init()override;
 
+	//更新前の処理
 	virtual void PreUpdate()override;
+	//更新
 	virtual void Update()override;
 
+	//描画前の処理
 	virtual void PreDraw()override;
+	//2Dの描画
 	virtual void DrawSprite()override;
 
-	virtual void Set2DPos(const Math::Vector2& pos) { m_2DPos = pos; };
+	//画面上の座標をセット
+	// _pos ... 画面上の座標
+	virtual void Set2DPos(const Math::Vector2& _pos) { m_2DPos = _pos; };
 
+	//描画優先度を返す
+	//戻り値 ... 描画優先度(小さいほど優先)
 	int GetLayerPriority() { return m_layerPriority; };
 
 protected:
+	//画面上の座標
 	Math::Vector2 m_2DPos;
 
 

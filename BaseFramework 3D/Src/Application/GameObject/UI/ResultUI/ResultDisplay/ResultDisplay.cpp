@@ -14,43 +14,43 @@
 void ResultDisplay::Init()
 {
 
-	if (!m_ResultBackTex)
+	if (!m_spResultBackTex)
 	{
-		m_ResultBackTex = std::make_shared<KdTexture>();
-		m_ResultBackTex->Load("Asset/Textures/GameUI/Result/ResultBack.png");
+		m_spResultBackTex = std::make_shared<KdTexture>();
+		m_spResultBackTex->Load("Asset/Textures/GameUI/Result/ResultBack.png");
 	}
-	if (!m_ResultBack2Tex)
+	if (!m_spResultBack2Tex)
 	{
-		m_ResultBack2Tex = std::make_shared<KdTexture>();
-		m_ResultBack2Tex->Load("Asset/Textures/GameUI/Result/back.png");
-	}
-
-	if (!m_ArrowTex)
-	{
-		m_ArrowTex = std::make_shared<KdTexture>();
-		m_ArrowTex->Load("Asset/Textures/GameUI/Result/Arrow.png");
-		m_ArrowSiz = { (float)m_ArrowTex->GetWidth(),(float)m_ArrowTex->GetHeight() };
-		m_ArrowLPos = { -400, 0 };
-		m_ArrowRPos = { 400, 0 };
+		m_spResultBack2Tex = std::make_shared<KdTexture>();
+		m_spResultBack2Tex->Load("Asset/Textures/GameUI/Result/back.png");
 	}
 
-	m_ResultDisplay_Score = std::make_shared<ResultDisplay_Score>();
-	m_ResultDisplay_Score->Init();
-	m_ResultDisplayList.push_back(m_ResultDisplay_Score);
+	if (!m_spArrowTex)
+	{
+		m_spArrowTex = std::make_shared<KdTexture>();
+		m_spArrowTex->Load("Asset/Textures/GameUI/Result/Arrow.png");
+		m_arrowSiz = { (float)m_spArrowTex->GetWidth(),(float)m_spArrowTex->GetHeight() };
+		m_arrowLPos = { -400, 0 };
+		m_arrowRPos = { 400, 0 };
+	}
+
+	m_spResultDisplay_Score = std::make_shared<ResultDisplay_Score>();
+	m_spResultDisplay_Score->Init();
+	m_resultDisplayList.push_back(m_spResultDisplay_Score);
 
 
 
-	m_ResultDisplay_PotionInventory = std::make_shared<ResultDisplay_PotionInventory>();
-	m_ResultDisplay_PotionInventory->Init();
-	m_ResultDisplayList.push_back(m_ResultDisplay_PotionInventory);
+	m_spResultDisplay_PotionInventory = std::make_shared<ResultDisplay_PotionInventory>();
+	m_spResultDisplay_PotionInventory->Init();
+	m_resultDisplayList.push_back(m_spResultDisplay_PotionInventory);
 
-	m_ResultDisplay_WeponInventory = std::make_shared<ResultDisplay_WeponInventory>();
-	m_ResultDisplay_WeponInventory->Init();
-	m_ResultDisplayList.push_back(m_ResultDisplay_WeponInventory);
+	m_spResultDisplay_WeaponInventory = std::make_shared<ResultDisplay_WeponInventory>();
+	m_spResultDisplay_WeaponInventory->Init();
+	m_resultDisplayList.push_back(m_spResultDisplay_WeaponInventory);
 
-	m_ResultDisplay_PlayerStatus = std::make_shared<ResultDisplay_PlayerStatus>();
-	m_ResultDisplay_PlayerStatus->Init();
-	m_ResultDisplayList.push_back(m_ResultDisplay_PlayerStatus);
+	m_spResultDisplay_PlayerStatus = std::make_shared<ResultDisplay_PlayerStatus>();
+	m_spResultDisplay_PlayerStatus->Init();
+	m_resultDisplayList.push_back(m_spResultDisplay_PlayerStatus);
 }
 
 void ResultDisplay::Update()
@@ -60,38 +60,38 @@ void ResultDisplay::Update()
 
 	LostUpdate();
 
-	if (m_CurrentDisplayIndex < 0 || m_CurrentDisplayIndex >= m_ResultDisplayList.size()) { return; }
-	m_ResultDisplayList[m_CurrentDisplayIndex]->Update();
+	if (m_currentDisplayIndex < 0 || m_currentDisplayIndex >= m_resultDisplayList.size()) { return; }
+	m_resultDisplayList[m_currentDisplayIndex]->Update();
 }
 
 void ResultDisplay::PreDraw()
 {
-	if (m_CurrentDisplayIndex < 0 || m_CurrentDisplayIndex >= m_ResultDisplayList.size()) { return; }
-	m_ResultDisplayList[m_CurrentDisplayIndex]->PreDraw();
+	if (m_currentDisplayIndex < 0 || m_currentDisplayIndex >= m_resultDisplayList.size()) { return; }
+	m_resultDisplayList[m_currentDisplayIndex]->PreDraw();
 }
 
 void ResultDisplay::DrawSprite()
 {
-	if (m_ResultBackTex)
+	if (m_spResultBackTex)
 	{
 		Math::Color col = { 3,3,3,1 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_ResultBackTex, 0, 0, nullptr, &col);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spResultBackTex, 0, 0, nullptr, &col);
 	}
 
-	if (m_ResultBack2Tex)
+	if (m_spResultBack2Tex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_ResultBack2Tex, 0, 0, nullptr);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spResultBack2Tex, 0, 0, nullptr);
 	}
 
 
 
 	ArrowDrawSprite();
 
-	if (m_CurrentDisplayIndex < 0 || m_CurrentDisplayIndex >= m_ResultDisplayList.size()) { return; }
-	m_ResultDisplayList[m_CurrentDisplayIndex]->DrawSprite();
+	if (m_currentDisplayIndex < 0 || m_currentDisplayIndex >= m_resultDisplayList.size()) { return; }
+	m_resultDisplayList[m_currentDisplayIndex]->DrawSprite();
 
 
-	if (m_CurrentDisplayIndex > 0)
+	if (m_currentDisplayIndex > 0)
 	{
 		if (m_playerDead)
 		{
@@ -101,14 +101,14 @@ void ResultDisplay::DrawSprite()
 
 }
 
-void ResultDisplay::SetPath(std::string path)
+void ResultDisplay::SetPath(std::string _path)
 {
 
 }
 
 void ResultDisplay::SetDisplayFloorInfo(std::vector<DisplayFloorInfo> _displayFloorInfo)
 {
-	m_ResultDisplay_Score->SetDisplayFloorInfo(_displayFloorInfo);
+	m_spResultDisplay_Score->SetDisplayFloorInfo(_displayFloorInfo);
 }
 
 void ResultDisplay::SetPlayerInventoryList(std::vector<std::vector<Inventory>> _playerInventoryList)
@@ -116,34 +116,34 @@ void ResultDisplay::SetPlayerInventoryList(std::vector<std::vector<Inventory>> _
 	m_playerInventoryList = _playerInventoryList;
 
 
-	if (m_ResultDisplay_PotionInventory)
+	if (m_spResultDisplay_PotionInventory)
 	{
-		m_ResultDisplay_PotionInventory->AddPotionTexInfo(_playerInventoryList[0]);
+		m_spResultDisplay_PotionInventory->AddPotionTexInfo(_playerInventoryList[0]);
 	}
-	if (m_ResultDisplay_WeponInventory)
+	if (m_spResultDisplay_WeaponInventory)
 	{
-		m_ResultDisplay_WeponInventory->WeaponsStrengtheningInfoInit(_playerInventoryList[1]);
+		m_spResultDisplay_WeaponInventory->WeaponsStrengtheningInfoInit(_playerInventoryList[1]);
 	}
 
 }
 
 void ResultDisplay::SetPlayerStatusGameResultFilePath(std::string _path)
 {
-	if (m_ResultDisplay_PlayerStatus)
+	if (m_spResultDisplay_PlayerStatus)
 	{
-		m_ResultDisplay_PlayerStatus->SetPlayerStatusGameResultFilePath(_path);
+		m_spResultDisplay_PlayerStatus->SetPlayerStatusGameResultFilePath(_path);
 	}
 }
 
-void ResultDisplay::SetSpWeaponBase(std::shared_ptr<WeaponBase> spWeaponBase)
+void ResultDisplay::SetSpWeaponBase(std::shared_ptr<WeaponBase> _spWeaponBase)
 {
-	if (m_ResultDisplay_WeponInventory)
+	if (m_spResultDisplay_WeaponInventory)
 	{
-		m_ResultDisplay_WeponInventory->SetSpWeaponBase(spWeaponBase);
+		m_spResultDisplay_WeaponInventory->SetSpWeaponBase(_spWeaponBase);
 	}
-	if (m_ResultDisplay_PlayerStatus)
+	if (m_spResultDisplay_PlayerStatus)
 	{
-		m_ResultDisplay_PlayerStatus->SetSpWeaponBase(spWeaponBase);
+		m_spResultDisplay_PlayerStatus->SetSpWeaponBase(_spWeaponBase);
 	}
 }
 
@@ -153,15 +153,15 @@ void ResultDisplay::SetPlayerDead(bool _flg)
 
 	if (m_playerDead)
 	{
-		if (!m_lostTex)
+		if (!m_spLostTex)
 		{
-			m_lostTex = std::make_shared<KdTexture>();
-			m_lostTex->Load("Asset/Textures/GameUI/Result/Lost.png");
+			m_spLostTex = std::make_shared<KdTexture>();
+			m_spLostTex->Load("Asset/Textures/GameUI/Result/Lost.png");
 
 			m_lostTexPos = { 390, 270 };
 
-			m_lostTexSiz.x = m_lostTex->GetWidth();
-			m_lostTexSiz.y = m_lostTex->GetHeight();
+			m_lostTexSiz.x = m_spLostTex->GetWidth();
+			m_lostTexSiz.y = m_spLostTex->GetHeight();
 		}
 
 		m_lostStampAngle = kLostStampBaseAngle + KdRandom::GetFloat(-kLostStampAngleRange, kLostStampAngleRange);
@@ -170,17 +170,17 @@ void ResultDisplay::SetPlayerDead(bool _flg)
 
 void ResultDisplay::ArrowUpdate()
 {
-	m_AroowAlpha += m_AddAroowAlpha * DeltaTime::Instance().GetRealDeltaTime();
-	if (m_AroowAlpha > 1)
+	m_arrowAlpha += m_addArrowAlpha * DeltaTime::Instance().GetRealDeltaTime();
+	if (m_arrowAlpha > 1)
 	{
-		m_AroowAlpha = 1;
-		m_AddAroowAlpha *= -1;
+		m_arrowAlpha = 1;
+		m_addArrowAlpha *= -1;
 	}
 
-	if (m_AroowAlpha < 0.3)
+	if (m_arrowAlpha < 0.3)
 	{
-		m_AroowAlpha = 0.3;
-		m_AddAroowAlpha *= -1;
+		m_arrowAlpha = 0.3;
+		m_addArrowAlpha *= -1;
 	}
 
 
@@ -193,77 +193,77 @@ void ResultDisplay::ArrowUpdate()
 	{
 
 		//左
-		float Left = m_ArrowLPos.x - m_ArrowSiz.x / 2;
-		float Roght = m_ArrowLPos.x + m_ArrowSiz.x / 2;
-		float top = m_ArrowLPos.y + m_ArrowSiz.y / 2;
-		float bot = m_ArrowLPos.y - m_ArrowSiz.y / 2;
+		float left = m_arrowLPos.x - m_arrowSiz.x / 2;
+		float right = m_arrowLPos.x + m_arrowSiz.x / 2;
+		float top = m_arrowLPos.y + m_arrowSiz.y / 2;
+		float bot = m_arrowLPos.y - m_arrowSiz.y / 2;
 
-		if (mouse.x >= Left && mouse.x <= Roght
+		if (mouse.x >= left && mouse.x <= right
 			&& mouse.y <= top && mouse.y >= bot)
 		{
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-			m_ArrowLHiFlg = true;
+			m_arrowLHitFlg = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
-				const int prevIndex = m_CurrentDisplayIndex;
-				m_CurrentDisplayIndex--;
+				const int prevIndex = m_currentDisplayIndex;
+				m_currentDisplayIndex--;
 
-				if (0 >= m_CurrentDisplayIndex)
+				if (0 >= m_currentDisplayIndex)
 				{
-					m_CurrentDisplayIndex = 0;
+					m_currentDisplayIndex = 0;
 				}
 
 				// ページが変わったときだけ、めくる音
-				if (prevIndex != m_CurrentDisplayIndex)
+				if (prevIndex != m_currentDisplayIndex)
 				{
 					{
-						std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
-						if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+						std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
+						if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 					}
 				}
 			}
 		}
 		else
 		{
-			m_ArrowLHiFlg = false;
+			m_arrowLHitFlg = false;
 		}
 	}
 	{
 
 		//migi
-		float Left = m_ArrowRPos.x - m_ArrowSiz.x / 2;
-		float Roght = m_ArrowRPos.x + m_ArrowSiz.x / 2;
-		float top = m_ArrowRPos.y + m_ArrowSiz.y / 2;
-		float bot = m_ArrowRPos.y - m_ArrowSiz.y / 2;
+		float left = m_arrowRPos.x - m_arrowSiz.x / 2;
+		float right = m_arrowRPos.x + m_arrowSiz.x / 2;
+		float top = m_arrowRPos.y + m_arrowSiz.y / 2;
+		float bot = m_arrowRPos.y - m_arrowSiz.y / 2;
 
-		if (mouse.x >= Left && mouse.x <= Roght
+		if (mouse.x >= left && mouse.x <= right
 			&& mouse.y <= top && mouse.y >= bot)
 		{
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-			m_ArrowRHiFlg = true;
+			m_arrowRHitFlg = true;
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
-				const int prevIndex = m_CurrentDisplayIndex;
-				m_CurrentDisplayIndex++;
+				const int prevIndex = m_currentDisplayIndex;
+				m_currentDisplayIndex++;
 
-				if (m_ResultDisplayList.size() <= m_CurrentDisplayIndex)
+				if (m_resultDisplayList.size() <= m_currentDisplayIndex)
 				{
-					m_CurrentDisplayIndex = m_ResultDisplayList.size() - 1;
+					m_currentDisplayIndex = m_resultDisplayList.size() - 1;
 				}
 
 				// ページが変わったときだけ、めくる音
-				if (prevIndex != m_CurrentDisplayIndex)
+				if (prevIndex != m_currentDisplayIndex)
 				{
 					{
-						std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
-						if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+						std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/PageTurn.wav", false);
+						if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 					}
 				}
 			}
 		}
 		else
 		{
-			m_ArrowRHiFlg = false;
+			m_arrowRHitFlg = false;
 		}
 	}
 
@@ -271,32 +271,32 @@ void ResultDisplay::ArrowUpdate()
 
 void ResultDisplay::ArrowDrawSprite()
 {
-	if (m_ArrowTex)
+	if (m_spArrowTex)
 	{
 
 
-		Math::Color col = { 1,1,1,m_AroowAlpha };
+		Math::Color col = { 1,1,1,m_arrowAlpha };
 
-		Math::Vector2 Siz = m_ArrowSiz;
-		if (m_ArrowLHiFlg)
+		Math::Vector2 siz = m_arrowSiz;
+		if (m_arrowLHitFlg)
 		{
-			Siz *= m_AroowHitScale;
+			siz *= m_arrowHitScale;
 		}
 
-		if (m_CurrentDisplayIndex != 0)
+		if (m_currentDisplayIndex != 0)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_ArrowTex, m_ArrowLPos.x, m_ArrowLPos.y, Siz.x, Siz.y, nullptr, &col);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spArrowTex, m_arrowLPos.x, m_arrowLPos.y, siz.x, siz.y, nullptr, &col);
 		}
 
 
-		Siz = m_ArrowSiz;
-		if (m_ArrowRHiFlg)
+		siz = m_arrowSiz;
+		if (m_arrowRHitFlg)
 		{
-			Siz *= m_AroowHitScale;
+			siz *= m_arrowHitScale;
 		}
-		if (m_CurrentDisplayIndex != m_ResultDisplayList.size() - 1)
+		if (m_currentDisplayIndex != m_resultDisplayList.size() - 1)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_ArrowTex, m_ArrowRPos.x, m_ArrowRPos.y, Siz.x, Siz.y, nullptr, &col, { 0.5,0.5 }, 180);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spArrowTex, m_arrowRPos.x, m_arrowRPos.y, siz.x, siz.y, nullptr, &col, { 0.5,0.5 }, 180);
 		}
 	}
 
@@ -319,7 +319,7 @@ void ResultDisplay::LostUpdate()
 	if (m_lostStampedFlg) { return; }
 
 	// ハンコが出るページ（2ページ目以降）にいる間だけ進める
-	if (m_CurrentDisplayIndex <= 0) { return; }
+	if (m_currentDisplayIndex <= 0) { return; }
 
 	const float hitTime = kLostDelayTime + kLostFallTime;		// 押した瞬間
 	const float endTime = hitTime + kLostBounceTime;			// 演出が終わる時間
@@ -334,8 +334,8 @@ void ResultDisplay::LostUpdate()
 
 		// ハンコを押した音
 		{
-			std::shared_ptr<KdSoundInstance> se = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/Stamp.wav", false);
-			if (se) { se->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
+			std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/UI/Stamp.wav", false);
+			if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 		}
 	}
 
@@ -348,7 +348,7 @@ void ResultDisplay::LostUpdate()
 
 void ResultDisplay::LostDraw()
 {
-	if (!m_lostTex) { return; }
+	if (!m_spLostTex) { return; }
 
 	float scale = 1.0f;		// 大きさ（倍）
 	float alpha = kLostStampAlpha;		// 透明度
@@ -389,20 +389,20 @@ void ResultDisplay::LostDraw()
 		shake.y = cosf(m_lostShakeTimer * 70.0f) * amp;
 	}
 
-	const float w = (float)m_lostTex->GetWidth() * scale;
-	const float h = (float)m_lostTex->GetHeight() * scale;
+	const float w = (float)m_spLostTex->GetWidth() * scale;
+	const float h = (float)m_spLostTex->GetHeight() * scale;
 	const Math::Vector2 pos = m_lostTexPos + shake;
 
 	// ハンコ本体
 	Math::Color col = { 1,0,0,alpha };
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_lostTex, pos.x, pos.y, w, h, nullptr, &col, { 0.5,1 }, m_lostStampAngle);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spLostTex, pos.x, pos.y, w, h, nullptr, &col, { 0.5,1 }, m_lostStampAngle);
 
 	// 押した瞬間の光（同じ画像を加算で重ねる）
 	if (flash > 0.0f)
 	{
 		Math::Color flashCol = { 1,1,1,flash * 0.8f };
 		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_lostTex, pos.x, pos.y, w, h, nullptr, &flashCol, { 0.5,1 }, m_lostStampAngle);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spLostTex, pos.x, pos.y, w, h, nullptr, &flashCol, { 0.5,1 }, m_lostStampAngle);
 		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
 	}
 }

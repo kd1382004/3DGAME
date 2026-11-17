@@ -7,17 +7,22 @@
 class PlayerStatusInventoryUI :public InventoryTabBase
 {
 public:
+	//コンストラクタ
 	PlayerStatusInventoryUI() {}
+	//デストラクタ
 	~PlayerStatusInventoryUI()override {}
 
+	//初期化
 	void Init()override;
 	void Update()override;			// = 旧 PlayerStatusUpdate
 	void PreDraw()override;			// = 旧 PlayerStatusPreDraw
 	void DrawSprite()override;		// = 旧 PlayerStatusDraw
 
 private:
+	//プレイヤーを映すレンダーターゲット
 	std::shared_ptr<KdRenderTargetPack> m_spRtTargetPack;
 
+	//プレイヤーを映すカメラ
 	std::shared_ptr<KdCamera> m_spStatusCamera;
 	float m_statusCamAngleY = 0.0f;   // Y軸回転角度 (度)
 	float m_statusCamDistance = 4.0f;   // プレイヤーからの距離 (お好みに合わせて調整)
@@ -28,22 +33,22 @@ private:
 	struct PlayerStatusInfo
 	{
 		//HPや攻撃力などの数値
-		int num;
+		int m_num;
 
 		//数値の位置
-		Math::Vector2 numPos;
+		Math::Vector2 m_numPos;
 
 		//数値の名前
-		std::shared_ptr<KdTexture>nameTex;
+		std::shared_ptr<KdTexture>m_spNameTex;
 
 		//数値の名前の位置
-		Math::Vector2 namePos;
+		Math::Vector2 m_namePos;
 
 		//アイコン
-		std::shared_ptr<KdTexture>iconTex;
+		std::shared_ptr<KdTexture>m_spIconTex;
 
 		//アイコンの位置
-		Math::Vector2 iconPos;
+		Math::Vector2 m_iconPos;
 	};
 
 	enum PlayerStatusInfoID
@@ -56,7 +61,9 @@ private:
 		PlayerStatusInfoSiz
 	};
 
+	//ステータスの表示情報
 	PlayerStatusInfo m_playerStatusInfo[PlayerStatusInfoSiz];
 
-	std::shared_ptr<KdTexture>m_playerStatusInfoBackTex;
+	//ステータスの背景の画像
+	std::shared_ptr<KdTexture>m_spPlayerStatusInfoBackTex;
 };

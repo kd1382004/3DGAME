@@ -13,32 +13,32 @@ void Sword_FinalSlash::Init()
 	const std::string texPath = "Asset/Textures/Weapon/Sword/Sword_FinalSlash/";
 
 	// 読み込み済みなら何もしない
-	auto loadTex = [](std::shared_ptr<KdTexture>& _tex, const std::string& _path)
+	auto loadTex = [](std::shared_ptr<KdTexture>& _spTex, const std::string& _path)
 		{
-			if (_tex) { return; }
-			_tex = std::make_shared<KdTexture>();
-			_tex->Load(_path);
+			if (_spTex) { return; }
+			_spTex = std::make_shared<KdTexture>();
+			_spTex->Load(_path);
 		};
 
 	// 斬撃の線・ぼんやりした光・黒いもや
-	loadTex(m_lineTex, texPath + "FinalSlash_Line.png");
-	loadTex(m_glowTex, texPath + "FinalSlash_Glow.png");
-	loadTex(m_darkHaloTex, texPath + "FinalSlash_DarkHalo.png");
+	loadTex(m_spLineTex, texPath + "FinalSlash_Line.png");
+	loadTex(m_spGlowTex, texPath + "FinalSlash_Glow.png");
+	loadTex(m_spDarkHaloTex, texPath + "FinalSlash_DarkHalo.png");
 
 	// 衝撃波リング
-	loadTex(m_ringTex, texPath + "FinalSlash_Ring.png");
-	loadTex(m_ringGlowTex, texPath + "FinalSlash_RingGlow.png");
+	loadTex(m_spRingTex, texPath + "FinalSlash_Ring.png");
+	loadTex(m_spRingGlowTex, texPath + "FinalSlash_RingGlow.png");
 	// 黒い稲妻（FinalSlash_Bolt0.png 〜 FinalSlash_Bolt2.png）
 	for (int i = 0; i < kBoltTexNum; i++)
 	{
-		loadTex(m_boltTex[i], texPath + "FinalSlash_Bolt" + std::to_string(i) + ".png");
+		loadTex(m_spBoltTex[i], texPath + "FinalSlash_Bolt" + std::to_string(i) + ".png");
 	}
 
 	// 板ポリゴン（描くたびに SetMaterial で画像を差し替える）
-	if (!m_Poly)
+	if (!m_spPoly)
 	{
-		m_Poly = std::make_shared<KdSquarePolygon>();
-		m_Poly->SetMaterial(m_lineTex);
+		m_spPoly = std::make_shared<KdSquarePolygon>();
+		m_spPoly->SetMaterial(m_spLineTex);
 	}
 }
 
@@ -119,7 +119,7 @@ void Sword_FinalSlash::Update()
 
 void Sword_FinalSlash::DrawEffect()
 {
-	if (!m_Poly) { return; }
+	if (!m_spPoly) { return; }
 	if (m_state != State::Charge && m_state != State::Fade) { return; }
 	//---------- 板を置く行列を2枚分（十字）作る ----------
 	// _widthRate : 横幅の倍率（箱の横幅 × これ）
@@ -316,31 +316,31 @@ void Sword_FinalSlash::DrawEffect()
 	if (drawHalo)
 	{
 		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
-		m_Poly->SetMaterial(m_darkHaloTex);
-		for (auto& mat : haloMats) { shader.DrawPolygon(*m_Poly, mat, haloColor); }
+		m_spPoly->SetMaterial(m_spDarkHaloTex);
+		for (auto& mat : haloMats) { shader.DrawPolygon(*m_spPoly, mat, haloColor); }
 	}
 
 	//リングの光
 	if (drawRing)
 	{
-		m_Poly->SetMaterial(m_ringGlowTex);
-		shader.DrawPolygon(*m_Poly, ringMat, ringGlowColor);
+		m_spPoly->SetMaterial(m_spRingGlowTex);
+		shader.DrawPolygon(*m_spPoly, ringMat, ringGlowColor);
 	}
 
 	//---------- 光と線（加算）… いつも描く ----------
 	KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
 
-	m_Poly->SetMaterial(m_glowTex);
-	for (auto& mat : glowMats) { shader.DrawPolygon(*m_Poly, mat, glowColor); }
+	m_spPoly->SetMaterial(m_spGlowTex);
+	for (auto& mat : glowMats) { shader.DrawPolygon(*m_spPoly, mat, glowColor); }
 
-	m_Poly->SetMaterial(m_lineTex);
-	for (auto& mat : lineMats) { shader.DrawPolygon(*m_Poly, mat, lineColor); }
+	m_spPoly->SetMaterial(m_spLineTex);
+	for (auto& mat : lineMats) { shader.DrawPolygon(*m_spPoly, mat, lineColor); }
 
 	//黒い輪 
 	if (drawRing)
 	{
-		m_Poly->SetMaterial(m_ringTex);
-		shader.DrawPolygon(*m_Poly, ringMat, ringColor);
+		m_spPoly->SetMaterial(m_spRingTex);
+		shader.DrawPolygon(*m_spPoly, ringMat, ringColor);
 	}
 
 
@@ -360,8 +360,8 @@ void Sword_FinalSlash::DrawEffect()
 
 			const auto boltMats = makeCrossMats(boltWidthRate, boltLengthRate, deg, m_boltFlipFlgs[n]);
 
-			m_Poly->SetMaterial(m_boltTex[m_boltIndices[n]]);
-			for (auto& mat : boltMats) { shader.DrawPolygon(*m_Poly, mat, boltColor); }
+			m_spPoly->SetMaterial(m_spBoltTex[m_boltIndices[n]]);
+			for (auto& mat : boltMats) { shader.DrawPolygon(*m_spPoly, mat, boltColor); }
 		}
 	}
 }
@@ -397,10 +397,10 @@ void Sword_FinalSlash::Burst()
 		m_spChargeSE->Stop();
 		m_spChargeSE = nullptr;
 	}
-	std::shared_ptr<KdSoundInstance> burstSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Burst.wav", false);
-	if (burstSE)
+	std::shared_ptr<KdSoundInstance> spBurstSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Burst.wav", false);
+	if (spBurstSE)
 	{
-		burstSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		spBurstSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 	}
 
 	// 斬撃の跡の箱

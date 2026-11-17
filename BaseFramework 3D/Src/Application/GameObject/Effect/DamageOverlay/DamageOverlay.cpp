@@ -2,10 +2,10 @@
 
 void DamageOverlay::Init()
 {
-	if (!m_DamageOverlayTex)
+	if (!m_spDamageOverlayTex)
 	{
-		m_DamageOverlayTex = std::make_shared<KdTexture>();
-		m_DamageOverlayTex->Load("Asset/Textures/GameUI/Effect/DamageOverlay/DamageOverlay.png");
+		m_spDamageOverlayTex = std::make_shared<KdTexture>();
+		m_spDamageOverlayTex->Load("Asset/Textures/GameUI/Effect/DamageOverlay/DamageOverlay.png");
 	}
 }
 
@@ -30,8 +30,8 @@ void DamageOverlay::Update()
 
 void DamageOverlay::DrawSprite()
 {
-	if (!m_DamageOverlayTex) { return; }
+	if (!m_spDamageOverlayTex) { return; }
 	Math::Color darkRed = { 0.706f, 0.0f, 0.0f, m_damageOverlayAlpha };
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_DamageOverlayTex, 0, 0, nullptr, &darkRed);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spDamageOverlayTex, 0, 0, nullptr, &darkRed);
 }

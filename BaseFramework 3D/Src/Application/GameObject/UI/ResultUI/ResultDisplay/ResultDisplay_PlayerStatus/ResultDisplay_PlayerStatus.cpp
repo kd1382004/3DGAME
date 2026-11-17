@@ -12,42 +12,42 @@ void ResultDisplay_PlayerStatus::Init()
 
 	for (int i = 0; i < PlayerStatusInfoSiz; i++)
 	{
-		m_playerStatusInfo[i].num = 0;
-		m_playerStatusInfo[i].numPos = numBasePos;
+		m_playerStatusInfo[i].m_num = 0;
+		m_playerStatusInfo[i].m_numPos = numBasePos;
 
-		m_playerStatusInfo[i].numPos.y -= i * 70;
+		m_playerStatusInfo[i].m_numPos.y -= i * 70;
 
-		m_playerStatusInfo[i].namePos = nameBasePos;
-		m_playerStatusInfo[i].namePos.y = m_playerStatusInfo[i].numPos.y;
+		m_playerStatusInfo[i].m_namePos = nameBasePos;
+		m_playerStatusInfo[i].m_namePos.y = m_playerStatusInfo[i].m_numPos.y;
 
 
-		m_playerStatusInfo[i].iconPos = iconBasePos;
-		m_playerStatusInfo[i].iconPos.y = m_playerStatusInfo[i].numPos.y;
+		m_playerStatusInfo[i].m_iconPos = iconBasePos;
+		m_playerStatusInfo[i].m_iconPos.y = m_playerStatusInfo[i].m_numPos.y;
 
-		if (!m_playerStatusInfo[i].nameTex)
+		if (!m_playerStatusInfo[i].m_spNameTex)
 		{
-			m_playerStatusInfo[i].nameTex = std::make_shared<KdTexture>();
+			m_playerStatusInfo[i].m_spNameTex = std::make_shared<KdTexture>();
 
 			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/PlayerStatusName";
 			filePath += std::to_string(i) + ".png";
-			m_playerStatusInfo[i].nameTex->Load(filePath);
+			m_playerStatusInfo[i].m_spNameTex->Load(filePath);
 		}
 
-		if (!m_playerStatusInfo[i].iconTex)
+		if (!m_playerStatusInfo[i].m_spIconTex)
 		{
-			m_playerStatusInfo[i].iconTex = std::make_shared<KdTexture>();
+			m_playerStatusInfo[i].m_spIconTex = std::make_shared<KdTexture>();
 
 			std::string filePath = "Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/PlayerStatusIcon";
 			filePath += std::to_string(i) + ".png";
-			m_playerStatusInfo[i].iconTex->Load(filePath);
+			m_playerStatusInfo[i].m_spIconTex->Load(filePath);
 		}
 
 	}
 
-	if (!m_playerStatusInfoBackTex)
+	if (!m_spPlayerStatusInfoBackTex)
 	{
-		m_playerStatusInfoBackTex = std::make_shared<KdTexture>();
-		m_playerStatusInfoBackTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/back.png");
+		m_spPlayerStatusInfoBackTex = std::make_shared<KdTexture>();
+		m_spPlayerStatusInfoBackTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/PlayerStatusInfo/back.png");
 	}
 
 	if (!m_spRtTargetPack)
@@ -69,15 +69,15 @@ void ResultDisplay_PlayerStatus::Init()
 		m_spPlayerModel->SetModelData("Asset/Models/Character/Player/Rogue.gltf");
 
 		//アニメータの準備
-		m_spAnimetor = std::make_shared<KdAnimator>();
-		m_spAnimetor->SetAnimation(m_spPlayerModel->GetAnimation("Idle"), true);
+		m_spAnimator = std::make_shared<KdAnimator>();
+		m_spAnimator->SetAnimation(m_spPlayerModel->GetAnimation("Idle"), true);
 	}
 
 
-	if (!m_statusTitleTex)
+	if (!m_spStatusTitleTex)
 	{
-		m_statusTitleTex = std::make_shared<KdTexture>();
-		m_statusTitleTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_PlayerStatus/StatusTex.png");
+		m_spStatusTitleTex = std::make_shared<KdTexture>();
+		m_spStatusTitleTex->Load("Asset/Textures/GameUI/Result/ResultDisplay_PlayerStatus/StatusTex.png");
 		m_statusTitleTexPos = { 0,250 };
 
 	}
@@ -87,7 +87,7 @@ void ResultDisplay_PlayerStatus::Update()
 {
 	if (m_spPlayerModel)
 	{
-		m_spAnimetor->AdvanceTime(m_spPlayerModel->WorkNodes(), 100);
+		m_spAnimator->AdvanceTime(m_spPlayerModel->WorkNodes(), 100);
 		m_spPlayerModel->CalcNodeMatrices();
 
 		// 装備していた武器を右手に持たせる（PlayerBase と同じ付け方）
@@ -166,9 +166,9 @@ void ResultDisplay_PlayerStatus::PreDraw()
 
 void ResultDisplay_PlayerStatus::DrawSprite()
 {
-	if (m_statusTitleTex)
+	if (m_spStatusTitleTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_statusTitleTex, m_statusTitleTexPos.x, m_statusTitleTexPos.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spStatusTitleTex, m_statusTitleTexPos.x, m_statusTitleTexPos.y);
 	}
 
 
@@ -182,13 +182,13 @@ void ResultDisplay_PlayerStatus::DrawSprite()
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, siz.x, siz.y);
 
 	//ステータス描画
-	Math::Vector2 pivo = { 0,0.5 };
+	Math::Vector2 pivot = { 0,0.5 };
 	for (int i = 0; i < PlayerStatusInfoSiz; i++)
 	{
 		Math::Color color;
-		Math::Vector2 backPos = m_playerStatusInfo[i].namePos;
+		Math::Vector2 backPos = m_playerStatusInfo[i].m_namePos;
 		Math::Vector2 backSiz = { 400,60 };
-		Math::Vector2 pivo = { 0,0.5 };
+		Math::Vector2 pivot = { 0,0.5 };
 		if (i % 2 == 0)
 		{
 			color = { 1,1,1,0.3f };
@@ -198,19 +198,19 @@ void ResultDisplay_PlayerStatus::DrawSprite()
 			color = { 0.5,0.5,0.5,0.3f };
 		}
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfoBackTex, backPos.x, backPos.y, backSiz.x, backSiz.y, nullptr, &color, pivo);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayerStatusInfoBackTex, backPos.x, backPos.y, backSiz.x, backSiz.y, nullptr, &color, pivot);
 
 
 
-		if (m_playerStatusInfo[i].nameTex)
+		if (m_playerStatusInfo[i].m_spNameTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].nameTex, m_playerStatusInfo[i].namePos.x, m_playerStatusInfo[i].namePos.y, nullptr, nullptr, pivo);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].m_spNameTex, m_playerStatusInfo[i].m_namePos.x, m_playerStatusInfo[i].m_namePos.y, nullptr, nullptr, pivot);
 		}
-		NumDraw::GetInstance().Drow(m_playerStatusInfo[i].num, RAligned, m_playerStatusInfo[i].numPos, kWhiteColor, 4, true);
+		NumDraw::GetInstance().Draw(m_playerStatusInfo[i].m_num, RAligned, m_playerStatusInfo[i].m_numPos, kWhiteColor, 4, true);
 
-		if (m_playerStatusInfo[i].iconTex)
+		if (m_playerStatusInfo[i].m_spIconTex)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].iconTex, m_playerStatusInfo[i].iconPos.x, m_playerStatusInfo[i].iconPos.y, nullptr, nullptr, pivo);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_playerStatusInfo[i].m_spIconTex, m_playerStatusInfo[i].m_iconPos.x, m_playerStatusInfo[i].m_iconPos.y, nullptr, nullptr, pivot);
 		}
 	}
 }
@@ -261,6 +261,6 @@ void ResultDisplay_PlayerStatus::RefreshStatusNum()
 			break;
 		}
 
-		m_playerStatusInfo[i].num = num;
+		m_playerStatusInfo[i].m_num = num;
 	}
 }

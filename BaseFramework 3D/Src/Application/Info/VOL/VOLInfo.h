@@ -4,33 +4,57 @@ class VOLInfo
 {
 public:
 
+	//デストラクタ(音量を保存する)
 	~VOLInfo() { Save(); };
 
-	void SetMSVol(float vol) { m_MSVol = vol; }
-	void SetSEVol(float vol) { m_SEVol = vol; }
-	void SetBGMVol(float vol) { m_BGMVol = vol; }
+	//全体の音量をセット
+	// _vol ... 音量(0〜1)
+	void SetMSVol(float _vol) { m_MSVol = _vol; }
+	//効果音の音量をセット
+	// _vol ... 音量(0〜1)
+	void SetSEVol(float _vol) { m_SEVol = _vol; }
+	//BGMの音量をセット
+	// _vol ... 音量(0〜1)
+	void SetBGMVol(float _vol) { m_BGMVol = _vol; }
 
 
+	//全体の音量を取得
+	//戻り値 ... 音量(0〜1)
 	float GetMSVol() { return m_MSVol; }
+	//効果音の音量を取得
+	//戻り値 ... 音量(0〜1)
 	float GetSEVol() { return m_SEVol; }
+	//BGMの音量を取得
+	//戻り値 ... 音量(0〜1)
 	float GetBGMVol() { return m_BGMVol; }
 
+	//全体の音量をかけた効果音の音量を取得
+	//戻り値 ... 実際に鳴らす効果音の音量
 	float GetMSSEVol() { return m_SEVol* m_MSVol; }
+	//全体の音量をかけたBGMの音量を取得
+	//戻り値 ... 実際に鳴らすBGMの音量
 	float GetMSBGMVol() { return m_BGMVol * m_MSVol; }
 
 
 
 private:
+	//コンストラクタ(シングルトンなので外から作れない)
 	VOLInfo() { Init(); };
 
+	//初期化(音量をファイルから読み込む)
 	void Init();
+	//音量をファイルに保存する
 	void Save();
 
+	//全体の音量
 	float m_MSVol = 0;
+	//効果音の音量
 	float m_SEVol = 0;
+	//BGMの音量
 	float m_BGMVol = 0;
 
 
+	//音量を保存するファイルのパス
 	std::string m_path = "Asset/Data/Vol/Volume.json";
 public:
 

@@ -29,13 +29,13 @@ bool ComboStepSaveLoad::Load(const std::string& _path, ComboFileData& _outData)
 	// モデルのパス（なければ空のまま。古いファイルにはない）
 	if (data.contains("charaModelPath") && data["charaModelPath"].is_string())
 	{
-		result.charaModelPath = data["charaModelPath"].get<std::string>();
+		result.m_charaModelPath = data["charaModelPath"].get<std::string>();
 	}
 
 	// 武器モデルのパス（なければ空のまま）
 	if (data.contains("weaponModelPath") && data["weaponModelPath"].is_string())
 	{
-		result.weaponModelPath = data["weaponModelPath"].get<std::string>();
+		result.m_weaponModelPath = data["weaponModelPath"].get<std::string>();
 	}
 
 	// 段
@@ -44,12 +44,12 @@ bool ComboStepSaveLoad::Load(const std::string& _path, ComboFileData& _outData)
 		// 段ではないものは飛ばす
 		if (!stepJson.is_object()) { continue; }
 
-		result.steps.push_back(StepFromJson(stepJson));
+		result.m_steps.push_back(StepFromJson(stepJson));
 	}
 
 	// 番号順に並べておく
-	std::stable_sort(result.steps.begin(), result.steps.end(),
-		[](const ComboStep& _a, const ComboStep& _b) { return _a.comboIndex < _b.comboIndex; });
+	std::stable_sort(result.m_steps.begin(), result.m_steps.end(),
+		[](const ComboStep& _a, const ComboStep& _b) { return _a.m_comboIndex < _b.m_comboIndex; });
 
 	// 全部うまくいったら入れ替える
 	_outData = std::move(result);
@@ -59,9 +59,9 @@ bool ComboStepSaveLoad::Load(const std::string& _path, ComboFileData& _outData)
 bool ComboStepSaveLoad::Save(const std::string& _path, const ComboFileData& _data)
 {
 	// 1. comboIndex の順に並べたコピーを作る
-	std::vector<ComboStep> sorted = _data.steps;
+	std::vector<ComboStep> sorted = _data.m_steps;
 	std::stable_sort(sorted.begin(), sorted.end(),
-		[](const ComboStep& _a, const ComboStep& _b) { return _a.comboIndex < _b.comboIndex; });
+		[](const ComboStep& _a, const ComboStep& _b) { return _a.m_comboIndex < _b.m_comboIndex; });
 
 	// 2. 組み立てる
 	nlohmann::json stepsJson = nlohmann::json::array();
@@ -72,8 +72,8 @@ bool ComboStepSaveLoad::Save(const std::string& _path, const ComboFileData& _dat
 
 	nlohmann::json data;
 	data["version"] = 1;
-	data["charaModelPath"] = _data.charaModelPath;
-	data["weaponModelPath"] = _data.weaponModelPath;
+	data["charaModelPath"] = _data.m_charaModelPath;
+	data["weaponModelPath"] = _data.m_weaponModelPath;
 	data["steps"] = std::move(stepsJson);
 
 	// 3. 保存先のフォルダーがなければ作る（例：新しい持ち主の Goblin/ など）
@@ -137,26 +137,26 @@ ComboStep ComboStepSaveLoad::StepFromJson(const nlohmann::json& _j)
 
 	if (_j.contains("animeName") && _j["animeName"].is_string())
 	{
-		step.animeName = _j["animeName"].get<std::string>();
+		step.m_animeName = _j["animeName"].get<std::string>();
 	}
 	if (_j.contains("comboIndex") && _j["comboIndex"].is_number_integer())
 	{
-		step.comboIndex = _j["comboIndex"].get<int>();
+		step.m_comboIndex = _j["comboIndex"].get<int>();
 	}
 
-	getFloat("speed", step.speed);
-	getFloat("acceptStart", step.acceptStart);
-	getFloat("cancelPoint", step.cancelPoint);
-	getFloat("evasionCancel", step.evasionCancel);
-	getFloat("hitStart", step.hitStart);
-	getFloat("hitEnd", step.hitEnd);
-	getFloat("trailStart", step.trailStart);
-	getFloat("trailEnd", step.trailEnd);
-	getFloat("damageRate", step.damageRate);
-	getFloat("knockbackRate", step.knockbackRate);
-	getFloat("hitStopTime", step.hitStopTime);
-	getFloat("stepForward", step.stepForward);
-	getFloat("staminaCost", step.staminaCost);
+	getFloat("speed", step.m_speed);
+	getFloat("acceptStart", step.m_acceptStart);
+	getFloat("cancelPoint", step.m_cancelPoint);
+	getFloat("evasionCancel", step.m_evasionCancel);
+	getFloat("hitStart", step.m_hitStart);
+	getFloat("hitEnd", step.m_hitEnd);
+	getFloat("trailStart", step.m_trailStart);
+	getFloat("trailEnd", step.m_trailEnd);
+	getFloat("damageRate", step.m_damageRate);
+	getFloat("knockbackRate", step.m_knockbackRate);
+	getFloat("hitStopTime", step.m_hitStopTime);
+	getFloat("stepForward", step.m_stepForward);
+	getFloat("staminaCost", step.m_staminaCost);
 
 	return step;
 }
@@ -166,21 +166,21 @@ nlohmann::json ComboStepSaveLoad::StepToJson(const ComboStep& _step)
 
 	nlohmann::json j;
 
-	j["animeName"] = _step.animeName;
-	j["comboIndex"] = _step.comboIndex;
-	j["speed"] = _step.speed;
-	j["acceptStart"] = _step.acceptStart;
-	j["cancelPoint"] = _step.cancelPoint;
-	j["evasionCancel"] = _step.evasionCancel;
-	j["hitStart"] = _step.hitStart;
-	j["hitEnd"] = _step.hitEnd;
-	j["trailStart"] = _step.trailStart;
-	j["trailEnd"] = _step.trailEnd;
-	j["damageRate"] = _step.damageRate;
-	j["knockbackRate"] = _step.knockbackRate;
-	j["hitStopTime"] = _step.hitStopTime;
-	j["stepForward"] = _step.stepForward;
-	j["staminaCost"] = _step.staminaCost;
+	j["animeName"] = _step.m_animeName;
+	j["comboIndex"] = _step.m_comboIndex;
+	j["speed"] = _step.m_speed;
+	j["acceptStart"] = _step.m_acceptStart;
+	j["cancelPoint"] = _step.m_cancelPoint;
+	j["evasionCancel"] = _step.m_evasionCancel;
+	j["hitStart"] = _step.m_hitStart;
+	j["hitEnd"] = _step.m_hitEnd;
+	j["trailStart"] = _step.m_trailStart;
+	j["trailEnd"] = _step.m_trailEnd;
+	j["damageRate"] = _step.m_damageRate;
+	j["knockbackRate"] = _step.m_knockbackRate;
+	j["hitStopTime"] = _step.m_hitStopTime;
+	j["stepForward"] = _step.m_stepForward;
+	j["staminaCost"] = _step.m_staminaCost;
 
 	return j;
 }

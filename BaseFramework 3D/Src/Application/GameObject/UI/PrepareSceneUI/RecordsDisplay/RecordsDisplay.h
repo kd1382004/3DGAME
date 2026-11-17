@@ -7,22 +7,32 @@ class PrepareScene;
 class RecordsDisplay :public UIBase
 {
 public:
+	//コンストラクタ
 	RecordsDisplay() {};
+	//デストラクタ
 	~RecordsDisplay() override{};
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//2Dの描画
 	void DrawSprite()override;
 
 	// 準備シーンをセット
+	// _spPrepareScene ... 準備シーン
 	void SetPrepareScene(std::shared_ptr<PrepareScene> _spPrepareScene) { m_wpPrepareScene = _spPrepareScene; }
 
 	// プレイ記録をセット(PrepareScene::Initから呼ばれる)
+	// _gameRecord ... プレイ記録
 	void SetGameRecord(const GameRecord& _gameRecord) { m_gameRecord = _gameRecord; }
 
 	// 表示する(true)・しない(false)
 	// PrepareScene::ChangeTabから呼ばれる
+	// _flg ... 表示するか
 	void SetActive(bool _flg) { m_activeFlg = _flg; }
+	//表示中かを返す
+	//戻り値 ... 表示中ならtrue
 	bool GetActive() const { return m_activeFlg; }
 
 private:
@@ -37,6 +47,9 @@ private:
 	bool m_activeFlg = false;
 
 	//マウスと当たってるかを返す
+	// _pos ... 四角の真ん中
+	// _w ... 四角の横幅
+	// _h ... 四角の高さ
 	bool MouseHit(Math::Vector2 _pos,float _w,float _h);
 
 };

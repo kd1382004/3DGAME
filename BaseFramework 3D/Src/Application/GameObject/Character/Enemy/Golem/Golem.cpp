@@ -8,15 +8,15 @@
 void Golem::Init()
 {
 	EnemyAmbush::Init();
-	wanderRadius = 50;
+	m_wanderRadius = 50;
 	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Golem/Status/Status.json";
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
 		m_spCharaModel->SetModelData("Asset/Models/Character/Enemy/Golem/golem_clean.gltf");
 		//アニメータの準備
-		m_spAnimetor = std::make_shared<KdAnimator>();
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.WalkAnime), true);
+		m_spAnimator = std::make_shared<KdAnimator>();
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_walkAnime), true);
 
 
 
@@ -25,16 +25,16 @@ void Golem::Init()
 			m_pCollider = std::make_unique<KdCollider>();
 
 			// 歩きのポーズでノード行列を計算してから読む（基本姿勢だと腕を広げた形のため）
-			m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes());
+			m_spAnimator->AdvanceTime(m_spCharaModel->WorkNodes());
 			m_spCharaModel->CalcNodeMatrices();
 
-			auto addSphere = [&](std::string_view nodeName, UINT type)
+			auto addSphere = [&](std::string_view _nodeName, UINT _type)
 				{
-					const KdModelWork::Node* node = m_spCharaModel->FindNode(nodeName);
+					const KdModelWork::Node* node = m_spCharaModel->FindNode(_nodeName);
 					if (!node) { return; }
 					const Math::Matrix& m = node->m_worldTransform;
 					// エンプティの位置 = 球の中心、エンプティのスケール = 半径
-					m_pCollider->RegisterCollisionShape(nodeName, m.Translation(), m.Right().Length(), type);
+					m_pCollider->RegisterCollisionShape(_nodeName, m.Translation(), m.Right().Length(), _type);
 				};
 
 			const UINT bodyType = KdCollider::TypeDamage | KdCollider::TypeCameraOcclusion;
@@ -50,14 +50,14 @@ void Golem::Init()
 		m_viewAngle = 100;
 
 		//---------- 3D効果音 ----------
-		auto loadSE = [&](std::shared_ptr<KdSoundInstance3D>& _se, const std::string& _path)
+		auto loadSE = [&](std::shared_ptr<KdSoundInstance3D>& _spSE, const std::string& _path)
 			{
-				if (_se) { return; }
-				_se = KdAudioManager::Instance().Play3D(_path, m_pos, false);
-				if (_se)
+				if (_spSE) { return; }
+				_spSE = KdAudioManager::Instance().Play3D(_path, m_pos, false);
+				if (_spSE)
 				{
-					_se->Stop();
-					_se->SetCurveDistanceScaler(25.0f);
+					_spSE->Stop();
+					_spSE->SetCurveDistanceScaler(25.0f);
 				}
 			};
 		loadSE(m_spWalk3DSE, "Asset/Sound/SE/Enemy/Golem/Walk.wav");
@@ -65,7 +65,7 @@ void Golem::Init()
 		loadSE(m_spSmash3DSE, "Asset/Sound/SE/Enemy/Golem/Smash.wav");
 	}
 
-	m_PlayerChaseDir = 3;
+	m_playerChaseDir = 3;
 	m_material = EnemyMaterial::Stone;
 }
 
@@ -74,7 +74,7 @@ void Golem::Update()
 
 	if (m_isDead)
 	{
-		if (!m_spAnimetor) { return; }
+		if (!m_spAnimator) { return; }
 
 		// 死亡時に出しっぱなしの攻撃判定を必ず消す
 		if (auto spAttack = m_wpAttack.lock())
@@ -82,7 +82,7 @@ void Golem::Update()
 			spAttack->FinishAttack_Slamming();
 		}
 
-		if (m_spAnimetor->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
 			m_isExpired = true;
 		}
@@ -104,7 +104,7 @@ void Golem::Update()
 
 	Attack();
 
-	if (m_AnimeChangeFlg)
+	if (m_animeChangeFlg)
 	{
 		ChangeAnime();
 	}
@@ -189,7 +189,7 @@ void Golem::UpdateFootstepSE()
 
 void Golem::ChangeAnime()
 {
-	if (!m_spAnimetor) { return; }
+	if (!m_spAnimator) { return; }
 
 
 	if (!m_isDead)
@@ -201,17 +201,17 @@ void Golem::ChangeAnime()
 
 	switch (m_enemyAnimeMode)
 	{
-	case EnemyBase::EnemyAnimeMode_Idel:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.IdleAnime), true);
+	case EnemyBase::EnemyAnimeMode_Idle:
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_idleAnime), true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Walk:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.WalkAnime), true);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_walkAnime), true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Run:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.DashAnime), true);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dashAnime), true);
 		break;
-	case EnemyBase::EnemyAnimeMode_Attck:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.smashAnime), false);
+	case EnemyBase::EnemyAnimeMode_Attack:
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_smashAnime), false);
 		m_attackFlg = true;
 		// 攻撃を始めるときのうなり声
 		if (m_spCrying3DSE)
@@ -222,13 +222,13 @@ void Golem::ChangeAnime()
 		}
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
-		m_spAnimetor->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.DieAnime), false);
+		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dieAnime), false);
 		break;
 	default:
 		break;
 	}
 
-	m_AnimeChangeFlg = false;
+	m_animeChangeFlg = false;
 }
 
 void Golem::Attack()
@@ -258,15 +258,15 @@ void Golem::Attack()
 	{
 		std::shared_ptr<AttackBase>spAttack = m_wpAttack.lock();
 
-		if (m_spAnimetor)
+		if (m_spAnimator)
 		{
 			//アニメーションが終わったら攻撃終了
-			if (m_spAnimetor->IsAnimationEnd())
+			if (m_spAnimator->IsAnimationEnd())
 			{
 				m_attackFlg = false;
 				m_attackWait = m_attackWaitMax;
 
-				m_AnimeChangeFlg = true;
+				m_animeChangeFlg = true;
 				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
 				m_hitTriggered = false;
 
@@ -282,16 +282,16 @@ void Golem::Attack()
 					spAttack->SetAngleY(m_angle);
 				}
 
-				float progress = m_spAnimetor->GetTime() / m_spAnimetor->GetMaxLength();
+				float progress = m_spAnimator->GetTime() / m_spAnimator->GetMaxLength();
 
-				if (progress > m_smasAttackAnimeHitTriggerTime && !m_hitTriggered)
+				if (progress > m_smashAttackAnimeHitTriggerTime && !m_hitTriggered)
 				{
 
 					if (spAttack)
 					{
 						m_hitTriggered = true;
-						spAttack->SetAttckFlg(true);
-						spAttack->SetAttckPower(NowAttack());
+						spAttack->SetAttackFlg(true);
+						spAttack->SetAttackPower(NowAttack());
 
 						// ゴーレムの向いている方向に少し前（叩いた場所）
 						const float rad = DirectX::XMConvertToRadians(m_angle);
@@ -332,8 +332,8 @@ void Golem::Attack()
 				}
 				else
 				{
-					m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Attck;
-					m_AnimeChangeFlg = true;
+					m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Attack;
+					m_animeChangeFlg = true;
 
 					std::shared_ptr<SmashAttack>spAttack = std::make_shared<SmashAttack>();
 					m_wpAttack = spAttack;
@@ -356,6 +356,6 @@ void Golem::Attack()
 
 
 
-	SetAttackGagePercent(m_attackWait / m_attackWaitMax);
+	SetAttackGaugePercent(m_attackWait / m_attackWaitMax);
 }
 

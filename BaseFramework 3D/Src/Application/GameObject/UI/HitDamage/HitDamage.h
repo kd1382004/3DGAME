@@ -14,10 +14,15 @@ enum class HitDamageType
 
 struct HitDamageDrawInfo {
 
+	//出す位置(ワールド)
 	Math::Vector3 m_3DPos = Math::Vector3::Zero;
+	//出す位置(画面)
 	Math::Vector2 m_2DPos = Math::Vector2::Zero;
-	int m_Damage = 0;
-	float m_Showtime = 3;
+	//ダメージ量
+	int m_damage = 0;
+	//表示時間
+	float m_showTime = 3;
+	//アルファ
 	float m_alpha = 1;
 
 	// 種類（色と大きさを決める）
@@ -36,19 +41,30 @@ struct HitDamageDrawInfo {
 class HitDamage :public UIBase
 {
 public:
+	//コンストラクタ
 	HitDamage() {};
+	//デストラクタ
 	~HitDamage()override {};
 
 
+	//初期化
 	void Init()override;
 
+	//更新前の処理
 	void PreUpdate()override;
+	//更新
 	void Update()override;
 
+	//描画前の処理
 	void PreDraw()override;
+	//2Dの描画
 	void DrawSprite()override;
 
 
+	//ダメージ数字を出す
+	// _damage ... ダメージ量
+	// _3DPos ... 出す位置(ワールド)
+	// _type ... 数字の種類
 	void SetDamage(int _damage, Math::Vector3 _3DPos, HitDamageType _type= HitDamageType::Normal)
 	{
 		// 当たった位置から少しだけずらす（連続で当てても数字が重ならないように）
@@ -59,7 +75,7 @@ public:
 
 		HitDamageDrawInfo damageInfo;
 		damageInfo.m_3DPos = _3DPos;
-		damageInfo.m_Damage = _damage;
+		damageInfo.m_damage = _damage;
 		damageInfo.m_type = _type;
 		m_hitDamageList.push_back(damageInfo);
 
@@ -70,11 +86,15 @@ public:
 		}
 	}
 
-	void SetCamera(const std::shared_ptr<CameraBase>& _camera) { m_wpCamera = _camera; }
+	//カメラをセット
+	// _spCamera ... カメラ
+	void SetCamera(const std::shared_ptr<CameraBase>& _spCamera) { m_wpCamera = _spCamera; }
 private:
 
+	//表示中のダメージ数字の一覧
 	std::list<HitDamageDrawInfo>m_hitDamageList;
 
+	//カメラ
 	std::weak_ptr<CameraBase>m_wpCamera;
 
 

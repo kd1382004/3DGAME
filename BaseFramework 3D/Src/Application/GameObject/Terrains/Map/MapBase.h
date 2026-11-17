@@ -34,7 +34,7 @@ enum RoomType
 	RoomType_PlayerSpawn,
 
 	//階段部屋
-	RoomType_Stars
+	RoomType_Stairs
 };
 
 
@@ -43,54 +43,87 @@ enum RoomType
 class MapBase :public KdGameObject
 {
 public:
+	//コンストラクタ
 	MapBase() {};
+	//デストラクタ
 	~MapBase() {};
 
 
 
+	//初期化
 	void Init()override;
+	//更新
 	void Update()override;
+	//更新後の処理
 	void PostUpdate()override;
+	//ライトありの描画
 	void DrawLit()override;
+	//影の描画
 	void GenerateDepthMapFromLight()override;
+	//描画前の処理(視錐台カリングなど)
 	void PreDraw()override;
 
 
+	//回転をセット
+	// _rMat ... 回転行列
 	void SetRotation(Math::Matrix _rMat);
 
+	//カメラをセット
+	// _spCamera ... カメラ
 	void SetCamera(std::shared_ptr<CameraBase> _spCamera) { m_wpCamera = _spCamera; }
 
+	//マップオブジェクトの種類をセット
+	// _mapObjType ... 種類
 	void SetMapObjType(MapObjType _mapObjType) { m_mapObjType = _mapObjType; }
+	//マップオブジェクトの種類を返す
+	//戻り値 ... 種類
 	MapObjType GetMapObjType() { return m_mapObjType; }
 
+	//プレイヤーをセット
+	// _spPlayerBase ... プレイヤー
 	void SetPlayer(std::shared_ptr<PlayerBase> _spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
 
+	//部屋の種類をセット
+	// _roomType ... 部屋の種類
 	void SetRoomType(RoomType _roomType) { m_roomType = _roomType; }
 
+	//部屋の種類を返す
+	//戻り値 ... 部屋の種類
 	RoomType GetRoomType() { return m_roomType; }
 
+	//部屋IDを返す
+	//戻り値 ... 部屋ID
 	int GetRoomID() { return m_roomID; }
 
-	void SerRoomID(int _ID) { m_roomID = _ID; }
+	//部屋IDをセット
+	// _ID ... 部屋ID
+	void SetRoomID(int _ID) { m_roomID = _ID; }
 
 
+	//モデルをセット
+	// _spModel ... モデル
 	void SetModel(std::shared_ptr<KdModelWork>_spModel) { m_spModel = _spModel; }
 protected:
 
 
 
+	//プレイヤー
 	std::weak_ptr<PlayerBase> m_wpPlayerBase;
 
+	//カメラ
 	std::weak_ptr<CameraBase>m_wpCamera;
 
+	//モデル
 	std::shared_ptr<KdModelWork>m_spModel = nullptr;
 
 	//視錐台用のBoxInfo
 	KdCollider::BoxInfo m_frustumBox;
 
+	//カメラに映っているか
 	bool m_isInView = false;
 
 
+	//マップオブジェクトの種類
 	MapObjType m_mapObjType = MapObjType::None;
 
 	//部屋の種類を監理

@@ -20,9 +20,9 @@
 
 void EnemyBase::Init()
 {
-	if (!m_crowdController)
+	if (!m_spCrowdController)
 	{
-		m_crowdController = std::make_shared<EnemyCrowdController>();
+		m_spCrowdController = std::make_shared<EnemyCrowdController>();
 	}
 
 
@@ -112,13 +112,13 @@ void EnemyBase::PreDraw()
 		std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 		if (!spHPBar) { return; }
 
-		std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
-		if (!spAttackGage) { return; }
+		std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
+		if (!spAttackGauge) { return; }
 
 		if (m_isDead)
 		{
 			spHPBar->SetDrawFlg(false);
-			spAttackGage->SetDrawFlg(false);
+			spAttackGauge->SetDrawFlg(false);
 			return;
 		}
 
@@ -130,18 +130,18 @@ void EnemyBase::PreDraw()
 			if (dist.Length() < 20)
 			{
 				spHPBar->SetDrawFlg(true);
-				spAttackGage->SetDrawFlg(true);
+				spAttackGauge->SetDrawFlg(true);
 			}
 			else
 			{
 				spHPBar->SetDrawFlg(false);
-				spAttackGage->SetDrawFlg(false);
+				spAttackGauge->SetDrawFlg(false);
 			}
 		}
 		else
 		{
 			spHPBar->SetDrawFlg(false);
-			spAttackGage->SetDrawFlg(false);
+			spAttackGauge->SetDrawFlg(false);
 		}
 	}
 }
@@ -154,14 +154,14 @@ void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 
 
 
-	std::shared_ptr<MapManager>m_spMapManager = m_wpMapManager.lock();
+	std::shared_ptr<MapManager>spMapManager = m_wpMapManager.lock();
 
-	if (m_spMapManager)
+	if (spMapManager)
 	{
-		Node* spawnNode = m_spMapManager->WorldToNode(m_spawnPos);
+		Node* spawnNode = spMapManager->WorldToNode(m_spawnPos);
 		if (spawnNode)
 		{
-			m_spawnPos = m_spMapManager->NodeToWorld(spawnNode);
+			m_spawnPos = spMapManager->NodeToWorld(spawnNode);
 		}
 	}
 
@@ -217,7 +217,7 @@ void EnemyBase::SearchPlayer()
 				m_playerChaseFlg = true;
 				
 				//アニメーション
-				m_AnimeChangeFlg = true;
+				m_animeChangeFlg = true;
 				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
 			}
 		}
@@ -289,8 +289,8 @@ void EnemyBase::PlayerChase()
 			if (m_stayTime == m_lostSightWaitTime)
 			{
 				//アニメーション
-				m_AnimeChangeFlg = true;
-				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
+				m_animeChangeFlg = true;
+				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idle;
 			}
 
 
@@ -303,7 +303,7 @@ void EnemyBase::PlayerChase()
 			m_returnSpawnPosFlg = true;
 
 			//アニメーション
-			m_AnimeChangeFlg = true;
+			m_animeChangeFlg = true;
 			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Walk;
 		}
 	}
@@ -312,7 +312,7 @@ void EnemyBase::PlayerChase()
 		if (m_stayTime != m_lostSightWaitTime)
 		{
 			//アニメーション
-			m_AnimeChangeFlg = true;
+			m_animeChangeFlg = true;
 			m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
 		}
 
@@ -336,33 +336,33 @@ void EnemyBase::PlayerChase()
 
 	if (m_playerChaseFlg)
 	{
-		if (!m_crowdController) { return; }
+		if (!m_spCrowdController) { return; }
 
 		Math::Vector3 dir = m_playerPos - m_pos;
 
-		if (m_PlayerChaseDir > dir.Length())
+		if (m_playerChaseDir > dir.Length())
 		{
 
 			if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run)
 			{
 
-				m_AnimeChangeFlg = true;
-				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idel;
+				m_animeChangeFlg = true;
+				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Idle;
 			}
 			return;
 		}
 		else
 		{
-			if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Idel)
+			if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Idle)
 			{
 
-				m_AnimeChangeFlg = true;
+				m_animeChangeFlg = true;
 				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
 			}
 		}
 
-		m_crowdController->Update(this, DeltaTime::Instance().GetGameDeltaTime());
-		m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+		m_spCrowdController->Update(this, DeltaTime::Instance().GetGameDeltaTime());
+		m_pos += m_moveVec * m_status.m_moveSpeed.m_nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 	}
 
 }
@@ -372,33 +372,33 @@ void EnemyBase::SetLV(int _lv)
 
 	_lv += KdRandom::GetInt(-1, 1);
 
-	m_status.LV = std::max(1, _lv);
+	m_status.m_LV = std::max(1, _lv);
 	ApplyLevelStatus();
 	auto spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
-		spHPBar->SetLV(m_status.LV);
-		spHPBar->SetHPBarTexPercent(m_status.HP.nowHP / m_status.HP.maxHP);
+		spHPBar->SetLV(m_status.m_LV);
+		spHPBar->SetHPBarTexPercent(m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP);
 	}
 }
 
 void EnemyBase::ApplyLevelStatus()
 {
-	if (m_status.LV <= 1) { return; }
+	if (m_status.m_LV <= 1) { return; }
 
 	// 階層（LV）ごとにステータスを強化
-	float hpScale = 1.0f + (m_status.LV - 1) * 0.20f;
-	float attackScale = 1.0f + (m_status.LV - 1) * 0.1f;
-	float defenseAdd = static_cast<float>(m_status.LV - 1) * 0.3f;
+	float hpScale = 1.0f + (m_status.m_LV - 1) * 0.20f;
+	float attackScale = 1.0f + (m_status.m_LV - 1) * 0.1f;
+	float defenseAdd = static_cast<float>(m_status.m_LV - 1) * 0.3f;
 
-	m_status.HP.maxHP = std::round(m_baseStatus.HP.baseHP * hpScale);
-	m_status.HP.nowHP = m_status.HP.maxHP;
+	m_status.m_HP.m_maxHP = std::round(m_baseStatus.m_HP.m_baseHP * hpScale);
+	m_status.m_HP.m_nowHP = m_status.m_HP.m_maxHP;
 
-	m_status.attck.baseAttckPowe = std::round(m_baseStatus.attck.baseAttckPowe * attackScale);
-	m_status.attck.nowAttck = m_status.attck.baseAttckPowe + m_status.attck.addAttack;
+	m_status.m_attack.m_baseAttackPower = std::round(m_baseStatus.m_attack.m_baseAttackPower * attackScale);
+	m_status.m_attack.m_nowAttack = m_status.m_attack.m_baseAttackPower + m_status.m_attack.m_addAttack;
 
-	m_status.defense.baseDefensePowe += defenseAdd;
-	m_status.defense.nowDefense = m_status.defense.baseDefensePowe + m_status.defense.addDefense;
+	m_status.m_defense.m_baseDefensePower += defenseAdd;
+	m_status.m_defense.m_nowDefense = m_status.m_defense.m_baseDefensePower + m_status.m_defense.m_addDefense;
 }
 
 void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
@@ -407,17 +407,17 @@ void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	{
 		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
 		spHPBar->Init();
-		spHPBar->SetLV(m_status.LV);
+		spHPBar->SetLV(m_status.m_LV);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
 
 
-		std::shared_ptr<AttackGage>spAttackGage = std::make_shared<AttackGage>();
-		spAttackGage->Init();
-		m_wpAttackGage = spAttackGage;
-		_spUIManager->AddUIObj(spAttackGage);
-		SetAttackGagePercent(1);
+		std::shared_ptr<AttackGage>spAttackGauge = std::make_shared<AttackGage>();
+		spAttackGauge->Init();
+		m_wpAttackGauge = spAttackGauge;
+		_spUIManager->AddUIObj(spAttackGauge);
+		SetAttackGaugePercent(1);
 	}
 
 
@@ -462,19 +462,19 @@ void EnemyBase::Release()
 		spHPBar->Delete();
 	}
 
-	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
-	if (spAttackGage)
+	std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
+	if (spAttackGauge)
 	{
-		spAttackGage->Delete();
+		spAttackGauge->Delete();
 	}
 }
 
 void EnemyBase::EnemyAnimeModeUpdate()
 {
-	if (!m_spAnimetor) { return; }
+	if (!m_spAnimator) { return; }
 	if (!m_spCharaModel) { return; }
 
-	m_spAnimetor->AdvanceTime(m_spCharaModel->WorkNodes(), 60);
+	m_spAnimator->AdvanceTime(m_spCharaModel->WorkNodes(), 60);
 	m_spCharaModel->CalcNodeMatrices();
 }
 
@@ -501,11 +501,11 @@ void EnemyBase::HPPosPostUpdate()
 
 
 	//攻撃ゲージ
-	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
-	if (spAttackGage)
+	std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
+	if (spAttackGauge)
 	{
 		set2DPos.y -= 20;
-		spAttackGage->Set2DPos({ set2DPos.x,set2DPos.y });
+		spAttackGauge->Set2DPos({ set2DPos.x,set2DPos.y });
 	}
 }
 
@@ -515,7 +515,7 @@ void EnemyBase::ReturnSpawnPos()
 	// スポーン地点に到達しているか判定
 	Math::Vector3 toSpawn = m_spawnPos - m_pos;
 	toSpawn.y = 0;
-	if (toSpawn.Length() < wanderRadius)
+	if (toSpawn.Length() < m_wanderRadius)
 	{
 		m_returnSpawnPosFlg = false;
 		m_path.clear();
@@ -591,7 +591,7 @@ void EnemyBase::ReturnSpawnPos()
 			{
 				dir.Normalize();
 				m_moveVec = dir; // 進行方向を更新
-				m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+				m_pos += m_moveVec * m_status.m_moveSpeed.m_nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 			}
 		}
 		else
@@ -601,7 +601,7 @@ void EnemyBase::ReturnSpawnPos()
 			{
 				toSpawn.Normalize();
 				m_moveVec = toSpawn;
-				m_pos += m_moveVec * m_status.moveSpeed.nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
+				m_pos += m_moveVec * m_status.m_moveSpeed.m_nowSpeed * DeltaTime::Instance().GetGameDeltaTime();
 			}
 		}
 	}
@@ -643,17 +643,17 @@ void EnemyBase::PlayMaterialSE(const std::string& _folder, float _volRate)
 	}
 
 	// 1回鳴らすだけなので持っておかない（鳴り終わったら KdAudioManager が片付ける）
-	std::shared_ptr<KdSoundInstance3D> se = KdAudioManager::Instance().Play3D(_folder + file, m_pos, false);
-	if (se)
+	std::shared_ptr<KdSoundInstance3D> spSE = KdAudioManager::Instance().Play3D(_folder + file, m_pos, false);
+	if (spSE)
 	{
-		se->SetCurveDistanceScaler(20.0f);
-		se->SetVolume(VOLInfo::Instance().GetMSSEVol() * _volRate);
+		spSE->SetCurveDistanceScaler(20.0f);
+		spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * _volRate);
 	}
 }
 
 void EnemyBase::SetDead()
 {
-	m_AnimeChangeFlg = true;
+	m_animeChangeFlg = true;
 	m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Die;
 
 
@@ -688,9 +688,9 @@ void EnemyBase::SetDead()
 	PlayMaterialSE("Asset/Sound/SE/Enemy/Death/", 1.0f);
 }
 
-void EnemyBase::SetAttackGagePercent(float _percent)
+void EnemyBase::SetAttackGaugePercent(float _percent)
 {
-	std::shared_ptr<AttackGage>spAttackGage = m_wpAttackGage.lock();
-	if (!spAttackGage) { return; }
-	spAttackGage->SetAttackGageTexPercent(_percent);
+	std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
+	if (!spAttackGauge) { return; }
+	spAttackGauge->SetAttackGaugeTexPercent(_percent);
 }

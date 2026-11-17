@@ -63,11 +63,11 @@ GameScene::~GameScene()
 
 }
 
-void GameScene::ImGUi()
+void GameScene::ImGUI()
 {
-	for (auto Camera : m_spCharacterStatus)
+	for (auto camera : m_spCharacterStatus)
 	{
-		Camera->ImGUI();
+		camera->ImGUI();
 	}
 
 	//ImGUI
@@ -89,7 +89,7 @@ void GameScene::ImGUi()
 	{
 		for (EditorEntry& editor : m_editors)
 		{
-			ImGui::Checkbox(editor.name, &editor.open);
+			ImGui::Checkbox(editor.m_name, &editor.m_open);
 		}
 		ImGui::TreePop();
 	}
@@ -97,57 +97,57 @@ void GameScene::ImGUi()
 	//開いているエディターだけ描画（×で閉じると open が false になる）
 	for (EditorEntry& editor : m_editors)
 	{
-		if (editor.open && editor.draw)
+		if (editor.m_open && editor.m_draw)
 		{
 			ImGui::SetNextWindowBgAlpha(1.0f);
-			editor.draw(&editor.open);
+			editor.m_draw(&editor.m_open);
 		}
 	}
 }
 
-void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEacapeGatePos)
+void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEscapeGatePos)
 {
 	if (!m_spWarpGateManager) { return; }
 
-	m_spWarpGateManager->WarpGateInit(_setNextGatePos, _setEacapeGatePos);
+	m_spWarpGateManager->WarpGateInit(_setNextGatePos, _setEscapeGatePos);
 }
 
 void GameScene::SetGameResult()
 {
 	GameResult gameResult;
-	gameResult.displayFloorInfo = m_DisplayFloorInfo;
+	gameResult.m_displayFloorInfo = m_displayFloorInfo;
 
 
 	if (m_spPlayer)
 	{
-		gameResult.playerDead = m_spPlayer->GetIsDead();
+		gameResult.m_playerDead = m_spPlayer->GetIsDead();
 
 
-		bool saveFlg = !gameResult.playerDead;
+		bool saveFlg = !gameResult.m_playerDead;
 
 		//セーブデータに保存
-		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_InventoryFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
-		SaveWeaponStrengtheningData(saveFlg, m_WeaponStrengtheningFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
+		SaveWeaponStrengtheningData(saveFlg, m_weaponStrengtheningFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
 
 
 		//ゲームResultに保存
-		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_InventoryGameResultFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
-		SaveWeaponStrengtheningData(true, m_WeaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryGameResultFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
+		SaveWeaponStrengtheningData(true, m_weaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
 		//プレイヤーのステータス状況を保存
 		m_spPlayer->ClearAllBuffs();
-		m_spPlayer->SaveCharaStatus(m_PlayerStatusGameResultFilePath);
+		m_spPlayer->SaveCharaStatus(m_playerStatusGameResultFilePath);
 		if (saveFlg)
 		{
 			//セーブデータに保存
-			m_spPlayer->SaveCharaStatus(m_PlayerStatusFilePath);
-			m_spPlayer->SaveCharaStatus(m_PlayerStatusFilePath);
+			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
+			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
 		}
 		else
 		{
 			//セーブデータに保存
 			//プレイヤーのステータス状況をリセット
 			m_spPlayer->LoadCharaStatus(m_spPlayer->GetCharaDefaultStatusFilePath());
-			m_spPlayer->SaveCharaStatus(m_PlayerStatusFilePath);
+			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
 		}
 
 	}
@@ -158,27 +158,27 @@ void GameScene::SetGameResult()
 void GameScene::ChangeResultScene()
 {
 	SetGameResult();
-	FadeDraw::Instance().SetFadeType(FedeOut, 3);
+	FadeDraw::Instance().SetFadeType(FadeOut, 3);
 	SceneManager::Instance().SetNextScene(SceneManager::SceneType::Result);
 }
 
 void GameScene::AddEnemyKill()
 {
-	m_DisplayFloorInfo[m_displayFloor].enemyKillCount++;
-	m_DisplayFloorInfo[0].enemyKillCount++;
+	m_displayFloorInfo[m_displayFloor].m_enemyKillCount++;
+	m_displayFloorInfo[0].m_enemyKillCount++;
 }
 
 void GameScene::AddTreasureChestsNum()
 {
-	m_DisplayFloorInfo[m_displayFloor].TreasureChestsNum++;
-	m_DisplayFloorInfo[0].TreasureChestsNum++;
+	m_displayFloorInfo[m_displayFloor].m_treasureChestsNum++;
+	m_displayFloorInfo[0].m_treasureChestsNum++;
 }
 
 void GameScene::PlayerDefeat()
 {
 	m_playerDefeatFlg = true;
 
-	FadeDraw::Instance().SetFadeType(FedeIn, 3);
+	FadeDraw::Instance().SetFadeType(FadeIn, 3);
 }
 
 void GameScene::Event()
@@ -197,20 +197,20 @@ void GameScene::Event()
 
 	////////////////////////////////////////////
 	//デバック
-	static bool REFLG = false;
+	static bool reFlg = false;
 
 	if (GetAsyncKeyState('3') & 0x8000)
 	{
 
-		if (!REFLG)
+		if (!reFlg)
 		{
 			GenerateMap();
-			REFLG = true;
+			reFlg = true;
 		}
 	}
 	else
 	{
-		REFLG = false;
+		reFlg = false;
 	}
 
 	if (GetAsyncKeyState('5') & 0x8000)
@@ -236,7 +236,7 @@ void GameScene::Event()
 	///////////////////////////////////////////////////
 	if (!m_spMapManager) { return; }
 	//更新チャンク決め
-	m_spMapManager->SetPlayerChanke(m_spPlayer->GetPos());
+	m_spMapManager->SetPlayerChunk(m_spPlayer->GetPos());
 
 	// プレイヤーのチャンクが移動した時だけ、更新リストを再構築する
 	if (m_spMapManager->GetIsChunkChanged())
@@ -254,7 +254,7 @@ void GameScene::Event()
 		if (m_spCamera)
 		{
 			m_spCamera->ClearCameraOcclusionObject();
-			for (auto& map : m_spMapManager->GetUpdateChankes())
+			for (auto& map : m_spMapManager->GetUpdateChunks())
 			{
 				m_spCamera->ResolveCameraOcclusionObject(map);
 			}
@@ -291,10 +291,10 @@ void GameScene::Event()
 	if (!m_spWeapon) { return; }
 	m_spWeapon->ClearAttackHitCharacterList();
 	m_spWeapon->ClearObjList();
-	std::vector<std::shared_ptr<MapBase>> mapList = m_spMapManager->GetUpdateChankes();
-	for (std::shared_ptr<MapBase> map : mapList)
+	std::vector<std::shared_ptr<MapBase>> mapList = m_spMapManager->GetUpdateChunks();
+	for (std::shared_ptr<MapBase> spMap : mapList)
 	{
-		m_spWeapon->AddObjList(map);
+		m_spWeapon->AddObjList(spMap);
 	}
 
 
@@ -317,8 +317,8 @@ void GameScene::Event()
 
 	float dt = DeltaTime::Instance().GetRealDeltaTime();
 
-	m_DisplayFloorInfo[m_displayFloor].playTimeSc += dt;
-	m_DisplayFloorInfo[0].playTimeSc += dt;
+	m_displayFloorInfo[m_displayFloor].m_playTimeSc += dt;
+	m_displayFloorInfo[0].m_playTimeSc += dt;
 }
 
 
@@ -328,7 +328,7 @@ void GameScene::Init()
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
 	DisplayFloorInfo displayFloorInfo;
-	m_DisplayFloorInfo.push_back(displayFloorInfo);
+	m_displayFloorInfo.push_back(displayFloorInfo);
 
 
 
@@ -352,11 +352,11 @@ void GameScene::Init()
 	m_spPlayer = std::make_shared<PlayerBase>();
 	m_spPlayer->Init();
 	m_spPlayer->SetPlayerWeaponInfo(SceneManager::Instance().GetPlayerWeaponInfo());
-	m_spPlayer->LoadCharaStatus(m_PlayerStatusFilePath);
+	m_spPlayer->LoadCharaStatus(m_playerStatusFilePath);
 	m_objList.push_back(m_spPlayer);
 
 
-	std::vector<std::vector<Inventory>> inventoryData = LoadInventoryData(m_InventoryFilePath);;
+	std::vector<std::vector<Inventory>> inventoryData = LoadInventoryData(m_inventoryFilePath);;
 	m_spPlayer->SetPotionsInventoryList(inventoryData[0]);
 	m_spPlayer->SetWeaponsStrengtheningInventoryList(inventoryData[1]);
 	m_spPlayer->GetPlayerInventory()->SetMoney(LoadMoney());	// 所持金
@@ -384,7 +384,7 @@ void GameScene::Init()
 
 	m_spWeapon->Init();
 	// マスタを土台にセーブの進行状況を重ねる
-	m_spWeapon->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_WeaponStrengtheningFilePath));
+	m_spWeapon->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_weaponStrengtheningFilePath));
 	
 
 	m_objList.push_back(m_spWeapon);
@@ -428,9 +428,9 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	//エフェクトマネージャー
 	/////////////////////////////////////////	
-	std::shared_ptr<EffectManager>effect = std::make_shared<EffectManager>();
-	effect->Init();
-	m_objList.push_back(effect);
+	std::shared_ptr<EffectManager>spEffect = std::make_shared<EffectManager>();
+	spEffect->Init();
+	m_objList.push_back(spEffect);
 
 
 	/////////////////////////////////////////
@@ -444,7 +444,7 @@ void GameScene::Init()
 	/////////////////////////////////////////	
 	m_spUIManager = std::make_shared<UIManager>();
 	m_spUIManager->Init();
-	m_spUIManager->SetpPotionTexInfo();
+	m_spUIManager->SetPotionTexInfo();
 	m_spUIManager->AddPlayerInventoryUI();
 	m_spUIManager->AddUIMapManager();
 	m_objList.push_back(m_spUIManager);
@@ -491,9 +491,9 @@ void GameScene::Init()
 	/////////////////////////////////////////
 	m_spPlayer->SetCamera(m_spCamera);
 	m_spPlayer->SetGameScene(self);
-	m_spPlayer->SetWepon(m_spWeapon);
+	m_spPlayer->SetWeapon(m_spWeapon);
 	m_spPlayer->AddUIList(m_spUIManager);
-	m_spPlayer->SetEffectManager(effect);
+	m_spPlayer->SetEffectManager(spEffect);
 	m_spPlayer->SetHitDamage(spHitDamage);
 	m_spPlayer->SetAccessoryManager(spAccessoryManager);
 	m_spPlayer->GetPlayerBuffManager()->SetPlayer(m_spPlayer);
@@ -582,16 +582,16 @@ void GameScene::Init()
 
 
 	//ImGUI用
-	m_upWSEditor = std::make_shared<WeaponStrengtheningEditor>(m_WeaponStrengtheningMSDateFilePath);
-	m_upTCTableEditor = std::make_shared<TreasureChestTableEditor>();
-	m_ComboStepEditor = std::make_shared<ComboStepEditor>();
+	m_spWSEditor = std::make_shared<WeaponStrengtheningEditor>(m_weaponStrengtheningMSDateFilePath);
+	m_spTCTableEditor = std::make_shared<TreasureChestTableEditor>();
+	m_spComboStepEditor = std::make_shared<ComboStepEditor>();
 
 	// コンボのプレビュー用モデルをシーンに置く（専用ウィンドウに描く。描いた後はゲームのカメラに戻す）
-	m_ComboStepEditor->SetPreviewMainCamera(m_spCamera);
-	m_objList.push_back(m_ComboStepEditor->GetPreviewObject());
+	m_spComboStepEditor->SetPreviewMainCamera(m_spCamera);
+	m_objList.push_back(m_spComboStepEditor->GetPreviewObject());
 
 	// エディターで保存したら、プレイヤーが使っているファイルならすぐ読み直す
-	m_ComboStepEditor->SetOnSaved([this](const std::string& _path)
+	m_spComboStepEditor->SetOnSaved([this](const std::string& _path)
 		{
 			if (!m_spPlayer) { return; }
 
@@ -605,9 +605,9 @@ void GameScene::Init()
 
 	// エディターを一覧に登録する
 	m_editors.clear();
-	m_editors.push_back({ U8("武器強化"), false, [this](bool* _open) { m_upWSEditor->Draw(_open); } });
-	m_editors.push_back({ U8("宝箱のドロップテーブル"), false, [this](bool* _open) { m_upTCTableEditor->Draw(_open); } });
-	m_editors.push_back({ U8("武器のコンボ"), false, [this](bool* _open) { m_ComboStepEditor->Draw(_open); } });
+	m_editors.push_back({ U8("武器強化"), false, [this](bool* _open) { m_spWSEditor->Draw(_open); } });
+	m_editors.push_back({ U8("宝箱のドロップテーブル"), false, [this](bool* _open) { m_spTCTableEditor->Draw(_open); } });
+	m_editors.push_back({ U8("武器のコンボ"), false, [this](bool* _open) { m_spComboStepEditor->Draw(_open); } });
 
 }
 
@@ -638,10 +638,10 @@ void GameScene::GenerateMap()
 
 	m_displayFloor++;
 	DisplayFloorInfo displayFloorInfo;
-	displayFloorInfo.DisplayFloor = m_displayFloor;
-	m_DisplayFloorInfo.push_back(displayFloorInfo);
+	displayFloorInfo.m_displayFloor = m_displayFloor;
+	m_displayFloorInfo.push_back(displayFloorInfo);
 
-	m_DisplayFloorInfo[0].DisplayFloor = m_displayFloor;
+	m_displayFloorInfo[0].m_displayFloor = m_displayFloor;
 
 	int mapSizeX = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorX) * std::pow(growth, m_mapGenerateDisplayFloor));
 	int mapSizeY = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorY) * std::pow(growth, m_mapGenerateDisplayFloor));
@@ -705,7 +705,7 @@ void GameScene::GenerateMap()
 
 
 	//更新チャンク決め
-	m_spMapManager->SetPlayerChanke(m_spPlayer->GetPos());
+	m_spMapManager->SetPlayerChunk(m_spPlayer->GetPos());
 
 	if (m_spMapObjManager)
 	{

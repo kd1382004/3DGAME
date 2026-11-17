@@ -25,14 +25,14 @@ void PrepareSceneDisplay::Init()
 
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
-		m_spMenuSiz[i].x = m_spMenuTex[i]->GetWidth();
-		m_spMenuSiz[i].y = m_spMenuTex[i]->GetHeight();
+		m_menuSiz[i].x = m_spMenuTex[i]->GetWidth();
+		m_menuSiz[i].y = m_spMenuTex[i]->GetHeight();
 
-		m_spMenuDrawSiz[i] = m_spMenuSiz[i] * kMenuScale;
+		m_menuDrawSiz[i] = m_menuSiz[i] * kMenuScale;
 
 
 		// 左端を揃えて上から順に並べる → 幅が段々短くなる階段状になる
-		m_spMenuPos[i] = { menuLeft, menuTopY - menuSpaceY * i };
+		m_menuPos[i] = { menuLeft, menuTopY - menuSpaceY * i };
 
 		m_mouseHitFlg[i] = false;
 	}
@@ -42,7 +42,7 @@ void PrepareSceneDisplay::Init()
 	// 文字の位置(左端・上下中央を基準。画面中央が0,0、上がプラス)
 	auto setTextPos = [&](InfoText _text, float _x, float _y)
 		{
-			m_spTextPos[static_cast<int>(_text)] = { _x, _y };
+			m_textPos[static_cast<int>(_text)] = { _x, _y };
 		};
 
 	// 画面タイトル
@@ -66,7 +66,7 @@ void PrepareSceneDisplay::Init()
 	setTextPos(InfoText::Potion, textLeft, equipTop - 146.0f);
 	setTextPos(InfoText::Count, panelLeft + 258.0f, equipTop - 146.0f);
 
-	m_weaponIconPos = m_spTextPos[static_cast<int>(InfoText::Sword)];
+	m_weaponIconPos = m_textPos[static_cast<int>(InfoText::Sword)];
 	m_weaponIconPos.x -= m_weaponIconSiz + 8.0f;
 
 	// 所持金パネル
@@ -91,7 +91,7 @@ void PrepareSceneDisplay::Update()
 {
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
-		if (MouseHit(m_spMenuPos[i], m_spMenuDrawSiz[i].x, m_spMenuDrawSiz[i].y))
+		if (MouseHit(m_menuPos[i], m_menuDrawSiz[i].x, m_menuDrawSiz[i].y))
 		{
 			m_mouseHitFlg[i] = true;
 
@@ -130,8 +130,8 @@ void PrepareSceneDisplay::DrawSprite()
 		if (!m_spMenuTex[i]) { continue; }
 
 
-		float w = m_spMenuDrawSiz[i].x;
-		float h = m_spMenuDrawSiz[i].y;
+		float w = m_menuDrawSiz[i].x;
+		float h = m_menuDrawSiz[i].y;
 
 		if (m_mouseHitFlg[i])
 		{
@@ -142,7 +142,7 @@ void PrepareSceneDisplay::DrawSprite()
 		// pivotを{0,0.5}にして左端基準で描画
 		KdShaderManager::Instance().m_spriteShader.DrawTex(
 			m_spMenuTex[i].get(),
-			static_cast<int>(m_spMenuPos[i].x), static_cast<int>(m_spMenuPos[i].y),
+			static_cast<int>(m_menuPos[i].x), static_cast<int>(m_menuPos[i].y),
 			w, h,
 			nullptr, &kWhiteColor, { 0.0f, 0.5f });
 	}
@@ -207,8 +207,8 @@ void PrepareSceneDisplay::Draw()
 			int i = static_cast<int>(_text);
 			if (!m_spTextTex[i]) { return; }
 			sprite.DrawTex(m_spTextTex[i],
-				static_cast<int>(m_spTextPos[i].x + _offset.x),
-				static_cast<int>(m_spTextPos[i].y + _offset.y),
+				static_cast<int>(m_textPos[i].x + _offset.x),
+				static_cast<int>(m_textPos[i].y + _offset.y),
 				nullptr, &kWhiteColor, { 0.0f, 0.5f });
 		};
 
@@ -259,17 +259,17 @@ void PrepareSceneDisplay::Draw()
 	// _maxW … 超えてはいけない横幅(項目の文字にかぶらないように。0なら制限なし)
 	auto drawNum = [&](long _num, InfoText _unit, bool _separator = false, float _maxW = 0.0f)
 		{
-			const Math::Vector2& unitPos = m_spTextPos[static_cast<int>(_unit)];
-			NumDraw::GetInstance().Drow(_num, RAligned,
+			const Math::Vector2& unitPos = m_textPos[static_cast<int>(_unit)];
+			NumDraw::GetInstance().Draw(_num, RAligned,
 				{ unitPos.x - numGap, unitPos.y },
 				Math::Color(1, 1, 1, 1), numSiz, _separator, -1, { _maxW, 0.0f });
 		};
 	
 	// 前回の記録(PrepareSceneDisplay)
-	if (m_gameRecord.hasLatest && !m_gameRecord.latest.displayFloorInfo.empty())
+	if (m_gameRecord.m_hasLatest && !m_gameRecord.m_latest.m_displayFloorInfo.empty())
 	{
-		int  floor = m_gameRecord.latest.displayFloorInfo[0].DisplayFloor;	// [0]は全体の情報
-		bool isLost = m_gameRecord.latest.playerDead;
+		int  floor = m_gameRecord.m_latest.m_displayFloorInfo[0].m_displayFloor;	// [0]は全体の情報
+		bool isLost = m_gameRecord.m_latest.m_playerDead;
 
 		drawNum(floor, InfoText::Floor, false, 64.0f);	// 「到達階」の右 〜 「階」の左
 		drawText(isLost ? InfoText::Lost : InfoText::Escape);

@@ -4,15 +4,15 @@
 #include "../../Object/Button/GameButton/GameButton.h"
 #include "../../Object/Button/TitleButton/TitleButton.h"
 
-void ButtonManager::InitTitel()
+void ButtonManager::InitTitle()
 {
 	m_buttonList.clear();
 	m_posList.clear();
 
-	std::shared_ptr<GameButton> gameButton = std::make_shared<GameButton>();
-	gameButton->Init();
-	gameButton->SetPos({ 0,-200,0 });
-	m_buttonList.push_back(gameButton);
+	std::shared_ptr<GameButton> spGameButton = std::make_shared<GameButton>();
+	spGameButton->Init();
+	spGameButton->SetPos({ 0,-200,0 });
+	m_buttonList.push_back(spGameButton);
 
 
 	m_posListNum = 0;
@@ -29,15 +29,15 @@ void ButtonManager::InitResult()
 	m_buttonList.clear();
 	m_posList.clear();
 
-	std::shared_ptr<GameButton> gameButton = std::make_shared<GameButton>();
-	gameButton->Init();
-	gameButton->SetPos({ -200,-300,0 });
-	m_buttonList.push_back(gameButton);
+	std::shared_ptr<GameButton> spGameButton = std::make_shared<GameButton>();
+	spGameButton->Init();
+	spGameButton->SetPos({ -200,-300,0 });
+	m_buttonList.push_back(spGameButton);
 
-	std::shared_ptr<TitleButton> titleButton = std::make_shared<TitleButton>();
-	titleButton->Init();
-	titleButton->SetPos({ 200,-300,0 });
-	m_buttonList.push_back(titleButton);
+	std::shared_ptr<TitleButton> spTitleButton = std::make_shared<TitleButton>();
+	spTitleButton->Init();
+	spTitleButton->SetPos({ 200,-300,0 });
+	m_buttonList.push_back(spTitleButton);
 
 	for (auto& obj : m_buttonList)
 	{
@@ -61,7 +61,7 @@ void ButtonManager::Update()
 			m_posListNum = 0;
 		}
 
-		m_bottonChange->Play();
+		m_spButtonChange->Play();
 	}
 
 	if (KeyInfo::GetInstance().KeyPush(VK_RIGHT, true, true))
@@ -73,7 +73,7 @@ void ButtonManager::Update()
 			m_posListNum = m_posList.size() - 1;
 		}
 
-		m_bottonChange->Play();
+		m_spButtonChange->Play();
 	}
 
 	int i = 0;
@@ -92,7 +92,7 @@ void ButtonManager::Update()
 
 		if (KeyInfo::GetInstance().GetKeyPush(VK_SPACE))
 		{
-			m_bottonDecision->Play();
+			m_spButtonDecision->Play();
 		}
 		
 		i++;
@@ -108,17 +108,17 @@ void ButtonManager::DrawSprite()
 
 }
 
-void ButtonManager::SetPos(const Math::Vector3& pos)
+void ButtonManager::SetPos(const Math::Vector3& _pos)
 {
 
 }
 
 void ButtonManager::Init()
 {
-	m_bottonChange = KdAudioManager::Instance().Play("Asset/Sound/Button/Change.wav");
-	m_bottonChange->SetVolume(0.5);
-	m_bottonChange->Stop();
-	m_bottonDecision = KdAudioManager::Instance().Play("Asset/Sound/Button/Decision.wav");
-	m_bottonDecision->SetVolume(0.5);
-	m_bottonDecision->Stop();
+	m_spButtonChange = KdAudioManager::Instance().Play("Asset/Sound/Button/Change.wav");
+	m_spButtonChange->SetVolume(0.5);
+	m_spButtonChange->Stop();
+	m_spButtonDecision = KdAudioManager::Instance().Play("Asset/Sound/Button/Decision.wav");
+	m_spButtonDecision->SetVolume(0.5);
+	m_spButtonDecision->Stop();
 }

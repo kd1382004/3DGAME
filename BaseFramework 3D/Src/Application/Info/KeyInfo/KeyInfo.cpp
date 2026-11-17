@@ -6,42 +6,42 @@ void KeyInfo::SetKeyValid(int _key)
 {
 	if (_key >= 'A' && _key <= 'Z')//アルファベット
 	{
-		int Num = _key - 'A';
-		KeyAlphabet[Num].m_validFlg = true;
+		int num = _key - 'A';
+		m_keyAlphabet[num].m_validFlg = true;
 	}
 	else if (_key >= VK_LEFT && _key <= VK_DOWN)//矢印
 	{
-		int Num = _key - VK_LEFT;
-		KeyArrow[Num].m_validFlg = true;
+		int num = _key - VK_LEFT;
+		m_keyArrow[num].m_validFlg = true;
 	}
 	else if (_key == VK_SPACE)//スペース
 	{
-		KeySpace.m_validFlg = true;
+		m_keySpace.m_validFlg = true;
 	}
 	else if (_key == VK_RETURN) //ENTER
 	{
-		KeyEnter.m_validFlg = true;
+		m_keyEnter.m_validFlg = true;
 	}
 	else if (_key == VK_LBUTTON)//左クリック
 	{
-		Mousebutton[0].m_validFlg = true;
+		m_mousebutton[0].m_validFlg = true;
 	}
 	else if (_key == VK_RBUTTON)//右クリック
 	{
-		Mousebutton[1].m_validFlg = true;
+		m_mousebutton[1].m_validFlg = true;
 	}
 	else if (_key >= '0' && _key <= '9')
 	{
-		int Num = _key - '0';
-		KeyNum[Num].m_validFlg = true;
+		int num = _key - '0';
+		m_keyNum[num].m_validFlg = true;
 	}
 	else if (_key == VK_SHIFT) //シフト
 	{
-		Shift.m_validFlg = true;
+		m_shift.m_validFlg = true;
 	}
 	else if (_key == VK_TAB)//TAB
 	{
-		KeyTAB.m_validFlg = true;
+		m_keyTAB.m_validFlg = true;
 	}
 }
 
@@ -53,140 +53,140 @@ void KeyInfo::KeyvalidReset()
 void KeyInfo::UpdateKey()
 {
 	//アルファベット
-	for (int i = 0; i < AlphabetNum; i++)
+	for (int i = 0; i < kAlphabetNum; i++)
 	{
-		if (!KeyAlphabet[i].m_validFlg) { continue; }
+		if (!m_keyAlphabet[i].m_validFlg) { continue; }
 
-		int Num = 'A' + i;
-		if (GetAsyncKeyState(Num) & 0x8000)
+		int num = 'A' + i;
+		if (GetAsyncKeyState(num) & 0x8000)
 		{
-			KeyAlphabet[i].m_pushFlg = true;
+			m_keyAlphabet[i].m_pushFlg = true;
 
-			if (KeyAlphabet[i].m_useFlg)
+			if (m_keyAlphabet[i].m_useFlg)
 			{
-				KeyAlphabet[i].m_pushS++;
+				m_keyAlphabet[i].m_pushS++;
 			}
 		}
 		else
 		{
-			KeyAlphabet[i].m_useFlg = false;
-			KeyAlphabet[i].m_pushFlg = false;
-			KeyAlphabet[i].m_pushS = 0;
+			m_keyAlphabet[i].m_useFlg = false;
+			m_keyAlphabet[i].m_pushFlg = false;
+			m_keyAlphabet[i].m_pushS = 0;
 		}
 	}
 
 	//矢印
-	for (int i = 0; i < ArrowNum; i++)
+	for (int i = 0; i < kArrowNum; i++)
 	{
-		if (!KeyArrow[i].m_validFlg) { continue; }
+		if (!m_keyArrow[i].m_validFlg) { continue; }
 
-		int Num = i;
-		if (GetAsyncKeyState(Num) & 0x8000)
+		int num = i;
+		if (GetAsyncKeyState(num) & 0x8000)
 		{
-			KeyArrow[i].m_pushFlg = true;
+			m_keyArrow[i].m_pushFlg = true;
 
-			if (KeyArrow[i].m_useFlg)
+			if (m_keyArrow[i].m_useFlg)
 			{
-				KeyArrow[i].m_pushS++;
+				m_keyArrow[i].m_pushS++;
 			}
 		}
 		else
 		{
-			KeyArrow[i].m_useFlg = false;
-			KeyArrow[i].m_pushFlg = false;
-			KeyArrow[i].m_pushS = 0;
+			m_keyArrow[i].m_useFlg = false;
+			m_keyArrow[i].m_pushFlg = false;
+			m_keyArrow[i].m_pushS = 0;
 		}
 	}
 
 	//スペース
-	if (KeySpace.m_validFlg)
+	if (m_keySpace.m_validFlg)
 	{
 		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 		{
-			KeySpace.m_pushFlg = true;
+			m_keySpace.m_pushFlg = true;
 
-			if (KeySpace.m_useFlg)
+			if (m_keySpace.m_useFlg)
 			{
-				KeySpace.m_pushS++;
+				m_keySpace.m_pushS++;
 			}
 		}
 		else
 		{
-			KeySpace.m_useFlg = false;
-			KeySpace.m_pushFlg = false;
-			KeySpace.m_pushS = 0;
+			m_keySpace.m_useFlg = false;
+			m_keySpace.m_pushFlg = false;
+			m_keySpace.m_pushS = 0;
 		}
 	}
 
 	//マウスボタン
-	for (int i = 0; i < MousebuttonNum; i++)
+	for (int i = 0; i < kMousebuttonNum; i++)
 	{
-		if (!Mousebutton[i].m_validFlg) { continue; }
+		if (!m_mousebutton[i].m_validFlg) { continue; }
 
 		int key = VK_LBUTTON + i;
 
 		if (GetAsyncKeyState(key) & 0x8000)
 		{
-			if (key == VK_LBUTTON && !Mousebutton[i].m_pushFlg && MouseInfo::Instance().GetMouseFreeFlg())
+			if (key == VK_LBUTTON && !m_mousebutton[i].m_pushFlg && MouseInfo::Instance().GetMouseFreeFlg())
 			{
 				MouseInfo::Instance().SEMouseClickPlay();
 			}
 
 
 
-			Mousebutton[i].m_pushFlg = true;
+			m_mousebutton[i].m_pushFlg = true;
 
-			if (Mousebutton[i].m_useFlg)
+			if (m_mousebutton[i].m_useFlg)
 			{
-				Mousebutton[i].m_pushS++;
+				m_mousebutton[i].m_pushS++;
 			}
 		}
 		else
 		{
-			Mousebutton[i].m_useFlg = false;
-			Mousebutton[i].m_pushFlg = false;
-			Mousebutton[i].m_pushS = 0;
+			m_mousebutton[i].m_useFlg = false;
+			m_mousebutton[i].m_pushFlg = false;
+			m_mousebutton[i].m_pushS = 0;
 		}
 	}
 
 
 	//シフト
-	if (Shift.m_validFlg)
+	if (m_shift.m_validFlg)
 	{
 		if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 		{
-			Shift.m_pushFlg = true;
+			m_shift.m_pushFlg = true;
 
-			if (Shift.m_useFlg)
+			if (m_shift.m_useFlg)
 			{
-				Shift.m_pushS++;
+				m_shift.m_pushS++;
 			}
 		}
 		else
 		{
-			Shift.m_useFlg = false;
-			Shift.m_pushFlg = false;
-			Shift.m_pushS = 0;
+			m_shift.m_useFlg = false;
+			m_shift.m_pushFlg = false;
+			m_shift.m_pushS = 0;
 		}
 	}
 
 
-	if (KeyTAB.m_validFlg)
+	if (m_keyTAB.m_validFlg)
 	{
 		if (GetAsyncKeyState(VK_TAB) & 0x8000)
 		{
-			KeyTAB.m_pushFlg = true;
+			m_keyTAB.m_pushFlg = true;
 
-			if (KeyTAB.m_useFlg)
+			if (m_keyTAB.m_useFlg)
 			{
-				KeyTAB.m_pushS++;
+				m_keyTAB.m_pushS++;
 			}
 		}
 		else
 		{
-			KeyTAB.m_useFlg = false;
-			KeyTAB.m_pushFlg = false;
-			KeyTAB.m_pushS = 0;
+			m_keyTAB.m_useFlg = false;
+			m_keyTAB.m_pushFlg = false;
+			m_keyTAB.m_pushS = 0;
 		}
 	}
 }
@@ -200,44 +200,44 @@ bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
 
 	if (_key >= 'A' && _key <= 'Z')//アルファベット
 	{
-		int Num = _key - 'A';
-		flg = GetValidKeyPush(&KeyAlphabet[Num], _useFlg, _flg);
+		int num = _key - 'A';
+		flg = GetValidKeyPush(&m_keyAlphabet[num], _useFlg, _flg);
 	}
 	else if (_key >= VK_LEFT && _key <= VK_DOWN)//矢印
 	{
-		int Num = _key - VK_LEFT;
-		flg = GetValidKeyPush(&KeyArrow[Num], _useFlg, _flg);
+		int num = _key - VK_LEFT;
+		flg = GetValidKeyPush(&m_keyArrow[num], _useFlg, _flg);
 	}
 	else if (_key == VK_SPACE)//スペース
 	{
-		flg = GetValidKeyPush(&KeySpace, _useFlg, _flg);
+		flg = GetValidKeyPush(&m_keySpace, _useFlg, _flg);
 	}
 	else if (_key == VK_RETURN) //ENTER
 	{
-		flg = GetValidKeyPush(&KeyEnter, _useFlg, _flg);
+		flg = GetValidKeyPush(&m_keyEnter, _useFlg, _flg);
 	}
 	else if (_key == VK_LBUTTON)//左クリック
 	{
-		flg = GetValidKeyPush(&Mousebutton[0], _useFlg, _flg);
+		flg = GetValidKeyPush(&m_mousebutton[0], _useFlg, _flg);
 	}
 	else if (_key == VK_RBUTTON)//右クリック
 	{
-		flg = GetValidKeyPush(&Mousebutton[1], _useFlg, _flg);
+		flg = GetValidKeyPush(&m_mousebutton[1], _useFlg, _flg);
 	}
 	else if (_key >= '0' && _key <= '9')
 	{
-		int Num = _key - '0';
-		flg = GetValidKeyPush(&KeyNum[Num], _useFlg, _flg);
+		int num = _key - '0';
+		flg = GetValidKeyPush(&m_keyNum[num], _useFlg, _flg);
 	}
 	else if (_key == VK_SHIFT)
 	{
-		int Num = _key;
-		flg = GetValidKeyPush(&Shift, _useFlg, _flg);
+		int num = _key;
+		flg = GetValidKeyPush(&m_shift, _useFlg, _flg);
 	}
 	else if (_key == VK_TAB)
 	{
-		int Num = _key;
-		flg = GetValidKeyPush(&KeyTAB, _useFlg, _flg);
+		int num = _key;
+		flg = GetValidKeyPush(&m_keyTAB, _useFlg, _flg);
 	}
 
 
@@ -278,7 +278,7 @@ bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
 
 		if (_useFlg && _flg)
 		{
-			if (_key->m_pushS > m_pushMax)
+			if (_key->m_pushS > kPushMax)
 			{
 				_key->m_useFlg = false;
 				_key->m_pushS = 0;
@@ -300,7 +300,7 @@ void KeyInfo::Init()
 		m_spKeyTexture->Load("Asset/Textures/Key/Keyboard Letters and Symbols.png");
 
 
-		m_keyTexSiz.x = m_spKeyTexture->GetWidth() / AlphabetNum;
+		m_keyTexSiz.x = m_spKeyTexture->GetWidth() / kAlphabetNum;
 		m_keyTexSiz.y = m_spKeyTexture->GetHeight();
 	}
 
@@ -323,9 +323,9 @@ Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
 	//アルファベット
 	if (_key >= 'A' && _key <= 'Z')
 	{
-		int Num = _key - 'A';
+		int num = _key - 'A';
 		srcRect = {
-			(long)m_keyTexSiz.x * Num,
+			(long)m_keyTexSiz.x * num,
 			0,
 			(long)m_keyTexSiz.x,
 			(long)m_keyTexSiz.y

@@ -15,15 +15,15 @@ void FPSCamera::Init()
 void FPSCamera::PostUpdate()
 {
 	// ターゲットの行列(有効な場合利用する)
-	Math::Matrix								_targetMat	= Math::Matrix::Identity;
-	const std::shared_ptr<const KdGameObject>	_spTarget	= m_wpTarget.lock();	
-	if (_spTarget)
+	Math::Matrix								targetMat	= Math::Matrix::Identity;
+	const std::shared_ptr<const KdGameObject>	spTarget	= m_wpTarget.lock();	
+	if (spTarget)
 	{
-		_targetMat = Math::Matrix::CreateTranslation(_spTarget->GetPos());
+		targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos());
 	}
 
 	// カメラの回転
 	UpdateRotateByMouse();
 	m_mRotation = GetRotationMatrix();
-	m_mWorld	= m_mRotation * m_mLocalPos * _targetMat;
+	m_mWorld	= m_mRotation * m_mLocalPos * targetMat;
 }
