@@ -7,6 +7,7 @@
 #include"../../Info/DebugInfo/DebugInfo.h"
 
 #include"../../GameObject/Button/GameButton/GameButton.h"
+#include"../../GameObject/Button/PrepareButton/PrepareButton.h"
 
 #include"../../Info/MouseInfo/MouseInfo.h"
 
@@ -32,6 +33,12 @@ void TitleScene::Init()
 
 	g_factory.RegisterCreateFunction("GameButton", []() {
 		std::shared_ptr<GameButton>obj = std::make_shared<GameButton>();
+		obj->Init();
+		return obj;
+		});
+
+	g_factory.RegisterCreateFunction("PrepareButton", []() {
+		std::shared_ptr<PrepareButton>obj = std::make_shared<PrepareButton>();
 		obj->Init();
 		return obj;
 		});

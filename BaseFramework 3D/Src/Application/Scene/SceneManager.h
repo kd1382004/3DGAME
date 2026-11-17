@@ -19,10 +19,20 @@ struct DisplayFloorInfo
 //ゲームリザルト
 struct GameResult
 {
+	//最初の配列は、全体の情報
 	std::vector<DisplayFloorInfo>displayFloorInfo;
 
 	//プレイヤー死亡
 	bool playerDead = false;
+};
+
+//プレイ記録(最新1件 + 最高階層ベスト3)
+//Asset/Data/PlayerData/GameRecordData.json に保存される
+struct GameRecord
+{
+	bool hasLatest = false;			// 最新の記録があるか(1回もプレイしていなければfalse)
+	GameResult latest;				// 最新のプレイ
+	std::vector<GameResult> best;	// 最高階層の上位3件(1位から順)
 };
 
 
@@ -45,6 +55,7 @@ public:
 	enum class SceneType
 	{
 		Title,
+		Prepare,
 		Game,
 		Result,
 	};
@@ -110,6 +121,8 @@ public:
 		m_ambient = m_defaultSmbient;
 		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 	};
+
+
 private:
 
 	// マネージャーの初期化

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include"../SceneManager.h"
+
 struct Inventory;
 
 enum WeponStrengtheningID;
@@ -42,6 +44,9 @@ public :
 
 	//ゲーム結果を保存
 	virtual void SetGameResult() {};
+
+
+
 protected :
 
 	// 継承先シーンで必要ならオーバーライドする
@@ -105,4 +110,26 @@ protected :
 	const std::string m_PlayerStatusGameResultFilePath = "Asset/Data/GameResult/PlayerStatusData.json";
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////
+	//プレイ記録(最新1件 + 最高階層ベスト3)
+
+	// GameRecordの定義はSceneManager.h(GameResultの隣)
+
+	// 今回の結果を記録に反映して保存(最新を上書き・ベスト3を更新)
+	void SaveGameRecord(const GameResult& _result);
+
+	// 記録を読み込む
+	GameRecord LoadGameRecord();
+
+	//パス
+	const std::string m_GameRecordFilePath = "Asset/Data/PlayerData/GameRecordData.json";
+
+private:
+	nlohmann::json GameResultToJson(const GameResult& _result);
+	GameResult JsonToGameResult(const nlohmann::json& _data);
+
+	// _aが_bより上の順位か(到達階 → 脱出 → 時間の短さ)
+	bool IsBetterResult(const GameResult& _a, const GameResult& _b);
+
 };

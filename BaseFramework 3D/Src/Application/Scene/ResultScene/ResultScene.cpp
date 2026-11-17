@@ -9,7 +9,7 @@
 #include"../../GameObject/UI/UIManager.h"
 #include"../../GameObject/UI/ResultUI/ResultDisplay/ResultDisplay.h"
 
-#include"../../GameObject/Button/GameButton/GameButton.h"
+#include"../../GameObject/Button/PrepareButton/PrepareButton.h"
 #include"../../GameObject/Button/TitleButton/TitleButton.h"
 
 
@@ -40,6 +40,7 @@ void ResultScene::Init()
 {
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 	GameResult gameResult = SceneManager::Instance().GetGameResult();
+	SaveGameRecord(gameResult);
 	std::shared_ptr<UIManager>spUIManager = std::make_shared<UIManager>();
 	spUIManager->Init();
 	m_objList.push_back(spUIManager);
@@ -76,10 +77,12 @@ void ResultScene::Init()
 
 
 
-	std::shared_ptr<GameButton>spGameButton = std::make_shared<GameButton>();
-	spGameButton->Init();
-	spGameButton->SetPos({ 420,-260,0 });
-	m_objList.push_back(spGameButton);
+	// もう一度挑戦(→準備シーン)
+	std::shared_ptr<PrepareButton>spPrepareButton = std::make_shared<PrepareButton>();
+	spPrepareButton->SetTexPath("Asset/Textures/Button/PrepareButton/RetryButton.png");
+	spPrepareButton->Init();
+	spPrepareButton->SetPos({ 420,-260,0 });
+	m_objList.push_back(spPrepareButton);
 
 	std::shared_ptr<TitleButton>spTitleButton = std::make_shared<TitleButton>();
 	spTitleButton->Init();

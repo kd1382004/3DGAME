@@ -466,3 +466,120 @@ std::string BaseScene::GetWeaponKey(int _weaponType)
 	default:                      return "";
 	}
 }
+
+void BaseScene::SaveGameRecord(const GameResult& _result)
+{
+	// 中身が空の結果(プレイしていない)は保存しない
+	if (_result.displayFloorInfo.empty()) { return; }
+
+	GameRecord record = LoadGameRecord();
+
+	// 最新を上書き
+	record.latest = _result;
+	record.hasLatest = true;
+
+	// ベスト3に入れて並べ替え、4位以下を切る
+	record.best.push_back(_result);
+	std::stable_sort(record.best.begin(), record.best.end(),
+		[&](const GameResult& a, const GameResult& b) { return IsBetterResult(a, b); });
+	if (record.best.size() > 3) { record.best.resize(3); }
+
+	// 書き出し
+	nlohmann::json data;
+	data["Latest"] = GameResultToJson(record.latest);
+	data["Best"] = nlohmann::json::array();
+	for (const auto& r : record.best)
+	{
+		data["Best"].push_back(GameResultToJson(r));
+	}
+
+	std::ofstream ofs(m_GameRecordFilePath);
+	ofs << data.dump(4);
+}
+
+GameRecord BaseScene::LoadGameRecord()
+{
+	GameRecord record;
+
+	std::ifstream ifs(m_GameRecordFilePath);
+	if (!ifs.is_open())
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] GameRecordファイルが見つかりません : %s\n"), m_GameRecordFilePath.c_str());
+		return record;
+	}
+
+	nlohmann::json data = nlohmann::json::parse(ifs, nullptr, false);
+	if (data.is_discarded())
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] GameRecordファイルの読み込みに失敗しました : %s\n"), m_GameRecordFilePath.c_str());
+		return record;
+	}
+
+	if (data.contains("Latest") && data["Latest"].is_object())
+	{
+		record.latest = JsonToGameResult(data["Latest"]);
+		record.hasLatest = true;
+	}
+
+	if (data.contains("Best") && data["Best"].is_array())
+	{
+		for (const auto& item : data["Best"])
+		{
+			record.best.push_back(JsonToGameResult(item));
+		}
+	}
+
+	return record;
+}
+
+nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
+{
+	nlohmann::json data;
+	data["PlayerDead"] = _result.playerDead;
+	data["Floors"] = nlohmann::json::array();
+
+	for (const auto& f : _result.displayFloorInfo)
+	{
+		nlohmann::json floor;
+		floor["DisplayFloor"] = f.DisplayFloor;
+		floor["EnemyKillCount"] = f.enemyKillCount;
+		floor["TreasureChestsNum"] = f.TreasureChestsNum;
+		floor["PlayTimeSc"] = f.playTimeSc;
+		data["Floors"].push_back(floor);
+	}
+	return data;
+}
+
+GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
+{
+	GameResult result;
+	result.playerDead = _data.value("PlayerDead", false);
+
+	if (_data.contains("Floors") && _data["Floors"].is_array())
+	{
+		for (const auto& item : _data["Floors"])
+		{
+			DisplayFloorInfo f;
+			f.DisplayFloor = item.value("DisplayFloor", 0);
+			f.enemyKillCount = item.value("EnemyKillCount", 0);
+			f.TreasureChestsNum = item.value("TreasureChestsNum", 0);
+			f.playTimeSc = item.value("PlayTimeSc", 0.0f);
+			result.displayFloorInfo.push_back(f);
+		}
+	}
+	return result;
+}
+
+bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
+{
+	// [0]は全体の情報
+	const DisplayFloorInfo a = _a.displayFloorInfo.empty() ? DisplayFloorInfo{} : _a.displayFloorInfo[0];
+	const DisplayFloorInfo b = _b.displayFloorInfo.empty() ? DisplayFloorInfo{} : _b.displayFloorInfo[0];
+
+	// ① 到達階が深いほうが上
+	if (a.DisplayFloor != b.DisplayFloor) { return a.DisplayFloor > b.DisplayFloor; }
+	// ② 同じ階なら、脱出したほうが上
+	if (_a.playerDead != _b.playerDead) { return !_a.playerDead; }
+	// ③ それも同じなら、時間が短いほうが上
+	return a.playTimeSc < b.playTimeSc;
+}

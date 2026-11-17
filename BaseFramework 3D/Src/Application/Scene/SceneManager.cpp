@@ -5,6 +5,7 @@
 
 #include "BaseScene/BaseScene.h"
 #include "TitleScene/TitleScene.h"
+#include "PrepareScene/PrepareScene.h"
 #include "GameScene/GameScene.h"
 #include "ResultScene/ResultScene.h"
 
@@ -207,6 +208,9 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	{
 	case SceneType::Title:
 		m_currentScene = std::make_shared<TitleScene>();
+		break;
+	case SceneType::Prepare:
+		m_currentScene = std::make_shared<PrepareScene>();
 		break;
 	case SceneType::Game:
 		m_currentScene = std::make_shared<GameScene>();

@@ -103,6 +103,9 @@
     <Filter Include="Src\Application\GameObject\Button">
       <UniqueIdentifier>{2439c879-bb7e-490f-8faa-a45f47dd799a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Button\PrepareButton">
+      <UniqueIdentifier>{5eaedc52-9025-4905-99b6-409b29845980}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\GameObject\Button\GameButton">
       <UniqueIdentifier>{37e26d8e-8743-4bef-87df-27550a6711e9}</UniqueIdentifier>
     </Filter>
@@ -237,6 +240,9 @@
     </Filter>
     <Filter Include="Src\Application\GameObject\WarpGate\EscapeGate">
       <UniqueIdentifier>{ca92674c-70e6-4b4f-9e94-f83a2b23ecef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Scene\PrepareScene">
+      <UniqueIdentifier>{4b9f85b5-0e0b-4b76-b505-6887a8268cef}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Application\Scene\ResultScene">
       <UniqueIdentifier>{405b4930-e935-4c21-8390-4e9455d38767}</UniqueIdentifier>
@@ -390,6 +396,21 @@
     </Filter>
     <Filter Include="Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash">
       <UniqueIdentifier>{473250fe-4ebd-4943-9342-424d79ef7ead}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\PrepareSceneUI">
+      <UniqueIdentifier>{8e0150dc-8343-4741-a347-53bf2bee9715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\PrepareSceneUI\PrepareSceneDisplay">
+      <UniqueIdentifier>{c1dc7e4f-3848-4e5e-8c07-32c6c5eba77e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\PrepareSceneUI\ShopDisplay">
+      <UniqueIdentifier>{411715ed-18c5-4aab-8d98-f2111801c7b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\PrepareSceneUI\EquipDisplay">
+      <UniqueIdentifier>{f788e7fc-643c-48d6-a721-385bd3422461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay">
+      <UniqueIdentifier>{b8f4526c-8318-4ff2-8c4b-d6977fd3a44c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -582,6 +603,9 @@
     <ClInclude Include="Src\Application\Info\DebugInfo\DebugInfo.h">
       <Filter>Src\Application\Info\DebugInfo</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Button\PrepareButton\PrepareButton.h">
+      <Filter>Src\Application\GameObject\Button\PrepareButton</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Button\GameButton\GameButton.h">
       <Filter>Src\Application\GameObject\Button\GameButton</Filter>
     </ClInclude>
@@ -753,6 +777,9 @@
     <ClInclude Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.h">
       <Filter>Src\Application\GameObject\WarpGate\EscapeGate</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Scene\PrepareScene\PrepareScene.h">
+      <Filter>Src\Application\Scene\PrepareScene</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Scene\ResultScene\ResultScene.h">
       <Filter>Src\Application\Scene\ResultScene</Filter>
     </ClInclude>
@@ -899,6 +926,18 @@
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash\Sword_FinalSlash.h">
       <Filter>Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\PrepareSceneUI\PrepareSceneDisplay\PrepareSceneDisplay.h">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\PrepareSceneDisplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\PrepareSceneUI\ShopDisplay\ShopDisplay.h">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\ShopDisplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\PrepareSceneUI\EquipDisplay\EquipDisplay.h">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\EquipDisplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay\RecordsDisplay.h">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1060,6 +1099,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Info\DebugInfo\DebugInfo.cpp">
       <Filter>Src\Application\Info\DebugInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Button\PrepareButton\PrepareButton.cpp">
+      <Filter>Src\Application\GameObject\Button\PrepareButton</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Button\GameButton\GameButton.cpp">
       <Filter>Src\Application\GameObject\Button\GameButton</Filter>
@@ -1223,6 +1265,9 @@
     <ClCompile Include="Src\Application\GameObject\WarpGate\EscapeGate\EscapeGate.cpp">
       <Filter>Src\Application\GameObject\WarpGate\EscapeGate</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Application\Scene\PrepareScene\PrepareScene.cpp">
+      <Filter>Src\Application\Scene\PrepareScene</Filter>
+    </ClCompile>
     <ClCompile Include="Src\Application\Scene\ResultScene\ResultScene.cpp">
       <Filter>Src\Application\Scene\ResultScene</Filter>
     </ClCompile>
@@ -1366,6 +1411,18 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash\Sword_FinalSlash.cpp">
       <Filter>Src\Application\GameObject\Weapon\Sword\Sword_FinalSlash</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\PrepareSceneUI\PrepareSceneDisplay\PrepareSceneDisplay.cpp">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\PrepareSceneDisplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\PrepareSceneUI\ShopDisplay\ShopDisplay.cpp">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\ShopDisplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\PrepareSceneUI\EquipDisplay\EquipDisplay.cpp">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\EquipDisplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay\RecordsDisplay.cpp">
+      <Filter>Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
