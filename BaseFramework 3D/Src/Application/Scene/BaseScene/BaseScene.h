@@ -80,6 +80,12 @@ protected :
 	const std::string m_InventoryGameResultFilePath = "Asset/Data/GameResult/PlayerInventoryData.json";
 
 	///////////////////////////////////////
+	//武器の所持情報(PlayerInventoryData.json の "weapons")
+	//戻り値・引数の[PlayerWeaponInfo] = その武器を持っているか
+	std::vector<bool> LoadOwnedWeapons();
+	void SaveOwnedWeapons(const std::vector<bool>& _owned);
+
+	///////////////////////////////////////
 
 	///////////////////////////////////////
 	//武器の強化情報の保存

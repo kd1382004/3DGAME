@@ -1,0 +1,85 @@
+{
+    "potions": [
+        {
+            "id": 0,
+            "name": "InstantHealPotion",
+            "buyPrice": 50,
+            "sellPrice": 25,
+            "startStock": 5
+        },
+        {
+            "id": 1,
+            "name": "AttackBaseUPPotion",
+            "buyPrice": 300,
+            "sellPrice": 150,
+            "startStock": 1
+        },
+        {
+            "id": 2,
+            "name": "AttackBoostPotion",
+            "buyPrice": 80,
+            "sellPrice": 40,
+            "startStock": 3
+        },
+        {
+            "id": 3,
+            "name": "InstantStaminaHealPotion",
+            "buyPrice": 40,
+            "sellPrice": 20,
+            "startStock": 5
+        },
+        {
+            "id": 4,
+            "name": "StaminaMaxUPPotion",
+            "buyPrice": 300,
+            "sellPrice": 150,
+            "startStock": 1
+        },
+        {
+            "id": 5,
+            "name": "StaminaRegenBaseUPPotion",
+            "buyPrice": 300,
+            "sellPrice": 150,
+            "startStock": 1
+        },
+        {
+            "id": 6,
+            "name": "StaminaRegenBoostPotion",
+            "buyPrice": 80,
+            "sellPrice": 40,
+            "startStock": 3
+        }
+    ],
+    "materials": [
+        {
+            "id": 0,
+            "name": "WeaponStrengthening_Crystal1",
+            "buyPrice": 100,
+            "sellPrice": 50,
+            "startStock": 5
+        },
+        {
+            "id": 1,
+            "name": "WeaponStrengthening_Crystal2",
+            "buyPrice": 200,
+            "sellPrice": 100,
+            "startStock": 3
+        }
+    ],
+    "weapons": [
+        {
+            "id": 0,
+            "name": "Dagger",
+            "buyPrice": 800,
+            "sellPrice": 400,
+            "startStock": 1
+        },
+        {
+            "id": 1,
+            "name": "Sword",
+            "buyPrice": 800,
+            "sellPrice": 400,
+            "startStock": 1
+        }
+    ]
+}

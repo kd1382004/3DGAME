@@ -5,6 +5,40 @@
                 {
                     "DisplayFloor": 1,
                     "EnemyKillCount": 0,
+                    "PlayTimeSc": 1.4450005292892456,
+                    "TreasureChestsNum": 0
+                },
+                {
+                    "DisplayFloor": 1,
+                    "EnemyKillCount": 0,
+                    "PlayTimeSc": 1.4450005292892456,
+                    "TreasureChestsNum": 0
+                }
+            ],
+            "PlayerDead": false
+        },
+        {
+            "Floors": [
+                {
+                    "DisplayFloor": 1,
+                    "EnemyKillCount": 0,
+                    "PlayTimeSc": 1.6209996938705444,
+                    "TreasureChestsNum": 0
+                },
+                {
+                    "DisplayFloor": 1,
+                    "EnemyKillCount": 0,
+                    "PlayTimeSc": 1.6209996938705444,
+                    "TreasureChestsNum": 0
+                }
+            ],
+            "PlayerDead": false
+        },
+        {
+            "Floors": [
+                {
+                    "DisplayFloor": 1,
+                    "EnemyKillCount": 0,
                     "PlayTimeSc": 1.1700001955032349,
                     "TreasureChestsNum": 0
                 },
@@ -23,16 +57,16 @@
             {
                 "DisplayFloor": 1,
                 "EnemyKillCount": 0,
-                "PlayTimeSc": 1.1700001955032349,
+                "PlayTimeSc": 1.6209996938705444,
                 "TreasureChestsNum": 0
             },
             {
                 "DisplayFloor": 1,
                 "EnemyKillCount": 0,
-                "PlayTimeSc": 1.1700001955032349,
+                "PlayTimeSc": 1.6209996938705444,
                 "TreasureChestsNum": 0
             }
         ],
-        "PlayerDead": true
+        "PlayerDead": false
     }
 }

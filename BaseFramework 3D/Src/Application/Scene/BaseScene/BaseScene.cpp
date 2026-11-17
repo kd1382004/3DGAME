@@ -268,6 +268,20 @@ void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _i
 			});
 	}
 
+	// 武器の所持情報はゲーム中に変わらないので、元のファイルから引き継ぐ
+	// (ここで書き直すと、買った武器の情報が消えてしまうため。リセットのときも残す)
+	{
+		std::ifstream oldFile(_filePath);
+		if (oldFile)
+		{
+			nlohmann::json oldData = nlohmann::json::parse(oldFile, nullptr, false);
+			if (!oldData.is_discarded() && oldData.contains("weapons"))
+			{
+				data["weapons"] = oldData["weapons"];
+			}
+		}
+	}
+
 	std::ofstream file(_filePath);
 	if (!file) return; // 必要に応じてエラー処理を追加
 
@@ -582,4 +596,59 @@ bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
 	if (_a.playerDead != _b.playerDead) { return !_a.playerDead; }
 	// ③ それも同じなら、時間が短いほうが上
 	return a.playTimeSc < b.playTimeSc;
+}
+
+
+std::vector<bool> BaseScene::LoadOwnedWeapons()
+{
+	// ファイルや項目が無いときは、剣だけ持っている状態にする
+	std::vector<bool> owned(PlayerWeaponInfoSize, false);
+	owned[PlayerWeaponInfo_Sword] = true;
+
+	std::ifstream file(m_InventoryFilePath);
+	if (!file) { return owned; }
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded() || !data.contains("weapons") || !data["weapons"].is_array()) { return owned; }
+
+	for (const auto& weapon : data["weapons"])
+	{
+		int id = weapon.value("id", -1);
+		if (id < 0 || id >= PlayerWeaponInfoSize) { continue; }
+
+		owned[id] = weapon.value("owned", false);
+	}
+
+	return owned;
+}
+
+void BaseScene::SaveOwnedWeapons(const std::vector<bool>& _owned)
+{
+	// ポーションなど他の項目は消さずに、"weapons" だけを書き換える
+	nlohmann::json data = nlohmann::json::object();
+	{
+		std::ifstream file(m_InventoryFilePath);
+		if (file)
+		{
+			data = nlohmann::json::parse(file, nullptr, false);
+			if (data.is_discarded()) { data = nlohmann::json::object(); }
+		}
+	}
+
+	const std::string weaponNames[PlayerWeaponInfoSize] = { "Dagger", "Sword" };	// PlayerWeaponInfoの順
+
+	data["weapons"] = nlohmann::json::array();
+	for (int id = 0; id < PlayerWeaponInfoSize; id++)
+	{
+		bool owned = (id < static_cast<int>(_owned.size())) ? static_cast<bool>(_owned[id]) : false;
+		data["weapons"].push_back({
+			{"id", id},
+			{"name", weaponNames[id]},
+			{"owned", owned}
+			});
+	}
+
+	std::ofstream file(m_InventoryFilePath);
+	if (!file) { return; }
+	file << data.dump(4);
 }

@@ -58,6 +58,7 @@ void PrepareScene::Init()
 	// 装備変更
 	m_spEquipDisplay = std::make_shared<EquipDisplay>();
 	m_spEquipDisplay->SetPrepareScene(shared_from_this());
+	m_spEquipDisplay->SetOwnedWeapons(LoadOwnedWeapons());	// 持っている武器だけを出す
 	m_spEquipDisplay->Init();
 	m_spUIManager->AddUIObj(m_spEquipDisplay);
 
@@ -111,10 +112,6 @@ void PrepareScene::Event()
 	default:
 		break;
 	}
-
-	// 選択中の装備は毎フレームSceneManagerへ反映しておく
-	// (どのボタンでGameへ移っても装備が持ち越されるように)
-	ApplyEquip();
 }
 
 void PrepareScene::ChangeTab(PrepareTab _tab)
@@ -164,7 +161,6 @@ void PrepareScene::ImGUi()
 
 		if (ImGui::Button(U8("Gameへ")))
 		{
-			ApplyEquip();
 			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);
 		}
 	}

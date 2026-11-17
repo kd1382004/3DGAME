@@ -1,0 +1,63 @@
+{
+    "potions": [
+        {
+            "id": 0,
+            "name": "InstantHealPotion",
+            "stock": 5
+        },
+        {
+            "id": 1,
+            "name": "AttackBaseUPPotion",
+            "stock": 1
+        },
+        {
+            "id": 2,
+            "name": "AttackBoostPotion",
+            "stock": 3
+        },
+        {
+            "id": 3,
+            "name": "InstantStaminaHealPotion",
+            "stock": 5
+        },
+        {
+            "id": 4,
+            "name": "StaminaMaxUPPotion",
+            "stock": 1
+        },
+        {
+            "id": 5,
+            "name": "StaminaRegenBaseUPPotion",
+            "stock": 1
+        },
+        {
+            "id": 6,
+            "name": "StaminaRegenBoostPotion",
+            "stock": 3
+        }
+    ],
+    "materials": [
+        {
+            "id": 0,
+            "name": "WeaponStrengthening_Crystal1",
+            "stock": 5
+        },
+        {
+            "id": 1,
+            "name": "WeaponStrengthening_Crystal2",
+            "stock": 3
+        }
+    ],
+    "weapons": [
+        {
+            "id": 0,
+            "name": "Dagger",
+            "stock": 1
+        },
+        {
+            "id": 1,
+            "name": "Sword",
+            "stock": 1
+        }
+    ]
+}
