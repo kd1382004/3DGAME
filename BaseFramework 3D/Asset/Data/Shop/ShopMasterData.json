@@ -1,17 +1,17 @@
 {
     "materials": [
         {
-            "buyPrice": 100,
+            "buyPrice": 500,
             "id": 0,
             "name": "WeaponStrengthening_Crystal1",
-            "sellPrice": 25,
+            "sellPrice": 125,
             "startStock": 5
         },
         {
-            "buyPrice": 200,
+            "buyPrice": 800,
             "id": 1,
             "name": "WeaponStrengthening_Crystal2",
-            "sellPrice": 50,
+            "sellPrice": 200,
             "startStock": 5
         }
     ],
@@ -31,10 +31,10 @@
             "startStock": 1
         },
         {
-            "buyPrice": 80,
+            "buyPrice": 100,
             "id": 2,
             "name": "AttackBoostPotion",
-            "sellPrice": 20,
+            "sellPrice": 25,
             "startStock": 3
         },
         {
@@ -75,10 +75,10 @@
             "startStock": 1
         },
         {
-            "buyPrice": 800,
+            "buyPrice": 1000,
             "id": 1,
             "name": "Sword",
-            "sellPrice": 200,
+            "sellPrice": 0,
             "startStock": 1
         }
     ]
