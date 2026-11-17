@@ -21,7 +21,9 @@ public:
 	//float siz...サイズ
 	//bool Separator..3桁区入りを入れるかどうか
 	//digit..表示させる桁数(-1の場合そのままの桁) 
-	void Drow(long Num, Aligned aligned, Math::Vector2 pos, Math::Color color = Math::Color(1, 1, 1, 1), float siz = 1, bool Separator = false, int digit = -1);
+	//maxSiz..超えてはいけない大きさ(横・縦。0の場合は制限なし)
+	//        超えるときは、横・縦それぞれの倍率を下げて収める
+	void Drow(long Num, Aligned aligned, Math::Vector2 pos, Math::Color color = Math::Color(1, 1, 1, 1), float siz = 1, bool Separator = false, int digit = -1, Math::Vector2 maxSiz = { 0, 0 });
 
 private:
 

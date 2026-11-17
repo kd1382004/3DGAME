@@ -84,24 +84,27 @@ void ResultDisplay_Score::DrawSprite()
 	int Num = 0;
 	Math::Vector2 pivo = { 0,0.5 };
 
+	// 数字が超えてはいけない大きさ(項目の文字「最高階層」などの右端 〜 数字の右端)
+	const Math::Vector2 kScoreNumMaxSiz = { 330.0f, 0.0f };
+
 	if (m_DisplayFloorTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_DisplayFloorTex, m_base2DPos.x, m_base2DPos.y, nullptr, nullptr, pivo);
-		NumDraw::GetInstance().Drow(floorNum, Aligned::RAligned, m_baseNumPos, kWhiteColor, 4, true);
+		NumDraw::GetInstance().Drow(floorNum, Aligned::RAligned, m_baseNumPos, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
 		Num++;
 	}
 
 	if (m_enemyKillTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_enemyKillTex, m_base2DPos.x, m_base2DPos.y - Num * 100, nullptr, nullptr, pivo);
-		NumDraw::GetInstance().Drow(enemykill, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true);
+		NumDraw::GetInstance().Drow(enemykill, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
 		Num++;
 	}
 
 	if (m_TreasureChestsNumTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_TreasureChestsNumTex, m_base2DPos.x, m_base2DPos.y - Num * 100, nullptr, nullptr, pivo);
-		NumDraw::GetInstance().Drow(TreasureChestsNum, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true);
+		NumDraw::GetInstance().Drow(TreasureChestsNum, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - Num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
 		Num++;
 	}
 

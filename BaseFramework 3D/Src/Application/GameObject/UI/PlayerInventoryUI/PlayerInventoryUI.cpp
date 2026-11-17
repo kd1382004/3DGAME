@@ -25,9 +25,34 @@
 #include"WeponInventory/WeponInventoryUI.h"
 #include"PlayerStatus/PlayerStatusInventoryUI.h"
 
+namespace
+{
+	// 所持金の表示位置(画面中央が0,0・上がプラス。種類アイコンと同じ高さ)
+	const Math::Vector2 kCoinPos     = { 138.0f, 225.0f };	// 金貨のアイコンの中心(左端122)
+	const Math::Vector2 kMoneyNumPos = { 246.0f, 225.0f };	// 数字の右端
+	const Math::Vector2 kGoldPos     = { 268.0f, 227.0f };	// 「G」の中心
+	constexpr float kMoneyNumSiz = 2.0f;					// 数字の大きさ(14 × 2 = 28)
+
+	// 数字が超えてはいけない大きさ(金貨の右端158 〜 数字の右端246 の間に収める)
+	const Math::Vector2 kMoneyNumMaxSiz = { 86.0f, 28.0f };
+}
+
 void PlayerInventoryUI::Init()
 {
 	KeyInfo::Instance().SetKeyValid(VK_TAB);
+
+	// 所持金の画像
+	if (!m_coinTex)
+	{
+		m_coinTex = std::make_shared<KdTexture>();
+		m_coinTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/Money/Coin.png");
+	}
+	if (!m_goldTex)
+	{
+		m_goldTex = std::make_shared<KdTexture>();
+		m_goldTex->Load("Asset/Textures/GameUI/Prepare/Menu/Text/Gold.png");
+	}
+
 	m_playerInventoryUIFlg = false;
 
 	if (!m_back1Tex)
@@ -304,7 +329,8 @@ void PlayerInventoryUI::DrawSprite()
 				break;
 			}
 		}
-		NumDraw::GetInstance().Drow(m_spContext->num, RAligned, pos, numColor, numScale);
+		// 右の枠の幅に収める(縦は跳ねる演出で大きくなるので制限しない)
+		NumDraw::GetInstance().Drow(m_spContext->num, RAligned, pos, numColor, numScale, false, -1, { 170.0f, 0.0f });
 
 		if (m_spContext->selectExplanationTex)
 		{
@@ -337,10 +363,44 @@ void PlayerInventoryUI::DrawSprite()
 
 	//////////////////////////////////////////////////
 
+	// 所持金(上の木の帯の右端)
+	DrawMoney();
+
+	//////////////////////////////////////////////////
+
 	InventoryTabBase* tab = GetTab(m_nowInventoryType);
 	if (tab)
 	{
 		tab->DrawSprite();
+	}
+}
+
+void PlayerInventoryUI::DrawMoney()
+{
+	// 金貨
+	if (m_coinTex)
+	{
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_coinTex, (int)kCoinPos.x, (int)kCoinPos.y);
+	}
+
+	// 所持金はプレイヤーのインベントリから読む
+	long money = 0;
+	if (std::shared_ptr<PlayerBase> spPlayer = m_spContext->wpPlayer.lock())
+	{
+		if (std::shared_ptr<PlayerInventory> spInventory = spPlayer->GetPlayerInventory())
+		{
+			money = spInventory->GetMoney();
+		}
+	}
+
+	// 数字(右揃え・3桁区切り)
+	// 桁が多くて金貨にかぶるときは、横を縮めて収める
+	NumDraw::GetInstance().Drow(money, RAligned, kMoneyNumPos, kWhiteColor, kMoneyNumSiz, true, -1, kMoneyNumMaxSiz);
+
+	// 「G」
+	if (m_goldTex)
+	{
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_goldTex, (int)kGoldPos.x, (int)kGoldPos.y);
 	}
 }
 

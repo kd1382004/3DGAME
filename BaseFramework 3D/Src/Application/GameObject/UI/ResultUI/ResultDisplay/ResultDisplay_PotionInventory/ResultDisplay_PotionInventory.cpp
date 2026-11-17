@@ -151,7 +151,7 @@ void ResultDisplay_PotionInventory::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(tex.m_NameTex, 200, 85);
 		}
 		// 所持数（右の枠の上の暗い帯に収まる大きさ・位置）
-		NumDraw::GetInstance().Drow(tex.m_num, RAligned, { 285,11 }, kWhiteColor, 2.5f);
+		NumDraw::GetInstance().Drow(tex.m_num, RAligned, { 285,11 }, kWhiteColor, 2.5f, false, -1, { 170.0f, 0.0f });	// 右の枠の幅に収める
 		break;
 	}
 

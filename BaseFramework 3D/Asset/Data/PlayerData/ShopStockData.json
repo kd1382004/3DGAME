@@ -1,14 +1,26 @@
 {
-    "potions": [
+    "materials": [
         {
             "id": 0,
-            "name": "InstantHealPotion",
+            "name": "WeaponStrengthening_Crystal1",
             "stock": 5
         },
         {
             "id": 1,
+            "name": "WeaponStrengthening_Crystal2",
+            "stock": 3
+        }
+    ],
+    "potions": [
+        {
+            "id": 0,
+            "name": "InstantHealPotion",
+            "stock": 10
+        },
+        {
+            "id": 1,
             "name": "AttackBaseUPPotion",
-            "stock": 1
+            "stock": 83
         },
         {
             "id": 2,
@@ -33,18 +45,6 @@
         {
             "id": 6,
             "name": "StaminaRegenBoostPotion",
-            "stock": 3
-        }
-    ],
-    "materials": [
-        {
-            "id": 0,
-            "name": "WeaponStrengthening_Crystal1",
-            "stock": 5
-        },
-        {
-            "id": 1,
-            "name": "WeaponStrengthening_Crystal2",
             "stock": 3
         }
     ],

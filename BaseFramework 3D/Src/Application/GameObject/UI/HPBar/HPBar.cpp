@@ -88,7 +88,8 @@ void HPBar::DrawSprite()
 		pivot = { 0.5f, 0.5f };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_HPBarIconFrameTex, m_HPBarIconFrameTex2DPos.x, m_HPBarIconFrameTex2DPos.y, m_HPBarIconFrameTexLength.x * m_siz, m_HPBarIconFrameTexLength.y * m_siz, &m_HPBarIconFrameTexRect, &kWhiteColor, pivot);
 
-		NumDraw::GetInstance().Drow(m_LV, CAligned, m_HPBarIconFrameTex2DPos, kWhiteColor, m_siz);
+		// アイコンの枠の内側(8割)に収める
+		NumDraw::GetInstance().Drow(m_LV, CAligned, m_HPBarIconFrameTex2DPos, kWhiteColor, m_siz, false, -1, { m_HPBarIconFrameTexLength.x * m_siz * 0.8f, m_HPBarIconFrameTexLength.y * m_siz * 0.8f });
 	}
 }
 

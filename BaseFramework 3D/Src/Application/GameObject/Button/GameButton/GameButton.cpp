@@ -10,7 +10,7 @@ void GameButton::Init()
 	if (!m_tex)
 	{
 		m_tex = std::make_shared<KdTexture>();
-		m_tex->Load("Asset/Textures/Button/GameButton/PlayButton.png");
+		m_tex->Load(m_texPath);
 		m_scale = m_defScale;
 		m_diameter = { m_tex->GetWidth() / 2.0f * m_scale , m_tex->GetHeight() / 2.0f * m_scale };
 
@@ -29,6 +29,8 @@ void GameButton::Init()
 
 void GameButton::Update()
 {
+	// 表示しないときは押せない
+	if (!m_activeFlg) { return; }
 
 	ButtonBase::Update();
 

@@ -69,7 +69,8 @@ protected :
 	///////////////////////////////////////
 	//Inventoryの情報
 	//_isSave...セーブするか(true)・リセットするか(false)
-	void SaveInventoryData(bool _isSave, const std::vector<Inventory>& inventoryPotionsList, const std::vector<Inventory>& inventoryWeaponsList, std::string _filePath);
+	//_money … 所持金(PlayerInventoryの値)。-1のときは元のファイルの値を引き継ぐ
+	void SaveInventoryData(bool _isSave, const std::vector<Inventory>& inventoryPotionsList, const std::vector<Inventory>& inventoryWeaponsList, std::string _filePath, long _money = -1);
 
 	//ロード
 	std::vector<std::vector<Inventory>> LoadInventoryData(std::string _filePath);
@@ -84,6 +85,14 @@ protected :
 	//戻り値・引数の[PlayerWeaponInfo] = その武器を持っているか
 	std::vector<bool> LoadOwnedWeapons();
 	void SaveOwnedWeapons(const std::vector<bool>& _owned);
+
+	///////////////////////////////////////
+	//所持金(PlayerInventoryData.json の "money")
+	//ダンジョンの中では PlayerInventory が持つ。これはプレイヤーがいないシーン(準備画面など)と、
+	//ゲーム開始時の読み込みで使う
+	//力尽きたとき(SaveInventoryData で _isSave が false)は 0 になる
+	long LoadMoney();
+	void SaveMoney(long _money);
 
 	///////////////////////////////////////
 
@@ -131,11 +140,21 @@ protected :
 	//パス
 	const std::string m_GameRecordFilePath = "Asset/Data/PlayerData/GameRecordData.json";
 
+	//ショップの再入荷
+	//在庫が0の商品だけ、ShopMasterData.json の startStock まで戻して保存する
+	//ダンジョンから帰ってきたとき(ResultScene::Init)に呼ぶ
+	void RestockShop();
+
+	const std::string m_ShopMasterFilePath = "Asset/Data/Shop/ShopMasterData.json";
+	const std::string m_ShopStockFilePath = "Asset/Data/PlayerData/ShopStockData.json";
+
 private:
 	nlohmann::json GameResultToJson(const GameResult& _result);
 	GameResult JsonToGameResult(const nlohmann::json& _data);
 
 	// _aが_bより上の順位か(到達階 → 脱出 → 時間の短さ)
 	bool IsBetterResult(const GameResult& _a, const GameResult& _b);
+
+
 
 };

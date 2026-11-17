@@ -2,6 +2,7 @@
 #include"../../UIBase.h"
 #include"../../../../Scene/SceneManager.h"
 #include"../../../Potions/PotionsType.h"
+#include"../../../../Info/NumDraw/NumDraw.h"
 
 class PrepareScene;
 
@@ -9,7 +10,7 @@ class ShopDisplay :public UIBase
 {
 public:
 	ShopDisplay() {};
-	~ShopDisplay() override{};
+	~ShopDisplay() override { SaveShopData(); };
 
 	void Init()override;
 	void Update()override;
@@ -23,9 +24,27 @@ public:
 	void SetActive(bool _flg) { m_activeFlg = _flg; }
 	bool GetActive() const { return m_activeFlg; }
 
-	// ショップ・持ち物のデータを読み直す(買った・売った後に呼ぶ)
+	// ショップ・持ち物のデータを読み直す
 	void LoadShopData();
 
+	long GetMoney() const { return m_money; }
+
+	std::vector<bool> GetOwnedWeapons() const
+	{
+		// 配列(bool[]) → vector<bool> に入れ直す(EquipDisplay::SetOwnedWeapons が vector で受け取るため)
+		return std::vector<bool>(m_weaponOwned, m_weaponOwned + PlayerWeaponInfoSize);
+	}
+
+	int GetPotionTotal() const
+	{
+		// 全種類のポーションの数を足す
+		int total = 0;
+		for (int i = 0; i < PotionsTypeMax; i++)
+		{
+			total += m_potionHave[i];
+		}
+		return total;
+	}
 private:
 
 	// 強化素材の種類数(Crystal1, Crystal2)
@@ -37,8 +56,10 @@ private:
 	// 表示中かどうか(開いているタブの時だけtrue)
 	bool m_activeFlg = false;
 
-	//マウスと当たってるかを返す(画面左上が0,0・下がプラスの四角)
-	bool MouseHit(float _x, float _y, float _w, float _h) const;
+	// 座標はフレームワークと同じ(画面の真ん中が0,0・上がプラス)
+
+	//マウスと当たってるかを返す(_pos … 四角の真ん中、_w,_h … 幅と高さ)
+	bool MouseHit(const Math::Vector2& _pos, float _w, float _h) const;
 
 	// このフレームで左クリックされたか(Updateの最初に1回だけ取る)
 	bool m_clickFlg = false;
@@ -90,8 +111,8 @@ private:
 	long m_money = 0;
 
 	const std::string m_shopMasterPath = "Asset/Data/Shop/ShopMasterData.json";
-	const std::string m_shopStockPath  = "Asset/Data/PlayerData/ShopStockData.json";
-	const std::string m_inventoryPath  = "Asset/Data/PlayerData/PlayerInventoryData.json";
+	const std::string m_shopStockPath = "Asset/Data/PlayerData/ShopStockData.json";
+	const std::string m_inventoryPath = "Asset/Data/PlayerData/PlayerInventoryData.json";
 
 	// 一覧に並ぶ商品の数
 	int GetListNum() const;
@@ -118,6 +139,7 @@ private:
 		ListTrack, InventoryTrack,
 		ThumbLeft, ThumbMid, ThumbRight, ThumbGrip,
 		ThumbLeftHover, ThumbMidHover, ThumbRightHover, ThumbGripHover,
+		StockLabel,		// 「在庫」
 		TexSize
 	};
 	std::shared_ptr<KdTexture> m_spTex[static_cast<int>(ShopTex::TexSize)];
@@ -145,13 +167,13 @@ private:
 	////////////////////////////////////////////////////
 	struct HScroll
 	{
-		float trackX = 0.0f, trackY = 0.0f, trackW = 0.0f;	// レール(画面左上が0,0)
+		float trackLeft = 0.0f, trackY = 0.0f, trackW = 0.0f;	// レール(左端のx・真ん中のy・長さ)
 		int   visibleNum = 1;		// 一度に見える数
 		int   index = 0;			// 一番左に見えている番号
 		bool  dragFlg = false;		// ドラッグ中か
 		float dragOffsetX = 0.0f;	// つかんだ位置とつまみの左端のずれ
 		bool  hoverFlg = false;		// つまみにマウスが乗っているか
-		float thumbX = 0.0f, thumbW = 0.0f;	// つまみ
+		float thumbX = 0.0f, thumbW = 0.0f;	// つまみ(左端のx・長さ)
 	};
 	HScroll m_listScroll;		// 商品一覧
 	HScroll m_haveScroll;		// 持ち物
@@ -159,22 +181,36 @@ private:
 	float m_thumbMinW = 0.0f;	// つまみの最小の長さ
 
 	void ScrollCalc(HScroll& _scroll, int _total);
-	void ScrollUpdate(HScroll& _scroll, int _total, float _panelX, float _panelY, float _panelW, float _panelH);
+	// _panelPos,_panelW,_panelH … ホイールが効くパネル(真ん中と大きさ)
+	void ScrollUpdate(HScroll& _scroll, int _total, const Math::Vector2& _panelPos, float _panelW, float _panelH);
 	void ScrollDraw(const HScroll& _scroll, ShopTex _track);
 
 
 	////////////////////////////////////////////////////
 	// 描画
 	////////////////////////////////////////////////////
-	// 画面左上が0,0・下がプラスの座標(左上基準)で描く
-	void DrawTL(const std::shared_ptr<KdTexture>& _spTex, float _x, float _y, float _scale = 1.0f);
-	void DrawTLSize(const std::shared_ptr<KdTexture>& _spTex, float _x, float _y, float _w, float _h);
+	// 画像を描く(_pos … _pivotの点の位置。_pivotは{0.5,0.5}で真ん中、{0,1}で左上)
+	void DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale = 1.0f,
+		const Math::Vector2& _pivot = { 0.5f, 0.5f });
+	void DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _w, float _h,
+		const Math::Vector2& _pivot = { 0.5f, 0.5f });
 
-	// 数字を描く(_x,_y … 左上。_alignで左揃え・右揃え)。描いた数字の右端のxを返す
-	float DrawNumTL(long _num, float _x, float _y, float _siz = 2.0f, bool _separator = false);
+	// 数字を描く(_pos.x … _alignedで揃える側の端、_pos.y … 数字の上下の真ん中)
+	// _maxW … 超えてはいけない横幅(0なら制限なし。超えるときは横を縮める)
+	void DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _siz = 2.0f, bool _separator = false, float _maxW = 0.0f);
 
-	// ボタンを描く。押せるか・カーソルが乗っているかで画像を変える
-	void DrawButton(ShopButton _button, float _x, float _y, bool _enable);
+	// 数字を描いたときの横幅(_maxWで縮んだ後の幅)
+	float GetNumWidth(long _num, float _siz = 2.0f, bool _separator = false, float _maxW = 0.0f) const;
+
+	// 右の欄の買値・売値を描く(数字は右揃え、「G」はいつも同じ位置)
+	// _rowY … その行の真ん中のy
+	void DrawPrice(long _price, float _rowY);
+
+	// 右の欄の1行目の右側に「在庫 〇」を描く
+	void DrawStock(int _stock);
+
+	// ボタンを描く(_pos … ボタンの真ん中)。押せるか・カーソルが乗っているかで画像を変える
+	void DrawButton(ShopButton _button, const Math::Vector2& _pos, bool _enable);
 
 	void DrawHeader();		// 見出し・所持金・タブ
 	void DrawList();		// 商品一覧
@@ -186,4 +222,27 @@ private:
 	int GetStackHave(int _index) const;
 	const std::shared_ptr<KdTexture>& GetStackTex(int _index, ItemTex _tex) const;
 	void DrawInventory();	// 持ち物
+
+
+	////////////////////////////////////////////////////
+	// 買う・売る
+	////////////////////////////////////////////////////
+	// 買う・売るボタンが押されたかを調べて、押されたら下の関数を呼ぶ(Updateから呼ぶ)
+	void BuySellUpdate();
+
+	// 消耗品・素材を _count 個買う(今のタブの _index 番)
+	// 在庫が足りない・お金が足りないときは何もしないで false
+	bool BuyStackItem(int _index, int _count);
+
+	// 消耗品・素材を _count 個売る(今のタブの _index 番)
+	// 持っている数が足りないときは何もしないで false
+	bool SellStackItem(int _index, int _count);
+
+	// 武器を買う(_id … PlayerWeaponInfo)
+	// 持っている・在庫がない・お金が足りないときは何もしないで false
+	bool BuyWeapon(int _id);
+
+	// 今の在庫・持ち物・お金をJSONに保存する(買った・売った後に呼ぶ)
+	// ShopStockData.json と PlayerInventoryData.json を書き換える
+	void SaveShopData();
 };

@@ -7,6 +7,8 @@ class ShopDisplay;
 class EquipDisplay;
 class RecordsDisplay;
 class PrepareSceneDisplay;
+class ShopEditor;
+class GameButton;
 
 
 // PlayerWeaponInfoはBaseScene.h → SceneManager.hで定義済み
@@ -39,6 +41,10 @@ public:
 	void ChangeTab(PrepareTab _tab);
 	PrepareTab GetCurrentTab() const { return m_currentTab; }
 
+	// ショップで買った・売ったときに ShopDisplay から呼ぶ
+	// ShopDisplay が持っている今の値(お金・武器)を、ほかの画面に配る
+	void OnShopDataChanged();
+
 private:
 
 	void Event() override;
@@ -65,4 +71,11 @@ private:
 	std::shared_ptr<EquipDisplay>   m_spEquipDisplay;
 	std::shared_ptr<RecordsDisplay> m_spRecordsDisplay;
 	std::shared_ptr<PrepareSceneDisplay> m_spPrepareSceneDisplay;
+
+	// 出発ボタン(→ゲームシーン)。メニューだけのとき(PrepareTab::None)だけ出す
+	std::shared_ptr<GameButton> m_spGameButton;
+
+	// ショップの値段を決めるEditor(ImGui)
+	std::shared_ptr<ShopEditor> m_spShopEditor;
+	bool m_shopEditorOpenFlg = false;
 };

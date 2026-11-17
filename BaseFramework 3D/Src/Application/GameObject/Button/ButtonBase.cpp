@@ -49,6 +49,9 @@ void ButtonBase::Update()
 
 void ButtonBase::DrawSprite()
 {
+	// 表示しないときは描かない
+	if (!m_activeFlg) { return; }
+
 	Math::Color color = { 1,1,1,m_alpha };
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_tex, m_pos.x, m_pos.y, m_diameter.x * m_scale, m_diameter.y * m_scale, nullptr, &color);
 }

@@ -25,7 +25,12 @@ public:
 	void SetActive(bool _flg) { m_activeFlg = _flg; }
 	bool GetActive() const { return m_activeFlg; }
 
+	void SetPotionNum(int _num) { m_potionNum = std::max(0, _num); }
+
+	void SetMoney(long _money);
 private:
+
+	
 
 	// 表示中かどうか(開いているタブの時だけtrue)
 	bool m_activeFlg = false;
@@ -170,4 +175,11 @@ private:
 	void OnEquip();		// 装備(EQUIP)   … 装備画面を開く
 	void OnShop();		// ショップ(SHOP) … ショップ画面を開く
 	void OnRecords();	// Play履歴(RECORDS) … 履歴画面を開く
+
+
+	long m_money = 0;
+
+	// 持っているポーションの合計(PrepareScene::OnShopDataChanged から入る)
+	int m_potionNum = 0;
+
 };

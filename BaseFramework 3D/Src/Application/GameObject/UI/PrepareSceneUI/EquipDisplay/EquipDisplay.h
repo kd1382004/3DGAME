@@ -34,7 +34,9 @@ private:
 	// 表示中かどうか(開いているタブの時だけtrue)
 	bool m_activeFlg = false;
 
-	//マウスと当たってるかを返す
+	// 座標はフレームワークと同じ(画面の真ん中が0,0・右と上がプラス)
+
+	//マウスと当たってるかを返す(_pos … 四角の真ん中)
 	bool MouseHit(Math::Vector2 _pos,float _w,float _h);
 
 
@@ -136,7 +138,7 @@ private:
 	int GetWeaponNum() const { return static_cast<int>(m_ownedList.size()); }
 
 	//---------- スクロールバー(PotionInventoryUIの縦を横にしたもの) ----------
-	// つまみの左端のX・横の長さ(画面左上が0,0の座標)
+	// つまみの左端のX・横の長さ
 	float m_scrollThumbX = 0.0f;
 	float m_scrollThumbW = 0.0f;
 
@@ -163,26 +165,25 @@ private:
 	// 一番右までスクロールしたときの番号
 	int GetMaxScrollIndex() const;
 
-	// マウスの位置(画面左上が0,0・下がプラスに変換したもの)
-	Math::Vector2 GetMouseTL() const;
-
 	// カーソルが乗っている武器の番号(乗っていなければ-1)
 	int m_hoverIndex = -1;
 
-	// 一覧のi番目(見えている枠の番号)の左上座標(画面左上が0,0の座標)
-	Math::Vector2 GetSlotTopLeft(int _slot) const;
+	// 一覧のi番目(見えている枠の番号)の真ん中の座標
+	Math::Vector2 GetSlotPos(int _slot) const;
 
 
 	////////////////////////////////////////////////////
 	// 描画
 	////////////////////////////////////////////////////
 
-	// 画面左上が0,0・下がプラスの座標(左上基準)で描く
+	// 画像を描く(_pos … _pivotの点の位置。_pivotは{0.5,0.5}で真ん中、{0,1}で左上)
 	// _scale … 元画像に対する倍率
-	void DrawTL(const std::shared_ptr<KdTexture>& _spTex, float _x, float _y, float _scale = 1.0f, const Math::Color& _color = kWhiteColor);
+	void DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale = 1.0f,
+		const Math::Vector2& _pivot = { 0.5f, 0.5f });
 
 	// 大きさを指定して描く(つまみの中央を伸ばすとき用)
-	void DrawTLSize(const std::shared_ptr<KdTexture>& _spTex, float _x, float _y, float _w, float _h);
+	void DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _w, float _h,
+		const Math::Vector2& _pivot = { 0.5f, 0.5f });
 
 	void DrawList();		// 武器一覧
 	void DrawScrollBar();	// スクロールバー

@@ -3,7 +3,7 @@
 #include <vector>
 #include <cmath>
 
-void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _siz, bool _Separator, int _digit)
+void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _siz, bool _Separator, int _digit, Math::Vector2 _maxSiz)
 {
 	if (!m_tex) return;
 
@@ -41,6 +41,18 @@ void NumDraw::Drow(long _Num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 	float charW = recX * _siz;
 	float charH = recY * _siz;
 	int totalGlyphs = static_cast<int>(glyphs.size());
+
+	// 超えてはいけない大きさがあれば、横・縦それぞれの倍率を下げて収める
+	// 横 … 全部の文字を並べた幅が _maxSiz.x を超えたら、1文字の幅を縮める
+	if (_maxSiz.x > 0.0f && totalGlyphs > 0 && charW * totalGlyphs > _maxSiz.x)
+	{
+		charW = _maxSiz.x / totalGlyphs;
+	}
+	// 縦 … 1文字の高さが _maxSiz.y を超えたら、高さを縮める
+	if (_maxSiz.y > 0.0f && charH > _maxSiz.y)
+	{
+		charH = _maxSiz.y;
+	}
 
 	for (int k = 0; k < totalGlyphs; k++)
 	{

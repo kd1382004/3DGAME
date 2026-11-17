@@ -99,4 +99,13 @@ private:
 
 	// InventoryType に対応するタブ
 	InventoryTabBase* GetTab(InventoryType _type);
+
+	/////////////////////////////
+	//所持金(上の木の帯の右端に出す。どのタブでも見える)
+	//値はプレイヤーのインベントリ(PlayerInventory)が持っている。ここでは描くだけ
+	std::shared_ptr<KdTexture> m_coinTex;	// 金貨のアイコン
+	std::shared_ptr<KdTexture> m_goldTex;	// 「G」
+
+	// 所持金を描く
+	void DrawMoney();
 };

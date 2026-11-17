@@ -38,6 +38,9 @@ void ResultScene::ImGUi()
 
 void ResultScene::Init()
 {
+	//ショップの再入荷
+	RestockShop();
+
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 	GameResult gameResult = SceneManager::Instance().GetGameResult();
 	SaveGameRecord(gameResult);
@@ -77,9 +80,9 @@ void ResultScene::Init()
 
 
 
-	// もう一度挑戦(→準備シーン)
+	// 準備画面へ(→準備シーン)
 	std::shared_ptr<PrepareButton>spPrepareButton = std::make_shared<PrepareButton>();
-	spPrepareButton->SetTexPath("Asset/Textures/Button/PrepareButton/RetryButton.png");
+	spPrepareButton->SetTexPath("Asset/Textures/Button/PrepareButton/PrepareButton.png");
 	spPrepareButton->Init();
 	spPrepareButton->SetPos({ 420,-260,0 });
 	m_objList.push_back(spPrepareButton);

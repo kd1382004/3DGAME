@@ -385,14 +385,16 @@ void ResultDisplay_WeponInventory::DrawSprite()
 					{
 						color = kRedColor;
 					}
-					NumDraw::GetInstance().Drow(m_weaponsStrengtheningIconInfoList[itemIndex].m_num, Aligned::RAligned, pos, color, 1.5);
+					// アイコン(60px)の半分の幅に収める
+					NumDraw::GetInstance().Drow(m_weaponsStrengtheningIconInfoList[itemIndex].m_num, Aligned::RAligned, pos, color, 1.5, false, -1, { 30.0f, 0.0f });
 				}
 				{
 					//レヴェルアップに必要なアイテムの数
 					Math::Vector2 pos = m_weaponsStrengtheningIconInfoList[itemIndex].m_2DPos;
 					pos.y -= 50;
 					pos.x += 5;
-					NumDraw::GetInstance().Drow(m_selectWeaponsStrengtheningnextLVNum, Aligned::LAligned, pos, kWhiteColor, 1.5);
+					// アイコン(60px)の半分の幅に収める
+					NumDraw::GetInstance().Drow(m_selectWeaponsStrengtheningnextLVNum, Aligned::LAligned, pos, kWhiteColor, 1.5, false, -1, { 30.0f, 0.0f });
 				}
 			}
 		}

@@ -170,7 +170,7 @@ private:
 	std::string m_FogAmbientJsonFilePath = "Asset/Data/ObjeData/FogAmbient/FogAmbientJsonSave.json";
 
 
-	PlayerWeaponInfo m_PlayerWeaponInfo = PlayerWeaponInfo::PlayerWeaponInfo_Sword;
+	PlayerWeaponInfo m_PlayerWeaponInfo = PlayerWeaponInfo::PlayerWeaponInfo_Dagger;
 
 private:
 

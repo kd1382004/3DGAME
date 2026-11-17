@@ -12,7 +12,13 @@ public:
 	void SetPos(const Math::Vector3& pos)override;
 
 	void KeyChosen(bool _choseFlg);
+
+	// 表示する(true)・しない(false)。falseの間は押せない・描かない
+	void SetActive(bool _flg) { m_activeFlg = _flg; }
+	bool GetActive() const { return m_activeFlg; }
 protected:
+
+	bool m_activeFlg = true;
 
 	std::shared_ptr<KdTexture> m_tex;
 	Math::Vector2 m_pos = {};

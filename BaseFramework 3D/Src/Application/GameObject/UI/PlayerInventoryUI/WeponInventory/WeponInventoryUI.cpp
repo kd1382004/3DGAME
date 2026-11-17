@@ -488,7 +488,8 @@ void WeponInventoryUI::DrawSprite()
 								pos.x += shakeX;
 							}
 						}
-						NumDraw::GetInstance().Drow(m_weaponsStrengtheningIconInfo.m_num, Aligned::RAligned, pos, color, numScale);
+						// アイコンの半分の幅に収める(「/」の左側)
+						NumDraw::GetInstance().Drow(m_weaponsStrengtheningIconInfo.m_num, Aligned::RAligned, pos, color, numScale, false, -1, { m_selectWeaponsStrengtheningIconSiz.x / 2.0f, 0.0f });
 					}
 					{
 						//「/」
@@ -503,7 +504,8 @@ void WeponInventoryUI::DrawSprite()
 						Math::Vector2 pos = basePos;
 						pos.x += numGapX;
 						pos.y -= numGapY;
-						NumDraw::GetInstance().Drow(m_selectWeaponsStrengtheningnextLVNum, Aligned::LAligned, pos, kWhiteColor, numScale);
+						// アイコンの半分の幅に収める(「/」の右側)
+						NumDraw::GetInstance().Drow(m_selectWeaponsStrengtheningnextLVNum, Aligned::LAligned, pos, kWhiteColor, numScale, false, -1, { m_selectWeaponsStrengtheningIconSiz.x / 2.0f, 0.0f });
 					}
 				}
 			}

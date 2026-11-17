@@ -59,56 +59,56 @@
         "attack": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 1075
         },
         "body": {
             "Lv": 1,
             "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 1075
         },
         "characteristic": {
             "Lv": 0,
             "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 1075
         },
         "characteristic1": {
             "Lv": 0,
             "nextLvNum": 5,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 1075
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 5,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 1075
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 5,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 1075
         },
         "chargeTime": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 1075
         },
         "defenseIgnore": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 1075
         },
         "stamina": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 1075
         }
     }
 }

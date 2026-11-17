@@ -230,7 +230,7 @@ void BaseScene::Init()
 
 
 
-void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _inventoryPotionsList, const std::vector<Inventory>& _inventoryWeaponsList, std::string _filePath)
+void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _inventoryPotionsList, const std::vector<Inventory>& _inventoryWeaponsList, std::string _filePath, long _money)
 {
 	nlohmann::json data;
 
@@ -268,8 +268,13 @@ void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _i
 			});
 	}
 
+	// 所持金:力尽きたら(リセット)全部失う
+	// 持ち帰れたら PlayerInventory の値。-1 のときは下で元のファイルから引き継ぐ
+	data["money"] = (_isSave && _money >= 0) ? _money : 0;
+
 	// 武器の所持情報はゲーム中に変わらないので、元のファイルから引き継ぐ
-	// (ここで書き直すと、買った武器の情報が消えてしまうため。リセットのときも残す)
+	// (ここで書き直すと、買った武器の情報が消えてしまうため)
+	// 力尽きたら(リセット)、最初から持っているダガーだけを残して、買った武器は失う
 	{
 		std::ifstream oldFile(_filePath);
 		if (oldFile)
@@ -278,6 +283,20 @@ void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _i
 			if (!oldData.is_discarded() && oldData.contains("weapons"))
 			{
 				data["weapons"] = oldData["weapons"];
+
+				if (!_isSave && data["weapons"].is_array())
+				{
+					for (auto& weapon : data["weapons"])
+					{
+						weapon["owned"] = (weapon.value("id", -1) == PlayerWeaponInfo_Dagger);
+					}
+				}
+			}
+
+			// 所持金:値が渡されなかった(-1)ときだけ、元のファイルから引き継ぐ
+			if (_isSave && _money < 0 && !oldData.is_discarded() && oldData.contains("money"))
+			{
+				data["money"] = oldData["money"];
 			}
 		}
 	}
@@ -598,12 +617,61 @@ bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
 	return a.playTimeSc < b.playTimeSc;
 }
 
+void BaseScene::RestockShop()
+{
+	//---------- 2つのJSONを読む ----------
+	auto readJson = [](const std::string& _path) -> nlohmann::json
+		{
+			std::ifstream file(_path);
+			if (!file) { return nlohmann::json::object(); }
+			nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+			if (data.is_discarded()) { return nlohmann::json::object(); }
+			return data;
+		};
+
+	const nlohmann::json master = readJson(m_ShopMasterFilePath);	// 値段・最初の在庫数
+	nlohmann::json       stock = readJson(m_ShopStockFilePath);	// 今の在庫
+
+	//---------- 配列1つ分を再入荷する ----------
+	// _key … "potions" / "materials" / "weapons"
+	auto restock = [&](const char* _key)
+		{
+			if (!master.contains(_key) || !stock.contains(_key)) { return; }
+
+			for (auto& item : stock[_key])
+			{
+				// 在庫が残っている商品はそのまま
+				if (item.value("stock", 0) > 0) { continue; }
+
+				// マスターから、同じidの最初の在庫数を探す
+				const int id = item.value("id", -1);
+				for (const auto& masterItem : master[_key])
+				{
+					if (masterItem.value("id", -1) == id)
+					{
+						item["stock"] = masterItem.value("startStock", 0);
+						break;
+					}
+				}
+			}
+		};
+
+	restock("potions");
+	restock("materials");
+	restock("weapons");
+
+	//---------- 保存 ----------
+	std::ofstream file(m_ShopStockFilePath);
+	if (!file) { return; }
+	file << stock.dump(4);
+}
+
 
 std::vector<bool> BaseScene::LoadOwnedWeapons()
 {
-	// ファイルや項目が無いときは、剣だけ持っている状態にする
+	// ファイルや項目が無いときは、ダガー(最初の武器)だけ持っている状態にする
 	std::vector<bool> owned(PlayerWeaponInfoSize, false);
-	owned[PlayerWeaponInfo_Sword] = true;
+	owned[PlayerWeaponInfo_Dagger] = true;
 
 	std::ifstream file(m_InventoryFilePath);
 	if (!file) { return owned; }
@@ -647,6 +715,38 @@ void BaseScene::SaveOwnedWeapons(const std::vector<bool>& _owned)
 			{"owned", owned}
 			});
 	}
+
+	std::ofstream file(m_InventoryFilePath);
+	if (!file) { return; }
+	file << data.dump(4);
+}
+
+
+long BaseScene::LoadMoney()
+{
+	std::ifstream file(m_InventoryFilePath);
+	if (!file) { return 0; }
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded()) { return 0; }
+
+	return data.value("money", 0L);
+}
+
+void BaseScene::SaveMoney(long _money)
+{
+	// ポーションなど他の項目は消さずに、"money" だけを書き換える
+	nlohmann::json data = nlohmann::json::object();
+	{
+		std::ifstream file(m_InventoryFilePath);
+		if (file)
+		{
+			data = nlohmann::json::parse(file, nullptr, false);
+			if (data.is_discarded()) { data = nlohmann::json::object(); }
+		}
+	}
+
+	data["money"] = std::max(0L, _money);	// マイナスにはしない
 
 	std::ofstream file(m_InventoryFilePath);
 	if (!file) { return; }

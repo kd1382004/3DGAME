@@ -91,6 +91,9 @@
     <Filter Include="Src\Application\Editor">
       <UniqueIdentifier>{91e0a06e-2267-44e4-b1b1-590b9dd897ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Editor\ShopEditor">
+      <UniqueIdentifier>{afcd0a81-4fce-47dc-8f3e-b3673c68b159}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\Editor\TitleSceneEditor">
       <UniqueIdentifier>{321b4d41-9a3e-4012-897d-b569c2a23247}</UniqueIdentifier>
     </Filter>
@@ -597,6 +600,9 @@
     <ClInclude Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.h">
       <Filter>Src\Application\GameObject\Camera\FPSCamera</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Editor\ShopEditor\ShopEditor.h">
+      <Filter>Src\Application\Editor\ShopEditor</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Editor\TitleSceneEditor\TitleSceneEditor.h">
       <Filter>Src\Application\Editor\TitleSceneEditor</Filter>
     </ClInclude>
@@ -1093,6 +1099,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.cpp">
       <Filter>Src\Application\GameObject\Camera\FPSCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Editor\ShopEditor\ShopEditor.cpp">
+      <Filter>Src\Application\Editor\ShopEditor</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Editor\TitleSceneEditor\TitleSceneEditor.cpp">
       <Filter>Src\Application\Editor\TitleSceneEditor</Filter>

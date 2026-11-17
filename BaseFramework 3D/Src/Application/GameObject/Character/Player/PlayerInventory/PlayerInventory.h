@@ -54,6 +54,26 @@ public:
 	void SetPotionsInventoryList(const std::vector<Inventory>& _potions);
 	//武器強化素材のインベントリリストを設定
 	void SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons);
+
+	//////////////////////////////
+	//お金
+
+	//所持金を取得
+	long GetMoney() const { return m_money; }
+
+	//所持金を設定(セーブデータを読み込んだとき)
+	void SetMoney(long _money) { m_money = std::max(0L, _money); }
+
+	//お金が増えたとき(拾った・もらった)
+	void AddMoney(long _money) { if (_money > 0) { m_money += _money; } }
+
+	//お金を使うとき。足りなければ使わずにfalseを返す
+	bool UseMoney(long _money)
+	{
+		if (_money < 0 || m_money < _money) { return false; }
+		m_money -= _money;
+		return true;
+	}
 private:
 
 	//各番号のポーションがどれだけあるか
@@ -65,4 +85,7 @@ private:
 
 
 	std::weak_ptr<ItemGetUIController>m_wpItemGetUIController;
+
+	//お金
+	long m_money = 0;
 };

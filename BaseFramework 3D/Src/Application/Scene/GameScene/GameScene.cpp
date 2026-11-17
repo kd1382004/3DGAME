@@ -126,12 +126,12 @@ void GameScene::SetGameResult()
 		bool saveFlg = !gameResult.playerDead;
 
 		//セーブデータに保存
-		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_InventoryFilePath);
+		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_InventoryFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
 		SaveWeaponStrengtheningData(saveFlg, m_WeaponStrengtheningFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
 
 
 		//ゲームResultに保存
-		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_InventoryGameResultFilePath);
+		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_InventoryGameResultFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
 		SaveWeaponStrengtheningData(true, m_WeaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
 		//プレイヤーのステータス状況を保存
 		m_spPlayer->ClearAllBuffs();
@@ -359,6 +359,7 @@ void GameScene::Init()
 	std::vector<std::vector<Inventory>> inventoryData = LoadInventoryData(m_InventoryFilePath);;
 	m_spPlayer->SetPotionsInventoryList(inventoryData[0]);
 	m_spPlayer->SetWeaponsStrengtheningInventoryList(inventoryData[1]);
+	m_spPlayer->GetPlayerInventory()->SetMoney(LoadMoney());	// 所持金
 
 	m_spCharacterStatus.push_back(m_spPlayer);
 

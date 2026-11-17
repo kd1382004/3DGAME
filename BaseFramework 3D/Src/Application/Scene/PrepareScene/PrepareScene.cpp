@@ -16,6 +16,8 @@
 #include"../../GameObject/UI/PrepareSceneUI/ShopDisplay/ShopDisplay.h"
 #include"../../GameObject/UI/PrepareSceneUI/RecordsDisplay/RecordsDisplay.h"
 
+#include"../../Editor/ShopEditor/ShopEditor.h"
+
 
 PrepareScene::~PrepareScene()
 {
@@ -55,10 +57,12 @@ void PrepareScene::Init()
 	m_spShopDisplay->Init();
 	m_spUIManager->AddUIObj(m_spShopDisplay);
 
+	// ショップの値段を決めるEditor
+	m_spShopEditor = std::make_shared<ShopEditor>("Asset/Data/Shop/ShopMasterData.json");
+
 	// 装備変更
 	m_spEquipDisplay = std::make_shared<EquipDisplay>();
 	m_spEquipDisplay->SetPrepareScene(shared_from_this());
-	m_spEquipDisplay->SetOwnedWeapons(LoadOwnedWeapons());	// 持っている武器だけを出す
 	m_spEquipDisplay->Init();
 	m_spUIManager->AddUIObj(m_spEquipDisplay);
 
@@ -69,8 +73,15 @@ void PrepareScene::Init()
 	m_spRecordsDisplay->Init();
 	m_spUIManager->AddUIObj(m_spRecordsDisplay);
 
-	ChangeTab(PrepareTab::None);
+	// 出発ボタン(右下・「前回の記録」パネルの下)
+	m_spGameButton = std::make_shared<GameButton>();
+	m_spGameButton->SetTexPath("Asset/Textures/Button/GameButton/DepartButton.png");
+	m_spGameButton->Init();
+	m_spGameButton->SetPos({ 445.0f, -305.0f, 0.0f });
+	m_objList.push_back(m_spGameButton);
 
+	ChangeTab(PrepareTab::None);
+	OnShopDataChanged();
 	/////////////////////////////////////////
 	// 音
 	/////////////////////////////////////////
@@ -83,6 +94,24 @@ void PrepareScene::Init()
 	//		m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.5);
 	//	}
 	//}
+}
+
+void PrepareScene::OnShopDataChanged()
+{
+	if (!m_spShopDisplay) { return; }
+
+	// メニュー画面の所持金(ファイルではなく、ショップが持っている値を使う)
+	if (m_spPrepareSceneDisplay)
+	{
+		m_spPrepareSceneDisplay->SetMoney(m_spShopDisplay->GetMoney());
+		 m_spPrepareSceneDisplay->SetPotionNum(m_spShopDisplay->GetPotionTotal());
+	}
+
+	// 装備画面の武器の一覧を作り直す
+	if (m_spEquipDisplay)
+	{
+		m_spEquipDisplay->SetOwnedWeapons(m_spShopDisplay->GetOwnedWeapons());
+	}
 }
 
 void PrepareScene::Event()
@@ -124,6 +153,9 @@ void PrepareScene::ChangeTab(PrepareTab _tab)
 	if (m_spRecordsDisplay) m_spRecordsDisplay->SetActive(_tab == PrepareTab::Records);
 	if (m_spPrepareSceneDisplay) m_spPrepareSceneDisplay->SetActive(_tab == PrepareTab::None);
 
+	// 出発ボタンはメニューだけのときに出す(ショップなどの画面と重なるため)
+	if (m_spGameButton) m_spGameButton->SetActive(_tab == PrepareTab::None);
+
 }
 
 void PrepareScene::ShopEvent()
@@ -163,6 +195,22 @@ void PrepareScene::ImGUi()
 		{
 			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);
 		}
+
+		ImGui::Separator();
+
+		// ショップの値段を決めるEditor
+		ImGui::Checkbox(U8("ショップの値段"), &m_shopEditorOpenFlg);
 	}
 	ImGui::End();
+
+	if (m_shopEditorOpenFlg && m_spShopEditor)
+	{
+		m_spShopEditor->Draw(&m_shopEditorOpenFlg);
+
+		// 保存したら、ショップ画面の値段を読み直す
+		if (m_spShopEditor->PopSaved() && m_spShopDisplay)
+		{
+			m_spShopDisplay->LoadShopData();
+		}
+	}
 }

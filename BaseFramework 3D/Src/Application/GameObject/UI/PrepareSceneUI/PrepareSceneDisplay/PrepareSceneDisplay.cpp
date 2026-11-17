@@ -64,7 +64,7 @@ void PrepareSceneDisplay::Init()
 	setTextPos(InfoText::Sword, valueLeft + 34.0f, equipTop - 100.0f);	// 剣とダガーは同じ場所
 	setTextPos(InfoText::Dagger, valueLeft + 34.0f, equipTop - 100.0f);
 	setTextPos(InfoText::Potion, textLeft, equipTop - 146.0f);
-	setTextPos(InfoText::Count, valueLeft + 56.0f, equipTop - 146.0f);	// 個数の数字の右
+	setTextPos(InfoText::Count, panelLeft + 258.0f, equipTop - 146.0f);
 
 	m_weaponIconPos = m_spTextPos[static_cast<int>(InfoText::Sword)];
 	m_weaponIconPos.x -= m_weaponIconSiz + 8.0f;
@@ -154,6 +154,12 @@ void PrepareSceneDisplay::DrawSprite()
 		Draw();
 	}
 
+}
+
+void PrepareSceneDisplay::SetMoney(long _money)
+{
+	// マイナスにはしない
+	m_money = std::max(0L, _money);
 }
 
 void PrepareSceneDisplay::LoadMenuTex()
@@ -250,12 +256,13 @@ void PrepareSceneDisplay::Draw()
 	const float numSiz = 2.0f;	// 元画像9×14px → 18×28px
 	const float numGap = 4.0f;	// 数字と単位のすき間
 
-	auto drawNum = [&](long _num, InfoText _unit, bool _separator = false)
+	// _maxW … 超えてはいけない横幅(項目の文字にかぶらないように。0なら制限なし)
+	auto drawNum = [&](long _num, InfoText _unit, bool _separator = false, float _maxW = 0.0f)
 		{
 			const Math::Vector2& unitPos = m_spTextPos[static_cast<int>(_unit)];
 			NumDraw::GetInstance().Drow(_num, RAligned,
 				{ unitPos.x - numGap, unitPos.y },
-				Math::Color(1, 1, 1, 1), numSiz, _separator);
+				Math::Color(1, 1, 1, 1), numSiz, _separator, -1, { _maxW, 0.0f });
 		};
 	
 	// 前回の記録(PrepareSceneDisplay)
@@ -264,16 +271,16 @@ void PrepareSceneDisplay::Draw()
 		int  floor = m_gameRecord.latest.displayFloorInfo[0].DisplayFloor;	// [0]は全体の情報
 		bool isLost = m_gameRecord.latest.playerDead;
 
-		drawNum(floor, InfoText::Floor);
+		drawNum(floor, InfoText::Floor, false, 64.0f);	// 「到達階」の右 〜 「階」の左
 		drawText(isLost ? InfoText::Lost : InfoText::Escape);
 
 	}
 
 
 
-	// TODO : ポーションの所持数と所持金は、データができたら差し替える
-	drawNum(0, InfoText::Count);
-	drawNum(0, InfoText::Gold, true);	// 所持金は3桁区切り(1,250)
+	
+	drawNum(m_potionNum, InfoText::Count, false, 72.0f);		// 「ポーション」の右 〜 「個」の左
+	drawNum(m_money, InfoText::Gold, true, 230.0f);	// 所持金は3桁区切り(1,250)。パネルの左端 〜 「G」の左
 }
 
 bool PrepareSceneDisplay::MouseHit(Math::Vector2 _pos, float _w, float _h)
