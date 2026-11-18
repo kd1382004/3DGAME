@@ -126,18 +126,29 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	//安全な部屋にする部屋を1つだけ先に決める(部屋IDは kInitialRoomID から始まる)
 	int safeRoomID = KdRandom::GetInt(kInitialRoomID, roomID - 1);
 
+	//置いた部屋の数(roomID は次に使うIDなので、初期値を引く)
+	int placedRoomNum = roomID - kInitialRoomID;
+
+	//部屋の数が最低数しかないなら、安全な部屋は作らない
+	bool useSafeRoom = (kMinRoomNum < placedRoomNum);
+
 	for (int i = 0; i < roomID; i++)
 	{
-		//何用の部屋か決める
-		if (i == safeRoomID)
+		//部屋の数が最低数なら敵部屋で埋める
+		if (!useSafeRoom)
+		{
+			roomTypeList[i] = RoomType_EnemyRoom;
+		}
+		//安全な部屋に選んだ部屋
+		else if (i == safeRoomID)
 		{
 			roomTypeList[i] = RoomType_SafeRoom;
 		}
+		//それ以外は敵の部屋・宝箱部屋から引く
 		else
 		{
-			//安全な部屋以外(敵の部屋・宝箱部屋)から引く
 			roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_TreasureChestRoom);
-		}
+		}	
 	}
 
 	/////////////////////////////////////////////////////

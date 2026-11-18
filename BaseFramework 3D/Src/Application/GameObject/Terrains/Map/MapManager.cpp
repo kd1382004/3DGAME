@@ -71,13 +71,13 @@ void MapManager::DrawLit()
 
 	if (m_spBoxModel)
 	{
-		//auto spCamera = m_wpCamera.lock();
-		//if (spCamera)
-		//{
-		//	Math::Vector3 pos = spCamera->GetPos();
-		//	m_boxPos.x = pos.x;
-		//	m_boxPos.z = pos.z;
-		//}
+		auto spCamera = m_wpCamera.lock();
+		if (spCamera)
+		{
+			Math::Vector3 pos = spCamera->GetPos();
+			m_boxPos.x = pos.x;
+			m_boxPos.z = pos.z;
+		}
 
 
 		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_boxPos);
