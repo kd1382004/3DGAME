@@ -624,7 +624,7 @@ void GameScene::GenerateMap()
 	//全effect停止
 	KdEffekseerManager::GetInstance().StopAllEffect();
 
-	int baseSize = 24;              // 1階のマップサイズ
+	int baseSize = 30;              // 1階のマップサイズ
 	float growth = 1.01f;
 
 

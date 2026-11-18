@@ -59,56 +59,56 @@
         "attack": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 92
         },
         "body": {
             "Lv": 1,
             "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 92
         },
         "characteristic": {
-            "Lv": 0,
-            "nextLvNum": 5,
+            "Lv": 3,
+            "nextLvNum": 7,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningItemNum": 40
         },
         "characteristic1": {
-            "Lv": 0,
-            "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "Lv": 5,
+            "nextLvNum": 9,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 40
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 40
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 40
         },
         "chargeTime": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 92
         },
         "defenseIgnore": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 92
         },
         "stamina": {
             "Lv": 0,
             "nextLvNum": 2,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 0
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 92
         }
     }
 }
