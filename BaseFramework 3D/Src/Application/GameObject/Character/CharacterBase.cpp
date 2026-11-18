@@ -754,14 +754,34 @@ bool CharacterBase::ConsumeStamina(float _amount)
 void CharacterBase::StaminaManager()
 {
 
-	if (m_status.m_stamina.m_staminaRegenFlg)
+	auto& st = m_status.m_stamina;
+	const float dt = DeltaTime::Instance().GetGameDeltaTime();
+
+	if (st.m_staminaRegenFlg)
 	{
-		float totalRegen = m_status.m_stamina.m_staminaRegenPerSec + m_status.m_stamina.m_staminaRegenBuff;
-		m_status.m_stamina.m_staminaNow += totalRegen * DeltaTime::Instance().GetGameDeltaTime();
+		float baseRegen = st.m_staminaRegenPerSec + st.m_staminaRegenBuff;
 
-		if (m_status.m_stamina.m_staminaNow < 0.0f) { m_status.m_stamina.m_staminaNow = 0.0f; }
+		// 倍率 = growth^t（上限あり）
+		float rateStart = std::min(std::pow(st.m_staminaRegenGrowth, st.m_staminaRegenElapsed), st.m_staminaRegenMaxRate);
+		st.m_staminaRegenElapsed += dt;
+		float rateEnd = std::min(std::pow(st.m_staminaRegenGrowth, st.m_staminaRegenElapsed), st.m_staminaRegenMaxRate);
 
-		if (m_status.m_stamina.m_staminaNow > m_status.m_stamina.m_staminaMax) { m_status.m_stamina.m_staminaNow = m_status.m_stamina.m_staminaMax; }
+		float rate = (rateStart + rateEnd) * 0.5f;
+		st.m_staminaNow += baseRegen * rate * dt;
+
+		st.m_staminaNow = std::clamp(st.m_staminaNow, 0.0f, st.m_staminaMax);
+	}
+	else
+	{
+		st.m_staminalockTime += dt;
+
+		if (st.m_staminalockTime >= 1)
+		{
+			m_status.m_stamina.m_staminaRegenFlg = true;
+			st.m_staminaRegenElapsed = 0;
+			st.m_staminalockTime = 0;
+		}
+	
 	}
 
 

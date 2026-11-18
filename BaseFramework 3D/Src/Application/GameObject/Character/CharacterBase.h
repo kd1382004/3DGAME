@@ -75,6 +75,17 @@ struct Stamina
 	//バフによる回復速度増加量(1秒あたり)
 	float m_staminaRegenBuff = 0;
 
+	// 回復開始からの経過時間
+	float m_staminaRegenElapsed = 0.0f;
+
+	// 1秒ごとに回復速度が何倍になるか（1.0より大きい値）
+	float m_staminaRegenGrowth = 1.5f;
+
+	// 回復倍率の上限
+	float m_staminaRegenMaxRate = 5.0f;
+
+
+	float m_staminalockTime = 0;
 
 	//スタミナが自然回復しているか
 	bool m_staminaRegenFlg = false;

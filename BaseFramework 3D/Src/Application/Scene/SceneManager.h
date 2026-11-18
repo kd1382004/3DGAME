@@ -115,7 +115,13 @@ public:
 	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_playerWeaponInfo; }
 	//プレイヤーの武器をセット
 	// _playerWeaponInfo ... プレイヤーの武器
-	void SetPlayerWeaponInfo(PlayerWeaponInfo _playerWeaponInfo) { m_playerWeaponInfo = _playerWeaponInfo; }
+	//変わったときはファイルに保存して、次に起動したときも同じ武器にする
+	void SetPlayerWeaponInfo(PlayerWeaponInfo _playerWeaponInfo)
+	{
+		if (m_playerWeaponInfo == _playerWeaponInfo) { return; }
+		m_playerWeaponInfo = _playerWeaponInfo;
+		PlayerWeaponJsonSave();
+	}
 
 
 
@@ -201,6 +207,14 @@ private:
 
 	//プレイヤーの武器
 	PlayerWeaponInfo m_playerWeaponInfo = PlayerWeaponInfo::PlayerWeaponInfo_Dagger;
+
+	//装備中の武器をファイルに保存する
+	void PlayerWeaponJsonSave();
+	//装備中の武器をファイルから読み込む(ファイルが無いときはダガーのまま)
+	void PlayerWeaponJsonLoad();
+
+	//装備中の武器のファイルのパス
+	std::string m_playerWeaponJsonFilePath = "Asset/Data/PlayerData/PlayerEquipData.json";
 
 private:
 

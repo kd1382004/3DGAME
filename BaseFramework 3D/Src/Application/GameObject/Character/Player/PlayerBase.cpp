@@ -208,9 +208,6 @@ void PlayerBase::PreUpdate()
 
 	m_isDetectedByEnemyNum = 0;
 
-	m_status.m_stamina.m_staminaRegenFlg = true;
-
-
 	//デバック
 	if (GetAsyncKeyState('2') & 0x8000)
 	{

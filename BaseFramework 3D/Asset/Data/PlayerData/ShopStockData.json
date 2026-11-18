@@ -15,12 +15,12 @@
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "stock": 10
+            "stock": 63
         },
         {
             "id": 1,
             "name": "AttackBaseUPPotion",
-            "stock": 83
+            "stock": 90
         },
         {
             "id": 2,

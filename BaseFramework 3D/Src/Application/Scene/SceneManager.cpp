@@ -171,6 +171,9 @@ void SceneManager::UnFogAmbient()
 void SceneManager::Init()
 {
 	{
+		// 前回の装備を読み込む(シーンより先に読んでおく)
+		PlayerWeaponJsonLoad();
+
 		// 開始シーンに切り替え
 		ChangeScene(m_currentSceneType);
 		m_fogFlg = true;
@@ -343,4 +346,32 @@ void SceneManager::FogAmbientJsonLoad()
 
 	//アンビエント
 	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
+}
+
+
+void SceneManager::PlayerWeaponJsonSave()
+{
+	nlohmann::json data;
+	data["equippedWeapon"] = static_cast<int>(m_playerWeaponInfo);
+
+	std::ofstream ofs(m_playerWeaponJsonFilePath);
+	if (!ofs) { return; }
+	ofs << data.dump(4);
+}
+
+void SceneManager::PlayerWeaponJsonLoad()
+{
+	std::ifstream ifs(m_playerWeaponJsonFilePath);
+	if (!ifs) { return; }	// 初回起動などでファイルが無いときはダガーのまま
+
+	nlohmann::json data = nlohmann::json::parse(ifs, nullptr, false);
+	if (data.is_discarded()) { return; }
+
+	int weapon = data.value("equippedWeapon", static_cast<int>(PlayerWeaponInfo_Dagger));
+
+	// 範囲外の値ならダガーにする
+	if (weapon < 0 || weapon >= PlayerWeaponInfoSize) { weapon = PlayerWeaponInfo_Dagger; }
+
+	// ここではSetPlayerWeaponInfoを使わない(読み込んだだけで保存しないため)
+	m_playerWeaponInfo = static_cast<PlayerWeaponInfo>(weapon);
 }
