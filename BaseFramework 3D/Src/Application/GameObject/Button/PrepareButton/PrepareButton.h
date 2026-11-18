@@ -6,10 +6,15 @@ class PrepareButton :public  ButtonBase
 {
 public:
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init()override;
+
 	//更新(押されたら準備シーンへ)
 	void Update()override;
+
+	//---- 設定 ----
 
 	// 表示する画像を変更する(Initより前に呼ぶ)
 	// 呼ばなければSTARTの画像になる
@@ -17,6 +22,8 @@ public:
 	void SetTexPath(const std::string& _path) { m_texPath = _path; }
 
 private:
+
+	//---- メンバ変数 ----
 
 	//ボタンの画像のパス
 	std::string m_texPath = "Asset/Textures/Button/PrepareButton/StartButton.png";

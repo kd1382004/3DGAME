@@ -162,41 +162,6 @@ void PrepareSceneDisplay::SetMoney(long _money)
 	m_money = std::max(0L, _money);
 }
 
-void PrepareSceneDisplay::LoadMenuTex()
-{
-	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
-	{
-		if (m_spMenuTex[i]) { continue; }
-
-		m_spMenuTex[i] = std::make_shared<KdTexture>();
-		if (!m_spMenuTex[i]->Load(m_menuTexPath[i]))
-		{
-			KdDebugGUI::Instance().AddLog(U8("[Error] PrepareMenuの画像が読み込めません : %s\n"), m_menuTexPath[i].c_str());
-		}
-	}
-}
-
-void PrepareSceneDisplay::LoadInfoTex()
-{
-	LoadTexArray(m_spPanelTex, m_panelTexPath, static_cast<int>(InfoPanel::PanelSize));
-	LoadTexArray(m_spTextTex, m_textTexPath, static_cast<int>(InfoText::TextSize));
-	LoadTexArray(m_spWeaponIconTex, m_weaponIconTexPath, PlayerWeaponInfoSize);
-}
-
-void PrepareSceneDisplay::LoadTexArray(std::shared_ptr<KdTexture>* _spTex, const std::string* _path, int _num)
-{
-	for (int i = 0; i < _num; i++)
-	{
-		if (_spTex[i]) { continue; }
-
-		_spTex[i] = std::make_shared<KdTexture>();
-		if (!_spTex[i]->Load(_path[i]))
-		{
-			KdDebugGUI::Instance().AddLog(U8("[Error] PrepareSceneDisplayの画像が読み込めません : %s\n"), _path[i].c_str());
-		}
-	}
-}
-
 void PrepareSceneDisplay::Draw()
 {
 	auto& sprite = KdShaderManager::Instance().m_spriteShader;
@@ -281,6 +246,41 @@ void PrepareSceneDisplay::Draw()
 	
 	drawNum(m_potionNum, InfoText::Count, false, 72.0f);		// 「ポーション」の右 〜 「個」の左
 	drawNum(m_money, InfoText::Gold, true, 230.0f);	// 所持金は3桁区切り(1,250)。パネルの左端 〜 「G」の左
+}
+
+void PrepareSceneDisplay::LoadMenuTex()
+{
+	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
+	{
+		if (m_spMenuTex[i]) { continue; }
+
+		m_spMenuTex[i] = std::make_shared<KdTexture>();
+		if (!m_spMenuTex[i]->Load(m_menuTexPath[i]))
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Error] PrepareMenuの画像が読み込めません : %s\n"), m_menuTexPath[i].c_str());
+		}
+	}
+}
+
+void PrepareSceneDisplay::LoadInfoTex()
+{
+	LoadTexArray(m_spPanelTex, m_panelTexPath, static_cast<int>(InfoPanel::PanelSize));
+	LoadTexArray(m_spTextTex, m_textTexPath, static_cast<int>(InfoText::TextSize));
+	LoadTexArray(m_spWeaponIconTex, m_weaponIconTexPath, PlayerWeaponInfoSize);
+}
+
+void PrepareSceneDisplay::LoadTexArray(std::shared_ptr<KdTexture>* _spTex, const std::string* _path, int _num)
+{
+	for (int i = 0; i < _num; i++)
+	{
+		if (_spTex[i]) { continue; }
+
+		_spTex[i] = std::make_shared<KdTexture>();
+		if (!_spTex[i]->Load(_path[i]))
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Error] PrepareSceneDisplayの画像が読み込めません : %s\n"), _path[i].c_str());
+		}
+	}
 }
 
 bool PrepareSceneDisplay::MouseHit(Math::Vector2 _pos, float _w, float _h)

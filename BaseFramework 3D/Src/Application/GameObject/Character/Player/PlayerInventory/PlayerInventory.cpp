@@ -3,6 +3,7 @@
 
 
 #include"../../../UI/ItemGetUIController/ItemGetUIController.h"
+
 void PlayerInventory::Init()
 {
 	{
@@ -57,6 +58,18 @@ void PlayerInventory::Init()
 	}
 }
 
+int PlayerInventory::GetPotionsInventoryNum(int _potionsType)
+{
+	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return 0; }
+	return m_potionsInventory[_potionsType].m_num;
+}
+
+int PlayerInventory::GetWeaponsStrengtheningInventoryNum(int _weaponsStrengtheningType)
+{
+	if (_weaponsStrengtheningType < 0 || _weaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return 0; }
+	return m_weaponsStrengtheningInventory[_weaponsStrengtheningType].m_num;
+}
+
 void PlayerInventory::AddPotionsInventory(int _potionsType)
 {
 	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return; }
@@ -70,18 +83,6 @@ void PlayerInventory::AddPotionsInventory(int _potionsType)
 	item.m_getNum = 1;
 	item.m_ID = _potionsType;
 	spItemGetUIController->AddGetItemList(item, ItemType::Potion);
-}
-
-void PlayerInventory::UsePotionsInventory(int _potionsType)
-{
-	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return; }
-	m_potionsInventory[_potionsType].m_num--;
-}
-
-int PlayerInventory::GetPotionsInventoryNum(int _potionsType)
-{
-	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return 0; }
-	return m_potionsInventory[_potionsType].m_num;
 }
 
 void PlayerInventory::AddWeaponsStrengtheningInventory(int _weaponsStrengtheningType)
@@ -100,18 +101,6 @@ void PlayerInventory::AddWeaponsStrengtheningInventory(int _weaponsStrengthening
 	spItemGetUIController->AddGetItemList(item, ItemType::WeaponsStrengthening);
 }
 
-void PlayerInventory::UseWeaponsStrengtheningInventory(int _weaponsStrengtheningType, int _num)
-{
-	if (_weaponsStrengtheningType < 0 || _weaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return; }
-	m_weaponsStrengtheningInventory[_weaponsStrengtheningType].m_num -= _num;
-}
-
-int PlayerInventory::GetWeaponsStrengtheningInventoryNum(int _weaponsStrengtheningType)
-{
-	if (_weaponsStrengtheningType < 0 || _weaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return 0; }
-	return m_weaponsStrengtheningInventory[_weaponsStrengtheningType].m_num;
-}
-
 void PlayerInventory::SetPotionsInventoryList(const std::vector<Inventory>& _potions)
 {
 	for (auto potions : _potions)
@@ -128,5 +117,17 @@ void PlayerInventory::SetWeaponsStrengtheningInventoryList(const std::vector<Inv
 		if (weapons.m_ID < 0 || weapons.m_ID >= m_weaponsStrengtheningInventory.size()) { continue; }
 		m_weaponsStrengtheningInventory[weapons.m_ID].m_num = weapons.m_num;
 	}
+}
+
+void PlayerInventory::UsePotionsInventory(int _potionsType)
+{
+	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return; }
+	m_potionsInventory[_potionsType].m_num--;
+}
+
+void PlayerInventory::UseWeaponsStrengtheningInventory(int _weaponsStrengtheningType, int _num)
+{
+	if (_weaponsStrengtheningType < 0 || _weaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return; }
+	m_weaponsStrengtheningInventory[_weaponsStrengtheningType].m_num -= _num;
 }
 

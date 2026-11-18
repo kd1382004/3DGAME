@@ -140,55 +140,6 @@ bool TreasureChestTableEditor::Save()
 	return true;
 }
 
-void TreasureChestTableEditor::LoadMasters()
-{
-	m_potions = LoadMaster(m_potionMasterPath);
-	m_materials = LoadMaster(m_materialMasterPath);
-}
-
-std::vector<TreasureChestTableEditor::MasterItem> TreasureChestTableEditor::LoadMaster(const std::string& _filePath)
-{
-	std::vector<MasterItem> list;
-
-	std::ifstream file(_filePath);
-	if (!file) { return list; }
-
-	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-	if (data.is_discarded() || !data.contains("inventory") || !data["inventory"].is_array()) { return list; }
-
-	for (const auto& itemData : data["inventory"])
-	{
-		MasterItem item;
-		item.m_id = itemData.value("id", 0);
-		item.m_name = itemData.value("name", std::string{});
-		list.push_back(item);
-	}
-	return list;
-}
-
-const std::vector<TreasureChestTableEditor::MasterItem>& TreasureChestTableEditor::GetMaster(int _type) const
-{
-	if (_type == ItemType_Material) { return m_materials; }
-	return m_potions;
-}
-
-std::string TreasureChestTableEditor::FindItemName(int _type, int _id) const
-{
-	if (_type < 0 || _type >= ItemTypeSiz) { return {}; }
-
-	for (const MasterItem& item : GetMaster(_type))
-	{
-		if (item.m_id == _id) { return item.m_name; }
-	}
-	return {};
-}
-
-void TreasureChestTableEditor::SelectTable(const std::string& _tableName)
-{
-	m_selectTable = _tableName;
-	std::snprintf(m_renameBuf, sizeof(m_renameBuf), "%s", m_selectTable.c_str());
-}
-
 void TreasureChestTableEditor::DrawTableList()
 {
 	ImGui::TextUnformatted(U8("テーブル"));
@@ -487,6 +438,55 @@ bool TreasureChestTableEditor::DrawItemRow(nlohmann::json& _item, int _index, fl
 
 	ImGui::PopID();
 	return remove;
+}
+
+const std::vector<TreasureChestTableEditor::MasterItem>& TreasureChestTableEditor::GetMaster(int _type) const
+{
+	if (_type == ItemType_Material) { return m_materials; }
+	return m_potions;
+}
+
+void TreasureChestTableEditor::LoadMasters()
+{
+	m_potions = LoadMaster(m_potionMasterPath);
+	m_materials = LoadMaster(m_materialMasterPath);
+}
+
+std::vector<TreasureChestTableEditor::MasterItem> TreasureChestTableEditor::LoadMaster(const std::string& _filePath)
+{
+	std::vector<MasterItem> list;
+
+	std::ifstream file(_filePath);
+	if (!file) { return list; }
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded() || !data.contains("inventory") || !data["inventory"].is_array()) { return list; }
+
+	for (const auto& itemData : data["inventory"])
+	{
+		MasterItem item;
+		item.m_id = itemData.value("id", 0);
+		item.m_name = itemData.value("name", std::string{});
+		list.push_back(item);
+	}
+	return list;
+}
+
+std::string TreasureChestTableEditor::FindItemName(int _type, int _id) const
+{
+	if (_type < 0 || _type >= ItemTypeSiz) { return {}; }
+
+	for (const MasterItem& item : GetMaster(_type))
+	{
+		if (item.m_id == _id) { return item.m_name; }
+	}
+	return {};
+}
+
+void TreasureChestTableEditor::SelectTable(const std::string& _tableName)
+{
+	m_selectTable = _tableName;
+	std::snprintf(m_renameBuf, sizeof(m_renameBuf), "%s", m_selectTable.c_str());
 }
 
 std::vector<std::string> TreasureChestTableEditor::Validate(const std::string& _tableName, const nlohmann::json& _table) const

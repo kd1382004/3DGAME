@@ -5,15 +5,30 @@ class UIMap_Map;
 class UIMap_TreasureChest:public KdGameObject
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	UIMap_TreasureChest() {};
+
 	//デストラクタ
 	~UIMap_TreasureChest()override {};
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init()override;
+
 	//2Dの描画
 	void DrawSprite()override;
+
+	//---- 取得 ----
+
+	//ミニマップ上の位置を返す
+	//戻り値 ... 画面座標
+	Math::Vector2 GetPos();
+
+	//---- 設定 ----
 
 	//マップの基準位置(ワールド)をセット
 	// _3DPos ... 基準位置(ワールド)
@@ -25,6 +40,7 @@ public:
 	//ミニマップの基準位置(画面)をセット
 	// _basePos ... 基準位置(画面)
 	void SetBasePos(Math::Vector2 _basePos) { m_basePos = _basePos; }
+
 	//ミニマップ上のプレイヤーの位置をセット
 	// _miniMapPlayerPos ... プレイヤーの位置(画面)
 	void SetMiniMapPlayerPos(Math::Vector2 _miniMapPlayerPos) { m_miniMapPlayerPos = _miniMapPlayerPos; }
@@ -38,10 +54,6 @@ public:
 	// _siz ... 1タイルの大きさ
 	void SetTileSiz(float _siz) { m_tileSiz = _siz; }
 
-	//ミニマップ上の位置を返す
-	//戻り値 ... 画面座標
-	Math::Vector2 GetPos();
-
 	//ミニマップの1マスの画像の大きさをセット
 	// _siz ... 画像の大きさ
 	void SetMapTexSiz(Math::Vector2 _siz) { m_mapTexSiz = _siz; }
@@ -53,7 +65,21 @@ public:
 	//もう表示しない(開けた)かをセット
 	// _flg ... もう表示しないか
 	void SetExpired(bool _flg) { m_isExpired = _flg; }
+
 private:
+
+	//---- 型 ----
+
+	//ミニマップに出す宝箱1つ分の情報
+	struct List
+	{
+		//宝箱の座標(ワールド)
+		Math::Vector3 m_pos;
+		//表示するか
+		bool m_drawFlg = false;
+	};
+
+	//---- メンバ変数 ----
 
 	//マップのUI
 	std::weak_ptr<UIMap_Map>m_wpUIMap_Map;
@@ -64,21 +90,8 @@ private:
 	//プレイヤーから何マス以内なら見つけたことにするか
 	int m_discoverTileNum = 2;
 
-	struct List
-	{
-		//宝箱の座標(ワールド)
-		Math::Vector3 m_pos;
-		//表示するか
-		bool m_drawFlg = false;
-	};
-
-
 	//宝箱の位置
 	List m_posList;
-
-	//プレイヤーの近くなら表示するようにする
-	// _info ... 調べる宝箱
-	void DiscoverTile(List* _info);
 
 	//ミニマップの1マスの画像の大きさ
 	Math::Vector2 m_mapTexSiz = { };
@@ -103,4 +116,10 @@ private:
 
 	//表示するか
 	bool m_drawFlg=false;
+
+	//---- その他の処理 ----
+
+	//プレイヤーの近くなら表示するようにする
+	// _info ... 調べる宝箱
+	void DiscoverTile(List* _info);
 };

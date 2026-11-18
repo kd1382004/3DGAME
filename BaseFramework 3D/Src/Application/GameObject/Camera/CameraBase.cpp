@@ -142,6 +142,53 @@ void CameraBase::SetEvasionCamera(float _time)
 	m_evasionCamTimer = 0;
 }
 
+bool CameraBase::RotateTowardsY(float _targetYawDeg, float _maxSpeedDegPerSec)
+{
+	bool isRotateFinished = false;
+
+
+	// 目標角度と現在角度の差分
+	float diff = _targetYawDeg - m_degAng.y;
+
+	// 許容誤差（度数法）
+	float toleranceDeg = 0.1f;
+
+	// -180度 〜 +180度の範囲に正規化（最短ルートで旋回）
+	while (diff > 180.0f)  diff -= 360.0f;
+	while (diff < -180.0f) diff += 360.0f;
+
+	// 1フレームあたりの最大回転量
+	float maxStep = _maxSpeedDegPerSec * DeltaTime::Instance().GetGameDeltaTime();
+
+	// 残りが許容範囲内、または今フレームで届く → ぴったり合わせて完了
+	if (std::abs(diff) <= std::max(maxStep, toleranceDeg))
+	{
+		m_degAng.y += diff;   // 目標にスナップ（誤差を残さない）
+		isRotateFinished = true;
+	}
+	else
+	{
+		m_degAng.y += (diff > 0.0f) ? maxStep : -maxStep;
+		isRotateFinished = false;
+	}
+
+	// 0 〜 360度に収める
+	if (m_degAng.y >= 360.0f) m_degAng.y -= 360.0f;
+	if (m_degAng.y < 0.0f)    m_degAng.y += 360.0f;
+
+	return isRotateFinished;
+}
+
+void CameraBase::Shake(float _time, float _power)
+{
+	// 今の揺れより弱いなら、上書きしない
+	if (m_shakeTimer > 0.0f && _power < m_shakePower) { return; }
+
+	m_shakeTimer = _time;
+	m_shakePower = _power;
+	m_shakeTime = _time;
+}
+
 void CameraBase::EvasionCamera()
 {
 	m_evasionCamTimer += DeltaTime::Instance().GetRealDeltaTime();
@@ -249,53 +296,4 @@ void CameraBase::ShakeUpdate()
 	m_shakeOffset.x = dist(randEngine) * nowPower;			// 横揺れ
 	m_shakeOffset.y = dist(randEngine) * nowPower * 0.7f;	// 縦揺れは少し弱く
 	m_shakeOffset.z = 0.0f;
-}
-
-
-
-bool CameraBase::RotateTowardsY(float _targetYawDeg, float _maxSpeedDegPerSec)
-{
-	bool isRotateFinished = false;
-
-
-	// 目標角度と現在角度の差分
-	float diff = _targetYawDeg - m_degAng.y;
-
-	// 許容誤差（度数法）
-	float toleranceDeg = 0.1f;
-
-	// -180度 〜 +180度の範囲に正規化（最短ルートで旋回）
-	while (diff > 180.0f)  diff -= 360.0f;
-	while (diff < -180.0f) diff += 360.0f;
-
-	// 1フレームあたりの最大回転量
-	float maxStep = _maxSpeedDegPerSec * DeltaTime::Instance().GetGameDeltaTime();
-
-	// 残りが許容範囲内、または今フレームで届く → ぴったり合わせて完了
-	if (std::abs(diff) <= std::max(maxStep, toleranceDeg))
-	{
-		m_degAng.y += diff;   // 目標にスナップ（誤差を残さない）
-		isRotateFinished = true;
-	}
-	else
-	{
-		m_degAng.y += (diff > 0.0f) ? maxStep : -maxStep;
-		isRotateFinished = false;
-	}
-
-	// 0 〜 360度に収める
-	if (m_degAng.y >= 360.0f) m_degAng.y -= 360.0f;
-	if (m_degAng.y < 0.0f)    m_degAng.y += 360.0f;
-
-	return isRotateFinished;
-}
-
-void CameraBase::Shake(float _time, float _power)
-{
-	// 今の揺れより弱いなら、上書きしない
-	if (m_shakeTimer > 0.0f && _power < m_shakePower) { return; }
-
-	m_shakeTimer = _time;
-	m_shakePower = _power;
-	m_shakeTime = _time;
 }

@@ -167,6 +167,25 @@ void WeaponStrengtheningEditor::DrawWeapon(nlohmann::json& _weapon)
 	}
 }
 
+void WeaponStrengtheningEditor::DrawPreview(const nlohmann::json& _item)
+{
+	const int   lvMax = _item.value("LvMax", 0);
+	const int   initial = _item.value("InitialNextLvNum", 1);
+	const float rate = _item.value("GrowthRate", 1.0f);
+
+	std::string text;
+	int total = 0;
+	for (int lv = 0; lv < lvMax; ++lv)
+	{
+		const int num = static_cast<int>(std::ceil(initial * std::pow(rate, lv)));
+		total += num;
+		if (!text.empty()) text += ", ";
+	}
+	text += U8("  (計 ") + std::to_string(total) + ")";
+
+	ImGui::TextUnformatted(text.c_str());
+}
+
 void WeaponStrengtheningEditor::EditInt(nlohmann::json& _obj, const char* _key, int _min, int _max)
 {
 	int v = _obj.value(_key, 0);
@@ -189,25 +208,6 @@ void WeaponStrengtheningEditor::EditFloat(nlohmann::json& _obj, const char* _key
 		_obj[_key] = std::round(static_cast<double>(v) * 100.0) / 100.0;
 		m_dirty = true;
 	}
-}
-
-void WeaponStrengtheningEditor::DrawPreview(const nlohmann::json& _item)
-{
-	const int   lvMax = _item.value("LvMax", 0);
-	const int   initial = _item.value("InitialNextLvNum", 1);
-	const float rate = _item.value("GrowthRate", 1.0f);
-
-	std::string text;
-	int total = 0;
-	for (int lv = 0; lv < lvMax; ++lv)
-	{
-		const int num = static_cast<int>(std::ceil(initial * std::pow(rate, lv)));
-		total += num;
-		if (!text.empty()) text += ", ";
-	}
-	text += U8("  (計 ") + std::to_string(total) + ")";
-
-	ImGui::TextUnformatted(text.c_str());
 }
 
 std::vector<std::string> WeaponStrengtheningEditor::Validate(const nlohmann::json& _weapon) const

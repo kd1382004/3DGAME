@@ -1,6 +1,7 @@
 ﻿#include "PlayerBuffManager.h"
 #include"../PlayerBase.h"
 #include"../../../Potions/PotionsType.h"
+
 void PlayerBuffManager::Update()
 {
 	float deltaTime = DeltaTime::Instance().GetGameDeltaTime();
@@ -19,42 +20,6 @@ void PlayerBuffManager::Update()
 		else
 		{
 			it++;
-		}
-	}
-}
-
-void PlayerBuffManager::BuffFinish(const StatusBuff& _statusBuff)
-{
-	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
-	if (spPlayer)
-	{
-		spPlayer->AddMaxHP(-_statusBuff.m_buffHP);
-		spPlayer->BoostAddAttack(-_statusBuff.m_buffAttack);
-		spPlayer->BoostAddDefense(-_statusBuff.m_buffDefense);
-		spPlayer->AddStaminaRegenBuff(-_statusBuff.m_buffStaminaRegen);
-
-
-		switch (_statusBuff.m_ID)
-		{
-		case PotionsType_InstantHeal:
-			break;
-		case PotionsType_AttackBaseUP:
-			break;
-		case PotionsType_AttackBoostPotion:
-			spPlayer->StopAttackBoostEffect();
-			break;
-		case PotionsType_InstantStaminaHeal:
-			break;
-		case PotionsType_StaminaRegenBaseUP:
-			break;
-		case PotionsType_StaminaRegenBoost:
-			break;
-		case PotionsType_StaminaMaxUP:
-			break;
-		case PotionsTypeMax:
-			break;
-		default:
-			break;
 		}
 	}
 }
@@ -110,6 +75,42 @@ void PlayerBuffManager::AddStatusBuff(StatusBuff _statusBuff)
 		}
 	}
 
+}
+
+void PlayerBuffManager::BuffFinish(const StatusBuff& _statusBuff)
+{
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
+	if (spPlayer)
+	{
+		spPlayer->AddMaxHP(-_statusBuff.m_buffHP);
+		spPlayer->BoostAddAttack(-_statusBuff.m_buffAttack);
+		spPlayer->BoostAddDefense(-_statusBuff.m_buffDefense);
+		spPlayer->AddStaminaRegenBuff(-_statusBuff.m_buffStaminaRegen);
+
+
+		switch (_statusBuff.m_ID)
+		{
+		case PotionsType_InstantHeal:
+			break;
+		case PotionsType_AttackBaseUP:
+			break;
+		case PotionsType_AttackBoostPotion:
+			spPlayer->StopAttackBoostEffect();
+			break;
+		case PotionsType_InstantStaminaHeal:
+			break;
+		case PotionsType_StaminaRegenBaseUP:
+			break;
+		case PotionsType_StaminaRegenBoost:
+			break;
+		case PotionsType_StaminaMaxUP:
+			break;
+		case PotionsTypeMax:
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void PlayerBuffManager::ClearAllBuffs()

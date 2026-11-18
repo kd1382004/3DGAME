@@ -7,6 +7,7 @@
 #include"../UI/UIManager.h"
 #include"../UI/HitDamage/HitDamage.h"
 #include"../UI/StaminaGage/StaminaGage.h"
+
 void CharacterBase::Init()
 {
 
@@ -104,272 +105,25 @@ void CharacterBase::ImGUI()
 	ImGui::End();
 }
 
-void CharacterBase::CameraShake(float _time, float _power)
-{
-	std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock();
-	if (!spCamera) { return; }
-
-	spCamera->Shake(_time, _power);
-}
-
-void CharacterBase::CameraShakeAt(const Math::Vector3& _pos, float _time, float _power, float _range)
-{
-	std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock();
-	if (!spCamera) { return; }
-	if (_range <= 0.0f) { return; }
-
-	// プレイヤー（カメラが追いかけている相手）までの距離で弱める（近い = 1 → _range で 0）
-	const float dist = (spCamera->GetTargetPos() - _pos).Length();
-	const float rate = std::clamp(1.0f - dist / _range, 0.0f, 1.0f);
-	if (rate <= 0.0f) { return; }
-
-	spCamera->Shake(_time, _power * rate);
-}
-
-void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
-{
-	if (m_isDead) { return; }
-
-	// ダメージ処理
-	float damage= DamageCalculationFormula(_damage, _ignoreRate);
-	m_status.m_HP.m_nowHP -= damage;
-
-
-	if (m_status.m_HP.m_nowHP <= 0)
-	{
-		m_isDead = true;
-		SetDead();
-	}
-
-	// ダメージ数字（死んだかどうかで色を変えるので、死亡判定の後に出す）
-	std::shared_ptr<HitDamage>spHitDamage = m_wpHitDamage.lock();
-	if (spHitDamage)
-	{
-		// 種類を決める（上から順に、当てはまったもの）
-		HitDamageType type = HitDamageType::Normal;
-		if (IsPlayer())			{ type = HitDamageType::Player; }	// プレイヤーが受けた
-		else if (m_isDead)		{ type = HitDamageType::Kill; }		// とどめ
-		else if (_isCritical)	{ type = HitDamageType::Critical; }	// 会心
-
-		// 出す位置：当たった位置。分からないときはキャラの頭の上
-		Math::Vector3 damagePos = _hitPos ? *_hitPos : m_pos + Math::Vector3(0.0f, 2.5f, 0.0f);
-
-		spHitDamage->SetDamage(damage, damagePos, type);
-	}
-
-
-	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
-	if (spHPBar)
-	{
-		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
-		spHPBar->SetHPBarTexPercent(percent);
-	}
-
-	// のけぞり
-	if (_hitStunTime > 0)
-	{
-		m_hitStunTimer = _hitStunTime;
-		m_hitStunFlg = true;
-	}
-
-	// ふっとばし
-	if (_knockbackDistance > 0)
-	{
-		m_knockbackEndPos = m_pos + _knockbackDir * _knockbackDistance;
-		m_knockbackStartPos = m_pos;
-		m_knockbackSpeed = 1;
-		m_isKnockbackFlg = true;
-		m_knockbackProgress = 0;
-	}
-}
-
 void CharacterBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 {
 
 }
 
-void CharacterBase::CollisionUpdate()
+void CharacterBase::SetDead()
 {
 
-	// あたり判定オブジェクトから期限切れの要素を削除
-	auto it = m_wpHitObjectList.begin();
-	while (it != m_wpHitObjectList.end())
-	{
-		if (it->expired())
-		{
-			it = m_wpHitObjectList.erase(it);
-		}
-		else
-		{
-			it++;
-		}
-	}
-
-
-	// 地面判定するよ
-	// ----- ----- ----- ----- -----
-
-	// ①当たり判定(レイ判定)用の情報作成
-	KdCollider::RayInfo rayInfo;
-	// レイの発射位置を設定
-	rayInfo.m_pos = GetPos();
-	// 少し高いところから飛ばす(段差の許容範囲)
-	static float enableStepHigh = 0.6f;
-	rayInfo.m_pos.y += enableStepHigh;
-
-	// レイの発射方向を設定
-	rayInfo.m_dir = Math::Vector3::Down;
-
-	// 段差登りの許容範囲
-	rayInfo.m_range = enableStepHigh;
-
-	// 階段・坂を下る際の吸着用に、下方向への到達距離を確保（接地中かつ上昇ジャンプ中でない場合）
-	if (m_groundHit && m_gravity >= 0.0f)
-	{
-		static float stepDown = 0.6f;
-		rayInfo.m_range += stepDown;
-	}
-
-	// 落下中（m_gravity > 0）であれば、その移動分もレイを伸ばす
-	if (m_gravity > 0.0f)
-	{
-		rayInfo.m_range += m_gravity * DeltaTime::Instance().GetGameDeltaTime();
-	}
-
-	// 当たり判定をしたいタイプを設定
-	rayInfo.m_type = KdCollider::TypeGround;
-
-	float maxOverLap = 0;
-	Math::Vector3 hitPos = {};
-	bool hit = false;
-
-	// ②HIT判定対象オブジェクトに総当たり
-	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
-	{
-		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
-		if (spGameObj)
-		{
-			float dist = (GetPos() - spGameObj->GetPos()).Length();
-
-			std::list<KdCollider::CollisionResult> retRayList;
-			spGameObj->Intersects(rayInfo, &retRayList);
-
-			// ③ 結果を使って座標を補完する
-			// レイに当たったリストから一番近いオブジェクトを検出
-
-			for (auto& ret : retRayList)
-			{
-				// レイを遮断しオーバーした長さが
-				// 一番長いものを探す
-				if (maxOverLap < ret.m_overlapDistance)
-				{
-					maxOverLap = ret.m_overlapDistance;
-					hitPos = ret.m_hitPos;
-					hit = true;
-				}
-			}
-		}
-	}
-
-	if (hit)
-	{
-		// 地面に当たっている
-		SetPos(hitPos);
-		m_gravity = 0;
-		m_groundHit = true;
-	}
-	else
-	{
-		m_groundHit = false;
-	}
-
-	// その他球による衝突判定 (壁判定)
-	// ----- ----- ----- ----- -----
-	// 反復押し戻し処理
-	for (int pass = 0; pass < 3; pass++)
-	{
-		DirectX::BoundingSphere sphere;
-		sphere.Radius = 1.0f;
-		sphere.Center = GetPos() + Math::Vector3(0, sphere.Radius, 0);
-	
-		KdCollider::SphereInfo sphereInfo(KdCollider::TypeBump, sphere);
-
-		Math::Vector3 maxPush = Math::Vector3::Zero;
-		float maxOverlap = 0.0f;
-		bool bumpHit = false;
-
-		for (auto& wpGameObj : m_wpHitObjectList)
-		{
-			auto spGameObj = wpGameObj.lock();
-			if (!spGameObj) continue;
-
-
-			//処理軽減
-			float dist = (GetPos() - spGameObj->GetPos()).Length();
-			if (dist >= m_detectRange) { continue; }
-
-			std::list<KdCollider::CollisionResult> retBumpList;
-			if (spGameObj->Intersects(sphereInfo, &retBumpList))
-			{
-				//Hit後処理
-				spGameObj->IsHit();
-			}
-
-			for (auto& ret : retBumpList)
-			{
-				if (ret.m_overlapDistance > maxOverlap)
-				{
-					maxOverlap = ret.m_overlapDistance;
-					maxPush = ret.m_hitDir * ret.m_overlapDistance;
-					bumpHit = true;
-				}
-			}
-		}
-
-		if (bumpHit)
-		{
-			maxPush.y = 0;
-			SetPos(GetPos() + maxPush);
-			m_wallHit = true;
-		}
-		else
-		{
-			m_wallHit = false;
-			break; // 衝突が無くなればループ終了
-		}
-	}
-
-
-
-	if (m_pDebugWire)
-	{
-		m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
-	}
 }
 
-void CharacterBase::Release()
+void CharacterBase::AddMaxStamina(float _boost)
 {
-	m_spCharaModel = nullptr;
-}
+	m_status.m_stamina.m_staminaMax += _boost;
 
-void CharacterBase::ApplyGravity()
-{
-	float deltaTime = DeltaTime::Instance().GetGameDeltaTime();
-
-	m_pos.y -= m_gravity * deltaTime;
-	m_gravity += m_gravityPower * deltaTime;
-}
-
-float CharacterBase::DamageCalculationFormula(float _damage, float _ignoreRate)
-{
-	//100超えないようにクランプ
-	_ignoreRate = std::clamp(_ignoreRate, 0.0f, 1.0f);
-
-	float effectiveDefense = m_status.m_defense.m_nowDefense * (1.0f - _ignoreRate);
-	float defense = 100.0f / (100.0f + effectiveDefense);
-	float returnDamage = _damage * defense;
-
-	return returnDamage;
+	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
+	if (spStaminaGauge)
+	{
+		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
+	}
 }
 
 void CharacterBase::LoadCharaStatus(std::string _filePath)
@@ -464,6 +218,215 @@ void CharacterBase::LoadCharaStatus(std::string _filePath)
 	m_status.m_LV = std::max(1, m_status.m_LV);
 }
 
+void CharacterBase::SaveCharaStatus(std::string _filePath)
+{
+	nlohmann::json data;
+
+	// HP
+	data["HP"]["baseHP"] = m_status.m_HP.m_baseHP;
+	data["HP"]["maxHP"] = m_status.m_HP.m_maxHP;
+	data["HP"]["nowHP"] = m_status.m_HP.m_nowHP;
+
+	// 攻撃力
+	data["attck"]["baseAttckPowe"] = m_status.m_attack.m_baseAttackPower;
+	data["attck"]["addAttack"] = m_status.m_attack.m_addAttack;
+
+	// 防御力
+	data["defense"]["baseDefensePowe"] = m_status.m_defense.m_baseDefensePower;
+	data["defense"]["addDefense"] = m_status.m_defense.m_addDefense;
+
+	// 移動速度
+	data["moveSpeed"]["baseSpeed"] = m_status.m_moveSpeed.m_baseSpeed;
+	data["moveSpeed"]["walkMovePowe"] = m_status.m_moveSpeed.m_walkMovePower;
+	data["moveSpeed"]["runMovePowe"] = m_status.m_moveSpeed.m_runMovePower;
+
+
+	// スタミナ
+	data["stamina"]["staminaMax"] = m_status.m_stamina.m_staminaMax;
+	data["stamina"]["staminaNow"] = m_status.m_stamina.m_staminaMax;
+	data["stamina"]["dashStaminaDrainPerSec"] = m_status.m_stamina.m_dashStaminaDrainPerSec;
+	data["stamina"]["staminaRegenPerSec"] = m_status.m_stamina.m_staminaRegenPerSec;
+	data["stamina"]["staminaRegenBuff"] = m_status.m_stamina.m_staminaRegenBuff;
+
+	//LV
+	data["LV"]["LV"] = m_status.m_LV;
+
+	std::ofstream ofs(_filePath);
+	if (!ofs.is_open())
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] ステータスファイルの保存に失敗しました : %s\n"), _filePath.c_str());
+		return;
+	}
+
+	ofs << data.dump(4);
+}
+
+void CharacterBase::CameraShake(float _time, float _power)
+{
+	std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock();
+	if (!spCamera) { return; }
+
+	spCamera->Shake(_time, _power);
+}
+
+void CharacterBase::CameraShakeAt(const Math::Vector3& _pos, float _time, float _power, float _range)
+{
+	std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock();
+	if (!spCamera) { return; }
+	if (_range <= 0.0f) { return; }
+
+	// プレイヤー（カメラが追いかけている相手）までの距離で弱める（近い = 1 → _range で 0）
+	const float dist = (spCamera->GetTargetPos() - _pos).Length();
+	const float rate = std::clamp(1.0f - dist / _range, 0.0f, 1.0f);
+	if (rate <= 0.0f) { return; }
+
+	spCamera->Shake(_time, _power * rate);
+}
+
+void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
+{
+	if (m_isDead) { return; }
+
+	// ダメージ処理
+	float damage= DamageCalculationFormula(_damage, _ignoreRate);
+	m_status.m_HP.m_nowHP -= damage;
+
+
+	if (m_status.m_HP.m_nowHP <= 0)
+	{
+		m_isDead = true;
+		SetDead();
+	}
+
+	// ダメージ数字（死んだかどうかで色を変えるので、死亡判定の後に出す）
+	std::shared_ptr<HitDamage>spHitDamage = m_wpHitDamage.lock();
+	if (spHitDamage)
+	{
+		// 種類を決める（上から順に、当てはまったもの）
+		HitDamageType type = HitDamageType::Normal;
+		if (IsPlayer())			{ type = HitDamageType::Player; }	// プレイヤーが受けた
+		else if (m_isDead)		{ type = HitDamageType::Kill; }		// とどめ
+		else if (_isCritical)	{ type = HitDamageType::Critical; }	// 会心
+
+		// 出す位置：当たった位置。分からないときはキャラの頭の上
+		Math::Vector3 damagePos = _hitPos ? *_hitPos : m_pos + Math::Vector3(0.0f, 2.5f, 0.0f);
+
+		spHitDamage->SetDamage(damage, damagePos, type);
+	}
+
+
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
+		spHPBar->SetHPBarTexPercent(percent);
+	}
+
+	// のけぞり
+	if (_hitStunTime > 0)
+	{
+		m_hitStunTimer = _hitStunTime;
+		m_hitStunFlg = true;
+	}
+
+	// ふっとばし
+	if (_knockbackDistance > 0)
+	{
+		m_knockbackEndPos = m_pos + _knockbackDir * _knockbackDistance;
+		m_knockbackStartPos = m_pos;
+		m_knockbackSpeed = 1;
+		m_isKnockbackFlg = true;
+		m_knockbackProgress = 0;
+	}
+}
+
+void CharacterBase::StaminaHeal(float _amount)
+{
+	m_status.m_stamina.m_staminaNow = std::min(m_status.m_stamina.m_staminaMax, m_status.m_stamina.m_staminaNow + _amount);
+	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
+	if (spStaminaGauge)
+	{
+		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
+	}
+
+
+}
+
+void CharacterBase::ApplyGravity()
+{
+	float deltaTime = DeltaTime::Instance().GetGameDeltaTime();
+
+	m_pos.y -= m_gravity * deltaTime;
+	m_gravity += m_gravityPower * deltaTime;
+}
+
+float CharacterBase::DamageCalculationFormula(float _damage, float _ignoreRate)
+{
+	//100超えないようにクランプ
+	_ignoreRate = std::clamp(_ignoreRate, 0.0f, 1.0f);
+
+	float effectiveDefense = m_status.m_defense.m_nowDefense * (1.0f - _ignoreRate);
+	float defense = 100.0f / (100.0f + effectiveDefense);
+	float returnDamage = _damage * defense;
+
+	return returnDamage;
+}
+
+bool CharacterBase::ConsumeStamina(float _amount)
+{
+
+	m_status.m_stamina.m_staminaRegenFlg = false;
+
+	//今のスタミナが減少量未満なら減らせない
+	if (m_status.m_stamina.m_staminaNow < _amount) { return false; }
+
+
+	m_status.m_stamina.m_staminaNow = std::max(0.0f, m_status.m_stamina.m_staminaNow - _amount);
+	return true;
+}
+
+void CharacterBase::StaminaManager()
+{
+
+	auto& st = m_status.m_stamina;
+	const float dt = DeltaTime::Instance().GetGameDeltaTime();
+
+	if (st.m_staminaRegenFlg)
+	{
+		float baseRegen = st.m_staminaRegenPerSec + st.m_staminaRegenBuff;
+
+		// 倍率 = growth^t（上限あり）
+		float rateStart = std::min(std::pow(st.m_staminaRegenGrowth, st.m_staminaRegenElapsed), st.m_staminaRegenMaxRate);
+		st.m_staminaRegenElapsed += dt;
+		float rateEnd = std::min(std::pow(st.m_staminaRegenGrowth, st.m_staminaRegenElapsed), st.m_staminaRegenMaxRate);
+
+		float rate = (rateStart + rateEnd) * 0.5f;
+		st.m_staminaNow += baseRegen * rate * dt;
+
+		st.m_staminaNow = std::clamp(st.m_staminaNow, 0.0f, st.m_staminaMax);
+	}
+	else
+	{
+		st.m_staminalockTime += dt;
+
+		if (st.m_staminalockTime >= 1)
+		{
+			m_status.m_stamina.m_staminaRegenFlg = true;
+			st.m_staminaRegenElapsed = 0;
+			st.m_staminalockTime = 0;
+		}
+	
+	}
+
+
+
+	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
+	if (spStaminaGauge)
+	{
+		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
+	}
+}
+
 void CharacterBase::AngleUpdate()
 {
 	if (m_moveVec.Length() == 0) { return; }
@@ -492,7 +455,6 @@ void CharacterBase::AngleUpdate()
 		}
 	}
 }
-
 
 void CharacterBase::StatusEditor()
 {
@@ -677,130 +639,166 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 	return hit;
 }
 
-void CharacterBase::SetDead()
+void CharacterBase::Release()
 {
-
+	m_spCharaModel = nullptr;
 }
 
-void CharacterBase::SaveCharaStatus(std::string _filePath)
+void CharacterBase::CollisionUpdate()
 {
-	nlohmann::json data;
 
-	// HP
-	data["HP"]["baseHP"] = m_status.m_HP.m_baseHP;
-	data["HP"]["maxHP"] = m_status.m_HP.m_maxHP;
-	data["HP"]["nowHP"] = m_status.m_HP.m_nowHP;
-
-	// 攻撃力
-	data["attck"]["baseAttckPowe"] = m_status.m_attack.m_baseAttackPower;
-	data["attck"]["addAttack"] = m_status.m_attack.m_addAttack;
-
-	// 防御力
-	data["defense"]["baseDefensePowe"] = m_status.m_defense.m_baseDefensePower;
-	data["defense"]["addDefense"] = m_status.m_defense.m_addDefense;
-
-	// 移動速度
-	data["moveSpeed"]["baseSpeed"] = m_status.m_moveSpeed.m_baseSpeed;
-	data["moveSpeed"]["walkMovePowe"] = m_status.m_moveSpeed.m_walkMovePower;
-	data["moveSpeed"]["runMovePowe"] = m_status.m_moveSpeed.m_runMovePower;
-
-
-	// スタミナ
-	data["stamina"]["staminaMax"] = m_status.m_stamina.m_staminaMax;
-	data["stamina"]["staminaNow"] = m_status.m_stamina.m_staminaMax;
-	data["stamina"]["dashStaminaDrainPerSec"] = m_status.m_stamina.m_dashStaminaDrainPerSec;
-	data["stamina"]["staminaRegenPerSec"] = m_status.m_stamina.m_staminaRegenPerSec;
-	data["stamina"]["staminaRegenBuff"] = m_status.m_stamina.m_staminaRegenBuff;
-
-	//LV
-	data["LV"]["LV"] = m_status.m_LV;
-
-	std::ofstream ofs(_filePath);
-	if (!ofs.is_open())
+	// あたり判定オブジェクトから期限切れの要素を削除
+	auto it = m_wpHitObjectList.begin();
+	while (it != m_wpHitObjectList.end())
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] ステータスファイルの保存に失敗しました : %s\n"), _filePath.c_str());
-		return;
+		if (it->expired())
+		{
+			it = m_wpHitObjectList.erase(it);
+		}
+		else
+		{
+			it++;
+		}
 	}
 
-	ofs << data.dump(4);
-}
 
+	// 地面判定するよ
+	// ----- ----- ----- ----- -----
 
-void CharacterBase::AddMaxStamina(float _boost)
-{
-	m_status.m_stamina.m_staminaMax += _boost;
+	// ①当たり判定(レイ判定)用の情報作成
+	KdCollider::RayInfo rayInfo;
+	// レイの発射位置を設定
+	rayInfo.m_pos = GetPos();
+	// 少し高いところから飛ばす(段差の許容範囲)
+	static float enableStepHigh = 0.6f;
+	rayInfo.m_pos.y += enableStepHigh;
 
-	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
-	if (spStaminaGauge)
+	// レイの発射方向を設定
+	rayInfo.m_dir = Math::Vector3::Down;
+
+	// 段差登りの許容範囲
+	rayInfo.m_range = enableStepHigh;
+
+	// 階段・坂を下る際の吸着用に、下方向への到達距離を確保（接地中かつ上昇ジャンプ中でない場合）
+	if (m_groundHit && m_gravity >= 0.0f)
 	{
-		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
+		static float stepDown = 0.6f;
+		rayInfo.m_range += stepDown;
 	}
-}
 
-
-bool CharacterBase::ConsumeStamina(float _amount)
-{
-
-	m_status.m_stamina.m_staminaRegenFlg = false;
-
-	//今のスタミナが減少量未満なら減らせない
-	if (m_status.m_stamina.m_staminaNow < _amount) { return false; }
-
-
-	m_status.m_stamina.m_staminaNow = std::max(0.0f, m_status.m_stamina.m_staminaNow - _amount);
-	return true;
-}
-
-void CharacterBase::StaminaManager()
-{
-
-	auto& st = m_status.m_stamina;
-	const float dt = DeltaTime::Instance().GetGameDeltaTime();
-
-	if (st.m_staminaRegenFlg)
+	// 落下中（m_gravity > 0）であれば、その移動分もレイを伸ばす
+	if (m_gravity > 0.0f)
 	{
-		float baseRegen = st.m_staminaRegenPerSec + st.m_staminaRegenBuff;
+		rayInfo.m_range += m_gravity * DeltaTime::Instance().GetGameDeltaTime();
+	}
 
-		// 倍率 = growth^t（上限あり）
-		float rateStart = std::min(std::pow(st.m_staminaRegenGrowth, st.m_staminaRegenElapsed), st.m_staminaRegenMaxRate);
-		st.m_staminaRegenElapsed += dt;
-		float rateEnd = std::min(std::pow(st.m_staminaRegenGrowth, st.m_staminaRegenElapsed), st.m_staminaRegenMaxRate);
+	// 当たり判定をしたいタイプを設定
+	rayInfo.m_type = KdCollider::TypeGround;
 
-		float rate = (rateStart + rateEnd) * 0.5f;
-		st.m_staminaNow += baseRegen * rate * dt;
+	float maxOverLap = 0;
+	Math::Vector3 hitPos = {};
+	bool hit = false;
 
-		st.m_staminaNow = std::clamp(st.m_staminaNow, 0.0f, st.m_staminaMax);
+	// ②HIT判定対象オブジェクトに総当たり
+	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
+	{
+		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
+		if (spGameObj)
+		{
+			float dist = (GetPos() - spGameObj->GetPos()).Length();
+
+			std::list<KdCollider::CollisionResult> retRayList;
+			spGameObj->Intersects(rayInfo, &retRayList);
+
+			// ③ 結果を使って座標を補完する
+			// レイに当たったリストから一番近いオブジェクトを検出
+
+			for (auto& ret : retRayList)
+			{
+				// レイを遮断しオーバーした長さが
+				// 一番長いものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hitPos = ret.m_hitPos;
+					hit = true;
+				}
+			}
+		}
+	}
+
+	if (hit)
+	{
+		// 地面に当たっている
+		SetPos(hitPos);
+		m_gravity = 0;
+		m_groundHit = true;
 	}
 	else
 	{
-		st.m_staminalockTime += dt;
+		m_groundHit = false;
+	}
 
-		if (st.m_staminalockTime >= 1)
-		{
-			m_status.m_stamina.m_staminaRegenFlg = true;
-			st.m_staminaRegenElapsed = 0;
-			st.m_staminalockTime = 0;
-		}
+	// その他球による衝突判定 (壁判定)
+	// ----- ----- ----- ----- -----
+	// 反復押し戻し処理
+	for (int pass = 0; pass < 3; pass++)
+	{
+		DirectX::BoundingSphere sphere;
+		sphere.Radius = 1.0f;
+		sphere.Center = GetPos() + Math::Vector3(0, sphere.Radius, 0);
 	
+		KdCollider::SphereInfo sphereInfo(KdCollider::TypeBump, sphere);
+
+		Math::Vector3 maxPush = Math::Vector3::Zero;
+		float maxOverlap = 0.0f;
+		bool bumpHit = false;
+
+		for (auto& wpGameObj : m_wpHitObjectList)
+		{
+			auto spGameObj = wpGameObj.lock();
+			if (!spGameObj) continue;
+
+
+			//処理軽減
+			float dist = (GetPos() - spGameObj->GetPos()).Length();
+			if (dist >= m_detectRange) { continue; }
+
+			std::list<KdCollider::CollisionResult> retBumpList;
+			if (spGameObj->Intersects(sphereInfo, &retBumpList))
+			{
+				//Hit後処理
+				spGameObj->IsHit();
+			}
+
+			for (auto& ret : retBumpList)
+			{
+				if (ret.m_overlapDistance > maxOverlap)
+				{
+					maxOverlap = ret.m_overlapDistance;
+					maxPush = ret.m_hitDir * ret.m_overlapDistance;
+					bumpHit = true;
+				}
+			}
+		}
+
+		if (bumpHit)
+		{
+			maxPush.y = 0;
+			SetPos(GetPos() + maxPush);
+			m_wallHit = true;
+		}
+		else
+		{
+			m_wallHit = false;
+			break; // 衝突が無くなればループ終了
+		}
 	}
 
 
 
-	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
-	if (spStaminaGauge)
+	if (m_pDebugWire)
 	{
-		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
+		m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
 	}
-}
-
-void CharacterBase::StaminaHeal(float _amount)
-{
-	m_status.m_stamina.m_staminaNow = std::min(m_status.m_stamina.m_staminaMax, m_status.m_stamina.m_staminaNow + _amount);
-	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
-	if (spStaminaGauge)
-	{
-		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
-	}
-
-
 }

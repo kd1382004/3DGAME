@@ -5,7 +5,6 @@
 
 #include"../../../Camera/CameraBase.h"
 
-
 void Goblin::Init()
 {
 	EnemyAmbush::Init();
@@ -192,6 +191,68 @@ void Goblin::Release()
 	}
 }
 
+void Goblin::UpdateFootstepSE()
+{
+	if (m_isDead || m_attackFlg)
+	{
+		if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); }
+		if (m_spDash3DSE) { m_spDash3DSE->Stop(); }
+		if (m_isDead && m_spCrying3DSE) { m_spCrying3DSE->Stop(); }
+		return;
+	}
+
+	float seVol = VOLInfo::Instance().GetMSSEVol();
+
+	// プレイヤーを発見して走っている時
+	if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run)
+	{
+		if (m_spWalk3DSE)
+		{
+			m_spWalk3DSE->Stop();
+		}
+
+		if (m_spDash3DSE)
+		{
+			m_spDash3DSE->SetPos(m_pos);
+			m_spDash3DSE->SetVolume(seVol * 0.3);
+			if (!m_spDash3DSE->IsPlaying())
+			{
+				m_spDash3DSE->Play();
+			}
+		}
+	}
+	// 歩いている時
+	else if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Walk)
+	{
+		if (m_spDash3DSE)
+		{
+			m_spDash3DSE->Stop();
+		}
+
+		if (m_spWalk3DSE)
+		{
+			m_spWalk3DSE->SetPos(m_pos);
+			m_spWalk3DSE->SetVolume(seVol * 0.3);
+			if (!m_spWalk3DSE->IsPlaying())
+			{
+				m_spWalk3DSE->Play();
+			}
+		}
+	}
+	// 待機中など停止時
+	else
+	{
+		if (m_spWalk3DSE)
+		{
+			m_spWalk3DSE->Stop();
+		}
+		if (m_spDash3DSE)
+		{
+			m_spDash3DSE->Stop();
+		}
+	}
+}
+
 void Goblin::ChangeAnime()
 {
 	if (!m_spAnimator) { return; }
@@ -361,66 +422,4 @@ void Goblin::AttacksSlammingDown()
 
 
 	SetAttackGaugePercent(m_attackWait / m_attackWaitMax);
-}
-
-void Goblin::UpdateFootstepSE()
-{
-	if (m_isDead || m_attackFlg)
-	{
-		if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); }
-		if (m_spDash3DSE) { m_spDash3DSE->Stop(); }
-		if (m_isDead && m_spCrying3DSE) { m_spCrying3DSE->Stop(); }
-		return;
-	}
-
-	float seVol = VOLInfo::Instance().GetMSSEVol();
-
-	// プレイヤーを発見して走っている時
-	if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run)
-	{
-		if (m_spWalk3DSE)
-		{
-			m_spWalk3DSE->Stop();
-		}
-
-		if (m_spDash3DSE)
-		{
-			m_spDash3DSE->SetPos(m_pos);
-			m_spDash3DSE->SetVolume(seVol * 0.3);
-			if (!m_spDash3DSE->IsPlaying())
-			{
-				m_spDash3DSE->Play();
-			}
-		}
-	}
-	// 歩いている時
-	else if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Walk)
-	{
-		if (m_spDash3DSE)
-		{
-			m_spDash3DSE->Stop();
-		}
-
-		if (m_spWalk3DSE)
-		{
-			m_spWalk3DSE->SetPos(m_pos);
-			m_spWalk3DSE->SetVolume(seVol * 0.3);
-			if (!m_spWalk3DSE->IsPlaying())
-			{
-				m_spWalk3DSE->Play();
-			}
-		}
-	}
-	// 待機中など停止時
-	else
-	{
-		if (m_spWalk3DSE)
-		{
-			m_spWalk3DSE->Stop();
-		}
-		if (m_spDash3DSE)
-		{
-			m_spDash3DSE->Stop();
-		}
-	}
 }

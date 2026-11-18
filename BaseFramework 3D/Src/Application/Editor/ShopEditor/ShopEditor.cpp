@@ -95,6 +95,51 @@ void ShopEditor::Draw(bool* _open)
 	ImGui::End();
 }
 
+bool ShopEditor::Load()
+{
+	std::ifstream file(m_filePath);
+	if (!file)
+	{
+		m_message = U8("読み込み失敗: ファイルが開けません");
+		return false;
+	}
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded())
+	{
+		m_message = U8("読み込み失敗: JSONが壊れています");
+		return false;
+	}
+
+	m_data = std::move(data);
+	m_dirty = false;
+	m_message = U8("読み込みました");
+	return true;
+}
+
+bool ShopEditor::Save()
+{
+	// 決まりに合わないものが1件でもあれば保存しない
+	if (!Validate().empty())
+	{
+		m_message = U8("保存失敗: 赤字のエラーを直してください");
+		return false;
+	}
+
+	std::ofstream file(m_filePath);
+	if (!file)
+	{
+		m_message = U8("保存失敗: ファイルが開けません");
+		return false;
+	}
+
+	file << m_data.dump(4);
+	m_dirty = false;
+	m_savedFlg = true;
+	m_message = U8("保存しました");
+	return true;
+}
+
 void ShopEditor::DrawCategory(const Category& _category)
 {
 	constexpr ImGuiTableFlags flags =
@@ -251,49 +296,4 @@ std::vector<std::string> ShopEditor::Validate() const
 		}
 	}
 	return errors;
-}
-
-bool ShopEditor::Load()
-{
-	std::ifstream file(m_filePath);
-	if (!file)
-	{
-		m_message = U8("読み込み失敗: ファイルが開けません");
-		return false;
-	}
-
-	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-	if (data.is_discarded())
-	{
-		m_message = U8("読み込み失敗: JSONが壊れています");
-		return false;
-	}
-
-	m_data = std::move(data);
-	m_dirty = false;
-	m_message = U8("読み込みました");
-	return true;
-}
-
-bool ShopEditor::Save()
-{
-	// 決まりに合わないものが1件でもあれば保存しない
-	if (!Validate().empty())
-	{
-		m_message = U8("保存失敗: 赤字のエラーを直してください");
-		return false;
-	}
-
-	std::ofstream file(m_filePath);
-	if (!file)
-	{
-		m_message = U8("保存失敗: ファイルが開けません");
-		return false;
-	}
-
-	file << m_data.dump(4);
-	m_dirty = false;
-	m_savedFlg = true;
-	m_message = U8("保存しました");
-	return true;
 }

@@ -7,17 +7,33 @@ class PrepareScene;
 class PrepareSceneDisplay :public UIBase
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	PrepareSceneDisplay() {};
+
 	//デストラクタ
 	~PrepareSceneDisplay() override {};
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init()override;
+
 	//更新
 	void Update()override;
+
 	//2Dの描画
 	void DrawSprite()override;
+
+	//---- 取得 ----
+
+	//表示中かを返す
+	//戻り値 ... 表示中ならtrue
+	bool GetActive() const { return m_activeFlg; }
+
+	//---- 設定 ----
 
 	// 準備シーンをセット
 	// _spPrepareScene ... 準備シーン
@@ -31,9 +47,6 @@ public:
 	// PrepareScene::ChangeTabから呼ばれる
 	// _flg ... 表示するか
 	void SetActive(bool _flg) { m_activeFlg = _flg; }
-	//表示中かを返す
-	//戻り値 ... 表示中ならtrue
-	bool GetActive() const { return m_activeFlg; }
 
 	//持っているポーションの合計をセット
 	// _num ... ポーションの合計(0未満は0にする)
@@ -42,18 +55,10 @@ public:
 	//所持金をセット
 	// _money ... 所持金
 	void SetMoney(long _money);
+
 private:
 
-	
-
-	// 表示中かどうか(開いているタブの時だけtrue)
-	bool m_activeFlg = false;
-
-	// 準備シーン(循環参照を防ぐためweak_ptr)
-	std::weak_ptr<PrepareScene> m_wpPrepareScene;
-
-	// プレイ記録(最新1件 + 最高階層ベスト3)
-	GameRecord m_gameRecord;
+	//---- 型 ----
 
 	// メニューの種類(上から並ぶ順)
 	enum class PrepareMenu
@@ -65,33 +70,7 @@ private:
 		MenuSize
 	};
 
-	// メニューボタンの画像
-	std::shared_ptr<KdTexture> m_spMenuTex[static_cast<int>(PrepareMenu::MenuSize)];
-	//メニューボタンの位置
-	Math::Vector2 m_menuPos[static_cast<int>(PrepareMenu::MenuSize)];
-	//メニューボタンの大きさ(画像)
-	Math::Vector2 m_menuSiz[static_cast<int>(PrepareMenu::MenuSize)];
-	//メニューボタンの描く大きさ
-	Math::Vector2 m_menuDrawSiz[static_cast<int>(PrepareMenu::MenuSize)];
-	//マウスが乗っているか
-	bool m_mouseHitFlg[static_cast<int>(PrepareMenu::MenuSize)];
-
-
-	// 画像のパス(PrepareMenuの順)
-	const std::string m_menuTexPath[static_cast<int>(PrepareMenu::MenuSize)] =
-	{
-		"Asset/Textures/Button/PrepareMenu/ExploreButton.png",
-		"Asset/Textures/Button/PrepareMenu/EquipButton.png",
-		"Asset/Textures/Button/PrepareMenu/ShopButton.png",
-		"Asset/Textures/Button/PrepareMenu/RecordsButton.png",
-	};
-
-	// 画像の読み込み
-	void LoadMenuTex();
-
-	////////////////////////////////////////////////////
 	// 情報パネル(右側)の画像
-	////////////////////////////////////////////////////
 
 	// パネル(背景)の種類
 	enum class InfoPanel
@@ -100,17 +79,6 @@ private:
 		Money,	// 所持金
 		LastRecord,	// 前回の記録
 		PanelSize
-	};
-
-	// パネルの画像
-	std::shared_ptr<KdTexture> m_spPanelTex[static_cast<int>(InfoPanel::PanelSize)];
-
-	// パネル画像のパス(InfoPanelの順)
-	const std::string m_panelTexPath[static_cast<int>(InfoPanel::PanelSize)] =
-	{
-		"Asset/Textures/GameUI/Prepare/Menu/Panel/NowEquipPanel.png",
-		"Asset/Textures/GameUI/Prepare/Menu/Panel/MoneyPanel.png",
-		"Asset/Textures/GameUI/Prepare/Menu/Panel/LastRecordPanel.png",
 	};
 
 	// 文字の種類
@@ -135,10 +103,58 @@ private:
 		TextSize
 	};
 
+	//---- メンバ変数 ----
+
+	// 表示中かどうか(開いているタブの時だけtrue)
+	bool m_activeFlg = false;
+
+	// 準備シーン(循環参照を防ぐためweak_ptr)
+	std::weak_ptr<PrepareScene> m_wpPrepareScene;
+
+	// プレイ記録(最新1件 + 最高階層ベスト3)
+	GameRecord m_gameRecord;
+
+	// メニューボタンの画像
+	std::shared_ptr<KdTexture> m_spMenuTex[static_cast<int>(PrepareMenu::MenuSize)];
+
+	//メニューボタンの位置
+	Math::Vector2 m_menuPos[static_cast<int>(PrepareMenu::MenuSize)];
+
+	//メニューボタンの大きさ(画像)
+	Math::Vector2 m_menuSiz[static_cast<int>(PrepareMenu::MenuSize)];
+
+	//メニューボタンの描く大きさ
+	Math::Vector2 m_menuDrawSiz[static_cast<int>(PrepareMenu::MenuSize)];
+
+	//マウスが乗っているか
+	bool m_mouseHitFlg[static_cast<int>(PrepareMenu::MenuSize)];
+
+	// 画像のパス(PrepareMenuの順)
+	const std::string m_menuTexPath[static_cast<int>(PrepareMenu::MenuSize)] =
+	{
+		"Asset/Textures/Button/PrepareMenu/ExploreButton.png",
+		"Asset/Textures/Button/PrepareMenu/EquipButton.png",
+		"Asset/Textures/Button/PrepareMenu/ShopButton.png",
+		"Asset/Textures/Button/PrepareMenu/RecordsButton.png",
+	};
+
+	// パネルの画像
+	std::shared_ptr<KdTexture> m_spPanelTex[static_cast<int>(InfoPanel::PanelSize)];
+
+	// パネル画像のパス(InfoPanelの順)
+	const std::string m_panelTexPath[static_cast<int>(InfoPanel::PanelSize)] =
+	{
+		"Asset/Textures/GameUI/Prepare/Menu/Panel/NowEquipPanel.png",
+		"Asset/Textures/GameUI/Prepare/Menu/Panel/MoneyPanel.png",
+		"Asset/Textures/GameUI/Prepare/Menu/Panel/LastRecordPanel.png",
+	};
+
 	// 文字の画像
 	std::shared_ptr<KdTexture> m_spTextTex[static_cast<int>(InfoText::TextSize)];
+
 	//文字の位置
 	Math::Vector2 m_textPos[static_cast<int>(InfoText::TextSize)];
+
 	//パネルの位置
 	Math::Vector2 m_panelPos[static_cast<int>(InfoPanel::PanelSize)];
 
@@ -163,15 +179,6 @@ private:
 		"Asset/Textures/GameUI/Prepare/Menu/Text/ResultLabel.png",
 	};
 
-	// 情報パネル・文字の画像の読み込み
-	void LoadInfoTex();
-
-	// 画像をまとめて読み込む(_num枚分)
-	// _spTex ... 読み込んだ画像を入れる配列
-	// _path ... 画像のパスの配列
-	void LoadTexArray(std::shared_ptr<KdTexture>* _spTex, const std::string* _path, int _num);
-
-
 	// 武器アイコン(PlayerWeaponInfoの順)
 	std::shared_ptr<KdTexture> m_spWeaponIconTex[2];
 
@@ -184,26 +191,9 @@ private:
 
 	// 武器アイコンの位置と大きさ(左端・上下中央を基準)
 	Math::Vector2 m_weaponIconPos = { 440.0f, 146.0f };
+
 	//武器アイコンの大きさ
 	float         m_weaponIconSiz = 40.0f;
-
-
-	//情報パネルの描画
-	void Draw();
-
-	//マウスと当たってるかを返す
-	// _pos ... 四角の真ん中
-	// _w ... 四角の横幅
-	// _h ... 四角の高さ
-	bool MouseHit(Math::Vector2 _pos, float _w, float _h);
-
-
-	// メニューが押された時の処理
-	void OnExplore();	// 本編(EXPLORE) … Gameシーンへ
-	void OnEquip();		// 装備(EQUIP)   … 装備画面を開く
-	void OnShop();		// ショップ(SHOP) … ショップ画面を開く
-	void OnRecords();	// Play履歴(RECORDS) … 履歴画面を開く
-
 
 	//所持金
 	long m_money = 0;
@@ -211,4 +201,33 @@ private:
 	// 持っているポーションの合計(PrepareScene::OnShopDataChanged から入る)
 	int m_potionNum = 0;
 
+	//---- 基本の処理 ----
+
+	//情報パネルの描画
+	void Draw();
+
+	//---- その他の処理 ----
+
+	// 画像の読み込み
+	void LoadMenuTex();
+
+	// 情報パネル・文字の画像の読み込み
+	void LoadInfoTex();
+
+	// 画像をまとめて読み込む(_num枚分)
+	// _spTex ... 読み込んだ画像を入れる配列
+	// _path ... 画像のパスの配列
+	void LoadTexArray(std::shared_ptr<KdTexture>* _spTex, const std::string* _path, int _num);
+
+	//マウスと当たってるかを返す
+	// _pos ... 四角の真ん中
+	// _w ... 四角の横幅
+	// _h ... 四角の高さ
+	bool MouseHit(Math::Vector2 _pos, float _w, float _h);
+
+	// メニューが押された時の処理
+	void OnExplore();	// 本編(EXPLORE) … Gameシーンへ
+	void OnEquip();		// 装備(EQUIP)   … 装備画面を開く
+	void OnShop();		// ショップ(SHOP) … ショップ画面を開く
+	void OnRecords();	// Play履歴(RECORDS) … 履歴画面を開く
 };

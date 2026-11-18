@@ -17,7 +17,6 @@
 
 #include"EnemyCrowdController/EnemyCrowdController.h"
 
-
 void EnemyBase::Init()
 {
 	if (!m_spCrowdController)
@@ -169,6 +168,44 @@ void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 	m_mWorld.Translation(m_pos);
 }
 
+void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
+{
+	if (_spUIManager)
+	{
+		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
+		spHPBar->Init();
+		spHPBar->SetLV(m_status.m_LV);
+		m_wpHPBar = spHPBar;
+		_spUIManager->AddUIObj(spHPBar);
+
+
+
+		std::shared_ptr<AttackGage>spAttackGauge = std::make_shared<AttackGage>();
+		spAttackGauge->Init();
+		m_wpAttackGauge = spAttackGauge;
+		_spUIManager->AddUIObj(spAttackGauge);
+		SetAttackGaugePercent(1);
+	}
+
+
+	HPPosPostUpdate();
+}
+
+void EnemyBase::SetLV(int _lv)
+{
+
+	_lv += KdRandom::GetInt(-1, 1);
+
+	m_status.m_LV = std::max(1, _lv);
+	ApplyLevelStatus();
+	auto spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		spHPBar->SetLV(m_status.m_LV);
+		spHPBar->SetHPBarTexPercent(m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP);
+	}
+}
+
 void EnemyBase::SearchPlayer()
 {
 	Math::Vector3 dir = m_mWorld.Backward();
@@ -227,53 +264,6 @@ void EnemyBase::SearchPlayer()
 	{
 		m_pDebugWire->AddDebugLine(m_pos, dir, m_viewDistance);
 	}
-}
-
-float EnemyBase::CalcSightLightDistance(const Math::Vector3& _eyePos, const Math::Vector3& _dir, float _maxDist, float _halfAngleDeg)
-{
-	float hitDist = _maxDist;
-
-	// レイを飛ばす方向（正面、左右の視野方向）
-	std::vector<Math::Vector3> rayDirs;
-	rayDirs.push_back(_dir); // 正面
-
-	// 左右の視野端へのレイ（壁に対して斜めの時にも突き抜けを防ぐ）
-	float rad = DirectX::XMConvertToRadians(_halfAngleDeg * 0.7f);
-	Math::Matrix rotL = Math::Matrix::CreateRotationY(rad);
-	Math::Matrix rotR = Math::Matrix::CreateRotationY(-rad);
-	rayDirs.push_back(Math::Vector3::TransformNormal(_dir, rotL));
-	rayDirs.push_back(Math::Vector3::TransformNormal(_dir, rotR));
-
-	for (const auto& rDir : rayDirs)
-	{
-		KdCollider::RayInfo ray(
-			KdCollider::TypeBump | KdCollider::TypeCameraOcclusion,
-			_eyePos,
-			rDir,
-			_maxDist
-		);
-
-		for (auto& wpObj : m_wpHitObjectList)
-		{
-			if (auto spObj = wpObj.lock())
-			{
-				std::list<KdCollider::CollisionResult> results;
-				if (spObj->Intersects(ray, &results))
-				{
-					for (const auto& ret : results)
-					{
-						float d = _maxDist - ret.m_overlapDistance;
-						if (d < hitDist)
-						{
-							hitDist = d;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return std::max(0.1f, hitDist);
 }
 
 void EnemyBase::PlayerChase()
@@ -367,63 +357,6 @@ void EnemyBase::PlayerChase()
 
 }
 
-void EnemyBase::SetLV(int _lv)
-{
-
-	_lv += KdRandom::GetInt(-1, 1);
-
-	m_status.m_LV = std::max(1, _lv);
-	ApplyLevelStatus();
-	auto spHPBar = m_wpHPBar.lock();
-	if (spHPBar)
-	{
-		spHPBar->SetLV(m_status.m_LV);
-		spHPBar->SetHPBarTexPercent(m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP);
-	}
-}
-
-void EnemyBase::ApplyLevelStatus()
-{
-	if (m_status.m_LV <= 1) { return; }
-
-	// 階層（LV）ごとにステータスを強化
-	float hpScale = 1.0f + (m_status.m_LV - 1) * 0.20f;
-	float attackScale = 1.0f + (m_status.m_LV - 1) * 0.1f;
-	float defenseAdd = static_cast<float>(m_status.m_LV - 1) * 0.3f;
-
-	m_status.m_HP.m_maxHP = std::round(m_baseStatus.m_HP.m_baseHP * hpScale);
-	m_status.m_HP.m_nowHP = m_status.m_HP.m_maxHP;
-
-	m_status.m_attack.m_baseAttackPower = std::round(m_baseStatus.m_attack.m_baseAttackPower * attackScale);
-	m_status.m_attack.m_nowAttack = m_status.m_attack.m_baseAttackPower + m_status.m_attack.m_addAttack;
-
-	m_status.m_defense.m_baseDefensePower += defenseAdd;
-	m_status.m_defense.m_nowDefense = m_status.m_defense.m_baseDefensePower + m_status.m_defense.m_addDefense;
-}
-
-void EnemyBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
-{
-	if (_spUIManager)
-	{
-		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
-		spHPBar->Init();
-		spHPBar->SetLV(m_status.m_LV);
-		m_wpHPBar = spHPBar;
-		_spUIManager->AddUIObj(spHPBar);
-
-
-
-		std::shared_ptr<AttackGage>spAttackGauge = std::make_shared<AttackGage>();
-		spAttackGauge->Init();
-		m_wpAttackGauge = spAttackGauge;
-		_spUIManager->AddUIObj(spAttackGauge);
-		SetAttackGaugePercent(1);
-	}
-
-
-	HPPosPostUpdate();
-}
-
 void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
 {
 	m_playerChaseFlg = true;
@@ -469,6 +402,69 @@ void EnemyBase::Release()
 	}
 }
 
+void EnemyBase::SetDead()
+{
+	m_animeChangeFlg = true;
+	m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Die;
+
+
+	std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
+	if (spGameScene)
+	{
+		spGameScene->AddEnemyKill();
+	}
+
+
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
+	if (spPlayer)
+	{
+		spPlayer->AddExp(10);
+	}
+
+	switch (m_material)
+	{
+	case EnemyMaterial::Flesh:
+		KdEffekseerManager::GetInstance().Play("Death/Flesh/Death_Flesh.efkefc", m_pos, 3.0f, 1.0f, false);
+		break;
+	case EnemyMaterial::Stone:
+		KdEffekseerManager::GetInstance().Play("Death/Stone/Death_Stone.efkefc", m_pos, 3.0f, 1.0f, false);
+		break;
+	case EnemyMaterial::Num:
+		break;
+	default:
+		break;
+	}
+
+	// 倒れた音（質感ごと）
+	PlayMaterialSE("Asset/Sound/SE/Enemy/Death/", 1.0f);
+}
+
+void EnemyBase::SetAttackGaugePercent(float _percent)
+{
+	std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
+	if (!spAttackGauge) { return; }
+	spAttackGauge->SetAttackGaugeTexPercent(_percent);
+}
+
+void EnemyBase::ApplyLevelStatus()
+{
+	if (m_status.m_LV <= 1) { return; }
+
+	// 階層（LV）ごとにステータスを強化
+	float hpScale = 1.0f + (m_status.m_LV - 1) * 0.20f;
+	float attackScale = 1.0f + (m_status.m_LV - 1) * 0.1f;
+	float defenseAdd = static_cast<float>(m_status.m_LV - 1) * 0.3f;
+
+	m_status.m_HP.m_maxHP = std::round(m_baseStatus.m_HP.m_baseHP * hpScale);
+	m_status.m_HP.m_nowHP = m_status.m_HP.m_maxHP;
+
+	m_status.m_attack.m_baseAttackPower = std::round(m_baseStatus.m_attack.m_baseAttackPower * attackScale);
+	m_status.m_attack.m_nowAttack = m_status.m_attack.m_baseAttackPower + m_status.m_attack.m_addAttack;
+
+	m_status.m_defense.m_baseDefensePower += defenseAdd;
+	m_status.m_defense.m_nowDefense = m_status.m_defense.m_baseDefensePower + m_status.m_defense.m_addDefense;
+}
+
 void EnemyBase::EnemyAnimeModeUpdate()
 {
 	if (!m_spAnimator) { return; }
@@ -509,6 +505,52 @@ void EnemyBase::HPPosPostUpdate()
 	}
 }
 
+float EnemyBase::CalcSightLightDistance(const Math::Vector3& _eyePos, const Math::Vector3& _dir, float _maxDist, float _halfAngleDeg)
+{
+	float hitDist = _maxDist;
+
+	// レイを飛ばす方向（正面、左右の視野方向）
+	std::vector<Math::Vector3> rayDirs;
+	rayDirs.push_back(_dir); // 正面
+
+	// 左右の視野端へのレイ（壁に対して斜めの時にも突き抜けを防ぐ）
+	float rad = DirectX::XMConvertToRadians(_halfAngleDeg * 0.7f);
+	Math::Matrix rotL = Math::Matrix::CreateRotationY(rad);
+	Math::Matrix rotR = Math::Matrix::CreateRotationY(-rad);
+	rayDirs.push_back(Math::Vector3::TransformNormal(_dir, rotL));
+	rayDirs.push_back(Math::Vector3::TransformNormal(_dir, rotR));
+
+	for (const auto& rDir : rayDirs)
+	{
+		KdCollider::RayInfo ray(
+			KdCollider::TypeBump | KdCollider::TypeCameraOcclusion,
+			_eyePos,
+			rDir,
+			_maxDist
+		);
+
+		for (auto& wpObj : m_wpHitObjectList)
+		{
+			if (auto spObj = wpObj.lock())
+			{
+				std::list<KdCollider::CollisionResult> results;
+				if (spObj->Intersects(ray, &results))
+				{
+					for (const auto& ret : results)
+					{
+						float d = _maxDist - ret.m_overlapDistance;
+						if (d < hitDist)
+						{
+							hitDist = d;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return std::max(0.1f, hitDist);
+}
 
 void EnemyBase::ReturnSpawnPos()
 {
@@ -649,48 +691,4 @@ void EnemyBase::PlayMaterialSE(const std::string& _folder, float _volRate)
 		spSE->SetCurveDistanceScaler(20.0f);
 		spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * _volRate);
 	}
-}
-
-void EnemyBase::SetDead()
-{
-	m_animeChangeFlg = true;
-	m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Die;
-
-
-	std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
-	if (spGameScene)
-	{
-		spGameScene->AddEnemyKill();
-	}
-
-
-	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
-	if (spPlayer)
-	{
-		spPlayer->AddExp(10);
-	}
-
-	switch (m_material)
-	{
-	case EnemyMaterial::Flesh:
-		KdEffekseerManager::GetInstance().Play("Death/Flesh/Death_Flesh.efkefc", m_pos, 3.0f, 1.0f, false);
-		break;
-	case EnemyMaterial::Stone:
-		KdEffekseerManager::GetInstance().Play("Death/Stone/Death_Stone.efkefc", m_pos, 3.0f, 1.0f, false);
-		break;
-	case EnemyMaterial::Num:
-		break;
-	default:
-		break;
-	}
-
-	// 倒れた音（質感ごと）
-	PlayMaterialSE("Asset/Sound/SE/Enemy/Death/", 1.0f);
-}
-
-void EnemyBase::SetAttackGaugePercent(float _percent)
-{
-	std::shared_ptr<AttackGage>spAttackGauge = m_wpAttackGauge.lock();
-	if (!spAttackGauge) { return; }
-	spAttackGauge->SetAttackGaugeTexPercent(_percent);
 }

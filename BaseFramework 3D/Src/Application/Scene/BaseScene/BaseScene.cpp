@@ -7,6 +7,7 @@
 
 #include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"
 #include"../../GameObject/Weapon/WeaponBase.h"
+
 void BaseScene::PreUpdate()
 {
 	// Updateの前の更新処理
@@ -211,15 +212,9 @@ void BaseScene::DrawDebug()
 	KdShaderManager::Instance().m_StandardShader.EndUnLit();
 }
 
-
 void BaseScene::ImGUI()
 {
 
-}
-
-void BaseScene::Event()
-{
-	// 各シーンで必要な内容を実装(オーバーライド)する
 }
 
 void BaseScene::Init()
@@ -227,8 +222,20 @@ void BaseScene::Init()
 	// 各シーンで必要な内容を実装(オーバーライド)する
 }
 
+std::string BaseScene::GetWeaponKey(int _weaponType)
+{
+	switch (_weaponType)
+	{
+	case PlayerWeaponInfo_Dagger: return "dagger";
+	case PlayerWeaponInfo_Sword:  return "sword";
+	default:                      return "";
+	}
+}
 
-
+void BaseScene::Event()
+{
+	// 各シーンで必要な内容を実装(オーバーライド)する
+}
 
 void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _inventoryPotionsList, const std::vector<Inventory>& _inventoryWeaponsList, std::string _filePath, long _money)
 {
@@ -343,6 +350,91 @@ std::vector<Inventory> BaseScene::ReadInventoryList(const nlohmann::json& _data,
 	return list;
 }
 
+std::vector<bool> BaseScene::LoadOwnedWeapons()
+{
+	// ファイルや項目が無いときは、ダガー(最初の武器)だけ持っている状態にする
+	std::vector<bool> owned(PlayerWeaponInfoSize, false);
+	owned[PlayerWeaponInfo_Dagger] = true;
+
+	std::ifstream file(m_inventoryFilePath);
+	if (!file) { return owned; }
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded() || !data.contains("weapons") || !data["weapons"].is_array()) { return owned; }
+
+	for (const auto& weapon : data["weapons"])
+	{
+		int id = weapon.value("id", -1);
+		if (id < 0 || id >= PlayerWeaponInfoSize) { continue; }
+
+		owned[id] = weapon.value("owned", false);
+	}
+
+	return owned;
+}
+
+void BaseScene::SaveOwnedWeapons(const std::vector<bool>& _owned)
+{
+	// ポーションなど他の項目は消さずに、"weapons" だけを書き換える
+	nlohmann::json data = nlohmann::json::object();
+	{
+		std::ifstream file(m_inventoryFilePath);
+		if (file)
+		{
+			data = nlohmann::json::parse(file, nullptr, false);
+			if (data.is_discarded()) { data = nlohmann::json::object(); }
+		}
+	}
+
+	const std::string weaponNames[PlayerWeaponInfoSize] = { "Dagger", "Sword" };	// PlayerWeaponInfoの順
+
+	data["weapons"] = nlohmann::json::array();
+	for (int id = 0; id < PlayerWeaponInfoSize; id++)
+	{
+		bool owned = (id < static_cast<int>(_owned.size())) ? static_cast<bool>(_owned[id]) : false;
+		data["weapons"].push_back({
+			{"id", id},
+			{"name", weaponNames[id]},
+			{"owned", owned}
+			});
+	}
+
+	std::ofstream file(m_inventoryFilePath);
+	if (!file) { return; }
+	file << data.dump(4);
+}
+
+long BaseScene::LoadMoney()
+{
+	std::ifstream file(m_inventoryFilePath);
+	if (!file) { return 0; }
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded()) { return 0; }
+
+	return data.value("money", 0L);
+}
+
+void BaseScene::SaveMoney(long _money)
+{
+	// ポーションなど他の項目は消さずに、"money" だけを書き換える
+	nlohmann::json data = nlohmann::json::object();
+	{
+		std::ifstream file(m_inventoryFilePath);
+		if (file)
+		{
+			data = nlohmann::json::parse(file, nullptr, false);
+			if (data.is_discarded()) { data = nlohmann::json::object(); }
+		}
+	}
+
+	data["money"] = std::max(0L, _money);	// マイナスにはしない
+
+	std::ofstream file(m_inventoryFilePath);
+	if (!file) { return; }
+	file << data.dump(4);
+}
+
 void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath, std::vector<WeaponsStrengtheningInfo> _weaponStrengtheningList)
 {
 	// 他の武器のデータを残すために1度開く（ファイルがなくても続行する）
@@ -412,6 +504,7 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 
 	file << data.dump(4);
 }
+
 std::vector<WeaponsStrengtheningInfo> BaseScene::LoadWeaponStrengtheningData(std::string _filePath)
 {
 	std::ifstream file(_filePath);
@@ -490,16 +583,6 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::LoadMergedWeaponStrengtheningDa
 	return now;
 }
 
-std::string BaseScene::GetWeaponKey(int _weaponType)
-{
-	switch (_weaponType)
-	{
-	case PlayerWeaponInfo_Dagger: return "dagger";
-	case PlayerWeaponInfo_Sword:  return "sword";
-	default:                      return "";
-	}
-}
-
 void BaseScene::SaveGameRecord(const GameResult& _result)
 {
 	// 中身が空の結果(プレイしていない)は保存しない
@@ -565,58 +648,6 @@ GameRecord BaseScene::LoadGameRecord()
 	return record;
 }
 
-nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
-{
-	nlohmann::json data;
-	data["PlayerDead"] = _result.m_playerDead;
-	data["Floors"] = nlohmann::json::array();
-
-	for (const auto& f : _result.m_displayFloorInfo)
-	{
-		nlohmann::json floor;
-		floor["DisplayFloor"] = f.m_displayFloor;
-		floor["EnemyKillCount"] = f.m_enemyKillCount;
-		floor["TreasureChestsNum"] = f.m_treasureChestsNum;
-		floor["PlayTimeSc"] = f.m_playTimeSc;
-		data["Floors"].push_back(floor);
-	}
-	return data;
-}
-
-GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
-{
-	GameResult result;
-	result.m_playerDead = _data.value("PlayerDead", false);
-
-	if (_data.contains("Floors") && _data["Floors"].is_array())
-	{
-		for (const auto& item : _data["Floors"])
-		{
-			DisplayFloorInfo f;
-			f.m_displayFloor = item.value("DisplayFloor", 0);
-			f.m_enemyKillCount = item.value("EnemyKillCount", 0);
-			f.m_treasureChestsNum = item.value("TreasureChestsNum", 0);
-			f.m_playTimeSc = item.value("PlayTimeSc", 0.0f);
-			result.m_displayFloorInfo.push_back(f);
-		}
-	}
-	return result;
-}
-
-bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
-{
-	// [0]は全体の情報
-	const DisplayFloorInfo a = _a.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _a.m_displayFloorInfo[0];
-	const DisplayFloorInfo b = _b.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _b.m_displayFloorInfo[0];
-
-	// ① 到達階が深いほうが上
-	if (a.m_displayFloor != b.m_displayFloor) { return a.m_displayFloor > b.m_displayFloor; }
-	// ② 同じ階なら、脱出したほうが上
-	if (_a.m_playerDead != _b.m_playerDead) { return !_a.m_playerDead; }
-	// ③ それも同じなら、時間が短いほうが上
-	return a.m_playTimeSc < b.m_playTimeSc;
-}
-
 void BaseScene::RestockShop()
 {
 	//---------- 2つのJSONを読む ----------
@@ -666,89 +697,54 @@ void BaseScene::RestockShop()
 	file << stock.dump(4);
 }
 
-
-std::vector<bool> BaseScene::LoadOwnedWeapons()
+bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
 {
-	// ファイルや項目が無いときは、ダガー(最初の武器)だけ持っている状態にする
-	std::vector<bool> owned(PlayerWeaponInfoSize, false);
-	owned[PlayerWeaponInfo_Dagger] = true;
+	// [0]は全体の情報
+	const DisplayFloorInfo a = _a.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _a.m_displayFloorInfo[0];
+	const DisplayFloorInfo b = _b.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _b.m_displayFloorInfo[0];
 
-	std::ifstream file(m_inventoryFilePath);
-	if (!file) { return owned; }
-
-	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-	if (data.is_discarded() || !data.contains("weapons") || !data["weapons"].is_array()) { return owned; }
-
-	for (const auto& weapon : data["weapons"])
-	{
-		int id = weapon.value("id", -1);
-		if (id < 0 || id >= PlayerWeaponInfoSize) { continue; }
-
-		owned[id] = weapon.value("owned", false);
-	}
-
-	return owned;
+	// ① 到達階が深いほうが上
+	if (a.m_displayFloor != b.m_displayFloor) { return a.m_displayFloor > b.m_displayFloor; }
+	// ② 同じ階なら、脱出したほうが上
+	if (_a.m_playerDead != _b.m_playerDead) { return !_a.m_playerDead; }
+	// ③ それも同じなら、時間が短いほうが上
+	return a.m_playTimeSc < b.m_playTimeSc;
 }
 
-void BaseScene::SaveOwnedWeapons(const std::vector<bool>& _owned)
+nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
 {
-	// ポーションなど他の項目は消さずに、"weapons" だけを書き換える
-	nlohmann::json data = nlohmann::json::object();
+	nlohmann::json data;
+	data["PlayerDead"] = _result.m_playerDead;
+	data["Floors"] = nlohmann::json::array();
+
+	for (const auto& f : _result.m_displayFloorInfo)
 	{
-		std::ifstream file(m_inventoryFilePath);
-		if (file)
+		nlohmann::json floor;
+		floor["DisplayFloor"] = f.m_displayFloor;
+		floor["EnemyKillCount"] = f.m_enemyKillCount;
+		floor["TreasureChestsNum"] = f.m_treasureChestsNum;
+		floor["PlayTimeSc"] = f.m_playTimeSc;
+		data["Floors"].push_back(floor);
+	}
+	return data;
+}
+
+GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
+{
+	GameResult result;
+	result.m_playerDead = _data.value("PlayerDead", false);
+
+	if (_data.contains("Floors") && _data["Floors"].is_array())
+	{
+		for (const auto& item : _data["Floors"])
 		{
-			data = nlohmann::json::parse(file, nullptr, false);
-			if (data.is_discarded()) { data = nlohmann::json::object(); }
+			DisplayFloorInfo f;
+			f.m_displayFloor = item.value("DisplayFloor", 0);
+			f.m_enemyKillCount = item.value("EnemyKillCount", 0);
+			f.m_treasureChestsNum = item.value("TreasureChestsNum", 0);
+			f.m_playTimeSc = item.value("PlayTimeSc", 0.0f);
+			result.m_displayFloorInfo.push_back(f);
 		}
 	}
-
-	const std::string weaponNames[PlayerWeaponInfoSize] = { "Dagger", "Sword" };	// PlayerWeaponInfoの順
-
-	data["weapons"] = nlohmann::json::array();
-	for (int id = 0; id < PlayerWeaponInfoSize; id++)
-	{
-		bool owned = (id < static_cast<int>(_owned.size())) ? static_cast<bool>(_owned[id]) : false;
-		data["weapons"].push_back({
-			{"id", id},
-			{"name", weaponNames[id]},
-			{"owned", owned}
-			});
-	}
-
-	std::ofstream file(m_inventoryFilePath);
-	if (!file) { return; }
-	file << data.dump(4);
-}
-
-
-long BaseScene::LoadMoney()
-{
-	std::ifstream file(m_inventoryFilePath);
-	if (!file) { return 0; }
-
-	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-	if (data.is_discarded()) { return 0; }
-
-	return data.value("money", 0L);
-}
-
-void BaseScene::SaveMoney(long _money)
-{
-	// ポーションなど他の項目は消さずに、"money" だけを書き換える
-	nlohmann::json data = nlohmann::json::object();
-	{
-		std::ifstream file(m_inventoryFilePath);
-		if (file)
-		{
-			data = nlohmann::json::parse(file, nullptr, false);
-			if (data.is_discarded()) { data = nlohmann::json::object(); }
-		}
-	}
-
-	data["money"] = std::max(0L, _money);	// マイナスにはしない
-
-	std::ofstream file(m_inventoryFilePath);
-	if (!file) { return; }
-	file << data.dump(4);
+	return result;
 }

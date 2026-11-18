@@ -1,6 +1,94 @@
 ﻿#include "KeyInfo.h"
 #include"../MouseInfo/MouseInfo.h"
 
+void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, float _alpha, Math::Vector2 _pivot)
+{
+	if (!m_spKeyTexture) { return; }
+	Math::Color color = { 1,1,1,_alpha };
+	Math::Rectangle srcRect;
+
+	srcRect = GetKeySrcRect(_key);
+
+	if (_key >= 'A' && _key <= 'Z')
+	{
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+		return;
+	}
+
+
+	switch (_key)
+	{
+	case VK_TAB:
+	case VK_ESCAPE:
+	case VK_SNAPSHOT:
+	case VK_BACK:
+	case VK_SHIFT:
+	case VK_PRIOR:
+	case VK_NEXT:
+	case VK_RETURN:
+	case VK_CONTROL:
+	case VK_MENU:
+	case VK_SPACE:
+	case VK_INSERT:
+	case VK_DELETE:
+	case VK_END:
+	case VK_HOME:
+	case VK_PAUSE:
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture2, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+		return;
+	}
+}
+
+bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
+{
+	bool flg = false;
+
+	if (_key >= 'A' && _key <= 'Z')//アルファベット
+	{
+		int num = _key - 'A';
+		flg = GetValidKeyPush(&m_keyAlphabet[num], _useFlg, _flg);
+	}
+	else if (_key >= VK_LEFT && _key <= VK_DOWN)//矢印
+	{
+		int num = _key - VK_LEFT;
+		flg = GetValidKeyPush(&m_keyArrow[num], _useFlg, _flg);
+	}
+	else if (_key == VK_SPACE)//スペース
+	{
+		flg = GetValidKeyPush(&m_keySpace, _useFlg, _flg);
+	}
+	else if (_key == VK_RETURN) //ENTER
+	{
+		flg = GetValidKeyPush(&m_keyEnter, _useFlg, _flg);
+	}
+	else if (_key == VK_LBUTTON)//左クリック
+	{
+		flg = GetValidKeyPush(&m_mousebutton[0], _useFlg, _flg);
+	}
+	else if (_key == VK_RBUTTON)//右クリック
+	{
+		flg = GetValidKeyPush(&m_mousebutton[1], _useFlg, _flg);
+	}
+	else if (_key >= '0' && _key <= '9')
+	{
+		int num = _key - '0';
+		flg = GetValidKeyPush(&m_keyNum[num], _useFlg, _flg);
+	}
+	else if (_key == VK_SHIFT)
+	{
+		int num = _key;
+		flg = GetValidKeyPush(&m_shift, _useFlg, _flg);
+	}
+	else if (_key == VK_TAB)
+	{
+		int num = _key;
+		flg = GetValidKeyPush(&m_keyTAB, _useFlg, _flg);
+	}
+
+
+
+	return  flg;
+}
 
 void KeyInfo::SetKeyValid(int _key)
 {
@@ -191,58 +279,27 @@ void KeyInfo::UpdateKey()
 	}
 }
 
-
-
-
-bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
+void KeyInfo::Init()
 {
-	bool flg = false;
-
-	if (_key >= 'A' && _key <= 'Z')//アルファベット
+	if (!m_spKeyTexture)
 	{
-		int num = _key - 'A';
-		flg = GetValidKeyPush(&m_keyAlphabet[num], _useFlg, _flg);
-	}
-	else if (_key >= VK_LEFT && _key <= VK_DOWN)//矢印
-	{
-		int num = _key - VK_LEFT;
-		flg = GetValidKeyPush(&m_keyArrow[num], _useFlg, _flg);
-	}
-	else if (_key == VK_SPACE)//スペース
-	{
-		flg = GetValidKeyPush(&m_keySpace, _useFlg, _flg);
-	}
-	else if (_key == VK_RETURN) //ENTER
-	{
-		flg = GetValidKeyPush(&m_keyEnter, _useFlg, _flg);
-	}
-	else if (_key == VK_LBUTTON)//左クリック
-	{
-		flg = GetValidKeyPush(&m_mousebutton[0], _useFlg, _flg);
-	}
-	else if (_key == VK_RBUTTON)//右クリック
-	{
-		flg = GetValidKeyPush(&m_mousebutton[1], _useFlg, _flg);
-	}
-	else if (_key >= '0' && _key <= '9')
-	{
-		int num = _key - '0';
-		flg = GetValidKeyPush(&m_keyNum[num], _useFlg, _flg);
-	}
-	else if (_key == VK_SHIFT)
-	{
-		int num = _key;
-		flg = GetValidKeyPush(&m_shift, _useFlg, _flg);
-	}
-	else if (_key == VK_TAB)
-	{
-		int num = _key;
-		flg = GetValidKeyPush(&m_keyTAB, _useFlg, _flg);
-	}
+		m_spKeyTexture = std::make_shared<KdTexture>();
+		m_spKeyTexture->Load("Asset/Textures/Key/Keyboard Letters and Symbols.png");
 
 
+		m_keyTexSiz.x = m_spKeyTexture->GetWidth() / kAlphabetNum;
+		m_keyTexSiz.y = m_spKeyTexture->GetHeight();
+	}
 
-	return  flg;
+	if (!m_spKeyTexture2)
+	{
+		m_spKeyTexture2 = std::make_shared<KdTexture>();
+		m_spKeyTexture2->Load("Asset/Textures/Key/Keyboard Extras.png");
+
+		m_keyTex2Siz.x = m_spKeyTexture2->GetWidth() / 4;
+		m_keyTex2Siz.y = m_spKeyTexture2->GetHeight() / 4;
+
+	}
 }
 
 bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
@@ -290,29 +347,6 @@ bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
 
 
 	return flg;
-}
-
-void KeyInfo::Init()
-{
-	if (!m_spKeyTexture)
-	{
-		m_spKeyTexture = std::make_shared<KdTexture>();
-		m_spKeyTexture->Load("Asset/Textures/Key/Keyboard Letters and Symbols.png");
-
-
-		m_keyTexSiz.x = m_spKeyTexture->GetWidth() / kAlphabetNum;
-		m_keyTexSiz.y = m_spKeyTexture->GetHeight();
-	}
-
-	if (!m_spKeyTexture2)
-	{
-		m_spKeyTexture2 = std::make_shared<KdTexture>();
-		m_spKeyTexture2->Load("Asset/Textures/Key/Keyboard Extras.png");
-
-		m_keyTex2Siz.x = m_spKeyTexture2->GetWidth() / 4;
-		m_keyTex2Siz.y = m_spKeyTexture2->GetHeight() / 4;
-
-	}
 }
 
 Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
@@ -400,42 +434,4 @@ Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
 
 
 	return srcRect;
-}
-
-void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, float _alpha, Math::Vector2 _pivot)
-{
-	if (!m_spKeyTexture) { return; }
-	Math::Color color = { 1,1,1,_alpha };
-	Math::Rectangle srcRect;
-
-	srcRect = GetKeySrcRect(_key);
-
-	if (_key >= 'A' && _key <= 'Z')
-	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
-		return;
-	}
-
-
-	switch (_key)
-	{
-	case VK_TAB:
-	case VK_ESCAPE:
-	case VK_SNAPSHOT:
-	case VK_BACK:
-	case VK_SHIFT:
-	case VK_PRIOR:
-	case VK_NEXT:
-	case VK_RETURN:
-	case VK_CONTROL:
-	case VK_MENU:
-	case VK_SPACE:
-	case VK_INSERT:
-	case VK_DELETE:
-	case VK_END:
-	case VK_HOME:
-	case VK_PAUSE:
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture2, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
-		return;
-	}
 }

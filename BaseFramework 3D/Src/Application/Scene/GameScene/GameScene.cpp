@@ -49,6 +49,7 @@
 #include"../../GameObject/Weapon/WeaponStrengtheningEditor/WeaponStrengtheningEditor.h"
 #include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestTableEditor/TreasureChestTableEditor.h"
 #include"../../GameObject/Weapon/ComboStep/ComboStepEditor.h"
+
 GameScene::~GameScene()
 {
 	if (m_spBossBGM)
@@ -104,223 +105,6 @@ void GameScene::ImGUI()
 		}
 	}
 }
-
-void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEscapeGatePos)
-{
-	if (!m_spWarpGateManager) { return; }
-
-	m_spWarpGateManager->WarpGateInit(_setNextGatePos, _setEscapeGatePos);
-}
-
-void GameScene::SetGameResult()
-{
-	GameResult gameResult;
-	gameResult.m_displayFloorInfo = m_displayFloorInfo;
-
-
-	if (m_spPlayer)
-	{
-		gameResult.m_playerDead = m_spPlayer->GetIsDead();
-
-
-		bool saveFlg = !gameResult.m_playerDead;
-
-		//セーブデータに保存
-		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
-		SaveWeaponStrengtheningData(saveFlg, m_weaponStrengtheningFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
-
-
-		//ゲームResultに保存
-		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryGameResultFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
-		SaveWeaponStrengtheningData(true, m_weaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
-		//プレイヤーのステータス状況を保存
-		m_spPlayer->ClearAllBuffs();
-		m_spPlayer->SaveCharaStatus(m_playerStatusGameResultFilePath);
-		if (saveFlg)
-		{
-			//セーブデータに保存
-			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
-			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
-		}
-		else
-		{
-			//セーブデータに保存
-			//プレイヤーのステータス状況をリセット
-			m_spPlayer->LoadCharaStatus(m_spPlayer->GetCharaDefaultStatusFilePath());
-			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
-		}
-
-	}
-
-	SceneManager::Instance().SetGameResult(gameResult);
-}
-
-void GameScene::ChangeResultScene()
-{
-	SetGameResult();
-	FadeDraw::Instance().SetFadeType(FadeOut, 3);
-	SceneManager::Instance().SetNextScene(SceneManager::SceneType::Result);
-}
-
-void GameScene::AddEnemyKill()
-{
-	m_displayFloorInfo[m_displayFloor].m_enemyKillCount++;
-	m_displayFloorInfo[0].m_enemyKillCount++;
-}
-
-void GameScene::AddTreasureChestsNum()
-{
-	m_displayFloorInfo[m_displayFloor].m_treasureChestsNum++;
-	m_displayFloorInfo[0].m_treasureChestsNum++;
-}
-
-void GameScene::PlayerDefeat()
-{
-	m_playerDefeatFlg = true;
-
-	FadeDraw::Instance().SetFadeType(FadeIn, 3);
-}
-
-void GameScene::Event()
-{
-	if (m_playerDefeatFlg)
-	{
-		if (!FadeDraw::Instance().GetFadeFlg())
-		{
-			ChangeResultScene();
-		}
-
-		return;
-	}
-
-
-
-	////////////////////////////////////////////
-	//デバック
-	static bool reFlg = false;
-
-	if (GetAsyncKeyState('3') & 0x8000)
-	{
-
-		if (!reFlg)
-		{
-			GenerateMap();
-			reFlg = true;
-		}
-	}
-	else
-	{
-		reFlg = false;
-	}
-
-	if (GetAsyncKeyState('5') & 0x8000)
-	{
-		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
-	}
-
-	if (GetAsyncKeyState('6') & 0x8000)
-	{
-		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
-	}
-
-
-	if (GetAsyncKeyState('7') & 0x8000)
-	{
-		ChangeResultScene();
-	}
-
-	//////////////////////////////////////////
-
-	///////////////////////////////////////////////////
-	//更新チャンク更新
-	///////////////////////////////////////////////////
-	if (!m_spMapManager) { return; }
-	//更新チャンク決め
-	m_spMapManager->SetPlayerChunk(m_spPlayer->GetPos());
-
-	// プレイヤーのチャンクが移動した時だけ、更新リストを再構築する
-	if (m_spMapManager->GetIsChunkChanged())
-	{
-		if (m_spMapObjManager)
-		{
-			m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
-		}
-		if (m_spEnemyManager)
-		{
-			m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
-		}
-
-
-		if (m_spCamera)
-		{
-			m_spCamera->ClearCameraOcclusionObject();
-			for (auto& map : m_spMapManager->GetUpdateChunks())
-			{
-				m_spCamera->ResolveCameraOcclusionObject(map);
-			}
-			for (auto& mapObj : m_spMapObjManager->GetMapUpdateObj())
-			{
-				m_spCamera->ResolveCameraOcclusionObject(mapObj);
-			}
-		}
-	}
-
-	//あたり判定セット
-
-	//プレイヤーのあたり判定リストを毎フレーム更新
-	m_spMapManager->MapHit(m_spPlayer);
-
-	//プレイヤーとマップオブジェクトのあたり判定
-	if (m_spMapObjManager)
-	{
-		m_spMapObjManager->MapObjHit(m_spPlayer);
-	}
-
-	//敵のあたり判定リストを毎フレーム更新
-	if (!m_spEnemyManager) { return; }
-	for (auto enemy : m_spEnemyManager->GetEnemyUpdateList())
-	{
-		m_spMapManager->MapHitEnemy(enemy);
-		if (m_spMapObjManager)
-		{
-			m_spMapObjManager->MapObjHit(enemy);
-		}
-	}
-
-	///////////////////////////////////////////////////
-	if (!m_spWeapon) { return; }
-	m_spWeapon->ClearAttackHitCharacterList();
-	m_spWeapon->ClearObjList();
-	std::vector<std::shared_ptr<MapBase>> mapList = m_spMapManager->GetUpdateChunks();
-	for (std::shared_ptr<MapBase> spMap : mapList)
-	{
-		m_spWeapon->AddObjList(spMap);
-	}
-
-
-	//武器とのあたり判定
-	auto& enemies = m_spEnemyManager->GetEnemyUpdateList();
-	for (auto& enemyA : enemies)
-	{
-		// 武器とのあたり判定
-		if (m_spWeapon)
-		{
-			m_spWeapon->AddAttackHitCharacterList(enemyA);
-		}
-	}
-
-
-	KdDebugGUI::Instance().ClearLog();
-	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);
-
-
-
-	float dt = DeltaTime::Instance().GetRealDeltaTime();
-
-	m_displayFloorInfo[m_displayFloor].m_playTimeSc += dt;
-	m_displayFloorInfo[0].m_playTimeSc += dt;
-}
-
 
 void GameScene::Init()
 {
@@ -611,6 +395,61 @@ void GameScene::Init()
 
 }
 
+void GameScene::SetGameResult()
+{
+	GameResult gameResult;
+	gameResult.m_displayFloorInfo = m_displayFloorInfo;
+
+
+	if (m_spPlayer)
+	{
+		gameResult.m_playerDead = m_spPlayer->GetIsDead();
+
+
+		bool saveFlg = !gameResult.m_playerDead;
+
+		//セーブデータに保存
+		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
+		SaveWeaponStrengtheningData(saveFlg, m_weaponStrengtheningFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+
+
+		//ゲームResultに保存
+		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryGameResultFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
+		SaveWeaponStrengtheningData(true, m_weaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+		//プレイヤーのステータス状況を保存
+		m_spPlayer->ClearAllBuffs();
+		m_spPlayer->SaveCharaStatus(m_playerStatusGameResultFilePath);
+		if (saveFlg)
+		{
+			//セーブデータに保存
+			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
+			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
+		}
+		else
+		{
+			//セーブデータに保存
+			//プレイヤーのステータス状況をリセット
+			m_spPlayer->LoadCharaStatus(m_spPlayer->GetCharaDefaultStatusFilePath());
+			m_spPlayer->SaveCharaStatus(m_playerStatusFilePath);
+		}
+
+	}
+
+	SceneManager::Instance().SetGameResult(gameResult);
+}
+
+void GameScene::AddEnemyKill()
+{
+	m_displayFloorInfo[m_displayFloor].m_enemyKillCount++;
+	m_displayFloorInfo[0].m_enemyKillCount++;
+}
+
+void GameScene::AddTreasureChestsNum()
+{
+	m_displayFloorInfo[m_displayFloor].m_treasureChestsNum++;
+	m_displayFloorInfo[0].m_treasureChestsNum++;
+}
+
 //マップ生成
 void GameScene::GenerateMap()
 {
@@ -719,4 +558,165 @@ void GameScene::GenerateMap()
 	}
 
 	m_spEnemyManager->SetVisionFlg(true);
+}
+
+void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEscapeGatePos)
+{
+	if (!m_spWarpGateManager) { return; }
+
+	m_spWarpGateManager->WarpGateInit(_setNextGatePos, _setEscapeGatePos);
+}
+
+void GameScene::ChangeResultScene()
+{
+	SetGameResult();
+	FadeDraw::Instance().SetFadeType(FadeOut, 3);
+	SceneManager::Instance().SetNextScene(SceneManager::SceneType::Result);
+}
+
+void GameScene::PlayerDefeat()
+{
+	m_playerDefeatFlg = true;
+
+	FadeDraw::Instance().SetFadeType(FadeIn, 3);
+}
+
+void GameScene::Event()
+{
+	if (m_playerDefeatFlg)
+	{
+		if (!FadeDraw::Instance().GetFadeFlg())
+		{
+			ChangeResultScene();
+		}
+
+		return;
+	}
+
+
+
+	////////////////////////////////////////////
+	//デバック
+	static bool reFlg = false;
+
+	if (GetAsyncKeyState('3') & 0x8000)
+	{
+
+		if (!reFlg)
+		{
+			GenerateMap();
+			reFlg = true;
+		}
+	}
+	else
+	{
+		reFlg = false;
+	}
+
+	if (GetAsyncKeyState('5') & 0x8000)
+	{
+		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
+	}
+
+	if (GetAsyncKeyState('6') & 0x8000)
+	{
+		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
+	}
+
+
+	if (GetAsyncKeyState('7') & 0x8000)
+	{
+		ChangeResultScene();
+	}
+
+	//////////////////////////////////////////
+
+	///////////////////////////////////////////////////
+	//更新チャンク更新
+	///////////////////////////////////////////////////
+	if (!m_spMapManager) { return; }
+	//更新チャンク決め
+	m_spMapManager->SetPlayerChunk(m_spPlayer->GetPos());
+
+	// プレイヤーのチャンクが移動した時だけ、更新リストを再構築する
+	if (m_spMapManager->GetIsChunkChanged())
+	{
+		if (m_spMapObjManager)
+		{
+			m_spMapObjManager->SetMapObjUpdateList(m_spMapManager);
+		}
+		if (m_spEnemyManager)
+		{
+			m_spEnemyManager->SetEnemyUpdateList(m_spMapManager);
+		}
+
+
+		if (m_spCamera)
+		{
+			m_spCamera->ClearCameraOcclusionObject();
+			for (auto& map : m_spMapManager->GetUpdateChunks())
+			{
+				m_spCamera->ResolveCameraOcclusionObject(map);
+			}
+			for (auto& mapObj : m_spMapObjManager->GetMapUpdateObj())
+			{
+				m_spCamera->ResolveCameraOcclusionObject(mapObj);
+			}
+		}
+	}
+
+	//あたり判定セット
+
+	//プレイヤーのあたり判定リストを毎フレーム更新
+	m_spMapManager->MapHit(m_spPlayer);
+
+	//プレイヤーとマップオブジェクトのあたり判定
+	if (m_spMapObjManager)
+	{
+		m_spMapObjManager->MapObjHit(m_spPlayer);
+	}
+
+	//敵のあたり判定リストを毎フレーム更新
+	if (!m_spEnemyManager) { return; }
+	for (auto enemy : m_spEnemyManager->GetEnemyUpdateList())
+	{
+		m_spMapManager->MapHitEnemy(enemy);
+		if (m_spMapObjManager)
+		{
+			m_spMapObjManager->MapObjHit(enemy);
+		}
+	}
+
+	///////////////////////////////////////////////////
+	if (!m_spWeapon) { return; }
+	m_spWeapon->ClearAttackHitCharacterList();
+	m_spWeapon->ClearObjList();
+	std::vector<std::shared_ptr<MapBase>> mapList = m_spMapManager->GetUpdateChunks();
+	for (std::shared_ptr<MapBase> spMap : mapList)
+	{
+		m_spWeapon->AddObjList(spMap);
+	}
+
+
+	//武器とのあたり判定
+	auto& enemies = m_spEnemyManager->GetEnemyUpdateList();
+	for (auto& enemyA : enemies)
+	{
+		// 武器とのあたり判定
+		if (m_spWeapon)
+		{
+			m_spWeapon->AddAttackHitCharacterList(enemyA);
+		}
+	}
+
+
+	KdDebugGUI::Instance().ClearLog();
+	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);
+
+
+
+	float dt = DeltaTime::Instance().GetRealDeltaTime();
+
+	m_displayFloorInfo[m_displayFloor].m_playTimeSc += dt;
+	m_displayFloorInfo[0].m_playTimeSc += dt;
 }

@@ -18,12 +18,53 @@
 
 #include"../../Editor/ShopEditor/ShopEditor.h"
 
-
 PrepareScene::~PrepareScene()
 {
 	if (m_spPrepareBGM)
 	{
 		m_spPrepareBGM->Stop();
+	}
+}
+
+void PrepareScene::ImGUI()
+{
+	if (ImGui::Begin(U8("PrepareScene")))
+	{
+		const char* tabName = (m_currentTab == PrepareTab::Shop) ? "Shop" : "Equip";
+		ImGui::Text(U8("現在のタブ : %s"), tabName);
+
+		if (ImGui::Button(U8("ショップ")))	{ ChangeTab(PrepareTab::Shop); }
+		ImGui::SameLine();
+		if (ImGui::Button(U8("装備変更")))	{ ChangeTab(PrepareTab::Equip); }
+
+		ImGui::Separator();
+
+		if (ImGui::Button(U8("武器をダガーに"))) { m_selectWeapon = PlayerWeaponInfo::PlayerWeaponInfo_Dagger; }
+		if (ImGui::Button(U8("武器を剣に")))	 { m_selectWeapon = PlayerWeaponInfo::PlayerWeaponInfo_Sword; }
+
+		ImGui::Separator();
+
+		if (ImGui::Button(U8("Gameへ")))
+		{
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);
+		}
+
+		ImGui::Separator();
+
+		// ショップの値段を決めるEditor
+		ImGui::Checkbox(U8("ショップの値段"), &m_shopEditorOpenFlg);
+	}
+	ImGui::End();
+
+	if (m_shopEditorOpenFlg && m_spShopEditor)
+	{
+		m_spShopEditor->Draw(&m_shopEditorOpenFlg);
+
+		// 保存したら、ショップ画面の値段を読み直す
+		if (m_spShopEditor->PopSaved() && m_spShopDisplay)
+		{
+			m_spShopDisplay->LoadShopData();
+		}
 	}
 }
 
@@ -96,6 +137,21 @@ void PrepareScene::Init()
 	//}
 }
 
+void PrepareScene::ChangeTab(PrepareTab _tab)
+{
+	m_currentTab = _tab;
+
+	// 開いているタブの画面だけを表示する
+	if (m_spShopDisplay)    m_spShopDisplay->SetActive(_tab == PrepareTab::Shop);
+	if (m_spEquipDisplay)   m_spEquipDisplay->SetActive(_tab == PrepareTab::Equip);
+	if (m_spRecordsDisplay) m_spRecordsDisplay->SetActive(_tab == PrepareTab::Records);
+	if (m_spPrepareSceneDisplay) m_spPrepareSceneDisplay->SetActive(_tab == PrepareTab::None);
+
+	// 出発ボタンはメニューだけのときに出す(ショップなどの画面と重なるため)
+	if (m_spGameButton) m_spGameButton->SetActive(_tab == PrepareTab::None);
+
+}
+
 void PrepareScene::OnShopDataChanged()
 {
 	if (!m_spShopDisplay) { return; }
@@ -143,21 +199,6 @@ void PrepareScene::Event()
 	}
 }
 
-void PrepareScene::ChangeTab(PrepareTab _tab)
-{
-	m_currentTab = _tab;
-
-	// 開いているタブの画面だけを表示する
-	if (m_spShopDisplay)    m_spShopDisplay->SetActive(_tab == PrepareTab::Shop);
-	if (m_spEquipDisplay)   m_spEquipDisplay->SetActive(_tab == PrepareTab::Equip);
-	if (m_spRecordsDisplay) m_spRecordsDisplay->SetActive(_tab == PrepareTab::Records);
-	if (m_spPrepareSceneDisplay) m_spPrepareSceneDisplay->SetActive(_tab == PrepareTab::None);
-
-	// 出発ボタンはメニューだけのときに出す(ショップなどの画面と重なるため)
-	if (m_spGameButton) m_spGameButton->SetActive(_tab == PrepareTab::None);
-
-}
-
 void PrepareScene::ShopEvent()
 {
 
@@ -171,46 +212,4 @@ void PrepareScene::EquipEvent()
 void PrepareScene::ApplyEquip()
 {
 	SceneManager::Instance().SetPlayerWeaponInfo(m_selectWeapon);
-}
-
-void PrepareScene::ImGUI()
-{
-	if (ImGui::Begin(U8("PrepareScene")))
-	{
-		const char* tabName = (m_currentTab == PrepareTab::Shop) ? "Shop" : "Equip";
-		ImGui::Text(U8("現在のタブ : %s"), tabName);
-
-		if (ImGui::Button(U8("ショップ")))	{ ChangeTab(PrepareTab::Shop); }
-		ImGui::SameLine();
-		if (ImGui::Button(U8("装備変更")))	{ ChangeTab(PrepareTab::Equip); }
-
-		ImGui::Separator();
-
-		if (ImGui::Button(U8("武器をダガーに"))) { m_selectWeapon = PlayerWeaponInfo::PlayerWeaponInfo_Dagger; }
-		if (ImGui::Button(U8("武器を剣に")))	 { m_selectWeapon = PlayerWeaponInfo::PlayerWeaponInfo_Sword; }
-
-		ImGui::Separator();
-
-		if (ImGui::Button(U8("Gameへ")))
-		{
-			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);
-		}
-
-		ImGui::Separator();
-
-		// ショップの値段を決めるEditor
-		ImGui::Checkbox(U8("ショップの値段"), &m_shopEditorOpenFlg);
-	}
-	ImGui::End();
-
-	if (m_shopEditorOpenFlg && m_spShopEditor)
-	{
-		m_spShopEditor->Draw(&m_shopEditorOpenFlg);
-
-		// 保存したら、ショップ画面の値段を読み直す
-		if (m_spShopEditor->PopSaved() && m_spShopDisplay)
-		{
-			m_spShopDisplay->LoadShopData();
-		}
-	}
 }

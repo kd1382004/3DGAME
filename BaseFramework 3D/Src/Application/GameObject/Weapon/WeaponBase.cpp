@@ -7,6 +7,7 @@
 
 #include"ComboStep/ComboStepSaveLoad.h"
 #include"ComboStep/ComboStepValidator.h"
+
 void WeaponBase::Init()
 {
 	LoadWeaponStatus(m_weaponStatusFilePath);
@@ -40,9 +41,9 @@ void WeaponBase::DrawLit()
 
 }
 
-void WeaponBase::CreateWeaponHitCollider()
+int WeaponBase::GetAttack()
 {
-
+	return (m_baseWeaponStatus.m_attackPower + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2));
 }
 
 void WeaponBase::SetAttackFlg(bool _flg)
@@ -65,6 +66,11 @@ void WeaponBase::AddAttackHitCharacterList(std::shared_ptr<CharacterBase> _spCha
 void WeaponBase::AddObjList(std::shared_ptr<MapBase> _spObj)
 {
 	m_objList.push_back(_spObj);
+}
+
+void WeaponBase::CreateWeaponHitCollider()
+{
+
 }
 
 // origin: 判定の基準位置（通常はキャラの位置）
@@ -91,9 +97,24 @@ std::optional<Math::Vector3> WeaponBase::FindAimAssistTarget(const Math::Vector3
 	return result;
 }
 
-int WeaponBase::GetAttack()
+bool WeaponBase::LoadCombo(const std::string& _path)
 {
-	return (m_baseWeaponStatus.m_attackPower + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2));
+	ComboFileData data;
+	if (!ComboStepSaveLoad::Load(_path, data))
+	{
+		// 失敗の理由は Load の中でログに出ている。今のコンボはそのまま
+		return false;
+	}
+
+	// 読み込んだ直後に検査して、問題があればログに出す（ゲームは止めない）
+	for (const ComboStepIssue& issue : ComboStepValidator::Validate(data.m_steps))
+	{
+		KdDebugGUI::Instance().AddLog(U8("[%s] %s : %s\n"),
+			issue.m_isError ? "Error" : "Warning", _path.c_str(), issue.m_message.c_str());
+	}
+
+	m_comboList = std::move(data.m_steps);
+	return true;
 }
 
 void WeaponBase::LoadWeaponStatus(const std::string& _filePath)
@@ -167,24 +188,4 @@ void WeaponBase::SaveWeaponStatus(const std::string& _filePath)
 
 	std::ofstream ofs(_filePath);
 	ofs << data.dump(4);
-}
-
-bool WeaponBase::LoadCombo(const std::string& _path)
-{
-	ComboFileData data;
-	if (!ComboStepSaveLoad::Load(_path, data))
-	{
-		// 失敗の理由は Load の中でログに出ている。今のコンボはそのまま
-		return false;
-	}
-
-	// 読み込んだ直後に検査して、問題があればログに出す（ゲームは止めない）
-	for (const ComboStepIssue& issue : ComboStepValidator::Validate(data.m_steps))
-	{
-		KdDebugGUI::Instance().AddLog(U8("[%s] %s : %s\n"),
-			issue.m_isError ? "Error" : "Warning", _path.c_str(), issue.m_message.c_str());
-	}
-
-	m_comboList = std::move(data.m_steps);
-	return true;
 }

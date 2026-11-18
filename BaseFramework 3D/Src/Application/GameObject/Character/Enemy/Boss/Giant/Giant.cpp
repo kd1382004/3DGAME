@@ -10,6 +10,7 @@
 #include"../../../../../Scene/GameScene/GameScene.h"
 
 #include"../../../../Terrains/Map/MapManager.h"
+
 void Giant::Init()
 {
 	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Boss/Giant/Status/Status.json";
@@ -223,6 +224,53 @@ void Giant::DrawLit()
 void Giant::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
 {
 	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
+}
+
+void Giant::Release()
+{
+	EnemyBase::Release();
+
+	if (m_spRun3DSE)
+	{
+		m_spRun3DSE->Stop();
+		m_spRun3DSE = nullptr;
+	}
+	if (m_spPunch3DSE)
+	{
+		m_spPunch3DSE->Stop();
+		m_spPunch3DSE = nullptr;
+	}
+	if (m_spCrying3DSE)
+	{
+		m_spCrying3DSE->Stop();
+		m_spCrying3DSE = nullptr;
+	}
+	if (m_spDon3DSE)
+	{
+		m_spDon3DSE->Stop();
+		m_spDon3DSE = nullptr;
+	}
+
+	auto spGameScene = m_wpGameScene.lock();
+	if (spGameScene)
+	{
+		spGameScene->AddEnemyKill();
+	}
+}
+
+Math::Matrix Giant::GetBoneWorldMatrix(std::string _nodeName)
+{
+
+	if (!m_spCharaModel) { return Math::Matrix::Identity; }
+
+	auto* handNode = m_spCharaModel->FindNode(_nodeName);
+	Math::Matrix handWorld;
+	if (handNode)
+	{
+		handWorld = handNode->m_worldTransform * m_mWorld;
+	}
+
+	return handWorld;
 }
 
 void Giant::AttackMode()
@@ -611,53 +659,6 @@ void Giant::ChangeAnime()
 	}
 
 	m_animeChangeFlg = false;
-}
-
-Math::Matrix Giant::GetBoneWorldMatrix(std::string _nodeName)
-{
-
-	if (!m_spCharaModel) { return Math::Matrix::Identity; }
-
-	auto* handNode = m_spCharaModel->FindNode(_nodeName);
-	Math::Matrix handWorld;
-	if (handNode)
-	{
-		handWorld = handNode->m_worldTransform * m_mWorld;
-	}
-
-	return handWorld;
-}
-
-void Giant::Release()
-{
-	EnemyBase::Release();
-
-	if (m_spRun3DSE)
-	{
-		m_spRun3DSE->Stop();
-		m_spRun3DSE = nullptr;
-	}
-	if (m_spPunch3DSE)
-	{
-		m_spPunch3DSE->Stop();
-		m_spPunch3DSE = nullptr;
-	}
-	if (m_spCrying3DSE)
-	{
-		m_spCrying3DSE->Stop();
-		m_spCrying3DSE = nullptr;
-	}
-	if (m_spDon3DSE)
-	{
-		m_spDon3DSE->Stop();
-		m_spDon3DSE = nullptr;
-	}
-
-	auto spGameScene = m_wpGameScene.lock();
-	if (spGameScene)
-	{
-		spGameScene->AddEnemyKill();
-	}
 }
 
 void Giant::UpdateFootstepSE()

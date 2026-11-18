@@ -7,100 +7,6 @@ MouseInfo::~MouseInfo()
 
 }
 
-void MouseInfo::SetMouseType(MouseType _type)
-{
-
-	if (m_mouseType != MouseType::MouseType_HIT && m_mouseOldType != MouseType::MouseType_HIT)
-	{
-		if (m_spHitSE)
-		{
-			m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-			m_spHitSE->Play();
-		}
-	}
-
-
-	m_mouseType = _type;
-}
-
-void MouseInfo::SetMousePosFixMousePos()
-{
-	if (!m_focusWindowFlg)
-	{
-		return;
-	}
-
-	POINT pos;
-	pos.x = m_fixMousePos.x;
-	pos.y = m_fixMousePos.y;
-	if (ClientToScreen(Application::Instance().GetWindowHandle(), &pos))
-	{
-		SetCursorPos(pos.x, pos.y);
-	}
-}
-
-POINT MouseInfo::GetWindowMousePos()
-{
-
-	POINT pos;
-	pos.x = m_fixMousePos.x;
-	pos.y = m_fixMousePos.y;
-	ClientToScreen(Application::Instance().GetWindowHandle(), &pos);
-
-	return pos;
-}
-
-void MouseInfo::SEMouseClickPlay()
-{
-	if (m_spClickSE)
-	{
-		m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-		m_spClickSE->Play();
-	}
-}
-
-int MouseInfo::GetMouseWheelValue() const
-{
-	return Application::Instance().GetMouseWheelValue();
-}
-
-void MouseInfo::Init()
-{
-	// ↓ウィンドウ中央座標
-	m_fixMousePos.x = 640;
-	m_fixMousePos.y = 360;
-
-
-	//マウスをウィンドウの中央に設定
-	POINT pos;
-	pos.x = m_fixMousePos.x;
-	pos.y = m_fixMousePos.y;
-	if (ClientToScreen(Application::Instance().GetWindowHandle(), &pos))
-	{
-		SetCursorPos(pos.x, pos.y);
-	}
-
-
-	if (!m_spMousePointer)
-	{
-		m_spMousePointer = std::make_shared<KdTexture>();
-		m_spMousePointer->Load("Asset/Textures/Mouse/MousePointer.png");
-	}
-
-	if (!m_spClickSE)
-	{
-		m_spClickSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/click.wav", false);
-		m_spClickSE->Stop();
-		m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-	}
-	if (!m_spHitSE)
-	{
-		m_spHitSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/Hit.wav", false);
-		m_spHitSE->Stop();
-		m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-	}
-}
-
 void MouseInfo::Update()
 {
 	//************************************************
@@ -195,4 +101,98 @@ void MouseInfo::DrawSprite()
 	Math::Vector2 piv = { 0,1 };
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spMousePointer, m_windowPos.x, m_windowPos.y, 24, 24, &rec, nullptr, piv);
 
+}
+
+POINT MouseInfo::GetWindowMousePos()
+{
+
+	POINT pos;
+	pos.x = m_fixMousePos.x;
+	pos.y = m_fixMousePos.y;
+	ClientToScreen(Application::Instance().GetWindowHandle(), &pos);
+
+	return pos;
+}
+
+int MouseInfo::GetMouseWheelValue() const
+{
+	return Application::Instance().GetMouseWheelValue();
+}
+
+void MouseInfo::SetMouseType(MouseType _type)
+{
+
+	if (m_mouseType != MouseType::MouseType_HIT && m_mouseOldType != MouseType::MouseType_HIT)
+	{
+		if (m_spHitSE)
+		{
+			m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+			m_spHitSE->Play();
+		}
+	}
+
+
+	m_mouseType = _type;
+}
+
+void MouseInfo::SetMousePosFixMousePos()
+{
+	if (!m_focusWindowFlg)
+	{
+		return;
+	}
+
+	POINT pos;
+	pos.x = m_fixMousePos.x;
+	pos.y = m_fixMousePos.y;
+	if (ClientToScreen(Application::Instance().GetWindowHandle(), &pos))
+	{
+		SetCursorPos(pos.x, pos.y);
+	}
+}
+
+void MouseInfo::SEMouseClickPlay()
+{
+	if (m_spClickSE)
+	{
+		m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		m_spClickSE->Play();
+	}
+}
+
+void MouseInfo::Init()
+{
+	// ↓ウィンドウ中央座標
+	m_fixMousePos.x = 640;
+	m_fixMousePos.y = 360;
+
+
+	//マウスをウィンドウの中央に設定
+	POINT pos;
+	pos.x = m_fixMousePos.x;
+	pos.y = m_fixMousePos.y;
+	if (ClientToScreen(Application::Instance().GetWindowHandle(), &pos))
+	{
+		SetCursorPos(pos.x, pos.y);
+	}
+
+
+	if (!m_spMousePointer)
+	{
+		m_spMousePointer = std::make_shared<KdTexture>();
+		m_spMousePointer->Load("Asset/Textures/Mouse/MousePointer.png");
+	}
+
+	if (!m_spClickSE)
+	{
+		m_spClickSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/click.wav", false);
+		m_spClickSE->Stop();
+		m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+	}
+	if (!m_spHitSE)
+	{
+		m_spHitSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/Hit.wav", false);
+		m_spHitSE->Stop();
+		m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+	}
 }

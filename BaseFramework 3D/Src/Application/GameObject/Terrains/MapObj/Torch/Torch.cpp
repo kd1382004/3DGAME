@@ -1,6 +1,7 @@
 ﻿#include "Torch.h"
 
 #include"../../../Camera/CameraBase.h"
+
 void Torch::Init()
 {
 	if (!m_spTorchModel)
@@ -162,8 +163,6 @@ void Torch::SetPos(const Math::Vector3& _pos)
 	m_mWorld.Translation(_pos);
 }
 
-
-
 void Torch::SetRotation(Math::Matrix _rMat)
 {
 	Math::Vector3 pos = GetPos();
@@ -173,6 +172,21 @@ void Torch::SetRotation(Math::Matrix _rMat)
 	Math::Matrix sMat = Math::Matrix::CreateScale(siz);
 
 	m_mWorld = sMat * _rMat * tMat;
+}
+
+void Torch::Release()
+{
+	// エフェクトオブジェクトを取得
+	if (auto spEffect = m_wpAuraEffect.lock())
+	{
+		spEffect->SetLoop(false);
+		spEffect->StopEffect();
+	}
+
+	if (m_spFireSE)
+	{
+		m_spFireSE->Stop();
+	}
 }
 
 void Torch::SetEffectUpdate(bool _flg)
@@ -202,20 +216,5 @@ void Torch::SetEffectUpdate(bool _flg)
 				"Fire/Fire.efkefc", worldEffectPos, 1.0f, 1.0f, true
 			);
 		}
-	}
-}
-
-void Torch::Release()
-{
-	// エフェクトオブジェクトを取得
-	if (auto spEffect = m_wpAuraEffect.lock())
-	{
-		spEffect->SetLoop(false);
-		spEffect->StopEffect();
-	}
-
-	if (m_spFireSE)
-	{
-		m_spFireSE->Stop();
 	}
 }

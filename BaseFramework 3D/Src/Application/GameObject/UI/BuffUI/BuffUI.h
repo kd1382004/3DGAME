@@ -7,18 +7,27 @@ class PlayerBase;
 class BuffUI :public UIBase
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	BuffUI() {};
+
 	//デストラクタ
 	~BuffUI() override{};
+
+	//---- 基本の処理 ----
 
 	//初期化
 	void Init()override;
 
 	//描画前の処理
 	void PreDraw()override;
+
 	//2Dの描画
 	void DrawSprite()override;
+
+	//---- 設定 ----
 
 	//ポーションの画像一覧をセット
 	// _spPotionTexInfo ... ポーションの画像一覧
@@ -27,12 +36,12 @@ public:
 	//プレイヤーをセット
 	// _spPlayer ... プレイヤー
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayer) { m_wpPlayer = _spPlayer; }
-private:
-	//ポーションの画像一覧
-	std::weak_ptr<PotionTexInfo>m_wpPotionTexInfo;
-	//プレイヤー
-	std::weak_ptr<PlayerBase>m_wpPlayer;
 
+private:
+
+	//---- 型 ----
+
+	//表示中のバフのアイコン1つ分の情報
 	struct BuffUIInfo {
 
 		//バフ(ポーション)の番号
@@ -43,6 +52,14 @@ private:
 		Math::Vector2 m_pos;
 
 	};
+
+	//---- メンバ変数 ----
+
+	//ポーションの画像一覧
+	std::weak_ptr<PotionTexInfo>m_wpPotionTexInfo;
+
+	//プレイヤー
+	std::weak_ptr<PlayerBase>m_wpPlayer;
 
 	//アイコンの大きさ
 	Math::Vector2 m_iconSiz;

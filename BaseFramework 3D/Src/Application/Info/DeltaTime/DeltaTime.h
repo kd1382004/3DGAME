@@ -4,6 +4,9 @@
 class DeltaTime
 {
 public:
+
+	//---- 基本の処理 ----
+
 	//実デルタタイムを使う
 	// _realDelta ... 前のフレームからの実際の経過時間(秒)
 	void Update(float _realDelta)
@@ -31,20 +34,17 @@ public:
 		}
 	}
 
+	//---- 取得 ----
+
 	//ゲーム内のデルタタイム(ヒットストップ・スロー込み)を取得
 	//戻り値 ... ゲーム内のデルタタイム(秒)
 	float GetGameDeltaTime() const { return m_gameDeltaTime; }
+
 	//実際のデルタタイム(ヒットストップ・スローの影響なし)を取得
 	//戻り値 ... 実際のデルタタイム(秒)
 	float GetRealDeltaTime() const { return m_realDeltaTime; }
 
-	//ヒットストップする(その間ゲーム内の時間が止まる)
-	// _duration ... 止める時間(秒)
-	void HitStop(float _duration)
-	{
-		// 今のヒットストップより短いなら上書きしない（とどめの長い止まりを、次の弱い当たりで縮めない）
-		m_hitStopTimer = std::max(m_hitStopTimer, _duration);
-	}
+	//---- 設定 ----
 
 	//時間の進む速さをセット
 	// _scale ... 速さの倍率(1で通常、0.5で半分の速さ)
@@ -60,13 +60,38 @@ public:
 		m_slowTimer = _slowTimer;
 	}
 
+	//---- その他の処理 ----
+
+	//ヒットストップする(その間ゲーム内の時間が止まる)
+	// _duration ... 止める時間(秒)
+	void HitStop(float _duration)
+	{
+		// 今のヒットストップより短いなら上書きしない（とどめの長い止まりを、次の弱い当たりで縮めない）
+		m_hitStopTimer = std::max(m_hitStopTimer, _duration);
+	}
+
+	//---- シングルトン ----
+
+	//インスタンスを取得する(シングルトン)
+	//戻り値 ... DeltaTimeのインスタンス
+	static DeltaTime& Instance() {
+		static DeltaTime instance;
+		return instance;
+	}
+
 private:
+
+	//---- メンバ変数 ----
+
 	//前のフレームの時刻(ミリ秒)
 	DWORD m_prevTime = timeGetTime();
+
 	//ゲーム内のデルタタイム(秒)
 	float m_gameDeltaTime = 0.0f;
+
 	//時間の進む速さの倍率
 	float m_timeScale = 1.0f;
+
 	//ヒットストップの残り時間(秒)
 	float m_hitStopTimer = 0.0f;
 	float m_maxDelta = 0.033f; // 最大33ms
@@ -74,23 +99,10 @@ private:
 	//実際のデルタタイム(秒)
 	float m_realDeltaTime = 0;
 
-
-
 	//スローの残り時間(秒)
 	float m_slowTimer = 0;
-	//=====================================================
-	// シングルトンパターン
-	//=====================================================
 
-private:
-	// 
+	//---- コンストラクタ・デストラクタ ----
+
 	DeltaTime() {}
-
-public:
-	//インスタンスを取得する(シングルトン)
-	//戻り値 ... DeltaTimeのインスタンス
-	static DeltaTime& Instance() {
-		static DeltaTime instance;
-		return instance;
-	}
 };

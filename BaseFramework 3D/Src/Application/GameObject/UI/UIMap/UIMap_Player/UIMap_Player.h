@@ -3,10 +3,16 @@
 class UIMap_Player
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	UIMap_Player() {};
+
 	//デストラクタ
 	~UIMap_Player() {};
+
+	//---- 基本の処理 ----
 
 	//初期化
 	void Init();
@@ -17,6 +23,13 @@ public:
 	//2Dの描画
 	void DrawSprite();
 
+	//---- 取得 ----
+
+	//ミニマップ上のプレイヤーの位置を返す
+	//戻り値 ... 画面座標
+	Math::Vector2 GetPos();
+
+	//---- 設定 ----
 
 	//プレイヤーの座標をセット
 	// _3DPos ... プレイヤーの座標(ワールド)
@@ -36,7 +49,6 @@ public:
 	// _basePos ... 基準位置(画面)
 	void SetBasePos(Math::Vector2 _basePos) { m_basePos= _basePos; }
 
-
 	//1タイルの大きさをセット
 	// _siz ... 1タイルの大きさ
 	void SetTileSiz(float _siz) { m_tileSiz = _siz; }
@@ -45,14 +57,13 @@ public:
 	// _angle ... 角度(度)
 	void SetAngle(float _angle) { m_angle = _angle; }
 
-	//ミニマップ上のプレイヤーの位置を返す
-	//戻り値 ... 画面座標
-	Math::Vector2 GetPos();
-
 	//ミニマップの1マスの画像の大きさをセット
 	// _siz ... 画像の大きさ
 	void SetMapTexSiz(Math::Vector2 _siz) { m_mapTexSiz = _siz; }
+
 private:
+
+	//---- メンバ変数 ----
 
 	//ミニマップの1マスの画像の大きさ
 	Math::Vector2 m_mapTexSiz = { };
@@ -80,6 +91,8 @@ private:
 
 	//マップの基準位置(ワールド)
 	Math::Vector3 m_base3DPos;
+
+	//---- その他の処理 ----
 
 	//プレイヤーの座標を画面座標にする
 	void Change2DPos();

@@ -135,14 +135,6 @@ void MapObjManager::AddMapObj(std::shared_ptr<MapObjBase> _spObj)
 	
 }
 
-void MapObjManager::ObjSetCamera(std::shared_ptr<CameraBase> _spCameraBase)
-{
-	for (auto& obj : m_mapObjList)
-	{
-		obj->SetCamera(_spCameraBase);
-	}
-}
-
 void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManager)
 {
 	if (!_spMapManager) { return; }
@@ -187,6 +179,14 @@ void MapObjManager::SetMapObjDrawList(std::shared_ptr<MapManager> _spMapManager)
 		}
 	}
 
+}
+
+void MapObjManager::ObjSetCamera(std::shared_ptr<CameraBase> _spCameraBase)
+{
+	for (auto& obj : m_mapObjList)
+	{
+		obj->SetCamera(_spCameraBase);
+	}
 }
 
 void MapObjManager::MapObjHit(const std::shared_ptr<KdGameObject>& _spObj)

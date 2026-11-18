@@ -12,6 +12,9 @@ struct ComboFileData
 class ComboStepSaveLoad
 {
 public:
+
+	//---- その他の処理 ----
+
 	// _path のファイルを読んで outData に入れる。失敗したら false（outData は変わらない）
 	// _outData ... 読み込んだデータを入れる先
 	static bool Load(const std::string& _path, ComboFileData& _outData);
@@ -21,12 +24,18 @@ public:
 	static bool Save(const std::string& _path, const ComboFileData& _data);
 
 private:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//インスタンスは作らない
 	ComboStepSaveLoad() {}
+
+	//---- その他の処理 ----
 
 	// 段1つ分の変換
 	// _j ... 段1つ分のjson
 	static ComboStep      StepFromJson(const nlohmann::json& _j);
+
 	//段1つ分をjsonにする
 	// _step ... 段のデータ
 	//戻り値 ... 段1つ分のjson

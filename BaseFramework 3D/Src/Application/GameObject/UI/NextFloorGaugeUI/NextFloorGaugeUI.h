@@ -5,13 +5,18 @@ class NextFloorGaugeUI :public UIBase
 {
 public:
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init()override;
+
 	//更新
 	void Update()override;
+
 	//2Dの描画
 	void DrawSprite()override;
 
+	//---- 設定 ----
 
 	//ゲージの割合をセット
 	// _percent ... 割合(0〜1)
@@ -24,7 +29,10 @@ public:
 	//表示するキーをセット
 	// _key ... キーの番号
 	void SetActionKey(int _key) { m_actionKey = _key; }
+
 private:
+
+	//---- メンバ変数 ----
 
 	//サイズ
 	Math::Vector2 m_siz;
@@ -46,8 +54,10 @@ private:
 
 	//キー表示のアルファ
 	float m_actionKeyAlpha = 1.0f;
+
 	//1フレームあたりのアルファの増減(点滅の速さ)
 	float m_actionKeyPushAlpha = 0.01f;
+
 	//キー表示のアルファの最小
 	float m_actionKeyAlphaMin = 0.3f;
 };

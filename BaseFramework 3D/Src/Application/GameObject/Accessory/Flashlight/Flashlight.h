@@ -3,6 +3,7 @@
 #include"../AccessoryBase.h"
 
 
+//懐中電灯の設定
 struct FlashlightConfig
 {
 	//ライトの色(明るさ込み)
@@ -20,22 +21,32 @@ struct FlashlightConfig
 class Flashlight :public AccessoryBase
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	Flashlight() {};
+
 	//デストラクタ
 	~Flashlight()override {};
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init() override;
+
 	//更新
 	void Update() override;
+
 	//更新後の処理(ライトの位置・向きを決める)
 	void PostUpdate() override;
 
 	//影の描画
 	void GenerateDepthMapFromLight() override;
+
 	//ライトありの描画
 	void DrawLit() override;
+
 	//光る部分の描画
 	void DrawBright() override;
 
@@ -44,6 +55,7 @@ public:
 
 private:
 
+	//---- メンバ変数 ----
 
 	//懐中電灯のモデル
 	std::shared_ptr<KdModelWork>m_spFlashlightModel;

@@ -6,8 +6,17 @@
 //============================================================
 class Application
 {
-// メンバ
 public:
+
+	//---- 取得 ----
+
+	HWND GetWindowHandle()		const	{ return m_window.GetWndHandle(); }
+	int GetMouseWheelValue()	const	{ return m_window.GetMouseWheelVal(); }
+	int		GetNowFPS()			const	{ return m_fpsController.m_nowfps; }
+	int		GetMaxFPS()			const	{ return m_fpsController.m_maxFps; }
+	float	GetDeltaTime()		const	{ return m_fpsController.GetDeltaTime(); }
+
+	//---- その他の処理 ----
 
 	// アプリケーション実行
 	void Execute();
@@ -15,32 +24,16 @@ public:
 	// アプリケーション終了
 	void End()							{ m_endFlag = true; }
 
-	HWND GetWindowHandle()		const	{ return m_window.GetWndHandle(); }
-	int GetMouseWheelValue()	const	{ return m_window.GetMouseWheelVal(); }
+	//---- シングルトン ----
 
-	int		GetNowFPS()			const	{ return m_fpsController.m_nowfps; }
-	int		GetMaxFPS()			const	{ return m_fpsController.m_maxFps; }
-	float	GetDeltaTime()		const	{ return m_fpsController.GetDeltaTime(); }
+	static Application &Instance(){
+		static Application Instance;
+		return Instance;
+	}
+
 private:
 
-	void KdBeginUpdate();
-	void PreUpdate();
-	void Update();
-	void PostUpdate();
-	void KdPostUpdate();
-
-	void KdBeginDraw(bool usePostProcess = true);
-	void PreDraw();
-	void Draw();
-	void PostDraw();
-	void DrawSprite();
-	void KdPostDraw();
-
-	// アプリケーション初期化
-	bool Init(int w, int h);
-
-	// アプリケーション解放
-	void Release();
+	//---- メンバ変数 ----
 
 	// ゲームウィンドウクラス
 	KdWindow		m_window;
@@ -51,16 +44,30 @@ private:
 	// ゲーム終了フラグ trueで終了する
 	bool		m_endFlag = false;
 
-//=====================================================
-// シングルトンパターン
-//=====================================================
-private:
-	// 
+	//---- コンストラクタ・デストラクタ ----
+
 	Application() {}
 
-public:
-	static Application &Instance(){
-		static Application Instance;
-		return Instance;
-	}
+	//---- 基本の処理 ----
+
+	void PreUpdate();
+	void Update();
+	void PostUpdate();
+	void PreDraw();
+	void Draw();
+	void DrawSprite();
+
+	// アプリケーション初期化
+	bool Init(int w, int h);
+
+	// アプリケーション解放
+	void Release();
+
+	//---- その他の処理 ----
+
+	void KdBeginUpdate();
+	void KdPostUpdate();
+	void KdBeginDraw(bool usePostProcess = true);
+	void PostDraw();
+	void KdPostDraw();
 };

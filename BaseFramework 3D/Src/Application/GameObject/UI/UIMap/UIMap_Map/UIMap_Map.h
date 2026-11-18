@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 
+//ミニマップのタイル1つ分の情報
 struct MiniMapInfo
 {
 	//階段があるか
@@ -21,17 +22,37 @@ struct MiniMapInfo
 class UIMap_Map
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	UIMap_Map() {};
+
 	//デストラクタ
 	~UIMap_Map() {};
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init();
+
 	//2Dの描画
 	void DrawSprite();
+
 	//描画前の処理
 	void PreDraw();
+
+	//---- 取得 ----
+
+	//タイルの一覧を返す
+	//戻り値 ... タイルの一覧
+	const std::list<MiniMapInfo>& GetMiniMapInfo() const { return m_posList; }
+
+	//1マスの画像の大きさを返す
+	//戻り値 ... 画像の大きさ
+	Math::Vector2 GetMapTexSiz() { return m_mapTexSiz; }
+
+	//---- 設定 ----
 
 	//床のタイルを追加
 	// _3DPos ... 床の座標(ワールド)
@@ -49,9 +70,6 @@ public:
 	// _basePos ... 基準位置(画面)
 	void SetBasePos(Math::Vector2 _basePos) { m_basePos = _basePos; }
 
-	//タイルの一覧を空にする
-	void PosListReset();
-
 	//マップの基準位置(ワールド)をセット
 	// _3DPos ... 基準位置(ワールド)
 	void SetBase3DPos(Math::Vector3 _3DPos)
@@ -63,26 +81,21 @@ public:
 	// _pos ... プレイヤーの位置(画面)
 	void SetMiniMapPlayerPos(Math::Vector2 _pos) { m_miniMapPlayerPos = _pos; }
 
-
-	//タイルの一覧を返す
-	//戻り値 ... タイルの一覧
-	const std::list<MiniMapInfo>& GetMiniMapInfo() const { return m_posList; }
-
-	//1マスの画像の大きさを返す
-	//戻り値 ... 画像の大きさ
-	Math::Vector2 GetMapTexSiz() { return m_mapTexSiz; }
-
 	//階段を見つけたかをセット
 	// _flg ... 見つけたか
 	void SetIsStairsMine(bool _flg) { m_isStairsMine = _flg; }
-
 
 	// ミニマップの表示モードを設定する
 	// true  : 全タイルを常時表示
 	// false : プレイヤーが踏破したタイルだけ表示
 	// _enable ... 全タイルを常時表示するか
 	void SetMinimapRevealAll(bool _enable);
-	
+
+	//---- その他の処理 ----
+
+	//タイルの一覧を空にする
+	void PosListReset();
+
 	// タイル座標から直接引く（見つからなければ nullptr）
 	// _x ... タイルのx
 	// _y ... タイルのy
@@ -93,14 +106,13 @@ public:
 	}
 
 private:
-	//タイル座標を1つの数字にする
-	// _x ... タイルのx
-	// _y ... タイルのy
-	//戻り値 ... 検索用のキー
-	static long long MakeKey(int _x, int _y)
-	{
-		return (static_cast<long long>(_x) << 32) ^ static_cast<unsigned int>(_y);
-	}
+
+	//---- 定数 ----
+
+	//部屋じゃないときの部屋番号
+	static const int kNOTRoom = -999;
+
+	//---- メンバ変数 ----
 
 	// タイル座標 → タイル（1座標に1タイル）
 	std::unordered_map<long long, MiniMapInfo*> m_tileMap;
@@ -110,12 +122,13 @@ private:
 
 	//ミニマップの基準位置(画面)
 	Math::Vector2 m_basePos;
+
 	//マップの基準位置(ワールド)
 	Math::Vector3 m_base3DPos;
 
-
 	//床の画像
 	std::shared_ptr<KdTexture>m_spMapTex;
+
 	//階段の画像
 	std::shared_ptr<KdTexture>m_spMapStairsTex;
 
@@ -125,12 +138,8 @@ private:
 	//ミニマップ上のプレイヤーの位置
 	Math::Vector2 m_miniMapPlayerPos;
 
-
 	//プレイヤーから何マス以内を踏破したことにするか
 	int m_discoverTileNum = 1;
-	//プレイヤーの近くのタイルを踏破したことにする
-	void DiscoverTile();
-
 
 	//タイルの一覧
 	std::list<MiniMapInfo>m_posList;
@@ -138,19 +147,32 @@ private:
 	//部屋の床リスト
 	std::vector< std::list<MiniMapInfo>>m_posRoomFloorList;
 
-	//部屋じゃないときの部屋番号
-	static const int kNOTRoom = -999;
-
 	//階段のタイル
 	MiniMapInfo m_stairsMiniMapInfo;
+
 	//階段を見つけたか
 	bool m_isStairsMine = false;
 
-
 	//タイルを焼き付けるテクスチャ
 	KdRenderTargetPack m_rtPack;
+
 	//焼き付け直す必要があるか
 	bool m_isDirty = true;
+
+	//---- その他の処理 ----
+
+	//タイル座標を1つの数字にする
+	// _x ... タイルのx
+	// _y ... タイルのy
+	//戻り値 ... 検索用のキー
+	static long long MakeKey(int _x, int _y)
+	{
+		return (static_cast<long long>(_x) << 32) ^ static_cast<unsigned int>(_y);
+	}
+
+	//プレイヤーの近くのタイルを踏破したことにする
+	void DiscoverTile();
+
 	//タイルをテクスチャに焼き付ける
 	void BakeTiles();
 };

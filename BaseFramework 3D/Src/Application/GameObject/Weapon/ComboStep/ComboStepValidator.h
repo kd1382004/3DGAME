@@ -12,6 +12,9 @@ struct ComboStepIssue
 class ComboStepValidator
 {
 public:
+
+	//---- その他の処理 ----
+
 	// 全部の検査をまとめて行い、問題の一覧を返す（問題なしなら空）
 	// _animeNames を渡すと、アニメーション名がモデルにあるかも検査する（nullptr なら飛ばす）
 	// _steps ... 検査するコンボ
@@ -20,6 +23,14 @@ public:
 		const std::unordered_set<std::string>* _animeNames = nullptr);
 
 private:
+
+	//---- コンストラクタ・デストラクタ ----
+
+	//インスタンスは作らない
+	ComboStepValidator() {}
+
+	//---- その他の処理 ----
+
 	//comboIndex の連番・重複
 	// _steps ... 検査するコンボ
 	// _outIssues ... 問題を足す先
@@ -36,7 +47,4 @@ private:
 	// _outIssues ... 問題を足す先
 	static void CheckAnimeName(const std::vector<ComboStep>& _steps,
 		const std::unordered_set<std::string>* _animeNames, std::vector<ComboStepIssue>& _outIssues);
-
-	//インスタンスは作らない
-	ComboStepValidator() {}
 };

@@ -6,6 +6,39 @@ std::shared_ptr<LootTableManager> LootTableManager::GetShared()
 	return spInstance;
 }
 
+LootItem LootTableManager::GetRandomLoot(const std::string& _tableName) const
+{
+	auto it = m_tables.find(_tableName);
+	if (it == m_tables.end() || it->second.m_items.empty() || it->second.m_totalWeight <= 0.0f)
+	{
+		return LootItem(); // type = -1（何も出ない）
+	}
+
+	const LootTable& table = it->second;
+
+	float r = KdRandom::GetFloat(0.0f, table.m_totalWeight);
+	float accum = 0.0f;
+
+	for (const LootItem& item : table.m_items)
+	{
+		accum += item.m_weight;
+		if (r <= accum)
+		{
+			return item;
+		}
+	}
+
+	return table.m_items.back();
+}
+
+int LootTableManager::GetRandomDropNum(const std::string& _tableName) const
+{
+	auto it = m_tables.find(_tableName);
+	if (it == m_tables.end()) { return 0; }
+
+	return KdRandom::GetInt(it->second.m_dropMin, it->second.m_dropMax);
+}
+
 void LootTableManager::Load(const std::string& _path)
 {
 	m_path = _path;
@@ -100,37 +133,4 @@ void LootTableManager::LoadOldFormat(const nlohmann::json& _j)
 
 		m_tables[slotName] = table;
 	}
-}
-
-LootItem LootTableManager::GetRandomLoot(const std::string& _tableName) const
-{
-	auto it = m_tables.find(_tableName);
-	if (it == m_tables.end() || it->second.m_items.empty() || it->second.m_totalWeight <= 0.0f)
-	{
-		return LootItem(); // type = -1（何も出ない）
-	}
-
-	const LootTable& table = it->second;
-
-	float r = KdRandom::GetFloat(0.0f, table.m_totalWeight);
-	float accum = 0.0f;
-
-	for (const LootItem& item : table.m_items)
-	{
-		accum += item.m_weight;
-		if (r <= accum)
-		{
-			return item;
-		}
-	}
-
-	return table.m_items.back();
-}
-
-int LootTableManager::GetRandomDropNum(const std::string& _tableName) const
-{
-	auto it = m_tables.find(_tableName);
-	if (it == m_tables.end()) { return 0; }
-
-	return KdRandom::GetInt(it->second.m_dropMin, it->second.m_dropMax);
 }

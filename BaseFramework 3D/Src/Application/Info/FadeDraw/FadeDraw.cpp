@@ -1,14 +1,5 @@
 ﻿#include "FadeDraw.h"
 
-void FadeDraw::Init()
-{
-	if (!m_spTex)
-	{
-		m_spTex = std::make_shared<KdTexture>();
-		m_spTex->Load("Asset/Textures/FadeDraw/FadeDraw.png");
-	}
-}
-
 void FadeDraw::Update()
 {
 	if (!m_fadeFlg) return;
@@ -56,5 +47,14 @@ void FadeDraw::DrawSprite()
 	{
 		m_fadeFineFlg = false;
 		m_fadeFlg = false;
+	}
+}
+
+void FadeDraw::Init()
+{
+	if (!m_spTex)
+	{
+		m_spTex = std::make_shared<KdTexture>();
+		m_spTex->Load("Asset/Textures/FadeDraw/FadeDraw.png");
 	}
 }

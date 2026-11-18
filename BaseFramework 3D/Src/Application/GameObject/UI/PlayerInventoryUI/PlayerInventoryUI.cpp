@@ -404,6 +404,17 @@ void PlayerInventoryUI::DrawMoney()
 	}
 }
 
+InventoryTabBase* PlayerInventoryUI::GetTab(InventoryType _type)
+{
+	switch (_type)
+	{
+	case PlayerInventoryUI::PotionInventory:	return m_spPotionInventoryUI.get();
+	case PlayerInventoryUI::WeaponInventory:		return m_spWeaponInventoryUI.get();
+	case PlayerInventoryUI::PlayerStatus:		return m_spPlayerStatusInventoryUI.get();
+	default:									return nullptr;
+	}
+}
+
 void PlayerInventoryUI::PlayerInventoryOpen()
 {
 
@@ -515,16 +526,5 @@ void PlayerInventoryUI::InventoryTypeChangeUpdate()
 		{
 			icon.m_hit = false;
 		}
-	}
-}
-
-InventoryTabBase* PlayerInventoryUI::GetTab(InventoryType _type)
-{
-	switch (_type)
-	{
-	case PlayerInventoryUI::PotionInventory:	return m_spPotionInventoryUI.get();
-	case PlayerInventoryUI::WeaponInventory:		return m_spWeaponInventoryUI.get();
-	case PlayerInventoryUI::PlayerStatus:		return m_spPlayerStatusInventoryUI.get();
-	default:									return nullptr;
 	}
 }

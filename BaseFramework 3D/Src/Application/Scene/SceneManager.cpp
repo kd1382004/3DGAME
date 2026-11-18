@@ -10,6 +10,7 @@
 #include "ResultScene/ResultScene.h"
 
 #include"../Info/DebugInfo/DebugInfo.h"
+
 void SceneManager::PreUpdate()
 {
 	// シーン切替
@@ -79,16 +80,6 @@ void SceneManager::DrawDebug()
 	m_spCurrentScene->DrawDebug();
 }
 
-const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()
-{
-	return m_spCurrentScene->GetObjList();
-}
-
-void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _spObj)
-{
-	m_spCurrentScene->AddObject(_spObj);
-}
-
 void SceneManager::ImGUI()
 {
 	//FOGImGUI
@@ -147,6 +138,16 @@ void SceneManager::ImGUI()
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 		MouseInfo::Instance().SetMouseFreeFlg(false);
 	}
+}
+
+const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()
+{
+	return m_spCurrentScene->GetObjList();
+}
+
+void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _spObj)
+{
+	m_spCurrentScene->AddObject(_spObj);
 }
 
 void SceneManager::ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack)
@@ -347,7 +348,6 @@ void SceneManager::FogAmbientJsonLoad()
 	//アンビエント
 	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 }
-
 
 void SceneManager::PlayerWeaponJsonSave()
 {

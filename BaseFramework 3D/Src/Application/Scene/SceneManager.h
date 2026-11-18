@@ -51,6 +51,8 @@ class SceneManager
 {
 public:
 
+	//---- 型 ----
+
 	// シーン情報
 	enum class SceneType
 	{
@@ -60,21 +62,46 @@ public:
 		Result,
 	};
 
+	//---- 基本の処理 ----
+
 	//今のシーンの更新前の処理
 	void PreUpdate();
+
 	//今のシーンの更新
 	void Update();
+
 	//今のシーンの更新後の処理
 	void PostUpdate();
 
 	//今のシーンの描画前の処理
 	void PreDraw();
+
 	//今のシーンの描画
 	void Draw();
+
 	//今のシーンの2D描画
 	void DrawSprite();
+
 	//今のシーンのデバッグ描画
 	void DrawDebug();
+
+	//追加
+	void ImGUI();
+
+	//---- 取得 ----
+
+	// 現在のシーンのオブジェクトリストを取得
+	const std::list<std::shared_ptr<KdGameObject>>& GetObjList();
+
+	//ゲーム結果を取得
+	//戻り値 ... ゲーム結果
+	GameResult GetGameResult() { return m_gameResult; }
+
+	//プレイヤーの武器を取得
+	//戻り値 ... プレイヤーの武器
+	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_playerWeaponInfo; }
+
+	//---- 設定 ----
 
 	// 次のシーンをセット (次のフレームから切り替わる)
 	// _nextScene ... 次のシーン
@@ -83,36 +110,14 @@ public:
 		m_nextSceneType = _nextScene;
 	}
 
-	// 現在のシーンのオブジェクトリストを取得
-	const std::list<std::shared_ptr<KdGameObject>>& GetObjList();
-
 	// 現在のシーンにオブジェクトを追加
 	// _spObj ... 追加するオブジェクト
 	void AddObject(const std::shared_ptr<KdGameObject>& _spObj);
 
-	//追加
-	void ImGUI();
-
-	//ゲーム結果を取得
-	//戻り値 ... ゲーム結果
-	GameResult GetGameResult() { return m_gameResult; }
 	//ゲーム結果をセット
 	// _gameResult ... ゲーム結果
 	void SetGameResult(GameResult _gameResult) { m_gameResult = _gameResult; }
 
-	//描画先を変更
-	// _spRtPack ... 描画先
-	void ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack);
-	//描画先を元に戻す
-	void UndoRenderTarget();
-
-	//初期に戻す
-	void UnFogAmbient();
-
-
-	//プレイヤーの武器を取得
-	//戻り値 ... プレイヤーの武器
-	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_playerWeaponInfo; }
 	//プレイヤーの武器をセット
 	// _playerWeaponInfo ... プレイヤーの武器
 	//変わったときはファイルに保存して、次に起動したときも同じ武器にする
@@ -122,8 +127,6 @@ public:
 		m_playerWeaponInfo = _playerWeaponInfo;
 		PlayerWeaponJsonSave();
 	}
-
-
 
 	//フォグを使うかをセット
 	// _fogFlg ... 使うならtrue
@@ -136,12 +139,11 @@ public:
 
 	//値を変えてアンビエントを変更
 	// _ambient ... アンビエントの色
-	void SetAmbient(const Math::Vector4& _ambient) 
+	void SetAmbient(const Math::Vector4& _ambient)
 	{
 		m_ambient = _ambient;
 		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 	};
-
 
 	//このゲームにおけるDデフォルトのアンビエントの値に変更
 	void SetDefaultAmbient()
@@ -150,80 +152,19 @@ public:
 		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 	};
 
+	//---- その他の処理 ----
 
-private:
+	//描画先を変更
+	// _spRtPack ... 描画先
+	void ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack);
 
-	// マネージャーの初期化
-	// インスタンス生成(アプリ起動)時にコンストラクタで自動実行
-	void Init();
+	//描画先を元に戻す
+	void UndoRenderTarget();
 
+	//初期に戻す
+	void UnFogAmbient();
 
-	// シーン切り替え関数
-	// _sceneType ... 切り替えるシーン
-	void ChangeScene(SceneType _sceneType);
-
-	// 現在のシーンのインスタンスを保持しているポインタ
-	std::shared_ptr<BaseScene> m_spCurrentScene = nullptr;
-
-	// 現在のシーンの種類を保持している変数
-	SceneType m_currentSceneType = SceneType::Title;
-
-	// 次のシーンの種類を保持している変数
-	SceneType m_nextSceneType = m_currentSceneType;
-
-
-	//自分追加
-
-	//ゲーム結果	
-	GameResult m_gameResult;
-
-
-	//描画先管理
-	KdRenderTargetChanger m_rtChanger;
-
-
-	/////////////////////////////////////
-	//フォグ
-	Math::Vector3 m_FOGCol = { 0.35,0.35,0.38 };
-	//フォグの濃さ
-	float m_FOGdensity = 0.02;
-
-	//フォグを使うか
-	bool m_fogFlg = false;
-
-	//アンビエント
-	Math::Vector4 m_ambient = { 1,1,1,1 };
-	//このゲームのデフォルトのアンビエント
-	Math::Vector4 m_defaultAmbient = { 1,1,1,1 };
-
-	//フォグとアンビエントの設定をファイルに保存する
-	void FogAmbientJsonSave();
-	//フォグとアンビエントの設定をファイルから読み込む
-	void FogAmbientJsonLoad();
-
-	//フォグとアンビエントの設定のファイルのパス
-	std::string m_fogAmbientJsonFilePath = "Asset/Data/ObjeData/FogAmbient/FogAmbientJsonSave.json";
-
-
-	//プレイヤーの武器
-	PlayerWeaponInfo m_playerWeaponInfo = PlayerWeaponInfo::PlayerWeaponInfo_Dagger;
-
-	//装備中の武器をファイルに保存する
-	void PlayerWeaponJsonSave();
-	//装備中の武器をファイルから読み込む(ファイルが無いときはダガーのまま)
-	void PlayerWeaponJsonLoad();
-
-	//装備中の武器のファイルのパス
-	std::string m_playerWeaponJsonFilePath = "Asset/Data/PlayerData/PlayerEquipData.json";
-
-private:
-
-	//コンストラクタ(シングルトンなので外から作れない)
-	SceneManager() { Init(); }
-	//デストラクタ
-	~SceneManager() {}
-
-public:
+	//---- シングルトン ----
 
 	// シングルトンパターン
 	// 常に存在する && 必ず1つしか存在しない(1つしか存在出来ない)
@@ -234,4 +175,81 @@ public:
 		static SceneManager instance;
 		return instance;
 	}
+
+private:
+
+	//---- メンバ変数 ----
+
+	// 現在のシーンのインスタンスを保持しているポインタ
+	std::shared_ptr<BaseScene> m_spCurrentScene = nullptr;
+
+	// 現在のシーンの種類を保持している変数
+	SceneType m_currentSceneType = SceneType::Title;
+
+	// 次のシーンの種類を保持している変数
+	SceneType m_nextSceneType = m_currentSceneType;
+
+	//自分追加
+
+	//ゲーム結果
+	GameResult m_gameResult;
+
+	//描画先管理
+	KdRenderTargetChanger m_rtChanger;
+
+	//フォグ
+	Math::Vector3 m_FOGCol = { 0.35,0.35,0.38 };
+
+	//フォグの濃さ
+	float m_FOGdensity = 0.02;
+
+	//フォグを使うか
+	bool m_fogFlg = false;
+
+	//アンビエント
+	Math::Vector4 m_ambient = { 1,1,1,1 };
+
+	//このゲームのデフォルトのアンビエント
+	Math::Vector4 m_defaultAmbient = { 1,1,1,1 };
+
+	//フォグとアンビエントの設定のファイルのパス
+	std::string m_fogAmbientJsonFilePath = "Asset/Data/ObjeData/FogAmbient/FogAmbientJsonSave.json";
+
+	//プレイヤーの武器
+	PlayerWeaponInfo m_playerWeaponInfo = PlayerWeaponInfo::PlayerWeaponInfo_Dagger;
+
+	//装備中の武器のファイルのパス
+	std::string m_playerWeaponJsonFilePath = "Asset/Data/PlayerData/PlayerEquipData.json";
+
+	//---- コンストラクタ・デストラクタ ----
+
+	//コンストラクタ(シングルトンなので外から作れない)
+	SceneManager() { Init(); }
+
+	//デストラクタ
+	~SceneManager() {}
+
+	//---- 基本の処理 ----
+
+	// マネージャーの初期化
+	// インスタンス生成(アプリ起動)時にコンストラクタで自動実行
+	void Init();
+
+	//---- その他の処理 ----
+
+	// シーン切り替え関数
+	// _sceneType ... 切り替えるシーン
+	void ChangeScene(SceneType _sceneType);
+
+	//フォグとアンビエントの設定をファイルに保存する
+	void FogAmbientJsonSave();
+
+	//フォグとアンビエントの設定をファイルから読み込む
+	void FogAmbientJsonLoad();
+
+	//装備中の武器をファイルに保存する
+	void PlayerWeaponJsonSave();
+
+	//装備中の武器をファイルから読み込む(ファイルが無いときはダガーのまま)
+	void PlayerWeaponJsonLoad();
 };

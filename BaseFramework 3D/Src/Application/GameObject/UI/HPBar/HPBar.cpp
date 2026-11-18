@@ -55,7 +55,6 @@ void HPBar::PreDraw()
 	m_HPBarDelayTex2DPos = { m_HPBarTex2DPos.x + hpBarDelayOffset, m_HPBarTex2DPos.y };
 }
 
-
 void HPBar::DrawSprite()
 {
 	if (!m_drawFlg) { return; }
@@ -127,14 +126,14 @@ void HPBar::SetHPBarTexPercentNODelayOffset(float _percent)
 	m_HPBarTexPercent = percent;
 }
 
-void HPBar::Delete()
-{
-	m_isExpired = true;
-}
-
 void HPBar::SetLV(int _LV)
 {
 	m_LV = _LV;
+}
+
+void HPBar::Delete()
+{
+	m_isExpired = true;
 }
 
 void HPBar::HPBarDelayPreDraw()

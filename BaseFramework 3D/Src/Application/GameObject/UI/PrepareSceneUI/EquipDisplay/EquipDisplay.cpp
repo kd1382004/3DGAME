@@ -61,29 +61,6 @@ void EquipDisplay::Init()
 	ScrollBarCalcThumb();
 }
 
-void EquipDisplay::SetOwnedWeapons(const std::vector<bool>& _owned)
-{
-	m_ownedList.clear();
-	for (int id = 0; id < PlayerWeaponInfoSize; id++)
-	{
-		if (id < static_cast<int>(_owned.size()) && _owned[id])
-		{
-			m_ownedList.push_back(id);
-		}
-	}
-
-	// 装備中の武器を持っていなければ、持っている最初の武器に替える
-	// (持っていない武器でダンジョンに入れないようにする)
-	const int equip = SceneManager::Instance().GetPlayerWeaponInfo();
-	if (std::find(m_ownedList.begin(), m_ownedList.end(), equip) == m_ownedList.end() &&
-		!m_ownedList.empty())
-	{
-		SceneManager::Instance().SetPlayerWeaponInfo(static_cast<PlayerWeaponInfo>(m_ownedList.front()));
-	}
-
-	m_scrollIndex = 0;
-}
-
 void EquipDisplay::Update()
 {
 	// 開いているタブでなければ何もしない
@@ -127,6 +104,29 @@ void EquipDisplay::DrawSprite()
 	DrawList();
 	DrawScrollBar();
 	DrawDetail();
+}
+
+void EquipDisplay::SetOwnedWeapons(const std::vector<bool>& _owned)
+{
+	m_ownedList.clear();
+	for (int id = 0; id < PlayerWeaponInfoSize; id++)
+	{
+		if (id < static_cast<int>(_owned.size()) && _owned[id])
+		{
+			m_ownedList.push_back(id);
+		}
+	}
+
+	// 装備中の武器を持っていなければ、持っている最初の武器に替える
+	// (持っていない武器でダンジョンに入れないようにする)
+	const int equip = SceneManager::Instance().GetPlayerWeaponInfo();
+	if (std::find(m_ownedList.begin(), m_ownedList.end(), equip) == m_ownedList.end() &&
+		!m_ownedList.empty())
+	{
+		SceneManager::Instance().SetPlayerWeaponInfo(static_cast<PlayerWeaponInfo>(m_ownedList.front()));
+	}
+
+	m_scrollIndex = 0;
 }
 
 bool EquipDisplay::MouseHit(Math::Vector2 _pos, float _w, float _h)
@@ -175,134 +175,6 @@ void EquipDisplay::LoadOneTex(std::shared_ptr<KdTexture>& _spTex, const std::str
 	{
 		KdDebugGUI::Instance().AddLog(U8("[Error] EquipDisplayの画像が読み込めません : %s\n"), _path.c_str());
 	}
-}
-
-Math::Vector2 EquipDisplay::GetSlotPos(int _slot) const
-{
-	return { kSlotPos.x + kSlotSpace * _slot, kSlotPos.y };
-}
-
-void EquipDisplay::DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale, const Math::Vector2& _pivot)
-{
-	if (!_spTex) { return; }
-	DrawTexSize(_spTex, _pos, _spTex->GetWidth() * _scale, _spTex->GetHeight() * _scale, _pivot);
-}
-
-void EquipDisplay::DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _w, float _h, const Math::Vector2& _pivot)
-{
-	if (!_spTex) { return; }
-
-	KdShaderManager::Instance().m_spriteShader.DrawTex(
-		_spTex.get(),
-		static_cast<int>(_pos.x), static_cast<int>(_pos.y),
-		static_cast<int>(_w), static_cast<int>(_h),
-		nullptr, &kWhiteColor, _pivot);
-}
-
-void EquipDisplay::DrawList()
-{
-	DrawTex(m_spTex[static_cast<int>(EquipTex::ListPanel)], kListPos);
-
-	const int equipWeapon = SceneManager::Instance().GetPlayerWeaponInfo();
-
-	for (int slot = 0; slot < kVisibleNum; slot++)
-	{
-		// 持っている武器だけを出す(足りない枠は何も描かない)
-		int listIndex = m_scrollIndex + slot;
-		if (listIndex >= GetWeaponNum()) { break; }
-
-		int weapon = m_ownedList[listIndex];
-		const Math::Vector2 slotPos = GetSlotPos(slot);
-
-		DrawTex(m_spWeaponTex[weapon][static_cast<int>(WeaponTex::Icon)], slotPos);
-
-		// 装備中 → 金の枠 + 「装備中」
-		if (weapon == equipWeapon)
-		{
-			DrawTex(m_spTex[static_cast<int>(EquipTex::SelectFrame)], slotPos);
-			DrawTex(m_spTex[static_cast<int>(EquipTex::Equipped)], { slotPos.x, kEquippedY });
-		}
-		// カーソルが乗っている → 銀の枠
-		else if (weapon == m_hoverIndex)
-		{
-			DrawTex(m_spTex[static_cast<int>(EquipTex::HoverFrame)], slotPos);
-		}
-	}
-}
-
-void EquipDisplay::DrawScrollBar()
-{
-	// ドット絵がにじまないよう、ポイントフィルタで描く(PotionInventoryUIと同じ)
-	KdShaderManager::Instance().m_spriteShader.Begin(false);
-
-	// レール(左端を基準に描く)
-	DrawTexSize(m_spTex[static_cast<int>(EquipTex::ScrollTrack)], { kTrackLeft, kTrackY }, kTrackW, kTrackH, kPivotLeft);
-
-	// マウスが乗っているときは明るい画像を使う
-	const bool hover = m_scrollThumbHoverFlg;
-	const auto& spL = m_spTex[static_cast<int>(hover ? EquipTex::ThumbLeftHover  : EquipTex::ThumbLeft)];
-	const auto& spM = m_spTex[static_cast<int>(hover ? EquipTex::ThumbMidHover   : EquipTex::ThumbMid)];
-	const auto& spR = m_spTex[static_cast<int>(hover ? EquipTex::ThumbRightHover : EquipTex::ThumbRight)];
-	const auto& spG = m_spTex[static_cast<int>(hover ? EquipTex::ThumbGripHover  : EquipTex::ThumbGrip)];
-
-	if (spL && spM && spR && spG)
-	{
-		const float capLW = static_cast<float>(spL->GetWidth());
-		const float capRW = static_cast<float>(spR->GetWidth());
-		const float thumbY = kTrackY;
-
-		// 左端
-		DrawTexSize(spL, { m_scrollThumbX, thumbY }, capLW, kTrackH, kPivotLeft);
-
-		// 中央 … 左端と右端を除いた長さに伸ばす
-		const float midW = m_scrollThumbW - capLW - capRW;
-		if (midW > 0.0f)
-		{
-			DrawTexSize(spM, { m_scrollThumbX + capLW, thumbY }, midW, kTrackH, kPivotLeft);
-		}
-
-		// 右端
-		DrawTexSize(spR, { m_scrollThumbX + m_scrollThumbW - capRW, thumbY }, capRW, kTrackH, kPivotLeft);
-
-		// 持ち手 … 画像そのままの大きさで真ん中に
-		DrawTex(spG, { m_scrollThumbX + m_scrollThumbW / 2.0f, thumbY });
-	}
-
-	KdShaderManager::Instance().m_spriteShader.End();
-}
-
-int EquipDisplay::GetMaxScrollIndex() const
-{
-	return std::max(0, GetWeaponNum() - kVisibleNum);
-}
-
-void EquipDisplay::ScrollBarCalcThumb()
-{
-	const int   weaponNum = GetWeaponNum();
-	const int   maxIndex  = GetMaxScrollIndex();
-	// つまみが動ける範囲(レールのふちの内側)
-	const float innerX = kTrackLeft + kTrackInset;
-	const float innerW = kTrackW - kTrackInset * 2.0f;
-
-	// スクロールの必要がなければ、つまみはレールいっぱい
-	if (maxIndex == 0)
-	{
-		m_scrollThumbX = innerX;
-		m_scrollThumbW = innerW;
-		return;
-	}
-
-	//---------- つまみの長さ ----------
-	// レールの長さ × 見えている数 ÷ 全部の数(短すぎるとつかめないので下限あり)
-	const float thumbW = innerW * static_cast<float>(kVisibleNum) / static_cast<float>(weaponNum);
-	m_scrollThumbW = std::clamp(thumbW, m_scrollThumbMinW, innerW);
-
-	//---------- つまみの位置 ----------
-	// 今の番号が、一番左(0)〜一番右(maxIndex)のどこか → 0〜1の割合
-	const float ratio = static_cast<float>(m_scrollIndex) / static_cast<float>(maxIndex);
-
-	// 左端が動ける範囲(innerX 〜 innerX + innerW - つまみの長さ)
-	m_scrollThumbX = innerX + (innerW - m_scrollThumbW) * ratio;
 }
 
 void EquipDisplay::ScrollBarUpdate()
@@ -420,6 +292,134 @@ void EquipDisplay::ScrollBarUpdate()
 
 	//---------- 範囲内に収める ----------
 	m_scrollIndex = std::clamp(m_scrollIndex, 0, maxIndex);
+}
+
+void EquipDisplay::ScrollBarCalcThumb()
+{
+	const int   weaponNum = GetWeaponNum();
+	const int   maxIndex  = GetMaxScrollIndex();
+	// つまみが動ける範囲(レールのふちの内側)
+	const float innerX = kTrackLeft + kTrackInset;
+	const float innerW = kTrackW - kTrackInset * 2.0f;
+
+	// スクロールの必要がなければ、つまみはレールいっぱい
+	if (maxIndex == 0)
+	{
+		m_scrollThumbX = innerX;
+		m_scrollThumbW = innerW;
+		return;
+	}
+
+	//---------- つまみの長さ ----------
+	// レールの長さ × 見えている数 ÷ 全部の数(短すぎるとつかめないので下限あり)
+	const float thumbW = innerW * static_cast<float>(kVisibleNum) / static_cast<float>(weaponNum);
+	m_scrollThumbW = std::clamp(thumbW, m_scrollThumbMinW, innerW);
+
+	//---------- つまみの位置 ----------
+	// 今の番号が、一番左(0)〜一番右(maxIndex)のどこか → 0〜1の割合
+	const float ratio = static_cast<float>(m_scrollIndex) / static_cast<float>(maxIndex);
+
+	// 左端が動ける範囲(innerX 〜 innerX + innerW - つまみの長さ)
+	m_scrollThumbX = innerX + (innerW - m_scrollThumbW) * ratio;
+}
+
+int EquipDisplay::GetMaxScrollIndex() const
+{
+	return std::max(0, GetWeaponNum() - kVisibleNum);
+}
+
+Math::Vector2 EquipDisplay::GetSlotPos(int _slot) const
+{
+	return { kSlotPos.x + kSlotSpace * _slot, kSlotPos.y };
+}
+
+void EquipDisplay::DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale, const Math::Vector2& _pivot)
+{
+	if (!_spTex) { return; }
+	DrawTexSize(_spTex, _pos, _spTex->GetWidth() * _scale, _spTex->GetHeight() * _scale, _pivot);
+}
+
+void EquipDisplay::DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _w, float _h, const Math::Vector2& _pivot)
+{
+	if (!_spTex) { return; }
+
+	KdShaderManager::Instance().m_spriteShader.DrawTex(
+		_spTex.get(),
+		static_cast<int>(_pos.x), static_cast<int>(_pos.y),
+		static_cast<int>(_w), static_cast<int>(_h),
+		nullptr, &kWhiteColor, _pivot);
+}
+
+void EquipDisplay::DrawList()
+{
+	DrawTex(m_spTex[static_cast<int>(EquipTex::ListPanel)], kListPos);
+
+	const int equipWeapon = SceneManager::Instance().GetPlayerWeaponInfo();
+
+	for (int slot = 0; slot < kVisibleNum; slot++)
+	{
+		// 持っている武器だけを出す(足りない枠は何も描かない)
+		int listIndex = m_scrollIndex + slot;
+		if (listIndex >= GetWeaponNum()) { break; }
+
+		int weapon = m_ownedList[listIndex];
+		const Math::Vector2 slotPos = GetSlotPos(slot);
+
+		DrawTex(m_spWeaponTex[weapon][static_cast<int>(WeaponTex::Icon)], slotPos);
+
+		// 装備中 → 金の枠 + 「装備中」
+		if (weapon == equipWeapon)
+		{
+			DrawTex(m_spTex[static_cast<int>(EquipTex::SelectFrame)], slotPos);
+			DrawTex(m_spTex[static_cast<int>(EquipTex::Equipped)], { slotPos.x, kEquippedY });
+		}
+		// カーソルが乗っている → 銀の枠
+		else if (weapon == m_hoverIndex)
+		{
+			DrawTex(m_spTex[static_cast<int>(EquipTex::HoverFrame)], slotPos);
+		}
+	}
+}
+
+void EquipDisplay::DrawScrollBar()
+{
+	// ドット絵がにじまないよう、ポイントフィルタで描く(PotionInventoryUIと同じ)
+	KdShaderManager::Instance().m_spriteShader.Begin(false);
+
+	// レール(左端を基準に描く)
+	DrawTexSize(m_spTex[static_cast<int>(EquipTex::ScrollTrack)], { kTrackLeft, kTrackY }, kTrackW, kTrackH, kPivotLeft);
+
+	// マウスが乗っているときは明るい画像を使う
+	const bool hover = m_scrollThumbHoverFlg;
+	const auto& spL = m_spTex[static_cast<int>(hover ? EquipTex::ThumbLeftHover  : EquipTex::ThumbLeft)];
+	const auto& spM = m_spTex[static_cast<int>(hover ? EquipTex::ThumbMidHover   : EquipTex::ThumbMid)];
+	const auto& spR = m_spTex[static_cast<int>(hover ? EquipTex::ThumbRightHover : EquipTex::ThumbRight)];
+	const auto& spG = m_spTex[static_cast<int>(hover ? EquipTex::ThumbGripHover  : EquipTex::ThumbGrip)];
+
+	if (spL && spM && spR && spG)
+	{
+		const float capLW = static_cast<float>(spL->GetWidth());
+		const float capRW = static_cast<float>(spR->GetWidth());
+		const float thumbY = kTrackY;
+
+		// 左端
+		DrawTexSize(spL, { m_scrollThumbX, thumbY }, capLW, kTrackH, kPivotLeft);
+
+		// 中央 … 左端と右端を除いた長さに伸ばす
+		const float midW = m_scrollThumbW - capLW - capRW;
+		if (midW > 0.0f)
+		{
+			DrawTexSize(spM, { m_scrollThumbX + capLW, thumbY }, midW, kTrackH, kPivotLeft);
+		}
+
+		// 右端
+		DrawTexSize(spR, { m_scrollThumbX + m_scrollThumbW - capRW, thumbY }, capRW, kTrackH, kPivotLeft);
+
+		// 持ち手 … 画像そのままの大きさで真ん中に
+		DrawTex(spG, { m_scrollThumbX + m_scrollThumbW / 2.0f, thumbY });
+	}
+
+	KdShaderManager::Instance().m_spriteShader.End();
 }
 
 void EquipDisplay::DrawDetail()

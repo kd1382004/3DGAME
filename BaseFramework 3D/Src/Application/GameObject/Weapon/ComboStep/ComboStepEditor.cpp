@@ -1,6 +1,25 @@
 ﻿#include "ComboStepEditor.h"
 #include"ComboStepSaveLoad.h"
 
+ComboStepEditor::ComboStepEditor()
+{
+	m_isDirty = false;
+
+
+	// 最初はプレイヤーの剣のコンボを開く。なければ仮データ（保存先は同じ場所）
+	if (!LoadFromFile(kTestPath))
+	{
+		m_filePath = kTestPath;
+		CreateDummyData();
+
+		// モデルのパスが決まってから、アニメーション一覧を作る
+		LoadPreviewModel();
+		LoadPreviewWeapon();
+	}
+
+	m_isDirty = false;
+}
+
 void ComboStepEditor::Draw(bool* _open)
 {
 	// 表示する名前：未保存なら末尾に「 *」を付ける
@@ -424,135 +443,6 @@ void ComboStepEditor::Draw(bool* _open)
 	m_resetLayout = false;
 }
 
-
-ComboStepEditor::ComboStepEditor()
-{
-	m_isDirty = false;
-
-
-	// 最初はプレイヤーの剣のコンボを開く。なければ仮データ（保存先は同じ場所）
-	if (!LoadFromFile(kTestPath))
-	{
-		m_filePath = kTestPath;
-		CreateDummyData();
-
-		// モデルのパスが決まってから、アニメーション一覧を作る
-		LoadPreviewModel();
-		LoadPreviewWeapon();
-	}
-
-	m_isDirty = false;
-}
-
-void ComboStepEditor::NewFile()
-{
-	m_requestNewPopup = true;
-}
-
-void ComboStepEditor::OpenFile()
-{
-	RefreshFileList();
-	m_requestOpenPopup = true;
-}
-
-void ComboStepEditor::Save()
-{
-	// 新規（まだファイルがない）なら、名前を付けて保存へ
-	if (m_filePath.empty())
-	{
-		SaveAs();
-		return;
-	}
-	RequestSave(m_filePath);
-}
-
-void ComboStepEditor::RequestSave(const std::string& _path)
-{
-	// 検査のエラーがあれば「それでも保存しますか？」を出す
-	if (CountErrors() > 0)
-	{
-		m_pendingSavePath = _path;
-		m_requestSaveErrorPopup = true;
-		return;
-	}
-	SaveToFile(_path);
-}
-
-void ComboStepEditor::SaveAs()
-{
-	// 今のファイルの「持ち主/武器」を初期値にする
-	if (!m_filePath.empty())
-	{
-		const std::filesystem::path path(m_filePath);
-		m_saveAsOwner = path.parent_path().filename().string();
-		m_saveAsWeapon = path.stem().string();
-	}
-	m_requestSaveAsPopup = true;
-}
-
-bool ComboStepEditor::LoadFromFile(const std::string& _path)
-{
-	ComboFileData data;
-	if (!ComboStepSaveLoad::Load(_path, data))
-	{
-		return false;   // 失敗しても今のデータはそのまま
-	}
-
-	m_steps = data.m_steps;
-	m_charaModelPath = data.m_charaModelPath;
-	m_weaponModelPath = data.m_weaponModelPath;
-	m_filePath = std::filesystem::path(_path).lexically_normal().generic_string();
-
-	// 前のファイルの状態を持ち越さない
-	m_selected = -1;
-	m_undoStack.clear();
-	m_redoStack.clear();
-	m_preview = PreviewState();
-	m_isDirty = false;
-
-	LoadPreviewModel();
-	LoadPreviewWeapon();
-	return true;
-}
-
-bool ComboStepEditor::SaveToFile(const std::string& _path)
-{
-	ComboFileData data;
-	data.m_charaModelPath = m_charaModelPath;
-	data.m_weaponModelPath = m_weaponModelPath;
-	data.m_steps = m_steps;
-
-	if (!ComboStepSaveLoad::Save(_path, data))
-	{
-		return false;   // 失敗したら「*」は残したまま
-	}
-
-	m_filePath = std::filesystem::path(_path).lexically_normal().generic_string();
-	m_isDirty = false;
-
-	// ゲームに知らせる（プレイヤーが使っているファイルなら読み直される）
-	if (m_onSaved) { m_onSaved(m_filePath); }
-	return true;
-}
-
-void ComboStepEditor::RefreshFileList()
-{
-	m_fileList.clear();
-	m_fileListSelected = -1;
-
-	std::error_code ec;
-	if (!std::filesystem::exists(kComboRoot, ec)) { return; }
-
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(kComboRoot, ec))
-	{
-		if (!entry.is_regular_file()) { continue; }
-		if (entry.path().extension() != ".json") { continue; }
-
-		m_fileList.push_back(entry.path().lexically_relative(kComboRoot).generic_string());
-	}
-	std::sort(m_fileList.begin(), m_fileList.end());
-}
-
 void ComboStepEditor::DrawFilePopups()
 {
 	//==============================
@@ -778,265 +668,6 @@ void ComboStepEditor::DrawFilePopups()
 	}
 }
 
-void ComboStepEditor::PushUndoState(const std::vector<ComboStep>& _state)
-{
-	m_undoStack.push_back(_state);
-
-	// 古いものから捨てる
-	if (m_undoStack.size() > kUndoMax)
-	{
-		m_undoStack.erase(m_undoStack.begin());
-	}
-
-	// 新しく変更したら、やり直しの履歴は使えなくなる
-	m_redoStack.clear();
-}
-
-void ComboStepEditor::Undo()
-{
-	if (m_undoStack.empty()) { return; }
-
-	m_redoStack.push_back(m_steps);
-	m_steps = m_undoStack.back();
-	m_undoStack.pop_back();
-
-	// 選んでいる段が範囲外になっていたら直す
-	if (m_selected >= static_cast<int>(m_steps.size()))
-	{
-		m_selected = static_cast<int>(m_steps.size()) - 1;
-	}
-
-	m_stableSteps = m_steps;
-	m_editChanged = false;
-	m_isDirty = true;
-}
-
-void ComboStepEditor::Redo()
-{
-	if (m_redoStack.empty()) { return; }
-
-	m_undoStack.push_back(m_steps);
-	m_steps = m_redoStack.back();
-	m_redoStack.pop_back();
-
-	if (m_selected >= static_cast<int>(m_steps.size()))
-	{
-		m_selected = static_cast<int>(m_steps.size()) - 1;
-	}
-
-	m_stableSteps = m_steps;
-	m_editChanged = false;
-	m_isDirty = true;
-}
-
-void ComboStepEditor::RenumberComboIndex()
-{
-	for (int i = 0; i < m_steps.size(); i++)
-	{
-		m_steps[i].m_comboIndex = i;
-	}
-
-	m_isDirty = true;
-}
-
-void ComboStepEditor::AddStep()
-{
-	PushUndo();
-	ComboStep addComboStep;
-	addComboStep.m_animeName = "New";
-	m_steps.push_back(addComboStep);
-
-	m_selected = m_steps.size() - 1;
-	RenumberComboIndex();
-}
-
-void ComboStepEditor::DuplicateStep()
-{
-	if (m_selected < 0 || m_selected >= m_steps.size())
-	{
-		return;
-	}
-	PushUndo();
-
-	ComboStep addComboStep;
-	addComboStep = m_steps[m_selected];
-
-	auto itr = m_steps.begin() + m_selected + 1;
-	m_steps.insert(itr, addComboStep);
-
-	m_selected++;
-	RenumberComboIndex();
-}
-
-void ComboStepEditor::DeleteStep()
-{
-	if (m_selected < 0 || m_selected >= m_steps.size())
-	{
-		return;
-	}
-
-	PushUndo();
-
-	auto itr = m_steps.begin() + m_selected;
-	m_steps.erase(itr);
-
-
-
-	if (m_steps.empty())
-	{
-		m_selected = -1;
-	}
-	else
-	{
-		int listSiz = m_steps.size();
-		m_selected = std::min(m_selected, listSiz - 1);
-	}
-
-	RenumberComboIndex();
-}
-
-void ComboStepEditor::MoveStep(int _dir)
-{
-
-	const int num = static_cast<int>(m_steps.size());
-
-	// 選んでいる段が範囲外なら何もしない
-	if (m_selected < 0 || m_selected >= num)
-	{
-		return;
-	}
-
-	// 入れ替える相手が範囲外なら何もしない
-	int changeIndex = m_selected + _dir;
-	if (changeIndex < 0 || changeIndex >= num)
-	{
-		return;
-	}
-
-	PushUndo();
-
-	std::swap(m_steps[m_selected], m_steps[changeIndex]);
-	m_selected = changeIndex;
-	RenumberComboIndex();
-}
-
-void ComboStepEditor::CreateDummyData()
-{
-	//仮データ
-	m_steps.clear();
-
-	// 1段目：軽い横斬り
-	{
-		ComboStep step;
-		step.m_animeName = "Attack1";
-		step.m_comboIndex = 0;
-		step.m_speed = 1.0f;
-		step.m_acceptStart = 0.4f;
-		step.m_cancelPoint = 0.7f;
-		step.m_evasionCancel = 0.5f;
-		step.m_hitStart = 0.3f;
-		step.m_hitEnd = 0.5f;
-		step.m_trailStart = 0.25f;
-		step.m_trailEnd = 0.55f;
-		step.m_damageRate = 1.0f;
-		step.m_knockbackRate = 1.0f;
-		step.m_hitStopTime = 0.03f;
-		step.m_stepForward = 0.3f;
-		step.m_staminaCost = 0.0f;   // 1段目は攻撃開始時に別で消費する想定
-		m_steps.push_back(step);
-	}
-
-	// 2段目：返しの斬り
-	{
-		ComboStep step;
-		step.m_animeName = "Attack2";
-		step.m_comboIndex = 1;
-		step.m_speed = 1.1f;
-		step.m_acceptStart = 0.45f;
-		step.m_cancelPoint = 0.75f;
-		step.m_evasionCancel = 0.55f;
-		step.m_hitStart = 0.35f;
-		step.m_hitEnd = 0.55f;
-		step.m_trailStart = 0.3f;
-		step.m_trailEnd = 0.6f;
-		step.m_damageRate = 1.2f;
-		step.m_knockbackRate = 1.0f;
-		step.m_hitStopTime = 0.04f;
-		step.m_stepForward = 0.4f;
-		step.m_staminaCost = 10.0f;
-		m_steps.push_back(step);
-	}
-
-	// 3段目（最後）：大きく振り下ろす
-	{
-		ComboStep step;
-		step.m_animeName = "Attack3";
-		step.m_comboIndex = 2;
-		step.m_speed = 0.9f;
-		// 最後の段なので acceptStart / cancelPoint は 9.9 のまま
-		step.m_evasionCancel = 0.7f;
-		step.m_hitStart = 0.4f;
-		step.m_hitEnd = 0.6f;
-		step.m_trailStart = 0.35f;
-		step.m_trailEnd = 0.65f;
-		step.m_damageRate = 1.8f;
-		step.m_knockbackRate = 2.0f;
-		step.m_hitStopTime = 0.08f;
-		step.m_stepForward = 0.8f;
-		step.m_staminaCost = 15.0f;
-		m_steps.push_back(step);
-	}
-}
-
-void ComboStepEditor::LoadPreviewModel()
-{
-	// 失敗したときに古い一覧が残らないよう、先に空にする
-	m_spPreviewModel = nullptr;
-	m_spPreviewObj->SetModel(nullptr);
-	m_animeList.clear();
-	m_animeNames.clear();
-
-	if (m_charaModelPath.empty()) { return; }
-
-	// ファイルがないと、モデルの読み込み（テクスチャなど）がアサートで止まるので先に確かめる
-	std::error_code ec;
-	if (!std::filesystem::is_regular_file(m_charaModelPath, ec))
-	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] プレビュー用モデルのファイルがありません : %s\n"), m_charaModelPath.c_str());
-		return;
-	}
-
-	auto spModel = std::make_shared<KdModelData>();
-	if (!spModel->Load(m_charaModelPath))
-	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] プレビュー用モデルが読み込めません : %s\n"), m_charaModelPath.c_str());
-		return;
-	}
-
-	// GetAnimation は範囲外の番号で nullptr を返すので、そこまで回す
-	for (UINT i = 0; ; ++i)
-	{
-		const std::shared_ptr<KdAnimationData> spAnime = spModel->GetAnimation(i);
-		if (!spAnime) { break; }
-
-		AnimeInfo info;
-		info.m_name = spAnime->m_name;
-		info.m_length = spAnime->m_maxLength;
-		m_animeList.push_back(info);
-		m_animeNames.insert(info.m_name);
-	}
-
-	// 名前順に並べる（選ぶときに探しやすい）
-	std::sort(m_animeList.begin(), m_animeList.end(),
-		[](const AnimeInfo& _a, const AnimeInfo& _b) { return _a.m_name < _b.m_name; });
-
-	m_spPreviewModel = spModel;
-	m_spPreviewObj->SetModel(spModel);
-
-	KdDebugGUI::Instance().AddLog(U8("アニメーションを %d 個読み込みました : %s\n"),
-		static_cast<int>(m_animeList.size()), m_charaModelPath.c_str());
-}
-
 void ComboStepEditor::DrawAnimeNameSelect(ComboStep& _step)
 {
 	// 一覧が空（モデル未設定・読み込み失敗）なら、手で打てるように InputText のまま
@@ -1084,110 +715,6 @@ void ComboStepEditor::DrawAnimeNameSelect(ComboStep& _step)
 			ImGui::PopID();
 		}
 		ImGui::EndCombo();
-	}
-}
-
-//==============================
-// 連続再生プレビュー（第6章）
-//==============================
-
-float ComboStepEditor::GetAnimeLength(const std::string& _name) const
-{
-	for (const AnimeInfo& info : m_animeList)
-	{
-		if (info.m_name == _name) { return info.m_length; }
-	}
-	return 0.0f;
-}
-
-void ComboStepEditor::StartPreviewStep(int _stepIdx)
-{
-	m_preview.m_stepIdx = _stepIdx;
-	m_preview.m_time = 0.0f;
-	m_preview.m_reserved = false;
-	m_preview.m_hitStopTimer = 0.0f;
-	m_preview.m_hitStopDone = false;
-}
-
-void ComboStepEditor::UpdatePreview(float _dt)
-{
-	if (!m_preview.m_playing) { return; }
-
-	// 段が消されたなどで範囲外になったら止める
-	if (m_preview.m_stepIdx < 0 || m_preview.m_stepIdx >= static_cast<int>(m_steps.size()))
-	{
-		m_preview.m_playing = false;
-		m_preview.m_stepIdx = -1;
-		return;
-	}
-
-	// ヒットストップ中は時間を進めない（DeltaTime::HitStop と同じ考え方）
-	if (m_preview.m_hitStopTimer > 0.0f)
-	{
-		m_preview.m_hitStopTimer -= _dt;
-		return;
-	}
-
-	const ComboStep& step = m_steps[m_preview.m_stepIdx];
-	const float length = GetAnimeLength(step.m_animeName);
-	if (length <= 0.0f)
-	{
-		m_preview.m_playing = false;
-		m_preview.m_lastEvent = U8("アニメーションが見つからないので止めました：") + step.m_animeName;
-		return;
-	}
-
-	// KdAnimator::AdvanceTime と同じ進め方：1秒で 100 × speed フレーム
-	m_preview.m_time += _dt * kAnimeFramePerSec * step.m_speed;
-	const float progress = m_preview.m_time / length;
-
-	// 当たり判定の開始で、当たったことにしてヒットストップ
-	if (m_previewHitStop && !m_preview.m_hitStopDone && progress >= step.m_hitStart)
-	{
-		m_preview.m_hitStopDone = true;
-		m_preview.m_hitStopTimer = step.m_hitStopTime;
-	}
-
-	// 入力の予約（ゲームと同じく、受付開始より前の入力は無視）
-	if (!m_preview.m_reserved && progress >= step.m_acceptStart)
-	{
-		bool push = false;
-		switch (m_previewInputMode)
-		{
-		case PreviewInput_Fastest: push = true; break;
-		case PreviewInput_Latest:  push = (progress >= step.m_cancelPoint - 0.02f); break;
-		case PreviewInput_Manual:  push = m_previewKeyPushed; break;
-		default: break;
-		}
-		if (push)
-		{
-			m_preview.m_reserved = true;
-		}
-	}
-
-	// 予約があって切替点を過ぎ、次の段があれば次へ（ゲームと同じく配列の次）
-	if (m_preview.m_reserved && progress >= step.m_cancelPoint &&
-		m_preview.m_stepIdx + 1 < static_cast<int>(m_steps.size()))
-	{
-		m_preview.m_lastEvent = std::to_string(step.m_comboIndex) + U8("番 → 次の段へ");
-		StartPreviewStep(m_preview.m_stepIdx + 1);
-		return;
-	}
-
-	// 予約がないまま最後まで再生したら終了
-	if (m_preview.m_time >= length)
-	{
-		if (m_previewLoop)
-		{
-			m_preview.m_lastEvent = U8("コンボ終了 → 1段目から");
-			StartPreviewStep(0);
-		}
-		else
-		{
-			m_preview.m_lastEvent = std::to_string(step.m_comboIndex) + U8("番でコンボ終了");
-			m_preview.m_playing = false;
-			m_preview.m_time = length;   // 最後の位置で止めておく
-		}
 	}
 }
 
@@ -1399,34 +926,6 @@ void ComboStepEditor::DrawComboTimeline()
 	ImGui::TextColored(ImVec4(1.00f, 0.40f, 1.00f, 1.0f), U8("│再生位置"));
 }
 
-void ComboStepEditor::UpdatePreviewObject()
-{
-	if (!m_showPreviewModel || !m_spPreviewModel) { return; }
-
-	// どの段のどの時間を映すか
-	//  再生中・一時停止中 → プレビューの位置
-	//  止まっている       → 選んでいる段の最初
-	int   stepIdx = m_preview.m_stepIdx;
-	float time = m_preview.m_time;
-	if (stepIdx < 0 || stepIdx >= static_cast<int>(m_steps.size()))
-	{
-		stepIdx = m_selected;
-		time = 0.0f;
-	}
-	if (stepIdx < 0 || stepIdx >= static_cast<int>(m_steps.size())) { return; }
-
-	const ComboStep& step = m_steps[stepIdx];
-	const float length = GetAnimeLength(step.m_animeName);
-	if (length <= 0.0f) { return; }
-
-	const float progress = time / length;
-
-	m_spPreviewObj->SetPose(step.m_animeName, time);
-	m_spPreviewObj->SetHitActive(progress >= step.m_hitStart && progress <= step.m_hitEnd);
-	m_spPreviewObj->SetTrailActive(progress >= step.m_trailStart && progress < step.m_trailEnd);
-	m_spPreviewObj->KeepAlive();   // 呼ばれている間だけ描かれる
-}
-
 void ComboStepEditor::DrawPreviewWindow()
 {
 	// 最初だけ画面の右側に出す（あとは動かした位置が imgui.ini に残る）
@@ -1517,12 +1016,117 @@ void ComboStepEditor::DrawPreviewWindow()
 	ImGui::End();
 }
 
-void ComboStepEditor::LoadPreviewWeapon()
+//==============================
+// 連続再生プレビュー（第6章）
+//==============================
+
+float ComboStepEditor::GetAnimeLength(const std::string& _name) const
 {
-	if (!m_spPreviewObj->SetWeaponModel(m_weaponModelPath))
+	for (const AnimeInfo& info : m_animeList)
 	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] プレビュー用の武器モデルが読み込めません : %s\n"), m_weaponModelPath.c_str());
+		if (info.m_name == _name) { return info.m_length; }
 	}
+	return 0.0f;
+}
+
+void ComboStepEditor::AddStep()
+{
+	PushUndo();
+	ComboStep addComboStep;
+	addComboStep.m_animeName = "New";
+	m_steps.push_back(addComboStep);
+
+	m_selected = m_steps.size() - 1;
+	RenumberComboIndex();
+}
+
+bool ComboStepEditor::LoadFromFile(const std::string& _path)
+{
+	ComboFileData data;
+	if (!ComboStepSaveLoad::Load(_path, data))
+	{
+		return false;   // 失敗しても今のデータはそのまま
+	}
+
+	m_steps = data.m_steps;
+	m_charaModelPath = data.m_charaModelPath;
+	m_weaponModelPath = data.m_weaponModelPath;
+	m_filePath = std::filesystem::path(_path).lexically_normal().generic_string();
+
+	// 前のファイルの状態を持ち越さない
+	m_selected = -1;
+	m_undoStack.clear();
+	m_redoStack.clear();
+	m_preview = PreviewState();
+	m_isDirty = false;
+
+	LoadPreviewModel();
+	LoadPreviewWeapon();
+	return true;
+}
+
+bool ComboStepEditor::SaveToFile(const std::string& _path)
+{
+	ComboFileData data;
+	data.m_charaModelPath = m_charaModelPath;
+	data.m_weaponModelPath = m_weaponModelPath;
+	data.m_steps = m_steps;
+
+	if (!ComboStepSaveLoad::Save(_path, data))
+	{
+		return false;   // 失敗したら「*」は残したまま
+	}
+
+	m_filePath = std::filesystem::path(_path).lexically_normal().generic_string();
+	m_isDirty = false;
+
+	// ゲームに知らせる（プレイヤーが使っているファイルなら読み直される）
+	if (m_onSaved) { m_onSaved(m_filePath); }
+	return true;
+}
+
+void ComboStepEditor::RefreshFileList()
+{
+	m_fileList.clear();
+	m_fileListSelected = -1;
+
+	std::error_code ec;
+	if (!std::filesystem::exists(kComboRoot, ec)) { return; }
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(kComboRoot, ec))
+	{
+		if (!entry.is_regular_file()) { continue; }
+		if (entry.path().extension() != ".json") { continue; }
+
+		m_fileList.push_back(entry.path().lexically_relative(kComboRoot).generic_string());
+	}
+	std::sort(m_fileList.begin(), m_fileList.end());
+}
+
+void ComboStepEditor::PushUndoState(const std::vector<ComboStep>& _state)
+{
+	m_undoStack.push_back(_state);
+
+	// 古いものから捨てる
+	if (m_undoStack.size() > kUndoMax)
+	{
+		m_undoStack.erase(m_undoStack.begin());
+	}
+
+	// 新しく変更したら、やり直しの履歴は使えなくなる
+	m_redoStack.clear();
+}
+
+void ComboStepEditor::RequestSave(const std::string& _path)
+{
+	// 検査のエラーがあれば「それでも保存しますか？」を出す
+	if (CountErrors() > 0)
+	{
+		m_pendingSavePath = _path;
+		m_requestSaveErrorPopup = true;
+		return;
+	}
+	SaveToFile(_path);
 }
 
 void ComboStepEditor::TogglePreviewPlay()
@@ -1544,4 +1148,399 @@ void ComboStepEditor::TogglePreviewPlay()
 		m_preview.m_lastEvent.clear();
 	}
 	m_preview.m_playing = true;
+}
+
+void ComboStepEditor::NewFile()
+{
+	m_requestNewPopup = true;
+}
+
+void ComboStepEditor::OpenFile()
+{
+	RefreshFileList();
+	m_requestOpenPopup = true;
+}
+
+void ComboStepEditor::Save()
+{
+	// 新規（まだファイルがない）なら、名前を付けて保存へ
+	if (m_filePath.empty())
+	{
+		SaveAs();
+		return;
+	}
+	RequestSave(m_filePath);
+}
+
+void ComboStepEditor::SaveAs()
+{
+	// 今のファイルの「持ち主/武器」を初期値にする
+	if (!m_filePath.empty())
+	{
+		const std::filesystem::path path(m_filePath);
+		m_saveAsOwner = path.parent_path().filename().string();
+		m_saveAsWeapon = path.stem().string();
+	}
+	m_requestSaveAsPopup = true;
+}
+
+void ComboStepEditor::Undo()
+{
+	if (m_undoStack.empty()) { return; }
+
+	m_redoStack.push_back(m_steps);
+	m_steps = m_undoStack.back();
+	m_undoStack.pop_back();
+
+	// 選んでいる段が範囲外になっていたら直す
+	if (m_selected >= static_cast<int>(m_steps.size()))
+	{
+		m_selected = static_cast<int>(m_steps.size()) - 1;
+	}
+
+	m_stableSteps = m_steps;
+	m_editChanged = false;
+	m_isDirty = true;
+}
+
+void ComboStepEditor::Redo()
+{
+	if (m_redoStack.empty()) { return; }
+
+	m_undoStack.push_back(m_steps);
+	m_steps = m_redoStack.back();
+	m_redoStack.pop_back();
+
+	if (m_selected >= static_cast<int>(m_steps.size()))
+	{
+		m_selected = static_cast<int>(m_steps.size()) - 1;
+	}
+
+	m_stableSteps = m_steps;
+	m_editChanged = false;
+	m_isDirty = true;
+}
+
+void ComboStepEditor::RenumberComboIndex()
+{
+	for (int i = 0; i < m_steps.size(); i++)
+	{
+		m_steps[i].m_comboIndex = i;
+	}
+
+	m_isDirty = true;
+}
+
+void ComboStepEditor::DuplicateStep()
+{
+	if (m_selected < 0 || m_selected >= m_steps.size())
+	{
+		return;
+	}
+	PushUndo();
+
+	ComboStep addComboStep;
+	addComboStep = m_steps[m_selected];
+
+	auto itr = m_steps.begin() + m_selected + 1;
+	m_steps.insert(itr, addComboStep);
+
+	m_selected++;
+	RenumberComboIndex();
+}
+
+void ComboStepEditor::DeleteStep()
+{
+	if (m_selected < 0 || m_selected >= m_steps.size())
+	{
+		return;
+	}
+
+	PushUndo();
+
+	auto itr = m_steps.begin() + m_selected;
+	m_steps.erase(itr);
+
+
+
+	if (m_steps.empty())
+	{
+		m_selected = -1;
+	}
+	else
+	{
+		int listSiz = m_steps.size();
+		m_selected = std::min(m_selected, listSiz - 1);
+	}
+
+	RenumberComboIndex();
+}
+
+void ComboStepEditor::MoveStep(int _dir)
+{
+
+	const int num = static_cast<int>(m_steps.size());
+
+	// 選んでいる段が範囲外なら何もしない
+	if (m_selected < 0 || m_selected >= num)
+	{
+		return;
+	}
+
+	// 入れ替える相手が範囲外なら何もしない
+	int changeIndex = m_selected + _dir;
+	if (changeIndex < 0 || changeIndex >= num)
+	{
+		return;
+	}
+
+	PushUndo();
+
+	std::swap(m_steps[m_selected], m_steps[changeIndex]);
+	m_selected = changeIndex;
+	RenumberComboIndex();
+}
+
+void ComboStepEditor::CreateDummyData()
+{
+	//仮データ
+	m_steps.clear();
+
+	// 1段目：軽い横斬り
+	{
+		ComboStep step;
+		step.m_animeName = "Attack1";
+		step.m_comboIndex = 0;
+		step.m_speed = 1.0f;
+		step.m_acceptStart = 0.4f;
+		step.m_cancelPoint = 0.7f;
+		step.m_evasionCancel = 0.5f;
+		step.m_hitStart = 0.3f;
+		step.m_hitEnd = 0.5f;
+		step.m_trailStart = 0.25f;
+		step.m_trailEnd = 0.55f;
+		step.m_damageRate = 1.0f;
+		step.m_knockbackRate = 1.0f;
+		step.m_hitStopTime = 0.03f;
+		step.m_stepForward = 0.3f;
+		step.m_staminaCost = 0.0f;   // 1段目は攻撃開始時に別で消費する想定
+		m_steps.push_back(step);
+	}
+
+	// 2段目：返しの斬り
+	{
+		ComboStep step;
+		step.m_animeName = "Attack2";
+		step.m_comboIndex = 1;
+		step.m_speed = 1.1f;
+		step.m_acceptStart = 0.45f;
+		step.m_cancelPoint = 0.75f;
+		step.m_evasionCancel = 0.55f;
+		step.m_hitStart = 0.35f;
+		step.m_hitEnd = 0.55f;
+		step.m_trailStart = 0.3f;
+		step.m_trailEnd = 0.6f;
+		step.m_damageRate = 1.2f;
+		step.m_knockbackRate = 1.0f;
+		step.m_hitStopTime = 0.04f;
+		step.m_stepForward = 0.4f;
+		step.m_staminaCost = 10.0f;
+		m_steps.push_back(step);
+	}
+
+	// 3段目（最後）：大きく振り下ろす
+	{
+		ComboStep step;
+		step.m_animeName = "Attack3";
+		step.m_comboIndex = 2;
+		step.m_speed = 0.9f;
+		// 最後の段なので acceptStart / cancelPoint は 9.9 のまま
+		step.m_evasionCancel = 0.7f;
+		step.m_hitStart = 0.4f;
+		step.m_hitEnd = 0.6f;
+		step.m_trailStart = 0.35f;
+		step.m_trailEnd = 0.65f;
+		step.m_damageRate = 1.8f;
+		step.m_knockbackRate = 2.0f;
+		step.m_hitStopTime = 0.08f;
+		step.m_stepForward = 0.8f;
+		step.m_staminaCost = 15.0f;
+		m_steps.push_back(step);
+	}
+}
+
+void ComboStepEditor::LoadPreviewWeapon()
+{
+	if (!m_spPreviewObj->SetWeaponModel(m_weaponModelPath))
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] プレビュー用の武器モデルが読み込めません : %s\n"), m_weaponModelPath.c_str());
+	}
+}
+
+void ComboStepEditor::LoadPreviewModel()
+{
+	// 失敗したときに古い一覧が残らないよう、先に空にする
+	m_spPreviewModel = nullptr;
+	m_spPreviewObj->SetModel(nullptr);
+	m_animeList.clear();
+	m_animeNames.clear();
+
+	if (m_charaModelPath.empty()) { return; }
+
+	// ファイルがないと、モデルの読み込み（テクスチャなど）がアサートで止まるので先に確かめる
+	std::error_code ec;
+	if (!std::filesystem::is_regular_file(m_charaModelPath, ec))
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] プレビュー用モデルのファイルがありません : %s\n"), m_charaModelPath.c_str());
+		return;
+	}
+
+	auto spModel = std::make_shared<KdModelData>();
+	if (!spModel->Load(m_charaModelPath))
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] プレビュー用モデルが読み込めません : %s\n"), m_charaModelPath.c_str());
+		return;
+	}
+
+	// GetAnimation は範囲外の番号で nullptr を返すので、そこまで回す
+	for (UINT i = 0; ; ++i)
+	{
+		const std::shared_ptr<KdAnimationData> spAnime = spModel->GetAnimation(i);
+		if (!spAnime) { break; }
+
+		AnimeInfo info;
+		info.m_name = spAnime->m_name;
+		info.m_length = spAnime->m_maxLength;
+		m_animeList.push_back(info);
+		m_animeNames.insert(info.m_name);
+	}
+
+	// 名前順に並べる（選ぶときに探しやすい）
+	std::sort(m_animeList.begin(), m_animeList.end(),
+		[](const AnimeInfo& _a, const AnimeInfo& _b) { return _a.m_name < _b.m_name; });
+
+	m_spPreviewModel = spModel;
+	m_spPreviewObj->SetModel(spModel);
+
+	KdDebugGUI::Instance().AddLog(U8("アニメーションを %d 個読み込みました : %s\n"),
+		static_cast<int>(m_animeList.size()), m_charaModelPath.c_str());
+}
+
+void ComboStepEditor::UpdatePreview(float _dt)
+{
+	if (!m_preview.m_playing) { return; }
+
+	// 段が消されたなどで範囲外になったら止める
+	if (m_preview.m_stepIdx < 0 || m_preview.m_stepIdx >= static_cast<int>(m_steps.size()))
+	{
+		m_preview.m_playing = false;
+		m_preview.m_stepIdx = -1;
+		return;
+	}
+
+	// ヒットストップ中は時間を進めない（DeltaTime::HitStop と同じ考え方）
+	if (m_preview.m_hitStopTimer > 0.0f)
+	{
+		m_preview.m_hitStopTimer -= _dt;
+		return;
+	}
+
+	const ComboStep& step = m_steps[m_preview.m_stepIdx];
+	const float length = GetAnimeLength(step.m_animeName);
+	if (length <= 0.0f)
+	{
+		m_preview.m_playing = false;
+		m_preview.m_lastEvent = U8("アニメーションが見つからないので止めました：") + step.m_animeName;
+		return;
+	}
+
+	// KdAnimator::AdvanceTime と同じ進め方：1秒で 100 × speed フレーム
+	m_preview.m_time += _dt * kAnimeFramePerSec * step.m_speed;
+	const float progress = m_preview.m_time / length;
+
+	// 当たり判定の開始で、当たったことにしてヒットストップ
+	if (m_previewHitStop && !m_preview.m_hitStopDone && progress >= step.m_hitStart)
+	{
+		m_preview.m_hitStopDone = true;
+		m_preview.m_hitStopTimer = step.m_hitStopTime;
+	}
+
+	// 入力の予約（ゲームと同じく、受付開始より前の入力は無視）
+	if (!m_preview.m_reserved && progress >= step.m_acceptStart)
+	{
+		bool push = false;
+		switch (m_previewInputMode)
+		{
+		case PreviewInput_Fastest: push = true; break;
+		case PreviewInput_Latest:  push = (progress >= step.m_cancelPoint - 0.02f); break;
+		case PreviewInput_Manual:  push = m_previewKeyPushed; break;
+		default: break;
+		}
+		if (push)
+		{
+			m_preview.m_reserved = true;
+		}
+	}
+
+	// 予約があって切替点を過ぎ、次の段があれば次へ（ゲームと同じく配列の次）
+	if (m_preview.m_reserved && progress >= step.m_cancelPoint &&
+		m_preview.m_stepIdx + 1 < static_cast<int>(m_steps.size()))
+	{
+		m_preview.m_lastEvent = std::to_string(step.m_comboIndex) + U8("番 → 次の段へ");
+		StartPreviewStep(m_preview.m_stepIdx + 1);
+		return;
+	}
+
+	// 予約がないまま最後まで再生したら終了
+	if (m_preview.m_time >= length)
+	{
+		if (m_previewLoop)
+		{
+			m_preview.m_lastEvent = U8("コンボ終了 → 1段目から");
+			StartPreviewStep(0);
+		}
+		else
+		{
+			m_preview.m_lastEvent = std::to_string(step.m_comboIndex) + U8("番でコンボ終了");
+			m_preview.m_playing = false;
+			m_preview.m_time = length;   // 最後の位置で止めておく
+		}
+	}
+}
+
+void ComboStepEditor::StartPreviewStep(int _stepIdx)
+{
+	m_preview.m_stepIdx = _stepIdx;
+	m_preview.m_time = 0.0f;
+	m_preview.m_reserved = false;
+	m_preview.m_hitStopTimer = 0.0f;
+	m_preview.m_hitStopDone = false;
+}
+
+void ComboStepEditor::UpdatePreviewObject()
+{
+	if (!m_showPreviewModel || !m_spPreviewModel) { return; }
+
+	// どの段のどの時間を映すか
+	//  再生中・一時停止中 → プレビューの位置
+	//  止まっている       → 選んでいる段の最初
+	int   stepIdx = m_preview.m_stepIdx;
+	float time = m_preview.m_time;
+	if (stepIdx < 0 || stepIdx >= static_cast<int>(m_steps.size()))
+	{
+		stepIdx = m_selected;
+		time = 0.0f;
+	}
+	if (stepIdx < 0 || stepIdx >= static_cast<int>(m_steps.size())) { return; }
+
+	const ComboStep& step = m_steps[stepIdx];
+	const float length = GetAnimeLength(step.m_animeName);
+	if (length <= 0.0f) { return; }
+
+	const float progress = time / length;
+
+	m_spPreviewObj->SetPose(step.m_animeName, time);
+	m_spPreviewObj->SetHitActive(progress >= step.m_hitStart && progress <= step.m_hitEnd);
+	m_spPreviewObj->SetTrailActive(progress >= step.m_trailStart && progress < step.m_trailEnd);
+	m_spPreviewObj->KeepAlive();   // 呼ばれている間だけ描かれる
 }

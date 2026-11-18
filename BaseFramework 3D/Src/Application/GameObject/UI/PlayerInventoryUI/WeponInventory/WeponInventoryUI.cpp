@@ -194,54 +194,6 @@ void WeponInventoryUI::Init()
 	}
 }
 
-void WeponInventoryUI::OnSelect()
-{
-	// UI と武器の強化 enum は同じ並び（末尾が UI では Icon、武器では Body）であることが前提
-	static_assert(static_cast<int>(WeaponsStrengtheningSiz) == static_cast<int>(::WeaponsStrengtheningSiz),
-		"PlayerInventoryUI と WeaponBase の強化 enum の数が違います");
-
-	std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
-	if (!spPlayer) { return; }
-	std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
-	if (!spWeapon) { return; }
-	std::shared_ptr<PotionTexInfo>spTexInfo = m_spContext->m_wpPotionTexInfo.lock();
-	if (!spTexInfo) { return; }
-
-	// 配列の番号 = 種類。武器側も同じ並びなので、番号どおりにコピーする
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
-	{
-		WeaponsStrengtheningInfo& ui = m_weaponsStrengtheningInfo[i];
-		const ::WeaponsStrengtheningInfo& src = spWeapon->GetWeaponsStrengtheningInfo(i);
-
-		// テクスチャは最初の1回だけ読む
-		if (!ui.m_spExplanationTex)
-		{
-			ui.m_spExplanationTex = spTexInfo->GetWeaponsStrengtheningExplanation(i);
-			ui.m_spNameTex = spTexInfo->GetWeaponsStrengtheningName(i);
-		}
-
-		// データは開くたびに取り直す
-		ui.m_lv = src.m_lv;
-		ui.m_nextLvNum = src.m_nextLvNum;
-		ui.m_strengtheningItemID = src.m_strengtheningItemID;
-		ui.m_myNodeID = src.m_myNodeID;
-		ui.m_preconditionNodeID = src.m_preconditionNodeID;
-		ui.m_preconditionNodeIndex = spWeapon->FindIndexByNodeID(src.m_preconditionNodeID); // -1 = 前提なし
-	}
-
-	m_selectIndex = 0;
-	m_spContext->m_spSelectExplanationTex = m_weaponsStrengtheningInfo[m_selectIndex].m_spExplanationTex;
-	m_spContext->m_spSelectNameTex = m_weaponsStrengtheningInfo[m_selectIndex].m_spNameTex;
-	m_spContext->m_num = m_weaponsStrengtheningInfo[m_selectIndex].m_lv;
-	m_selectWeaponsStrengtheningNextLVNum = m_weaponsStrengtheningInfo[m_selectIndex].m_nextLvNum;
-	m_weaponsStrengtheningInfo[m_selectIndex].m_hit = true;
-
-	WeaponChooseFlg(m_selectIndex);
-
-
-	WeaponsStrengtheningInfoInitPos();
-}
-
 void WeponInventoryUI::Update()
 {
 	//持ってる数を武器に渡す
@@ -547,6 +499,54 @@ void WeponInventoryUI::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spLVTex, m_LVTex2DPos.x, m_LVTex2DPos.y, lvW, lvH, nullptr, nullptr, pivot);
 	}
 
+}
+
+void WeponInventoryUI::OnSelect()
+{
+	// UI と武器の強化 enum は同じ並び（末尾が UI では Icon、武器では Body）であることが前提
+	static_assert(static_cast<int>(WeaponsStrengtheningSiz) == static_cast<int>(::WeaponsStrengtheningSiz),
+		"PlayerInventoryUI と WeaponBase の強化 enum の数が違います");
+
+	std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
+	if (!spPlayer) { return; }
+	std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
+	if (!spWeapon) { return; }
+	std::shared_ptr<PotionTexInfo>spTexInfo = m_spContext->m_wpPotionTexInfo.lock();
+	if (!spTexInfo) { return; }
+
+	// 配列の番号 = 種類。武器側も同じ並びなので、番号どおりにコピーする
+	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	{
+		WeaponsStrengtheningInfo& ui = m_weaponsStrengtheningInfo[i];
+		const ::WeaponsStrengtheningInfo& src = spWeapon->GetWeaponsStrengtheningInfo(i);
+
+		// テクスチャは最初の1回だけ読む
+		if (!ui.m_spExplanationTex)
+		{
+			ui.m_spExplanationTex = spTexInfo->GetWeaponsStrengtheningExplanation(i);
+			ui.m_spNameTex = spTexInfo->GetWeaponsStrengtheningName(i);
+		}
+
+		// データは開くたびに取り直す
+		ui.m_lv = src.m_lv;
+		ui.m_nextLvNum = src.m_nextLvNum;
+		ui.m_strengtheningItemID = src.m_strengtheningItemID;
+		ui.m_myNodeID = src.m_myNodeID;
+		ui.m_preconditionNodeID = src.m_preconditionNodeID;
+		ui.m_preconditionNodeIndex = spWeapon->FindIndexByNodeID(src.m_preconditionNodeID); // -1 = 前提なし
+	}
+
+	m_selectIndex = 0;
+	m_spContext->m_spSelectExplanationTex = m_weaponsStrengtheningInfo[m_selectIndex].m_spExplanationTex;
+	m_spContext->m_spSelectNameTex = m_weaponsStrengtheningInfo[m_selectIndex].m_spNameTex;
+	m_spContext->m_num = m_weaponsStrengtheningInfo[m_selectIndex].m_lv;
+	m_selectWeaponsStrengtheningNextLVNum = m_weaponsStrengtheningInfo[m_selectIndex].m_nextLvNum;
+	m_weaponsStrengtheningInfo[m_selectIndex].m_hit = true;
+
+	WeaponChooseFlg(m_selectIndex);
+
+
+	WeaponsStrengtheningInfoInitPos();
 }
 
 void WeponInventoryUI::WeaponsStrengtheningInfoInitPos()

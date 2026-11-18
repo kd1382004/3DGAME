@@ -12,126 +12,7 @@ class ComboPreviewObject : public KdGameObject
 {
 public:
 
-	// 映すモデル（nullptr で消す）
-	// _spData ... 映すモデル
-	void SetModel(const std::shared_ptr<KdModelData>& _spData)
-	{
-		m_spModel = _spData ? std::make_shared<KdModelWork>(_spData) : nullptr;
-	}
-
-	// 手に持たせる武器のモデル（空のパスで外す）。読み込めなければ false
-	// _path ... 武器モデルのパス
-	bool SetWeaponModel(const std::string& _path)
-	{
-		m_spWeapon = nullptr;
-		if (_path.empty()) { return true; }
-
-		// ファイルがないと、モデルの読み込み（テクスチャなど）がアサートで止まるので先に確かめる
-		std::error_code ec;
-		if (!std::filesystem::is_regular_file(_path, ec)) { return false; }
-
-		auto spWeapon = std::make_shared<KdModelData>();
-		if (!spWeapon->Load(_path)) { return false; }
-
-		m_spWeapon = spWeapon;
-
-		// 軌跡を出す切っ先の位置（Sword::Init と同じく "SwordTip" ノード。なければ手から 0.6m 先）
-		m_tipLocal = { 0.0f, 0.6f, 0.0f };
-		if (KdModelData::Node* pTip = spWeapon->FindNode("SwordTip"))
-		{
-			m_tipLocal = pTip->m_localTransform.Translation();
-		}
-		return true;
-	}
-
-	// ゲームのカメラ（プレビューを描いた後、シェーダーのカメラをこれに戻す）
-	// _spCamera ... ゲームのカメラ
-	void SetMainCamera(const std::shared_ptr<KdGameObject>& _spCamera) { m_wpMainCamera = _spCamera; }
-
-	// 軌跡を出す区間（trailStart〜trailEnd）にいるか
-	// _active ... 軌跡を出すか
-	void SetTrailActive(bool _active) { m_trailActive = _active; }
-
-	// 当たり判定が出ている間は赤っぽく描く
-	// _active ... 当たり判定が出ているか
-	void SetHitActive(bool _active) { m_hitActive = _active; }
-
-	// エディターが毎フレーム呼ぶ。呼ばれなくなったら数フレームで描くのをやめる
-	void KeepAlive() { m_aliveFrames = 3; }
-
-	// 描くテクスチャの大きさ（ピクセル）。ウィンドウの大きさに合わせて毎フレーム呼んでよい
-	// _w ... 横幅(ピクセル)
-	// _h ... 高さ(ピクセル)
-	void SetViewSize(int _w, int _h)
-	{
-		m_reqW = std::max(_w, 16);
-		m_reqH = std::max(_h, 16);
-	}
-
-	// ImGui::Image に渡すテクスチャ（まだ描いていなければ nullptr）
-	ImTextureID GetTextureID() const
-	{
-		if (!m_rtPack.m_RTTexture) { return ImTextureID{}; }
-		return (ImTextureID)m_rtPack.m_RTTexture->WorkSRView();
-	}
-
-	//==============================
-	// 見た目の設定（エディターから触る）
-	//==============================
-	float         m_camYaw = 180.0f;    // カメラの水平角度（度）
-	float         m_camPitch = 10.0f;   // カメラの見下ろし角度（度）
-	float         m_camDistance = 3.0f; // カメラとの距離（m）
-	float         m_camHeight = 0.9f;   // 注視する高さ（m）
-	Math::Color   m_bgColor = { 0.35f, 0.38f, 0.42f, 1.0f }; // 背景色
-	float         m_brightness = 1.5f;  // 明るさ（色に掛ける）
-	float         m_emissive = 0.25f;   // 自己発光（暗いダンジョンの光でも見えるように）
-
-	bool          m_showTrail = true;   // 軌跡を出すか
-
-	// 武器を付けるノードと、そこからの回転（PlayerBase::Update と同じ値）
-	std::string   m_weaponNodeName = "Weapon.R";
-	Math::Vector3 m_weaponRot = { 0.0f, 0.0f, 70.0f };   // 度（x=ピッチ, y=ヨー, z=ロール）
-
-	//カメラの位置を最初に戻す
-	void ResetCamera()
-	{
-		m_camYaw = 180.0f; m_camPitch = 10.0f; m_camDistance = 3.0f; m_camHeight = 0.9f;
-	}
-
-	// アニメーション _animeName の _time（フレーム）の姿勢にする
-	void SetPose(const std::string& _animeName, float _time)
-	{
-		if (!m_spModel || !m_spModel->GetData()) { return; }
-
-		// 軌跡用：段（アニメーション）が変わったら軌跡を消す。時間が動いたときだけ点を足す
-		if (_animeName != m_lastPoseAnime || _time < m_lastPoseTime)
-		{
-			m_trailClearRequest = true;
-		}
-		if (_animeName != m_lastPoseAnime || _time != m_lastPoseTime)
-		{
-			m_poseChanged = true;
-		}
-		m_lastPoseAnime = _animeName;
-		m_lastPoseTime = _time;
-
-		const std::shared_ptr<KdAnimationData> spAnime = m_spModel->GetData()->GetAnimation(_animeName);
-		if (!spAnime) { return; }
-
-		const float time = std::clamp(_time, 0.0f, spAnime->m_maxLength);
-
-		// KdAnimator::AdvanceTime と同じく、ノードごとに補間した行列を入れる
-		std::vector<KdModelWork::Node>& nodes = m_spModel->WorkNodes();
-		for (KdAnimationData::Node& animeNode : spAnime->m_nodes)
-		{
-			const int idx = animeNode.m_nodeOffset;
-			if (idx < 0 || idx >= static_cast<int>(nodes.size())) { continue; }
-
-			animeNode.Interpolate(nodes[idx].m_localTransform, time);
-		}
-
-		m_spModel->CalcNodeMatrices();
-	}
+	//---- 基本の処理 ----
 
 	//更新
 	void Update() override
@@ -214,20 +95,170 @@ public:
 		}
 	}
 
+	//---- 取得 ----
+
+	// ImGui::Image に渡すテクスチャ（まだ描いていなければ nullptr）
+	ImTextureID GetTextureID() const
+	{
+		if (!m_rtPack.m_RTTexture) { return ImTextureID{}; }
+		return (ImTextureID)m_rtPack.m_RTTexture->WorkSRView();
+	}
+
+	//---- 設定 ----
+
+	// 映すモデル（nullptr で消す）
+	// _spData ... 映すモデル
+	void SetModel(const std::shared_ptr<KdModelData>& _spData)
+	{
+		m_spModel = _spData ? std::make_shared<KdModelWork>(_spData) : nullptr;
+	}
+
+	// 手に持たせる武器のモデル（空のパスで外す）。読み込めなければ false
+	// _path ... 武器モデルのパス
+	bool SetWeaponModel(const std::string& _path)
+	{
+		m_spWeapon = nullptr;
+		if (_path.empty()) { return true; }
+
+		// ファイルがないと、モデルの読み込み（テクスチャなど）がアサートで止まるので先に確かめる
+		std::error_code ec;
+		if (!std::filesystem::is_regular_file(_path, ec)) { return false; }
+
+		auto spWeapon = std::make_shared<KdModelData>();
+		if (!spWeapon->Load(_path)) { return false; }
+
+		m_spWeapon = spWeapon;
+
+		// 軌跡を出す切っ先の位置（Sword::Init と同じく "SwordTip" ノード。なければ手から 0.6m 先）
+		m_tipLocal = { 0.0f, 0.6f, 0.0f };
+		if (KdModelData::Node* pTip = spWeapon->FindNode("SwordTip"))
+		{
+			m_tipLocal = pTip->m_localTransform.Translation();
+		}
+		return true;
+	}
+
+	// ゲームのカメラ（プレビューを描いた後、シェーダーのカメラをこれに戻す）
+	// _spCamera ... ゲームのカメラ
+	void SetMainCamera(const std::shared_ptr<KdGameObject>& _spCamera) { m_wpMainCamera = _spCamera; }
+
+	// 軌跡を出す区間（trailStart〜trailEnd）にいるか
+	// _active ... 軌跡を出すか
+	void SetTrailActive(bool _active) { m_trailActive = _active; }
+
+	// 当たり判定が出ている間は赤っぽく描く
+	// _active ... 当たり判定が出ているか
+	void SetHitActive(bool _active) { m_hitActive = _active; }
+
+	// 描くテクスチャの大きさ（ピクセル）。ウィンドウの大きさに合わせて毎フレーム呼んでよい
+	// _w ... 横幅(ピクセル)
+	// _h ... 高さ(ピクセル)
+	void SetViewSize(int _w, int _h)
+	{
+		m_reqW = std::max(_w, 16);
+		m_reqH = std::max(_h, 16);
+	}
+
+	// アニメーション _animeName の _time（フレーム）の姿勢にする
+	void SetPose(const std::string& _animeName, float _time)
+	{
+		if (!m_spModel || !m_spModel->GetData()) { return; }
+
+		// 軌跡用：段（アニメーション）が変わったら軌跡を消す。時間が動いたときだけ点を足す
+		if (_animeName != m_lastPoseAnime || _time < m_lastPoseTime)
+		{
+			m_trailClearRequest = true;
+		}
+		if (_animeName != m_lastPoseAnime || _time != m_lastPoseTime)
+		{
+			m_poseChanged = true;
+		}
+		m_lastPoseAnime = _animeName;
+		m_lastPoseTime = _time;
+
+		const std::shared_ptr<KdAnimationData> spAnime = m_spModel->GetData()->GetAnimation(_animeName);
+		if (!spAnime) { return; }
+
+		const float time = std::clamp(_time, 0.0f, spAnime->m_maxLength);
+
+		// KdAnimator::AdvanceTime と同じく、ノードごとに補間した行列を入れる
+		std::vector<KdModelWork::Node>& nodes = m_spModel->WorkNodes();
+		for (KdAnimationData::Node& animeNode : spAnime->m_nodes)
+		{
+			const int idx = animeNode.m_nodeOffset;
+			if (idx < 0 || idx >= static_cast<int>(nodes.size())) { continue; }
+
+			animeNode.Interpolate(nodes[idx].m_localTransform, time);
+		}
+
+		m_spModel->CalcNodeMatrices();
+	}
+
+	//---- その他の処理 ----
+
+	// エディターが毎フレーム呼ぶ。呼ばれなくなったら数フレームで描くのをやめる
+	void KeepAlive() { m_aliveFrames = 3; }
+
+	//カメラの位置を最初に戻す
+	void ResetCamera()
+	{
+		m_camYaw = 180.0f; m_camPitch = 10.0f; m_camDistance = 3.0f; m_camHeight = 0.9f;
+	}
+
+	//---- メンバ変数 ----
+
+	// 見た目の設定（エディターから触る）
+	float         m_camYaw = 180.0f;    // カメラの水平角度（度）
+	float         m_camPitch = 10.0f;   // カメラの見下ろし角度（度）
+	float         m_camDistance = 3.0f; // カメラとの距離（m）
+	float         m_camHeight = 0.9f;   // 注視する高さ（m）
+	Math::Color   m_bgColor = { 0.35f, 0.38f, 0.42f, 1.0f }; // 背景色
+	float         m_brightness = 1.5f;  // 明るさ（色に掛ける）
+	float         m_emissive = 0.25f;   // 自己発光（暗いダンジョンの光でも見えるように）
+	bool          m_showTrail = true;   // 軌跡を出すか
+
+	// 武器を付けるノードと、そこからの回転（PlayerBase::Update と同じ値）
+	std::string   m_weaponNodeName = "Weapon.R";
+	Math::Vector3 m_weaponRot = { 0.0f, 0.0f, 70.0f };   // 度（x=ピッチ, y=ヨー, z=ロール）
+
 private:
 
 	//映すキャラのモデル
 	std::shared_ptr<KdModelWork> m_spModel = nullptr;
 	std::shared_ptr<KdModelData> m_spWeapon = nullptr;   // 手に持たせる武器（アニメーションなし）
 	std::weak_ptr<KdGameObject>  m_wpMainCamera;
+
 	//当たり判定が出ているか
 	bool                         m_hitActive = false;
+
 	//残りの生存フレーム(呼ばれなくなったら描かない)
 	int                          m_aliveFrames = 0;
 
-	//==============================
-	// 軌跡
-	//==============================
+	//軌跡
+	std::shared_ptr<KdTrailPolygon> m_spTrail = nullptr;
+	Math::Vector3 m_tipLocal = { 0.0f, 0.6f, 0.0f };   // 武器のローカルでの切っ先の位置
+	bool          m_trailActive = false;
+	bool          m_prevTrailActive = false;   // 前のフレームの m_trailActive（始まり・途切れを見つける用）
+	bool          m_trailClearRequest = false;
+
+	//このフレームで姿勢が変わったか
+	bool          m_poseChanged = false;
+
+	//前に姿勢を作ったアニメーション名
+	std::string   m_lastPoseAnime;
+
+	//前に姿勢を作った時間
+	float         m_lastPoseTime = -1.0f;
+
+	//プレビュー用のカメラ
+	KdCamera           m_camera;
+
+	//プレビューを描くテクスチャ
+	KdRenderTargetPack m_rtPack;
+	int                m_rtW = 0, m_rtH = 0;     // 今のテクスチャの大きさ
+	int                m_reqW = 480, m_reqH = 480; // 欲しい大きさ
+
+	//---- その他の処理 ----
 
 	// 切っ先の位置を軌跡に足す（時間が動いたときだけ）
 	// _tipPos ... 切っ先の位置(ワールド)
@@ -262,24 +293,4 @@ private:
 		}
 		m_poseChanged = false;
 	}
-
-	//軌跡
-	std::shared_ptr<KdTrailPolygon> m_spTrail = nullptr;
-	Math::Vector3 m_tipLocal = { 0.0f, 0.6f, 0.0f };   // 武器のローカルでの切っ先の位置
-	bool          m_trailActive = false;
-	bool          m_prevTrailActive = false;   // 前のフレームの m_trailActive（始まり・途切れを見つける用）
-	bool          m_trailClearRequest = false;
-	//このフレームで姿勢が変わったか
-	bool          m_poseChanged = false;
-	//前に姿勢を作ったアニメーション名
-	std::string   m_lastPoseAnime;
-	//前に姿勢を作った時間
-	float         m_lastPoseTime = -1.0f;
-
-	//プレビュー用のカメラ
-	KdCamera           m_camera;
-	//プレビューを描くテクスチャ
-	KdRenderTargetPack m_rtPack;
-	int                m_rtW = 0, m_rtH = 0;     // 今のテクスチャの大きさ
-	int                m_reqW = 480, m_reqH = 480; // 欲しい大きさ
 };

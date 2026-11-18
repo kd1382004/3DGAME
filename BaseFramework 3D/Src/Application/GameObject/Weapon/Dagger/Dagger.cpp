@@ -5,6 +5,7 @@
 #include"ChargeAttack/Dagger_ChargeAttack.h"
 
 #include"../../../Scene/SceneManager.h"
+
 void Dagger::Init()
 {
 	m_weaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Dagger/BaseWeaponStatus.json";
@@ -233,69 +234,6 @@ void Dagger::DrawLit()
 
 }
 
-void Dagger::ChargeAttackPlay()
-{
-	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
-	{
-		m_chargeAttackMaxDamage = m_characterAttackPower + (m_baseWeaponStatus.m_attackPower * (m_chargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2);
-
-		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack;
-
-		for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv; i++)
-		{
-			spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
-			spDagger_ChargeAttack->Init();
-
-			float maxDistanceM = m_maxDistanceM * (m_chargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].m_lv * 0.3) * 10;
-			float chargeAttackSpeed = m_chargeAttackSpeed * (m_chargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].m_lv * 0.3);
-
-			int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].m_lv * 1);
-
-
-
-			float spread = 30.0f; // 角度の広がり
-			float t;
-			if (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv - 1 == 0)
-			{
-				t = 0;
-				spread = 0;
-			}
-			else
-			{
-				t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv - 1); // 0～1
-			}
-
-			float ang = m_attackAngle - spread * 0.5f + spread * t;
-
-			spDagger_ChargeAttack->SetShockwaveStatus(hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxDamage, m_mWorld.Translation(), ang);
-			spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
-			spDagger_ChargeAttack->SetMapObjList(m_objList);
-
-			if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
-			{
-				// 当たったときに揺らすカメラを渡す
-				spDagger_ChargeAttack->SetCamera(spParent->GetCamera());
-
-				// 撃った瞬間に画面を揺らす
-				spParent->CameraShake(0.15f, 0.1f);
-			}
-
-			SceneManager::Instance().AddObject(spDagger_ChargeAttack);
-		}
-
-
-	}
-
-
-	//レベル2を止める
-	auto spEffect2 = m_wpChargeLV2Effect.lock();
-	if (spEffect2 && spEffect2->IsPlaying())
-	{
-		spEffect2->StopEffect();
-	}
-
-}
-
 void Dagger::SetNowChargeTime(float _time)
 {
 	m_chargeTime = _time;
@@ -459,6 +397,69 @@ void Dagger::SetAttackFlg(bool _flg)
 	{
 		m_spChargeSE->Stop();
 	}
+}
+
+void Dagger::ChargeAttackPlay()
+{
+	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
+	{
+		m_chargeAttackMaxDamage = m_characterAttackPower + (m_baseWeaponStatus.m_attackPower * (m_chargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2);
+
+		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack;
+
+		for (int i = 0; i < m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv; i++)
+		{
+			spDagger_ChargeAttack = std::make_shared<Dagger_ChargeAttack>();
+			spDagger_ChargeAttack->Init();
+
+			float maxDistanceM = m_maxDistanceM * (m_chargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].m_lv * 0.3) * 10;
+			float chargeAttackSpeed = m_chargeAttackSpeed * (m_chargeLV * 0.3) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].m_lv * 0.3);
+
+			int hitNum = m_hitNum + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic3].m_lv * 1);
+
+
+
+			float spread = 30.0f; // 角度の広がり
+			float t;
+			if (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv - 1 == 0)
+			{
+				t = 0;
+				spread = 0;
+			}
+			else
+			{
+				t = (float)i / (m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv - 1); // 0～1
+			}
+
+			float ang = m_attackAngle - spread * 0.5f + spread * t;
+
+			spDagger_ChargeAttack->SetShockwaveStatus(hitNum, maxDistanceM, chargeAttackSpeed, m_chargeAttackMaxDamage, m_mWorld.Translation(), ang);
+			spDagger_ChargeAttack->SetAttackHitCharacterList(m_attackHitCharacterList);
+			spDagger_ChargeAttack->SetMapObjList(m_objList);
+
+			if (std::shared_ptr<CharacterBase> spParent = m_wpParentChara.lock())
+			{
+				// 当たったときに揺らすカメラを渡す
+				spDagger_ChargeAttack->SetCamera(spParent->GetCamera());
+
+				// 撃った瞬間に画面を揺らす
+				spParent->CameraShake(0.15f, 0.1f);
+			}
+
+			SceneManager::Instance().AddObject(spDagger_ChargeAttack);
+		}
+
+
+	}
+
+
+	//レベル2を止める
+	auto spEffect2 = m_wpChargeLV2Effect.lock();
+	if (spEffect2 && spEffect2->IsPlaying())
+	{
+		spEffect2->StopEffect();
+	}
+
 }
 
 void Dagger::StopWeaponSE()

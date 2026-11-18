@@ -42,6 +42,7 @@ private:
 	//スクロールした段数に合わせてアイコンの位置を決める
 	void UpdateIconPos();
 
+	//リザルトに並べるアイテムのアイコン1つ分の情報
 	struct ItemIconInfo
 	{
 		//アイテムの番号

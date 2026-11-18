@@ -4,6 +4,9 @@ class PlayerBase;
 class AttackLeftPunch :public KdGameObject
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ(攻撃のステータスを決める)
 	AttackLeftPunch()
 	{
@@ -14,12 +17,16 @@ public:
 
 		SetAttackStatus();
 	};
+
 	//デストラクタ
 	~AttackLeftPunch() {};
 
+	//---- 基本の処理 ----
 
-	//攻撃左パンチ攻撃
-	void AttackLeftPunchUpdate();
+	//ライトありの描画(今は何もしない)
+	void DrawLit()override;
+
+	//---- 設定 ----
 
 	//攻撃の中心の位置をセット
 	// _pos ... 位置
@@ -28,6 +35,7 @@ public:
 	//当たり判定を出すかをセット
 	// _flg ... 出すならtrue
 	void SetAttackFlg(bool _flg = true) { m_hitFlg = _flg; }
+
 	//攻撃力をセット
 	// _attackPower ... 攻撃力
 	void SetAttackPower(float _attackPower) { m_attackPower = _attackPower; }
@@ -40,7 +48,6 @@ public:
 		m_knockbackDir.Normalize();
 	}
 
-
 	//この攻撃を消すかをセット
 	// _flg ... 消すならtrue
 	void SetExpired(bool _flg) { m_isExpired = _flg; }
@@ -49,20 +56,18 @@ public:
 	// _spPlayerBase ... プレイヤー
 	void SetPlayer(std::shared_ptr<PlayerBase>_spPlayerBase) { m_wpPlayerBase = _spPlayerBase; }
 
-
-	//ライトありの描画(今は何もしない)
-	void DrawLit()override;
-
 	//攻撃の向き(Y軸の角度)をセット
 	// _angY ... 角度(度)
 	void SetAngleY(float _angY) { m_angleY = _angY; }
+
+	//---- その他の処理 ----
+
+	//攻撃左パンチ攻撃
+	void AttackLeftPunchUpdate();
+
 private:
 
-	//攻撃のステータス(倍率・ふっとばし・スタン)を決める
-	void SetAttackStatus();
-
-	//読み込み(今は何もしない)
-	void Load();
+	//---- メンバ変数 ----
 
 	//当てるプレイヤー
 	std::weak_ptr<PlayerBase>m_wpPlayerBase;
@@ -78,6 +83,7 @@ private:
 
 	//攻撃力倍率
 	float m_attackMagnification = 1.5;
+
 	//攻撃力
 	float m_attackPower = 0;
 
@@ -90,9 +96,19 @@ private:
 	//スタン時間
 	float m_hitStunTime = 0;
 
-
 	//攻撃の箱の大きさ(半分の大きさ)
 	Math::Vector3 m_boxSiz = { 10,5,5 };
+
 	//攻撃範囲表示の広がり具合(0〜1)
 	float m_boxPercent = 0;
+
+	//---- 設定 ----
+
+	//攻撃のステータス(倍率・ふっとばし・スタン)を決める
+	void SetAttackStatus();
+
+	//---- その他の処理 ----
+
+	//読み込み(今は何もしない)
+	void Load();
 };

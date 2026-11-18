@@ -1,5 +1,6 @@
 #pragma once
 
+//数字をどちらにそろえて描くか
 enum Aligned
 {
 	LAligned, //左揃え
@@ -11,8 +12,12 @@ class NumDraw
 {
 public:
 
+	//---- コンストラクタ・デストラクタ ----
+
 	//デストラクタ
 	~NumDraw() { Release(); };
+
+	//---- 基本の処理 ----
 
 	//数字を画像で描く
 	// _num ... 表示したい数字(整数)
@@ -25,24 +30,8 @@ public:
 	// _maxSiz ... 超えてはいけない大きさ(横・縦。0なら制限なし。超えるときは倍率を下げて収める)
 	void Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color = Math::Color(1, 1, 1, 1), float _siz = 1, bool _separator = false, int _digit = -1, Math::Vector2 _maxSiz = { 0, 0 });
 
-private:
+	//---- 取得 ----
 
-	//初期化(数字の画像の読み込み)
-	void Init();
-	//解放
-	void Release();
-	//コンストラクタ(シングルトンなので外から作れない)
-	NumDraw() { Init(); }
-
-
-	//数字(0〜9とカンマ)が並んだ画像
-	std::shared_ptr<KdTexture> m_spTex;
-	//数字直径横
-	int m_recX = 9;
-	//数字直径縦
-	int m_recY = 14;
-
-public:
 	//インスタンスを取得する(シングルトン)
 	//戻り値 ... NumDrawのインスタンス
 	static NumDraw& GetInstance()
@@ -50,5 +39,31 @@ public:
 		static NumDraw instance;
 		return instance;
 	}
+
+private:
+
+	//---- メンバ変数 ----
+
+	//数字(0〜9とカンマ)が並んだ画像
+	std::shared_ptr<KdTexture> m_spTex;
+
+	//数字直径横
+	int m_recX = 9;
+
+	//数字直径縦
+	int m_recY = 14;
+
+	//---- コンストラクタ・デストラクタ ----
+
+	//コンストラクタ(シングルトンなので外から作れない)
+	NumDraw() { Init(); }
+
+	//---- 基本の処理 ----
+
+	//初期化(数字の画像の読み込み)
+	void Init();
+
+	//解放
+	void Release();
 };
 

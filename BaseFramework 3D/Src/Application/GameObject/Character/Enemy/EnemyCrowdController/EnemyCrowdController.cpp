@@ -1,6 +1,7 @@
 ﻿#include "EnemyCrowdController.h"
 #include"../EnemyBase.h"
 #include"../EnemyManager.h"
+
 void EnemyCrowdController::Update(EnemyBase* _enemy, float _dt)
 {
 	Math::Vector3 toPlayer = CalcToPlayer(_enemy);
@@ -16,6 +17,30 @@ void EnemyCrowdController::Update(EnemyBase* _enemy, float _dt)
 		desired.Normalize();
 
 	_enemy->SetMoveVec(desired);
+}
+
+Math::Vector3 EnemyCrowdController::CalcSeparation(EnemyBase* _enemy)
+{
+	Math::Vector3 force = { 0,0,0 };
+	float radius = 2.0f;
+
+	auto& enemies = _enemy->GetEnemyManager()->GetEnemyUpdateList();
+
+	for (auto& other : enemies)
+	{
+		if (other.get() == _enemy) continue;
+
+		Math::Vector3 diff = _enemy->GetPos() - other->GetPos();
+		diff.y = 0;
+
+		float dist = diff.Length();
+		if (dist < radius && dist > 0.001f)
+		{
+			force += diff / (dist * dist) * 0.5;
+		}
+	}
+
+	return force;
 }
 
 Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* _enemy)
@@ -71,34 +96,6 @@ Math::Vector3 EnemyCrowdController::CalcAvoidance(EnemyBase* _enemy)
 
 	return force;
 }
-
-
-
-Math::Vector3 EnemyCrowdController::CalcSeparation(EnemyBase* _enemy)
-{
-	Math::Vector3 force = { 0,0,0 };
-	float radius = 2.0f;
-
-	auto& enemies = _enemy->GetEnemyManager()->GetEnemyUpdateList();
-
-	for (auto& other : enemies)
-	{
-		if (other.get() == _enemy) continue;
-
-		Math::Vector3 diff = _enemy->GetPos() - other->GetPos();
-		diff.y = 0;
-
-		float dist = diff.Length();
-		if (dist < radius && dist > 0.001f)
-		{
-			force += diff / (dist * dist) * 0.5;
-		}
-	}
-
-	return force;
-}
-
-
 
 Math::Vector3 EnemyCrowdController::CalcToPlayer(EnemyBase* _enemy)
 {

@@ -4,7 +4,7 @@
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "num": 36
+            "num": 38
         },
         {
             "id": 1,
@@ -14,12 +14,12 @@
         {
             "id": 2,
             "name": "AttackBoostPotion",
-            "num": 91
+            "num": 95
         },
         {
             "id": 3,
             "name": "InstantStaminaHealPotion",
-            "num": 93
+            "num": 96
         },
         {
             "id": 4,
@@ -34,19 +34,19 @@
         {
             "id": 6,
             "name": "StaminaRegenBoostPotion",
-            "num": 90
+            "num": 92
         }
     ],
     "weaponStrengtheningMaterials": [
         {
             "id": 0,
             "name": "WeaponStrengthening_Crystal1",
-            "num": 92
+            "num": 96
         },
         {
             "id": 1,
             "name": "WeaponStrengthening_Crystal2",
-            "num": 40
+            "num": 42
         }
     ],
     "weapons": [

@@ -6,23 +6,31 @@ class ButtonManager :public KdGameObject
 {
 public:
 
-	//タイトル画面のボタンを作る
-	void InitTitle();
-	//リザルト画面のボタンを作る
-	void InitResult();
+	//---- 基本の処理 ----
+
 	//更新
 	virtual void Update()override;
+
 	//ボタンを描く
 	virtual void DrawSprite()override;
+
+	//---- 設定 ----
 
 	//座標をセット
 	// _pos ... 座標
 	void SetPos(const Math::Vector3& _pos);
 
+	//---- その他の処理 ----
+
+	//タイトル画面のボタンを作る
+	void InitTitle();
+
+	//リザルト画面のボタンを作る
+	void InitResult();
+
 protected:
 
-	//初期化
-	void Init()override;
+	//---- メンバ変数 ----
 
 	//ボタンのリスト
 	std::list<std::shared_ptr<ButtonBase>> m_buttonList;
@@ -35,6 +43,12 @@ protected:
 
 	//選ぶボタンを変えたときの音
 	std::shared_ptr < KdSoundInstance> m_spButtonChange;
+
 	//ボタンを決定したときの音
 	std::shared_ptr < KdSoundInstance> m_spButtonDecision;
+
+	//---- 基本の処理 ----
+
+	//初期化
+	void Init()override;
 };

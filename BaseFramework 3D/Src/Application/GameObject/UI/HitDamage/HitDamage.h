@@ -12,6 +12,7 @@ enum class HitDamageType
 	Player,		// プレイヤーが受けた（赤）
 };
 
+//表示中のダメージ数字1つ分の情報
 struct HitDamageDrawInfo {
 
 	//出す位置(ワールド)

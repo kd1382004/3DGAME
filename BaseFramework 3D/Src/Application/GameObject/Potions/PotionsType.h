@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//ポーションの種類
 enum PotionsType
 {
 	//即座に回復

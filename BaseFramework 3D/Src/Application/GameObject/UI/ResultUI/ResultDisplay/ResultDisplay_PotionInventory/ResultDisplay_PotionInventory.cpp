@@ -4,6 +4,7 @@
 #include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"
 #include"../../../../Potions/PotionTexInfo/PotionTexInfo.h"
 #include"../../../../../Info/NumDraw/NumDraw.h"
+
 void ResultDisplay_PotionInventory::Init()
 {
 	m_iconDimensions = { 40,40 };
@@ -205,22 +206,6 @@ void ResultDisplay_PotionInventory::AddPotionTexInfo(std::vector<Inventory> _pot
 	}
 }
 
-void ResultDisplay_PotionInventory::UpdateIconPos()
-{
-	const float step = m_iconDimensions.m_w + m_slotSpacing;
-
-	for (auto& icon : m_itemIconInfo)
-	{
-		const int i = icon.m_index % m_slotCols;	// 横（何列目）
-		const int j = icon.m_index / m_slotCols;	// 縦（何段目）
-
-		float x = m_slotBasePos.x + i * step;
-		// スクロールした段数(m_scrollRow)だけ上にずらす
-		float y = m_slotBasePos.y - (j - m_scrollRow) * step;
-		icon.m_2DPos = { x,y };
-	}
-}
-
 void ResultDisplay_PotionInventory::IconHit()
 {
 	POINT mousePos = MouseInfo::Instance().m_windowPos;
@@ -254,6 +239,22 @@ void ResultDisplay_PotionInventory::IconHit()
 		{
 			potion.m_hit = false;
 		}
+	}
+}
+
+void ResultDisplay_PotionInventory::UpdateIconPos()
+{
+	const float step = m_iconDimensions.m_w + m_slotSpacing;
+
+	for (auto& icon : m_itemIconInfo)
+	{
+		const int i = icon.m_index % m_slotCols;	// 横（何列目）
+		const int j = icon.m_index / m_slotCols;	// 縦（何段目）
+
+		float x = m_slotBasePos.x + i * step;
+		// スクロールした段数(m_scrollRow)だけ上にずらす
+		float y = m_slotBasePos.y - (j - m_scrollRow) * step;
+		icon.m_2DPos = { x,y };
 	}
 }
 

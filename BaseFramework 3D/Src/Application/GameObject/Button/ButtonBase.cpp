@@ -76,23 +76,6 @@ void ButtonBase::KeyChosen(bool _choseFlg)
 	m_choseFlg = _choseFlg;
 }
 
-void ButtonBase::AlphaFlashing()
-{
-	m_alpha += m_alphaAdd;
-	if (m_alpha < m_alphaMin)
-	{
-		m_alpha = m_alphaMin;
-		m_alphaAdd *= -1;
-	}
-
-	if (m_alpha > m_alphaMax)
-	{
-		m_alpha = m_alphaMax;
-		m_alphaAdd *= -1;
-	}
-
-}
-
 void ButtonBase::ImGUI()
 {
 
@@ -152,6 +135,23 @@ void ButtonBase::ImGUI()
 		std::ofstream ofs(m_filePath);
 		ofs << data.dump(4);   // 4 = インデント幅（整形）
 	}
+}
+
+void ButtonBase::AlphaFlashing()
+{
+	m_alpha += m_alphaAdd;
+	if (m_alpha < m_alphaMin)
+	{
+		m_alpha = m_alphaMin;
+		m_alphaAdd *= -1;
+	}
+
+	if (m_alpha > m_alphaMax)
+	{
+		m_alpha = m_alphaMax;
+		m_alphaAdd *= -1;
+	}
+
 }
 
 void ButtonBase::MouseChosen()

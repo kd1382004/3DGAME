@@ -41,6 +41,7 @@ private:
 	Math::Vector2 m_volBackSiz;
 
 
+	//音量設定の項目1つ分(項目の名前・音量バー)の表示情報
 	struct VolInfo
 	{
 		//項目の名前の画像

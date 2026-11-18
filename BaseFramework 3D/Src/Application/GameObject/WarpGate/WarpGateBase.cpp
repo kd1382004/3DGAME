@@ -45,6 +45,27 @@ void WarpGateBase::DrawLit()
 	}
 }
 
+bool WarpGateBase::PlayerHit()
+{
+	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
+	if (!spPlayer) { return false; }
+
+
+	KdCollider::RayInfo rayInfo;
+	rayInfo.m_pos = spPlayer->GetPos();
+	rayInfo.m_pos.y += 1;
+	rayInfo.m_dir = { 0,-1,0 };
+	rayInfo.m_type = KdCollider::TypeGround;
+	rayInfo.m_range = 3;
+
+	if (Intersects(rayInfo, nullptr))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void WarpGateBase::UpdateMagicCircleAnime()
 {
 	if (!m_spWarpGateWork) { return; }
@@ -88,27 +109,6 @@ void WarpGateBase::UpdateMagicCircleAnime()
 			break;
 		}
 	}
-}
-
-bool WarpGateBase::PlayerHit()
-{
-	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
-	if (!spPlayer) { return false; }
-
-
-	KdCollider::RayInfo rayInfo;
-	rayInfo.m_pos = spPlayer->GetPos();
-	rayInfo.m_pos.y += 1;
-	rayInfo.m_dir = { 0,-1,0 };
-	rayInfo.m_type = KdCollider::TypeGround;
-	rayInfo.m_range = 3;
-
-	if (Intersects(rayInfo, nullptr))
-	{
-		return true;
-	}
-
-	return false;
 }
 
 void WarpGateBase::ShowGuideUI(int _key)

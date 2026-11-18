@@ -3,6 +3,7 @@
 
 class PotionTexInfo;
 
+//画面に出す「アイテム入手」の表示1つ分の情報
 struct GetItem
 {
 	//入手数
@@ -39,6 +40,7 @@ struct GetItem
 	int m_ID;
 };
 
+//入手したアイテムの種類
 enum ItemType
 {
 	Potion,
@@ -48,30 +50,43 @@ enum ItemType
 class ItemGetUIController :public UIBase
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	ItemGetUIController() {};
+
 	//デストラクタ
 	~ItemGetUIController() {};
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init()override;
+
 	//更新前の処理
 	void PreUpdate()override;
+
 	//更新
 	void Update()override;
+
 	//2Dの描画
 	void DrawSprite()override;
 
+	//---- 設定 ----
 
 	//手に入れたアイテムを表示に追加
 	// _item ... 手に入れたアイテム
 	// _type ... アイテムの種類
 	void AddGetItemList(GetItem _item, ItemType _type);
+
 private:
+
+	//---- メンバ変数 ----
 
 	//表示するアイテムの一覧
 	std::list<GetItem> m_getItemList;
-	
+
 	//表示のBase位置
 	Math::Vector2 m_basePos;
 
@@ -80,11 +95,13 @@ private:
 
 	//背景の画像
 	std::shared_ptr<KdTexture>m_spBackTex;
+
 	//背景の大きさ
 	Math::Vector2 m_backWH;
 
 	//背景2の画像
 	std::shared_ptr<KdTexture>m_spBack2Tex;
+
 	//アルファ
 	float m_alpha;
 

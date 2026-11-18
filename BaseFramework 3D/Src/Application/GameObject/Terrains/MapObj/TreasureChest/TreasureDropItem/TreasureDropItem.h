@@ -3,6 +3,7 @@
 class PlayerBase;
 class LootTableManager;
 
+//宝箱から出たアイテムの動きの段階
 enum class DropState
 {
 	Pop,      // 宝箱から上に飛び出す

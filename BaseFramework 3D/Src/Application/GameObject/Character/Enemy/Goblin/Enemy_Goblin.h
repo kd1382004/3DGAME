@@ -7,28 +7,30 @@ class AttackBase;
 class Goblin :public EnemyAmbush
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	Goblin() {};
+
 	//デストラクタ
 	~Goblin()override { Release(); };
 
+	//---- 基本の処理 ----
 
 	//初期化
 	void Init()override;
+
 	//更新
 	void Update()override;
+
 	//更新前の処理
 	void PreUpdate()override;
 
 private:
 
-	//解放
-	void Release()override;
+	//---- 型 ----
 
-	// 3D足音SE更新
-	void UpdateFootstepSE();
-
-	////////////////////////////////////////////
 	//アニメーションモード
 	struct GoblinAnimeName
 	{
@@ -52,22 +54,14 @@ private:
 		std::string m_dieAnime = "Die";
 	};
 
+	//---- メンバ変数 ----
 
 	//アニメーション名
 	GoblinAnimeName m_goblinAnimeName;
 
-	//今の状態に合わせてアニメーションを変える
-	void ChangeAnime();
-
-
-
-	//攻撃
-	void Attack();
-	//叩きつけ攻撃
-	void AttacksSlammingDown();
-
 	//攻撃中か
 	bool m_attackFlg=false;
+
 	//当たり判定を出したか
 	bool m_hitTriggered =false;
 
@@ -76,8 +70,10 @@ private:
 
 	//攻撃待機時間(秒)
 	float m_attackWaitMax=5;
+
 	//攻撃待機時間の最小(秒)
 	float m_attackWaitMin =2;
+
 	//次の攻撃までの待機時間(秒)
 	float m_attackWait= m_attackWaitMax;
 
@@ -86,9 +82,30 @@ private:
 
 	// 3D足音SE
 	std::shared_ptr<KdSoundInstance3D> m_spWalk3DSE;
+
 	//ダッシュの3D音
 	std::shared_ptr<KdSoundInstance3D> m_spDash3DSE;
+
 	//鳴き声の3D音
 	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
 	std::shared_ptr<KdSoundInstance3D> m_spSlam3DSE;	// 叩きつけの音
+
+	//---- 基本の処理 ----
+
+	//解放
+	void Release()override;
+
+	//---- その他の処理 ----
+
+	// 3D足音SE更新
+	void UpdateFootstepSE();
+
+	//今の状態に合わせてアニメーションを変える
+	void ChangeAnime();
+
+	//攻撃
+	void Attack();
+
+	//叩きつけ攻撃
+	void AttacksSlammingDown();
 };

@@ -5,6 +5,7 @@
 #include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"
 
 #include"../../../../../Info/DeltaTime/DeltaTime.h"
+
 void TreasureDropItem::Init()
 {
 	if (!m_spDropItemModel)
@@ -114,6 +115,38 @@ void TreasureDropItem::FloatUpdate()
 	}
 }
 
+void TreasureDropItem::AttractUpdate()
+{
+	std::shared_ptr<PlayerBase> spPlayer = m_wpPlayer.lock();
+	if (!spPlayer) { return; }
+
+	const float dt = DeltaTime::Instance().GetGameDeltaTime();
+
+	// 足元ではなく胸あたりを狙う
+	m_playerPos = spPlayer->GetPos();
+	m_playerPos.y += m_targetHeight;
+
+	Math::Vector3 toPlayer = m_playerPos - m_pos;
+	float dist = toPlayer.Length();
+
+
+	// このフレームで進む距離（だんだん速く、上限あり）
+	float speed = std::min(m_speed + m_accel, m_maxSpeed) * dt;
+
+	// 届く距離なら入手（行き過ぎ防止）
+	if (dist <= speed || dist < m_getRadius)
+	{
+		m_pos = m_playerPos;
+		m_dropStateMode = DropState::Get;
+		return;
+	}
+
+	toPlayer.Normalize();
+	m_pos += toPlayer * speed;
+
+	m_accel += m_addAccel * dt;
+}
+
 void TreasureDropItem::GetItem()
 {
 	std::shared_ptr<PlayerBase>spPlayer = m_wpPlayer.lock();
@@ -155,36 +188,4 @@ void TreasureDropItem::GetItem()
 	}
 
 	m_isExpired = true;
-}
-
-void TreasureDropItem::AttractUpdate()
-{
-	std::shared_ptr<PlayerBase> spPlayer = m_wpPlayer.lock();
-	if (!spPlayer) { return; }
-
-	const float dt = DeltaTime::Instance().GetGameDeltaTime();
-
-	// 足元ではなく胸あたりを狙う
-	m_playerPos = spPlayer->GetPos();
-	m_playerPos.y += m_targetHeight;
-
-	Math::Vector3 toPlayer = m_playerPos - m_pos;
-	float dist = toPlayer.Length();
-
-
-	// このフレームで進む距離（だんだん速く、上限あり）
-	float speed = std::min(m_speed + m_accel, m_maxSpeed) * dt;
-
-	// 届く距離なら入手（行き過ぎ防止）
-	if (dist <= speed || dist < m_getRadius)
-	{
-		m_pos = m_playerPos;
-		m_dropStateMode = DropState::Get;
-		return;
-	}
-
-	toPlayer.Normalize();
-	m_pos += toPlayer * speed;
-
-	m_accel += m_addAccel * dt;
 }

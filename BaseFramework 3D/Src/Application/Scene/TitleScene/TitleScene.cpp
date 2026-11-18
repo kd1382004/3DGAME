@@ -22,7 +22,48 @@
 #include"../../GameObject/UI/UIManager.h"
 #include"../../GameObject/UI/DrawTex/DrawTex.h"
 
+TitleScene::~TitleScene()
+{
+	if (m_spTitleBGM)
+	{
+		m_spTitleBGM->Stop();
+	}
+}
 
+void TitleScene::ImGUI()
+{
+	if (ImGui::Begin(U8("TitleSceneEditor"), nullptr, ImGuiWindowFlags_MenuBar))
+	{
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu(U8("メニュー")))
+			{
+				if (ImGui::MenuItem(U8("TitleSceneEditorを閉じる")))
+				{
+					DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
+				}
+
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+	}
+
+	if (ImGui::Button(U8("武器をダガーに")))
+	{
+		SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo::PlayerWeaponInfo_Dagger);
+	}
+
+	if (ImGui::Button(U8("武器を剣に")))
+	{
+		SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo::PlayerWeaponInfo_Sword);
+	}
+
+
+
+
+	ImGui::End();
+
+}
 
 void TitleScene::Init()
 {
@@ -179,50 +220,6 @@ void TitleScene::SetObjeList()
 		}
 
 	}
-}
-
-
-TitleScene::~TitleScene()
-{
-	if (m_spTitleBGM)
-	{
-		m_spTitleBGM->Stop();
-	}
-}
-
-void TitleScene::ImGUI()
-{
-	if (ImGui::Begin(U8("TitleSceneEditor"), nullptr, ImGuiWindowFlags_MenuBar))
-	{
-		if (ImGui::BeginMenuBar()) {
-			if (ImGui::BeginMenu(U8("メニュー")))
-			{
-				if (ImGui::MenuItem(U8("TitleSceneEditorを閉じる")))
-				{
-					DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
-				}
-
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
-		}
-	}
-
-	if (ImGui::Button(U8("武器をダガーに")))
-	{
-		SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo::PlayerWeaponInfo_Dagger);
-	}
-
-	if (ImGui::Button(U8("武器を剣に")))
-	{
-		SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo::PlayerWeaponInfo_Sword);
-	}
-
-
-
-
-	ImGui::End();
-
 }
 
 void TitleScene::Event()

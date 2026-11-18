@@ -13,11 +13,6 @@ TitleSceneEditor::TitleSceneEditor()
 		});
 }
 
-TitleSceneEditor::~TitleSceneEditor()
-{
-
-}
-
 void TitleSceneEditor::ImGui()
 {
 	std::list< std::shared_ptr<KdGameObject>>objeClassCamera;
@@ -178,4 +173,9 @@ void TitleSceneEditor::TerrainsImGUI(std::list<std::shared_ptr<KdGameObject>> _o
 
 		ImGui::TreePop();
 	}
+}
+
+TitleSceneEditor::~TitleSceneEditor()
+{
+
 }

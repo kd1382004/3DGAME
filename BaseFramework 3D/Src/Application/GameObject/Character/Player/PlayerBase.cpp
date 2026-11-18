@@ -39,50 +39,6 @@
 
 #include"PlayerAccessory/PlayerAccessory.h"
 
-const std::vector<Inventory>& PlayerBase::GetPotionsInventoryList()
-{
-	if (m_spPlayerInventory)
-	{
-		return m_spPlayerInventory->GetPotionsInventoryList();
-	}
-
-	return std::vector<Inventory>();
-}
-
-const std::vector<Inventory>& PlayerBase::GetWeaponsStrengtheningInventoryList()
-{
-	if (m_spPlayerInventory)
-	{
-		return m_spPlayerInventory->GetWeaponsStrengtheningInventoryList();
-	}
-
-	return std::vector<Inventory>();
-}
-
-void PlayerBase::SetPotionsInventoryList(const std::vector<Inventory>& _potions)
-{
-	if (m_spPlayerInventory)
-	{
-		m_spPlayerInventory->SetPotionsInventoryList(_potions);
-	}
-}
-
-void PlayerBase::SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons)
-{
-	if (m_spPlayerInventory)
-	{
-		m_spPlayerInventory->SetWeaponsStrengtheningInventoryList(_weapons);
-	}
-}
-
-void PlayerBase::ClearAllBuffs()
-{
-	if (m_spPlayerBuffManager)
-	{
-		m_spPlayerBuffManager->ClearAllBuffs();
-	}
-}
-
 void PlayerBase::Init()
 {
 	m_keyConfigFilePath = "Asset/Data/KeyConfig/KeyConfig.json";
@@ -365,6 +321,63 @@ void PlayerBase::PostUpdate()
 void PlayerBase::GenerateDepthMapFromLight()
 {}
 
+const std::vector<Inventory>& PlayerBase::GetPotionsInventoryList()
+{
+	if (m_spPlayerInventory)
+	{
+		return m_spPlayerInventory->GetPotionsInventoryList();
+	}
+
+	return std::vector<Inventory>();
+}
+
+const std::vector<Inventory>& PlayerBase::GetWeaponsStrengtheningInventoryList()
+{
+	if (m_spPlayerInventory)
+	{
+		return m_spPlayerInventory->GetWeaponsStrengtheningInventoryList();
+	}
+
+	return std::vector<Inventory>();
+}
+
+Math::Vector3 PlayerBase::GetBonePosition(std::string _boneName)
+{
+	if (!m_spCharaModel) return Math::Vector3::Zero;
+
+
+	//
+	auto* node = m_spCharaModel->FindNode(_boneName);
+	Math::Vector3 pos = node->m_worldTransform.Translation();
+	return pos;
+}
+
+Math::Matrix PlayerBase::GetBoneWorldMatrix(const std::string& _boneName)
+{
+	if (!m_spCharaModel) { return m_mWorld; }
+
+	auto* node = m_spCharaModel->FindNode(_boneName);
+	if (!node) { return m_mWorld; }
+
+	// ボーンの行列（モデル基準） × キャラのワールド行列
+	return node->m_worldTransform * m_mWorld;
+}
+
+void PlayerBase::SetPotionsInventoryList(const std::vector<Inventory>& _potions)
+{
+	if (m_spPlayerInventory)
+	{
+		m_spPlayerInventory->SetPotionsInventoryList(_potions);
+	}
+}
+
+void PlayerBase::SetWeaponsStrengtheningInventoryList(const std::vector<Inventory>& _weapons)
+{
+	if (m_spPlayerInventory)
+	{
+		m_spPlayerInventory->SetWeaponsStrengtheningInventoryList(_weapons);
+	}
+}
 
 void PlayerBase::SetGameScene(const std::shared_ptr<GameScene>& _spGameScene)
 {
@@ -394,21 +407,6 @@ void PlayerBase::SetWeapon(const std::shared_ptr<WeaponBase>& _spWeapon)
 	_spWeapon->LoadCombo(m_comboFilePath);
 
 	m_attackCombo = _spWeapon->GetComboList();
-}
-
-void PlayerBase::ReloadCombo()
-{
-	std::shared_ptr<WeaponBase> spWeapon = m_wpWeapon.lock();
-	if (!spWeapon) { return; }
-
-	// 段の数や中身が変わるので、コンボの途中なら止めてから入れ替える
-	CancelCombo();
-
-	if (spWeapon->LoadCombo(m_comboFilePath))
-	{
-		m_attackCombo = spWeapon->GetComboList();
-		KdDebugGUI::Instance().AddLog(U8("コンボを読み直しました : %s\n"), m_comboFilePath.c_str());
-	}
 }
 
 void PlayerBase::SetPos(const Math::Vector3& _pos)
@@ -469,63 +467,21 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 
 }
 
-void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
+void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManager)
 {
-	if (m_evasionFlg)
+
+	if (!_spEffectManager) { return; }
+
+	m_wpEffectManager = _spEffectManager;
+	if (!m_spDamageOverlay)
 	{
-		DeltaTime::Instance().SetTimeScale(0.1);
-		DeltaTime::Instance().SetSlowTimer(1);
+		m_spDamageOverlay = std::make_shared<DamageOverlay>();
+		m_spDamageOverlay->Init();
 
-		//回避成功演出入れる
-		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
-		if (spCamera)
-		{
-			spCamera->SetEvasionCamera(1);
-		}
-
-		return;
-	}
-
-	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
-
-	if (m_spDamageOverlay)
-	{
-		m_spDamageOverlay->OnDamaged(_damage, m_status.m_HP.m_maxHP);
-	}
-
-	if (m_spDamageSE)
-	{
-		m_spDamageSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-		m_spDamageSE->Play();
-	}
-
-	KdEffekseerManager::GetInstance().Play("PlayerDamage/PlayerDamage.efkefc", m_pos, 3.0f, 1.0f, false);
-
-	// 被弾で画面を揺らす
-	CameraShake(0.2f, 0.15f);
-}
-
-void PlayerBase::HPHeal(int _heal)
-{
-	m_status.m_HP.m_nowHP += _heal;
-	if (m_status.m_HP.m_nowHP >= m_status.m_HP.m_maxHP)
-	{
-		m_status.m_HP.m_nowHP = m_status.m_HP.m_maxHP;
+		_spEffectManager->AddEffectList(m_spDamageOverlay);
 	}
 
 
-	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
-	if (spHPBar)
-	{
-		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
-		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
-	}
-
-
-	if (_heal > 0)
-	{
-		m_wpHealEffect = KdEffekseerManager::GetInstance().Play("Heel/HealEffect.efkefc", m_pos, 1.0f, 1.0f, false);
-	}
 }
 
 void PlayerBase::AddMaxHP(int _boost, bool _flg)
@@ -589,17 +545,6 @@ void PlayerBase::AddExp(int _gainedExp)
 	m_spPlayerLV->AddExp(_gainedExp, this);
 }
 
-Math::Vector3 PlayerBase::GetBonePosition(std::string _boneName)
-{
-	if (!m_spCharaModel) return Math::Vector3::Zero;
-
-
-	//
-	auto* node = m_spCharaModel->FindNode(_boneName);
-	Math::Vector3 pos = node->m_worldTransform.Translation();
-	return pos;
-}
-
 void PlayerBase::SetAccessoryManager(std::shared_ptr<AccessoryManager> _spAccessoryManager)
 {
 	m_wpAccessoryManager = _spAccessoryManager;
@@ -613,21 +558,146 @@ void PlayerBase::SetAccessoryManager(std::shared_ptr<AccessoryManager> _spAccess
 	m_spPlayerAccessory->SetFlashlight(spFlashlight);
 }
 
-void PlayerBase::SetEffectManager(std::shared_ptr<EffectManager> _spEffectManager)
+void PlayerBase::SetPlayerWeaponInfo(int _info)
 {
-
-	if (!_spEffectManager) { return; }
-
-	m_wpEffectManager = _spEffectManager;
-	if (!m_spDamageOverlay)
 	{
-		m_spDamageOverlay = std::make_shared<DamageOverlay>();
-		m_spDamageOverlay->Init();
+		switch (_info)
+		{
+		case PlayerWeaponInfo::PlayerWeaponInfo_Dagger:
+			m_playerAnimeName.m_attackAnime = m_playerAnimeName.m_daggerAttackAnime;
+			break;
+		case PlayerWeaponInfo::PlayerWeaponInfo_Sword:
+			m_playerAnimeName.m_attackAnime = m_playerAnimeName.m_swordAttackAnime;
+			break;
 
-		_spEffectManager->AddEffectList(m_spDamageOverlay);
+		default:
+			break;
+		}
+		m_playerAnimeName.m_attackAnime;
+	}
+}
+
+void PlayerBase::ClearAllBuffs()
+{
+	if (m_spPlayerBuffManager)
+	{
+		m_spPlayerBuffManager->ClearAllBuffs();
+	}
+}
+
+void PlayerBase::ReloadCombo()
+{
+	std::shared_ptr<WeaponBase> spWeapon = m_wpWeapon.lock();
+	if (!spWeapon) { return; }
+
+	// 段の数や中身が変わるので、コンボの途中なら止めてから入れ替える
+	CancelCombo();
+
+	if (spWeapon->LoadCombo(m_comboFilePath))
+	{
+		m_attackCombo = spWeapon->GetComboList();
+		KdDebugGUI::Instance().AddLog(U8("コンボを読み直しました : %s\n"), m_comboFilePath.c_str());
+	}
+}
+
+void PlayerBase::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
+{
+	if (m_evasionFlg)
+	{
+		DeltaTime::Instance().SetTimeScale(0.1);
+		DeltaTime::Instance().SetSlowTimer(1);
+
+		//回避成功演出入れる
+		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
+		if (spCamera)
+		{
+			spCamera->SetEvasionCamera(1);
+		}
+
+		return;
+	}
+
+	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
+
+	if (m_spDamageOverlay)
+	{
+		m_spDamageOverlay->OnDamaged(_damage, m_status.m_HP.m_maxHP);
+	}
+
+	if (m_spDamageSE)
+	{
+		m_spDamageSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		m_spDamageSE->Play();
+	}
+
+	KdEffekseerManager::GetInstance().Play("PlayerDamage/PlayerDamage.efkefc", m_pos, 3.0f, 1.0f, false);
+
+	// 被弾で画面を揺らす
+	CameraShake(0.2f, 0.15f);
+}
+
+void PlayerBase::HPHeal(int _heal)
+{
+	m_status.m_HP.m_nowHP += _heal;
+	if (m_status.m_HP.m_nowHP >= m_status.m_HP.m_maxHP)
+	{
+		m_status.m_HP.m_nowHP = m_status.m_HP.m_maxHP;
 	}
 
 
+	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
+	if (spHPBar)
+	{
+		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
+		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
+	}
+
+
+	if (_heal > 0)
+	{
+		m_wpHealEffect = KdEffekseerManager::GetInstance().Play("Heel/HealEffect.efkefc", m_pos, 1.0f, 1.0f, false);
+	}
+}
+
+void PlayerBase::StopSound()
+{
+	if (m_spWalkSE) { m_spWalkSE->Stop(); }
+	if (m_spDashSE) { m_spDashSE->Stop(); }
+	if (m_spRollSE) { m_spRollSE->Stop(); }
+	if (m_spJumpSE) { m_spJumpSE->Stop(); }
+	if (m_spDamageSE) { m_spDamageSE->Stop(); }
+
+	std::shared_ptr<WeaponBase> spWeapon = m_wpWeapon.lock();
+	if (spWeapon)
+	{
+		spWeapon->StopWeaponSE();
+	}
+
+	// チャージ中に開いた場合はチャージ状態も解除
+	m_chargeAttackFlg = false;
+	m_chargeAttackCount = 0;
+}
+
+void PlayerBase::PlayAttackBoostEffect()
+{
+	m_isAttackBoostActive = true;
+
+	auto spEffect = m_wpAttackBoostEffect.lock();
+	if (spEffect && spEffect->IsPlaying()) { return; }   // 再生中ならそのまま
+
+	m_wpAttackBoostEffect = KdEffekseerManager::GetInstance().Play(
+		"AttackBoost/AttackBoost.efkefc", m_pos + Math::Vector3{ 0, 0.5f, 0 }, 1.0f, 1.0f, false);
+}
+
+void PlayerBase::StopAttackBoostEffect()
+{
+	m_isAttackBoostActive = false;
+
+	if (auto effect = m_wpAttackBoostEffect.lock())
+	{
+		effect->StopEffect();   // 中で SetLoop(false) も呼ばれる
+	}
+	m_wpAttackBoostEffect.reset();
 }
 
 void PlayerBase::WeaponUpdate()
@@ -1285,79 +1355,6 @@ void PlayerBase::EvasionUpdate()
 				m_spRollSE->Play();
 			}
 		}
-	}
-}
-
-Math::Matrix PlayerBase::GetBoneWorldMatrix(const std::string& _boneName)
-{
-	if (!m_spCharaModel) { return m_mWorld; }
-
-	auto* node = m_spCharaModel->FindNode(_boneName);
-	if (!node) { return m_mWorld; }
-
-	// ボーンの行列（モデル基準） × キャラのワールド行列
-	return node->m_worldTransform * m_mWorld;
-}
-
-
-
-void PlayerBase::StopSound()
-{
-	if (m_spWalkSE) { m_spWalkSE->Stop(); }
-	if (m_spDashSE) { m_spDashSE->Stop(); }
-	if (m_spRollSE) { m_spRollSE->Stop(); }
-	if (m_spJumpSE) { m_spJumpSE->Stop(); }
-	if (m_spDamageSE) { m_spDamageSE->Stop(); }
-
-	std::shared_ptr<WeaponBase> spWeapon = m_wpWeapon.lock();
-	if (spWeapon)
-	{
-		spWeapon->StopWeaponSE();
-	}
-
-	// チャージ中に開いた場合はチャージ状態も解除
-	m_chargeAttackFlg = false;
-	m_chargeAttackCount = 0;
-}
-
-void PlayerBase::PlayAttackBoostEffect()
-{
-	m_isAttackBoostActive = true;
-
-	auto spEffect = m_wpAttackBoostEffect.lock();
-	if (spEffect && spEffect->IsPlaying()) { return; }   // 再生中ならそのまま
-
-	m_wpAttackBoostEffect = KdEffekseerManager::GetInstance().Play(
-		"AttackBoost/AttackBoost.efkefc", m_pos + Math::Vector3{ 0, 0.5f, 0 }, 1.0f, 1.0f, false);
-}
-
-void PlayerBase::StopAttackBoostEffect()
-{
-	m_isAttackBoostActive = false;
-
-	if (auto effect = m_wpAttackBoostEffect.lock())
-	{
-		effect->StopEffect();   // 中で SetLoop(false) も呼ばれる
-	}
-	m_wpAttackBoostEffect.reset();
-}
-
-void PlayerBase::SetPlayerWeaponInfo(int _info)
-{
-	{
-		switch (_info)
-		{
-		case PlayerWeaponInfo::PlayerWeaponInfo_Dagger:
-			m_playerAnimeName.m_attackAnime = m_playerAnimeName.m_daggerAttackAnime;
-			break;
-		case PlayerWeaponInfo::PlayerWeaponInfo_Sword:
-			m_playerAnimeName.m_attackAnime = m_playerAnimeName.m_swordAttackAnime;
-			break;
-
-		default:
-			break;
-		}
-		m_playerAnimeName.m_attackAnime;
 	}
 }
 

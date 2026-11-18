@@ -15,6 +15,7 @@ enum ItemCategory
 	ItemCategory_Num			// 種類の数（配列のサイズ用）
 };
 
+//アイテムを使ったときのアイコンの演出の種類
 enum UseEffectType
 {
 	None,		// 演出なし
@@ -104,18 +105,16 @@ struct InventoryItemIconInfo
 class InventoryTabBase
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//デストラクタ
 	virtual ~InventoryTabBase() {}
 
-	//各タブで共有する情報をセット
-	// _spContext ... 共有する情報
-	void SetContext(std::shared_ptr<InventoryUIContext> _spContext) { m_spContext = _spContext; }
+	//---- 基本の処理 ----
 
 	// 起動時に1回
 	virtual void Init() {}
-
-	// タブが選ばれたとき
-	virtual void OnSelect() {}
 
 	// タブが開いている間、毎フレーム
 	virtual void Update() {}
@@ -126,7 +125,21 @@ public:
 	// タブが開いている間の2D描画
 	virtual void DrawSprite() {}
 
+	//---- 設定 ----
+
+	//各タブで共有する情報をセット
+	// _spContext ... 共有する情報
+	void SetContext(std::shared_ptr<InventoryUIContext> _spContext) { m_spContext = _spContext; }
+
+	//---- その他の処理 ----
+
+	// タブが選ばれたとき
+	virtual void OnSelect() {}
+
 protected:
+
+	//---- メンバ変数 ----
+
 	//各タブで共有する情報
 	std::shared_ptr<InventoryUIContext> m_spContext = nullptr;
 };

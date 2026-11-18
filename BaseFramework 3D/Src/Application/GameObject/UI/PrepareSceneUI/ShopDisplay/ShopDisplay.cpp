@@ -127,6 +127,105 @@ void ShopDisplay::Init()
 	m_haveScroll.m_visibleNum = kHaveVisibleNum;
 }
 
+/////////////////////////////////////////////////////////////////////
+// 更新
+/////////////////////////////////////////////////////////////////////
+void ShopDisplay::Update()
+{
+	// 開いているタブでなければ何もしない
+	if (!m_activeFlg) { return; }
+
+	// 左クリックはこのフレームで1回だけ取る(タブ・一覧・スクロールで取り合わないように)
+	m_clickFlg = KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true);
+
+	//---------- タブ ----------
+	for (int t = 0; t < static_cast<int>(ShopTab::TabSize); t++)
+	{
+		const Math::Vector2 tabPos = { kTabPos.x + kTabSpace * t, kTabPos.y };
+		if (MouseHit(tabPos, kTabW, kTabH))
+		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
+			if (m_clickFlg && m_tab != static_cast<ShopTab>(t))
+			{
+				m_tab = static_cast<ShopTab>(t);
+				m_selectIndex = 0;
+				m_count = 1;
+				m_listScroll.m_index = 0;
+				m_haveScroll.m_index = 0;
+				m_clickFlg = false;
+			}
+		}
+	}
+
+	//---------- スクロール ----------
+	const int listNum = GetListNum();
+	const int haveNum = static_cast<int>(GetHaveList().size());
+
+	ScrollCalc(m_listScroll, listNum);
+	ScrollUpdate(m_listScroll, listNum, kListPos, kListW, kListH);
+	ScrollCalc(m_listScroll, listNum);
+
+	ScrollCalc(m_haveScroll, haveNum);
+	ScrollUpdate(m_haveScroll, haveNum, kHavePos, kHaveW, kHaveH);
+	ScrollCalc(m_haveScroll, haveNum);
+
+	//---------- 商品一覧(カーソル・選択) ----------
+	m_hoverIndex = -1;
+	if (!m_listScroll.m_dragFlg)
+	{
+		for (int slot = 0; slot < kListVisibleNum; slot++)
+		{
+			int index = m_listScroll.m_index + slot;
+			if (index >= listNum) { break; }
+
+			const Math::Vector2 slotPos = { kSlotPos.x + kSlotSpace * slot, kSlotPos.y };
+			if (MouseHit(slotPos, kSlotSiz, kSlotSiz))
+			{
+				MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
+				m_hoverIndex = index;
+				if (m_clickFlg)
+				{
+					m_selectIndex = index;
+					m_count = 1;
+					m_clickFlg = false;
+				}
+				break;
+			}
+		}
+	}
+
+	//---------- 数量の＋／－(消耗品・素材だけ) ----------
+	if (IsStackTab() && m_selectIndex < GetListNum())
+	{
+		const float rowY = InfoRowY(1);
+		if (m_clickFlg && MouseHit({ kCountMinusX, rowY }, kSmallSiz, kSmallSiz)) { m_count--; m_clickFlg = false; }
+		if (m_clickFlg && MouseHit({ kCountPlusX,  rowY }, kSmallSiz, kSmallSiz)) { m_count++; m_clickFlg = false; }
+		m_count = std::clamp(m_count, 1, 99);
+	}
+
+	// 買う・売る
+	BuySellUpdate();
+}
+
+/////////////////////////////////////////////////////////////////////
+// 描画
+/////////////////////////////////////////////////////////////////////
+void ShopDisplay::DrawSprite()
+{
+	// 開いているタブでなければ何もしない
+	if (!m_activeFlg) { return; }
+
+	// ドット絵がにじまないよう、ポイントフィルタで描く
+	KdShaderManager::Instance().m_spriteShader.Begin(false);
+
+	DrawHeader();
+	DrawList();
+	DrawDetail();
+	DrawInventory();
+
+	KdShaderManager::Instance().m_spriteShader.End();
+}
+
 void ShopDisplay::LoadShopData()
 {
 	auto readJson = [](const std::string& _path) -> nlohmann::json
@@ -208,301 +307,56 @@ void ShopDisplay::LoadShopData()
 	m_money = inventory.value("money", 0L);
 }
 
-int ShopDisplay::GetListNum() const
+void ShopDisplay::DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale, const Math::Vector2& _pivot)
 {
-	switch (m_tab)
-	{
-	case ShopTab::Consumable: return PotionsTypeMax;
-	case ShopTab::Material:   return kMaterialNum;
-	case ShopTab::Weapon:     return PlayerWeaponInfoSize;
-	default:                  return 0;
-	}
+	if (!_spTex) { return; }
+	DrawTexSize(_spTex, _pos, _spTex->GetWidth() * _scale, _spTex->GetHeight() * _scale, _pivot);
 }
 
-std::vector<ShopDisplay::HaveItem> ShopDisplay::GetHaveList() const
+void ShopDisplay::DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _w, float _h, const Math::Vector2& _pivot)
 {
-	std::vector<HaveItem> list;
-	switch (m_tab)
-	{
-	case ShopTab::Consumable:
-		for (int i = 0; i < PotionsTypeMax; i++)
-		{
-			if (m_potionHave[i] > 0) { list.push_back({ m_spPotionTex[i][static_cast<int>(ItemTex::Icon)], m_potionHave[i] }); }
-		}
-		break;
-	case ShopTab::Weapon:
-		for (int i = 0; i < PlayerWeaponInfoSize; i++)
-		{
-			if (m_weaponOwned[i]) { list.push_back({ m_spWeaponTex[i][static_cast<int>(ItemTex::Icon)], 1 }); }
-		}
-		break;
-	case ShopTab::Material:
-		for (int i = 0; i < kMaterialNum; i++)
-		{
-			if (m_materialHave[i] > 0) { list.push_back({ m_spMaterialTex[i][static_cast<int>(ItemTex::Icon)], m_materialHave[i] }); }
-		}
-		break;
-	default:
-		break;
-	}
-	return list;
+	if (!_spTex) { return; }
+
+	KdShaderManager::Instance().m_spriteShader.DrawTex(
+		_spTex.get(),
+		static_cast<int>(_pos.x), static_cast<int>(_pos.y),
+		static_cast<int>(_w), static_cast<int>(_h),
+		nullptr, &kWhiteColor, _pivot);
 }
 
-const ShopDisplay::ShopItem& ShopDisplay::GetStackItem(int _index) const
+void ShopDisplay::DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _siz, bool _separator, float _maxW)
 {
-	return (m_tab == ShopTab::Material) ? m_materialItem[_index] : m_potionItem[_index];
-}
+	NumDraw::GetInstance().Draw(_num, _aligned, _pos, Math::Color(1, 1, 1, 1), _siz, _separator, -1, { _maxW, 0.0f });
 
-int ShopDisplay::GetStackHave(int _index) const
-{
-	return (m_tab == ShopTab::Material) ? m_materialHave[_index] : m_potionHave[_index];
-}
-
-const std::shared_ptr<KdTexture>& ShopDisplay::GetStackTex(int _index, ItemTex _tex) const
-{
-	return (m_tab == ShopTab::Material) ? m_spMaterialTex[_index][static_cast<int>(_tex)]
-		: m_spPotionTex[_index][static_cast<int>(_tex)];
-}
-
-/////////////////////////////////////////////////////////////////////
-// 更新
-/////////////////////////////////////////////////////////////////////
-void ShopDisplay::Update()
-{
-	// 開いているタブでなければ何もしない
-	if (!m_activeFlg) { return; }
-
-	// 左クリックはこのフレームで1回だけ取る(タブ・一覧・スクロールで取り合わないように)
-	m_clickFlg = KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true);
-
-	//---------- タブ ----------
-	for (int t = 0; t < static_cast<int>(ShopTab::TabSize); t++)
-	{
-		const Math::Vector2 tabPos = { kTabPos.x + kTabSpace * t, kTabPos.y };
-		if (MouseHit(tabPos, kTabW, kTabH))
-		{
-			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-			if (m_clickFlg && m_tab != static_cast<ShopTab>(t))
-			{
-				m_tab = static_cast<ShopTab>(t);
-				m_selectIndex = 0;
-				m_count = 1;
-				m_listScroll.m_index = 0;
-				m_haveScroll.m_index = 0;
-				m_clickFlg = false;
-			}
-		}
-	}
-
-	//---------- スクロール ----------
-	const int listNum = GetListNum();
-	const int haveNum = static_cast<int>(GetHaveList().size());
-
-	ScrollCalc(m_listScroll, listNum);
-	ScrollUpdate(m_listScroll, listNum, kListPos, kListW, kListH);
-	ScrollCalc(m_listScroll, listNum);
-
-	ScrollCalc(m_haveScroll, haveNum);
-	ScrollUpdate(m_haveScroll, haveNum, kHavePos, kHaveW, kHaveH);
-	ScrollCalc(m_haveScroll, haveNum);
-
-	//---------- 商品一覧(カーソル・選択) ----------
-	m_hoverIndex = -1;
-	if (!m_listScroll.m_dragFlg)
-	{
-		for (int slot = 0; slot < kListVisibleNum; slot++)
-		{
-			int index = m_listScroll.m_index + slot;
-			if (index >= listNum) { break; }
-
-			const Math::Vector2 slotPos = { kSlotPos.x + kSlotSpace * slot, kSlotPos.y };
-			if (MouseHit(slotPos, kSlotSiz, kSlotSiz))
-			{
-				MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-				m_hoverIndex = index;
-				if (m_clickFlg)
-				{
-					m_selectIndex = index;
-					m_count = 1;
-					m_clickFlg = false;
-				}
-				break;
-			}
-		}
-	}
-
-	//---------- 数量の＋／－(消耗品・素材だけ) ----------
-	if (IsStackTab() && m_selectIndex < GetListNum())
-	{
-		const float rowY = InfoRowY(1);
-		if (m_clickFlg && MouseHit({ kCountMinusX, rowY }, kSmallSiz, kSmallSiz)) { m_count--; m_clickFlg = false; }
-		if (m_clickFlg && MouseHit({ kCountPlusX,  rowY }, kSmallSiz, kSmallSiz)) { m_count++; m_clickFlg = false; }
-		m_count = std::clamp(m_count, 1, 99);
-	}
-
-	// 買う・売る
-	BuySellUpdate();
-}
-
-bool ShopDisplay::MouseHit(const Math::Vector2& _pos, float _w, float _h) const
-{
-	// マウスもフレームワークと同じ座標(画面の真ん中が0,0・上がプラス)
-	const POINT mousePos = MouseInfo::Instance().m_windowPos;
-	const float mx = static_cast<float>(mousePos.x);
-	const float my = static_cast<float>(mousePos.y);
-
-	return (std::abs(mx - _pos.x) <= _w / 2.0f && std::abs(my - _pos.y) <= _h / 2.0f);
-}
-
-/////////////////////////////////////////////////////////////////////
-// 横スクロール(EquipDisplayと同じ動き)
-/////////////////////////////////////////////////////////////////////
-void ShopDisplay::ScrollCalc(HScroll& _scroll, int _total)
-{
-	const int   maxIndex = std::max(0, _total - _scroll.m_visibleNum);
-	const float innerX = _scroll.m_trackLeft + kTrackInset;
-	const float innerW = _scroll.m_trackW - kTrackInset * 2.0f;
-
-	// スクロールの必要がなければ、つまみはレールいっぱい
-	if (maxIndex == 0)
-	{
-		_scroll.m_index = 0;
-		_scroll.m_thumbX = innerX;
-		_scroll.m_thumbW = innerW;
-		return;
-	}
-
-	// 長さ = レールの長さ × 見えている数 ÷ 全部の数(下限あり)
-	const float thumbW = innerW * static_cast<float>(_scroll.m_visibleNum) / static_cast<float>(_total);
-	_scroll.m_thumbW = std::clamp(thumbW, m_thumbMinW, innerW);
-
-	// 位置 = 今の番号の割合
-	_scroll.m_index = std::clamp(_scroll.m_index, 0, maxIndex);
-	const float ratio = static_cast<float>(_scroll.m_index) / static_cast<float>(maxIndex);
-	_scroll.m_thumbX = innerX + (innerW - _scroll.m_thumbW) * ratio;
-}
-
-void ShopDisplay::ScrollUpdate(HScroll& _scroll, int _total, const Math::Vector2& _panelPos, float _panelW, float _panelH)
-{
-	const int maxIndex = std::max(0, _total - _scroll.m_visibleNum);
-
-	// スクロールの必要がなければ何もしない
-	if (maxIndex == 0)
-	{
-		_scroll.m_index = 0;
-		_scroll.m_dragFlg = false;
-		_scroll.m_hoverFlg = false;
-		return;
-	}
-
-	const float mx = static_cast<float>(MouseInfo::Instance().m_windowPos.x);
-
-	const float trackLeft = _scroll.m_trackLeft + kTrackInset;
-	const float trackRight = _scroll.m_trackLeft + _scroll.m_trackW - kTrackInset;
-
-	const bool isOnTrack = MouseHit({ (trackLeft + trackRight) / 2.0f, _scroll.m_trackY }, trackRight - trackLeft, kTrackH);
-	const bool isOnThumb = isOnTrack && mx >= _scroll.m_thumbX && mx <= _scroll.m_thumbX + _scroll.m_thumbW;
-
-	//---------- ドラッグ開始 ----------
-	if (isOnThumb && !_scroll.m_dragFlg)
-	{
-		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-		if (m_clickFlg)
-		{
-			_scroll.m_dragFlg = true;
-			_scroll.m_dragOffsetX = mx - _scroll.m_thumbX;
-			m_clickFlg = false;
-		}
-	}
-
-	//---------- ドラッグ中 ----------
-	if (_scroll.m_dragFlg)
-	{
-		if (!(GetAsyncKeyState(VK_LBUTTON) & 0x8000))
-		{
-			_scroll.m_dragFlg = false;
-		}
-		else
-		{
-			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-
-			const float moveRange = (trackRight - _scroll.m_thumbW) - trackLeft;
-			float ratio = 0.0f;
-			if (moveRange > 0.0f)
-			{
-				ratio = (mx - _scroll.m_dragOffsetX - trackLeft) / moveRange;
-			}
-			ratio = std::clamp(ratio, 0.0f, 1.0f);
-			_scroll.m_index = static_cast<int>(std::round(ratio * maxIndex));
-		}
-	}
-	//---------- レールをクリック → 1画面分動く ----------
-	else if (isOnTrack && !isOnThumb)
-	{
-		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
-		if (m_clickFlg)
-		{
-			_scroll.m_index += (mx < _scroll.m_thumbX) ? -_scroll.m_visibleNum : _scroll.m_visibleNum;
-			m_clickFlg = false;
-		}
-	}
-
-	//---------- マウスホイール(そのパネルの上にあるときだけ) ----------
-	if (!_scroll.m_dragFlg && MouseHit(_panelPos, _panelW, _panelH))
-	{
-		int wheel = MouseInfo::Instance().GetMouseWheelValue();
-		if (wheel >= 1) { _scroll.m_index -= 1; }
-		else if (wheel <= -1) { _scroll.m_index += 1; }
-	}
-
-	_scroll.m_hoverFlg = isOnThumb || _scroll.m_dragFlg;
-	_scroll.m_index = std::clamp(_scroll.m_index, 0, maxIndex);
-}
-
-void ShopDisplay::ScrollDraw(const HScroll& _scroll, ShopTex _track)
-{
-	// 左端を基準に、横に並べて描く
-	const Math::Vector2 pivotLeft = { 0.0f, 0.5f };
-
-	DrawTexSize(m_spTex[static_cast<int>(_track)], { _scroll.m_trackLeft, _scroll.m_trackY }, _scroll.m_trackW, kTrackH, pivotLeft);
-
-	const bool hover = _scroll.m_hoverFlg;
-	const auto& spL = m_spTex[static_cast<int>(hover ? ShopTex::ThumbLeftHover : ShopTex::ThumbLeft)];
-	const auto& spM = m_spTex[static_cast<int>(hover ? ShopTex::ThumbMidHover : ShopTex::ThumbMid)];
-	const auto& spR = m_spTex[static_cast<int>(hover ? ShopTex::ThumbRightHover : ShopTex::ThumbRight)];
-	const auto& spG = m_spTex[static_cast<int>(hover ? ShopTex::ThumbGripHover : ShopTex::ThumbGrip)];
-	if (!spL || !spM || !spR || !spG) { return; }
-
-	const float lw = static_cast<float>(spL->GetWidth());
-	const float rw = static_cast<float>(spR->GetWidth());
-	const float y = _scroll.m_trackY;
-
-	DrawTexSize(spL, { _scroll.m_thumbX, y }, lw, kTrackH, pivotLeft);
-	const float midW = _scroll.m_thumbW - lw - rw;
-	if (midW > 0.0f) { DrawTexSize(spM, { _scroll.m_thumbX + lw, y }, midW, kTrackH, pivotLeft); }
-	DrawTexSize(spR, { _scroll.m_thumbX + _scroll.m_thumbW - rw, y }, rw, kTrackH, pivotLeft);
-
-	// 持ち手はつまみの真ん中
-	DrawTex(spG, { _scroll.m_thumbX + _scroll.m_thumbW / 2.0f, y });
-}
-
-/////////////////////////////////////////////////////////////////////
-// 描画
-/////////////////////////////////////////////////////////////////////
-void ShopDisplay::DrawSprite()
-{
-	// 開いているタブでなければ何もしない
-	if (!m_activeFlg) { return; }
-
-	// ドット絵がにじまないよう、ポイントフィルタで描く
+	// NumDrawの中で Begin/End しているので、続けて描けるよう開き直す
 	KdShaderManager::Instance().m_spriteShader.Begin(false);
+}
 
-	DrawHeader();
-	DrawList();
-	DrawDetail();
-	DrawInventory();
+void ShopDisplay::DrawPrice(long _price, float _rowY)
+{
+	// 右端を kInfoPriceRightX にそろえる(桁が変わっても「G」の位置は動かない)
+	DrawNum(_price, RAligned, { kInfoPriceRightX, _rowY }, 2.0f, true, kInfoValueMaxW);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { kInfoGoldX, _rowY - 1.0f });
+}
 
-	KdShaderManager::Instance().m_spriteShader.End();
+void ShopDisplay::DrawStock(int _stock)
+{
+	// 「在庫」と、その右に数(右端を買う・売るボタンの右端にそろえる)
+	DrawTex(m_spTex[static_cast<int>(ShopTex::StockLabel)], { kStockLabelX, InfoRowY(0) });
+	DrawNum(std::max(0, _stock), RAligned, { kStockNumRightX, InfoRowY(0) }, 2.0f, false, kStockNumMaxW);
+}
+
+void ShopDisplay::DrawButton(ShopButton _button, const Math::Vector2& _pos, bool _enable)
+{
+	float w = kButtonW, h = kButtonH;
+	if (_button == ShopButton::Plus || _button == ShopButton::Minus) { w = h = kSmallSiz; }
+
+	ButtonState state = ButtonState::Disable;
+	if (_enable)
+	{
+		state = MouseHit(_pos, w, h) ? ButtonState::Hover : ButtonState::Normal;
+	}
+	DrawTex(m_spButtonTex[static_cast<int>(_button)][static_cast<int>(state)], _pos);
 }
 
 void ShopDisplay::DrawHeader()
@@ -705,6 +559,303 @@ void ShopDisplay::DrawInventory()
 	}
 
 	ScrollDraw(m_haveScroll, ShopTex::InventoryTrack);
+}
+
+int ShopDisplay::GetListNum() const
+{
+	switch (m_tab)
+	{
+	case ShopTab::Consumable: return PotionsTypeMax;
+	case ShopTab::Material:   return kMaterialNum;
+	case ShopTab::Weapon:     return PlayerWeaponInfoSize;
+	default:                  return 0;
+	}
+}
+
+std::vector<ShopDisplay::HaveItem> ShopDisplay::GetHaveList() const
+{
+	std::vector<HaveItem> list;
+	switch (m_tab)
+	{
+	case ShopTab::Consumable:
+		for (int i = 0; i < PotionsTypeMax; i++)
+		{
+			if (m_potionHave[i] > 0) { list.push_back({ m_spPotionTex[i][static_cast<int>(ItemTex::Icon)], m_potionHave[i] }); }
+		}
+		break;
+	case ShopTab::Weapon:
+		for (int i = 0; i < PlayerWeaponInfoSize; i++)
+		{
+			if (m_weaponOwned[i]) { list.push_back({ m_spWeaponTex[i][static_cast<int>(ItemTex::Icon)], 1 }); }
+		}
+		break;
+	case ShopTab::Material:
+		for (int i = 0; i < kMaterialNum; i++)
+		{
+			if (m_materialHave[i] > 0) { list.push_back({ m_spMaterialTex[i][static_cast<int>(ItemTex::Icon)], m_materialHave[i] }); }
+		}
+		break;
+	default:
+		break;
+	}
+	return list;
+}
+
+float ShopDisplay::GetNumWidth(long _num, float _siz, bool _separator, float _maxW) const
+{
+	// 桁数(3桁区切りのカンマも1文字分)
+	const int digits = static_cast<int>(std::to_string(std::abs(_num)).size());
+	const int commas = _separator ? (digits - 1) / 3 : 0;
+	const float w = (digits + commas) * kNumGlyphW * _siz;
+
+	// 超えてはいけない横幅があれば、その幅に縮む
+	return (_maxW > 0.0f && w > _maxW) ? _maxW : w;
+}
+
+const ShopDisplay::ShopItem& ShopDisplay::GetStackItem(int _index) const
+{
+	return (m_tab == ShopTab::Material) ? m_materialItem[_index] : m_potionItem[_index];
+}
+
+int ShopDisplay::GetStackHave(int _index) const
+{
+	return (m_tab == ShopTab::Material) ? m_materialHave[_index] : m_potionHave[_index];
+}
+
+const std::shared_ptr<KdTexture>& ShopDisplay::GetStackTex(int _index, ItemTex _tex) const
+{
+	return (m_tab == ShopTab::Material) ? m_spMaterialTex[_index][static_cast<int>(_tex)]
+		: m_spPotionTex[_index][static_cast<int>(_tex)];
+}
+
+bool ShopDisplay::MouseHit(const Math::Vector2& _pos, float _w, float _h) const
+{
+	// マウスもフレームワークと同じ座標(画面の真ん中が0,0・上がプラス)
+	const POINT mousePos = MouseInfo::Instance().m_windowPos;
+	const float mx = static_cast<float>(mousePos.x);
+	const float my = static_cast<float>(mousePos.y);
+
+	return (std::abs(mx - _pos.x) <= _w / 2.0f && std::abs(my - _pos.y) <= _h / 2.0f);
+}
+
+void ShopDisplay::LoadTex()
+{
+	const std::string shop = "Asset/Textures/GameUI/Prepare/Shop/";
+	const std::string equip = "Asset/Textures/GameUI/Prepare/Equip/";
+	const std::string menu = "Asset/Textures/GameUI/Prepare/Menu/";
+	const std::string item = "Asset/Textures/GameUI/Item/";
+
+	// ShopTexの順
+	const std::string path[static_cast<int>(ShopTex::TexSize)] =
+	{
+		shop + "Text/ShopTitle.png", shop + "Text/MoneyLabel.png", menu + "Text/Gold.png", menu + "Text/Count.png",
+		shop + "Panel/MoneyPanel.png", equip + "Panel/WeaponListPanel.png", shop + "Panel/ShopDetailPanel.png",
+		shop + "Panel/PriceInfoPanel.png", shop + "Panel/InventoryPanel.png",
+		equip + "Frame/SelectFrame.png", equip + "Frame/HoverFrame.png", item + "PlayerInventory/WeponStrengtheningIcon/NotIcon.png",
+		shop + "Text/Owned.png", shop + "Text/NotStocked.png", shop + "Text/SoldOut.png",
+		shop + "Text/HaveLabel.png", shop + "Text/Have.png", shop + "Text/NotHave.png", shop + "Text/BuyPriceLabel.png",
+		shop + "Text/SellPriceLabel.png", shop + "Text/CountLabel.png", shop + "Text/TotalLabel.png",
+		shop + "Text/Inventory.png", shop + "Text/Times.png", shop + "Text/Dash.png",
+		equip + "Scroll/ScrollTrackH.png", shop + "Panel/InventoryScrollTrack.png",
+		equip + "Scroll/ScrollThumbLeftH.png", equip + "Scroll/ScrollThumbMidH.png", equip + "Scroll/ScrollThumbRightH.png", equip + "Scroll/ScrollThumbGripH.png",
+		equip + "Scroll/ScrollThumbLeftH_Hover.png", equip + "Scroll/ScrollThumbMidH_Hover.png", equip + "Scroll/ScrollThumbRightH_Hover.png", equip + "Scroll/ScrollThumbGripH_Hover.png",
+		shop + "Text/StockLabel.png",
+	};
+	for (int i = 0; i < static_cast<int>(ShopTex::TexSize); i++)
+	{
+		LoadOneTex(m_spTex[i], path[i]);
+	}
+
+	// タブ
+	const std::string tabName[static_cast<int>(ShopTab::TabSize)] = { "Consumable", "Material", "Weapon" };
+	for (int t = 0; t < static_cast<int>(ShopTab::TabSize); t++)
+	{
+		LoadOneTex(m_spTabTex[t][0], shop + "Tab/Tab" + tabName[t] + ".png");
+		LoadOneTex(m_spTabTex[t][1], shop + "Tab/Tab" + tabName[t] + "_Select.png");
+	}
+
+	// ボタン
+	const std::string buttonName[static_cast<int>(ShopButton::ButtonSize)] = { "Buy", "Sell", "Plus", "Minus" };
+	const std::string stateName[static_cast<int>(ButtonState::StateSize)] = { "", "_Hover", "_Disable" };
+	for (int b = 0; b < static_cast<int>(ShopButton::ButtonSize); b++)
+	{
+		for (int s = 0; s < static_cast<int>(ButtonState::StateSize); s++)
+		{
+			LoadOneTex(m_spButtonTex[b][s], shop + "Button/" + buttonName[b] + "Button" + stateName[s] + ".png");
+		}
+	}
+
+	// ポーション(アイコン・名前・説明)
+	for (int i = 0; i < PotionsTypeMax; i++)
+	{
+		const std::string dir = item + "Potion/" + kPotionName[i] + "/";
+		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Icon)], dir + "Icon.png");
+		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Name)], dir + "SelectNameBase.png");
+		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Explanation)], dir + "SelectExplanationBase.png");
+	}
+
+	// 武器(アイコン・名前・説明)
+	for (int i = 0; i < PlayerWeaponInfoSize; i++)
+	{
+		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Icon)], item + "PlayerInventory/WeponStrengtheningIcon/" + kWeaponName[i] + "/WeponStrengtheningIcon8.png");
+		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Name)], item + "WeaponsStrengthening/" + kWeaponName[i] + "/Icon/SelectNameBase.png");
+		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Explanation)], item + "WeaponsStrengthening/" + kWeaponName[i] + "/Icon/SelectExplanationBase.png");
+	}
+
+	// 強化素材(アイコン・名前・説明)
+	for (int i = 0; i < kMaterialNum; i++)
+	{
+		const std::string dir = item + "WeaponsStrengtheningItem/WeaponStrengthening_Crystal" + std::to_string(i + 1) + "/";
+		LoadOneTex(m_spMaterialTex[i][static_cast<int>(ItemTex::Icon)], dir + "Icon.png");
+		LoadOneTex(m_spMaterialTex[i][static_cast<int>(ItemTex::Name)], dir + "SelectNameBase.png");
+		LoadOneTex(m_spMaterialTex[i][static_cast<int>(ItemTex::Explanation)], dir + "SelectExplanationBase.png");
+	}
+}
+
+/////////////////////////////////////////////////////////////////////
+// 画像の読み込み
+/////////////////////////////////////////////////////////////////////
+void ShopDisplay::LoadOneTex(std::shared_ptr<KdTexture>& _spTex, const std::string& _path)
+{
+	if (_spTex) { return; }
+
+	_spTex = std::make_shared<KdTexture>();
+	if (!_spTex->Load(_path))
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayの画像が読み込めません : %s\n"), _path.c_str());
+	}
+}
+
+/////////////////////////////////////////////////////////////////////
+// 横スクロール(EquipDisplayと同じ動き)
+/////////////////////////////////////////////////////////////////////
+void ShopDisplay::ScrollCalc(HScroll& _scroll, int _total)
+{
+	const int   maxIndex = std::max(0, _total - _scroll.m_visibleNum);
+	const float innerX = _scroll.m_trackLeft + kTrackInset;
+	const float innerW = _scroll.m_trackW - kTrackInset * 2.0f;
+
+	// スクロールの必要がなければ、つまみはレールいっぱい
+	if (maxIndex == 0)
+	{
+		_scroll.m_index = 0;
+		_scroll.m_thumbX = innerX;
+		_scroll.m_thumbW = innerW;
+		return;
+	}
+
+	// 長さ = レールの長さ × 見えている数 ÷ 全部の数(下限あり)
+	const float thumbW = innerW * static_cast<float>(_scroll.m_visibleNum) / static_cast<float>(_total);
+	_scroll.m_thumbW = std::clamp(thumbW, m_thumbMinW, innerW);
+
+	// 位置 = 今の番号の割合
+	_scroll.m_index = std::clamp(_scroll.m_index, 0, maxIndex);
+	const float ratio = static_cast<float>(_scroll.m_index) / static_cast<float>(maxIndex);
+	_scroll.m_thumbX = innerX + (innerW - _scroll.m_thumbW) * ratio;
+}
+
+void ShopDisplay::ScrollUpdate(HScroll& _scroll, int _total, const Math::Vector2& _panelPos, float _panelW, float _panelH)
+{
+	const int maxIndex = std::max(0, _total - _scroll.m_visibleNum);
+
+	// スクロールの必要がなければ何もしない
+	if (maxIndex == 0)
+	{
+		_scroll.m_index = 0;
+		_scroll.m_dragFlg = false;
+		_scroll.m_hoverFlg = false;
+		return;
+	}
+
+	const float mx = static_cast<float>(MouseInfo::Instance().m_windowPos.x);
+
+	const float trackLeft = _scroll.m_trackLeft + kTrackInset;
+	const float trackRight = _scroll.m_trackLeft + _scroll.m_trackW - kTrackInset;
+
+	const bool isOnTrack = MouseHit({ (trackLeft + trackRight) / 2.0f, _scroll.m_trackY }, trackRight - trackLeft, kTrackH);
+	const bool isOnThumb = isOnTrack && mx >= _scroll.m_thumbX && mx <= _scroll.m_thumbX + _scroll.m_thumbW;
+
+	//---------- ドラッグ開始 ----------
+	if (isOnThumb && !_scroll.m_dragFlg)
+	{
+		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
+		if (m_clickFlg)
+		{
+			_scroll.m_dragFlg = true;
+			_scroll.m_dragOffsetX = mx - _scroll.m_thumbX;
+			m_clickFlg = false;
+		}
+	}
+
+	//---------- ドラッグ中 ----------
+	if (_scroll.m_dragFlg)
+	{
+		if (!(GetAsyncKeyState(VK_LBUTTON) & 0x8000))
+		{
+			_scroll.m_dragFlg = false;
+		}
+		else
+		{
+			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
+
+			const float moveRange = (trackRight - _scroll.m_thumbW) - trackLeft;
+			float ratio = 0.0f;
+			if (moveRange > 0.0f)
+			{
+				ratio = (mx - _scroll.m_dragOffsetX - trackLeft) / moveRange;
+			}
+			ratio = std::clamp(ratio, 0.0f, 1.0f);
+			_scroll.m_index = static_cast<int>(std::round(ratio * maxIndex));
+		}
+	}
+	//---------- レールをクリック → 1画面分動く ----------
+	else if (isOnTrack && !isOnThumb)
+	{
+		MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
+		if (m_clickFlg)
+		{
+			_scroll.m_index += (mx < _scroll.m_thumbX) ? -_scroll.m_visibleNum : _scroll.m_visibleNum;
+			m_clickFlg = false;
+		}
+	}
+
+	//---------- マウスホイール(そのパネルの上にあるときだけ) ----------
+	if (!_scroll.m_dragFlg && MouseHit(_panelPos, _panelW, _panelH))
+	{
+		int wheel = MouseInfo::Instance().GetMouseWheelValue();
+		if (wheel >= 1) { _scroll.m_index -= 1; }
+		else if (wheel <= -1) { _scroll.m_index += 1; }
+	}
+
+	_scroll.m_hoverFlg = isOnThumb || _scroll.m_dragFlg;
+	_scroll.m_index = std::clamp(_scroll.m_index, 0, maxIndex);
+}
+
+void ShopDisplay::ScrollDraw(const HScroll& _scroll, ShopTex _track)
+{
+	// 左端を基準に、横に並べて描く
+	const Math::Vector2 pivotLeft = { 0.0f, 0.5f };
+
+	DrawTexSize(m_spTex[static_cast<int>(_track)], { _scroll.m_trackLeft, _scroll.m_trackY }, _scroll.m_trackW, kTrackH, pivotLeft);
+
+	const bool hover = _scroll.m_hoverFlg;
+	const auto& spL = m_spTex[static_cast<int>(hover ? ShopTex::ThumbLeftHover : ShopTex::ThumbLeft)];
+	const auto& spM = m_spTex[static_cast<int>(hover ? ShopTex::ThumbMidHover : ShopTex::ThumbMid)];
+	const auto& spR = m_spTex[static_cast<int>(hover ? ShopTex::ThumbRightHover : ShopTex::ThumbRight)];
+	const auto& spG = m_spTex[static_cast<int>(hover ? ShopTex::ThumbGripHover : ShopTex::ThumbGrip)];
+	if (!spL || !spM || !spR || !spG) { return; }
+
+	const float lw = static_cast<float>(spL->GetWidth());
+	const float rw = static_cast<float>(spR->GetWidth());
+	const float y = _scroll.m_trackY;
+
+	DrawTexSize(spL, { _scroll.m_thumbX, y }, lw, kTrackH, pivotLeft);
+	const float midW = _scroll.m_thumbW - lw - rw;
+	if (midW > 0.0f) { DrawTexSize(spM, { _scroll.m_thumbX + lw, y }, midW, kTrackH, pivotLeft); }
+	DrawTexSize(spR, { _scroll.m_thumbX + _scroll.m_thumbW - rw, y }, rw, kTrackH, pivotLeft);
+
+	// 持ち手はつまみの真ん中
+	DrawTex(spG, { _scroll.m_thumbX + _scroll.m_thumbW / 2.0f, y });
 }
 
 void ShopDisplay::BuySellUpdate()
@@ -929,155 +1080,4 @@ void ShopDisplay::SaveShopData()
 	writeArray(inventory, "weapons", "owned", [&](int _id) { return m_weaponOwned[_id]; }, PlayerWeaponInfoSize);
 	inventory["money"] = m_money;
 	writeJson(m_inventoryPath, inventory);
-}
-
-void ShopDisplay::DrawButton(ShopButton _button, const Math::Vector2& _pos, bool _enable)
-{
-	float w = kButtonW, h = kButtonH;
-	if (_button == ShopButton::Plus || _button == ShopButton::Minus) { w = h = kSmallSiz; }
-
-	ButtonState state = ButtonState::Disable;
-	if (_enable)
-	{
-		state = MouseHit(_pos, w, h) ? ButtonState::Hover : ButtonState::Normal;
-	}
-	DrawTex(m_spButtonTex[static_cast<int>(_button)][static_cast<int>(state)], _pos);
-}
-
-void ShopDisplay::DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale, const Math::Vector2& _pivot)
-{
-	if (!_spTex) { return; }
-	DrawTexSize(_spTex, _pos, _spTex->GetWidth() * _scale, _spTex->GetHeight() * _scale, _pivot);
-}
-
-void ShopDisplay::DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _w, float _h, const Math::Vector2& _pivot)
-{
-	if (!_spTex) { return; }
-
-	KdShaderManager::Instance().m_spriteShader.DrawTex(
-		_spTex.get(),
-		static_cast<int>(_pos.x), static_cast<int>(_pos.y),
-		static_cast<int>(_w), static_cast<int>(_h),
-		nullptr, &kWhiteColor, _pivot);
-}
-
-void ShopDisplay::DrawStock(int _stock)
-{
-	// 「在庫」と、その右に数(右端を買う・売るボタンの右端にそろえる)
-	DrawTex(m_spTex[static_cast<int>(ShopTex::StockLabel)], { kStockLabelX, InfoRowY(0) });
-	DrawNum(std::max(0, _stock), RAligned, { kStockNumRightX, InfoRowY(0) }, 2.0f, false, kStockNumMaxW);
-}
-
-void ShopDisplay::DrawPrice(long _price, float _rowY)
-{
-	// 右端を kInfoPriceRightX にそろえる(桁が変わっても「G」の位置は動かない)
-	DrawNum(_price, RAligned, { kInfoPriceRightX, _rowY }, 2.0f, true, kInfoValueMaxW);
-	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { kInfoGoldX, _rowY - 1.0f });
-}
-
-void ShopDisplay::DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _siz, bool _separator, float _maxW)
-{
-	NumDraw::GetInstance().Draw(_num, _aligned, _pos, Math::Color(1, 1, 1, 1), _siz, _separator, -1, { _maxW, 0.0f });
-
-	// NumDrawの中で Begin/End しているので、続けて描けるよう開き直す
-	KdShaderManager::Instance().m_spriteShader.Begin(false);
-}
-
-float ShopDisplay::GetNumWidth(long _num, float _siz, bool _separator, float _maxW) const
-{
-	// 桁数(3桁区切りのカンマも1文字分)
-	const int digits = static_cast<int>(std::to_string(std::abs(_num)).size());
-	const int commas = _separator ? (digits - 1) / 3 : 0;
-	const float w = (digits + commas) * kNumGlyphW * _siz;
-
-	// 超えてはいけない横幅があれば、その幅に縮む
-	return (_maxW > 0.0f && w > _maxW) ? _maxW : w;
-}
-
-/////////////////////////////////////////////////////////////////////
-// 画像の読み込み
-/////////////////////////////////////////////////////////////////////
-void ShopDisplay::LoadOneTex(std::shared_ptr<KdTexture>& _spTex, const std::string& _path)
-{
-	if (_spTex) { return; }
-
-	_spTex = std::make_shared<KdTexture>();
-	if (!_spTex->Load(_path))
-	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayの画像が読み込めません : %s\n"), _path.c_str());
-	}
-}
-
-void ShopDisplay::LoadTex()
-{
-	const std::string shop = "Asset/Textures/GameUI/Prepare/Shop/";
-	const std::string equip = "Asset/Textures/GameUI/Prepare/Equip/";
-	const std::string menu = "Asset/Textures/GameUI/Prepare/Menu/";
-	const std::string item = "Asset/Textures/GameUI/Item/";
-
-	// ShopTexの順
-	const std::string path[static_cast<int>(ShopTex::TexSize)] =
-	{
-		shop + "Text/ShopTitle.png", shop + "Text/MoneyLabel.png", menu + "Text/Gold.png", menu + "Text/Count.png",
-		shop + "Panel/MoneyPanel.png", equip + "Panel/WeaponListPanel.png", shop + "Panel/ShopDetailPanel.png",
-		shop + "Panel/PriceInfoPanel.png", shop + "Panel/InventoryPanel.png",
-		equip + "Frame/SelectFrame.png", equip + "Frame/HoverFrame.png", item + "PlayerInventory/WeponStrengtheningIcon/NotIcon.png",
-		shop + "Text/Owned.png", shop + "Text/NotStocked.png", shop + "Text/SoldOut.png",
-		shop + "Text/HaveLabel.png", shop + "Text/Have.png", shop + "Text/NotHave.png", shop + "Text/BuyPriceLabel.png",
-		shop + "Text/SellPriceLabel.png", shop + "Text/CountLabel.png", shop + "Text/TotalLabel.png",
-		shop + "Text/Inventory.png", shop + "Text/Times.png", shop + "Text/Dash.png",
-		equip + "Scroll/ScrollTrackH.png", shop + "Panel/InventoryScrollTrack.png",
-		equip + "Scroll/ScrollThumbLeftH.png", equip + "Scroll/ScrollThumbMidH.png", equip + "Scroll/ScrollThumbRightH.png", equip + "Scroll/ScrollThumbGripH.png",
-		equip + "Scroll/ScrollThumbLeftH_Hover.png", equip + "Scroll/ScrollThumbMidH_Hover.png", equip + "Scroll/ScrollThumbRightH_Hover.png", equip + "Scroll/ScrollThumbGripH_Hover.png",
-		shop + "Text/StockLabel.png",
-	};
-	for (int i = 0; i < static_cast<int>(ShopTex::TexSize); i++)
-	{
-		LoadOneTex(m_spTex[i], path[i]);
-	}
-
-	// タブ
-	const std::string tabName[static_cast<int>(ShopTab::TabSize)] = { "Consumable", "Material", "Weapon" };
-	for (int t = 0; t < static_cast<int>(ShopTab::TabSize); t++)
-	{
-		LoadOneTex(m_spTabTex[t][0], shop + "Tab/Tab" + tabName[t] + ".png");
-		LoadOneTex(m_spTabTex[t][1], shop + "Tab/Tab" + tabName[t] + "_Select.png");
-	}
-
-	// ボタン
-	const std::string buttonName[static_cast<int>(ShopButton::ButtonSize)] = { "Buy", "Sell", "Plus", "Minus" };
-	const std::string stateName[static_cast<int>(ButtonState::StateSize)] = { "", "_Hover", "_Disable" };
-	for (int b = 0; b < static_cast<int>(ShopButton::ButtonSize); b++)
-	{
-		for (int s = 0; s < static_cast<int>(ButtonState::StateSize); s++)
-		{
-			LoadOneTex(m_spButtonTex[b][s], shop + "Button/" + buttonName[b] + "Button" + stateName[s] + ".png");
-		}
-	}
-
-	// ポーション(アイコン・名前・説明)
-	for (int i = 0; i < PotionsTypeMax; i++)
-	{
-		const std::string dir = item + "Potion/" + kPotionName[i] + "/";
-		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Icon)], dir + "Icon.png");
-		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Name)], dir + "SelectNameBase.png");
-		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Explanation)], dir + "SelectExplanationBase.png");
-	}
-
-	// 武器(アイコン・名前・説明)
-	for (int i = 0; i < PlayerWeaponInfoSize; i++)
-	{
-		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Icon)], item + "PlayerInventory/WeponStrengtheningIcon/" + kWeaponName[i] + "/WeponStrengtheningIcon8.png");
-		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Name)], item + "WeaponsStrengthening/" + kWeaponName[i] + "/Icon/SelectNameBase.png");
-		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Explanation)], item + "WeaponsStrengthening/" + kWeaponName[i] + "/Icon/SelectExplanationBase.png");
-	}
-
-	// 強化素材(アイコン・名前・説明)
-	for (int i = 0; i < kMaterialNum; i++)
-	{
-		const std::string dir = item + "WeaponsStrengtheningItem/WeaponStrengthening_Crystal" + std::to_string(i + 1) + "/";
-		LoadOneTex(m_spMaterialTex[i][static_cast<int>(ItemTex::Icon)], dir + "Icon.png");
-		LoadOneTex(m_spMaterialTex[i][static_cast<int>(ItemTex::Name)], dir + "SelectNameBase.png");
-		LoadOneTex(m_spMaterialTex[i][static_cast<int>(ItemTex::Explanation)], dir + "SelectExplanationBase.png");
-	}
 }

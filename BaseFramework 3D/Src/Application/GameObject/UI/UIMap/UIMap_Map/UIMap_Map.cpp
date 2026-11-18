@@ -93,16 +93,6 @@ void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize, int _ro
 	m_isStairsMine = true;
 }
 
-void UIMap_Map::PosListReset()
-{
-	m_posList.clear();
-	m_tileMap.clear();
-	m_stairsMiniMapInfo.m_drawFlg = false;
-	m_isStairsMine = false;
-	m_isDirty = true;
-}
-
-
 void UIMap_Map::SetMinimapRevealAll(bool _enable)
 {
 	if (_enable)
@@ -115,6 +105,15 @@ void UIMap_Map::SetMinimapRevealAll(bool _enable)
 
 		m_isDirty = true;
 	}
+}
+
+void UIMap_Map::PosListReset()
+{
+	m_posList.clear();
+	m_tileMap.clear();
+	m_stairsMiniMapInfo.m_drawFlg = false;
+	m_isStairsMine = false;
+	m_isDirty = true;
 }
 
 void UIMap_Map::DiscoverTile()
@@ -163,7 +162,6 @@ void UIMap_Map::DiscoverTile()
 		m_isDirty = true; // 同上
 	}
 }
-
 
 void UIMap_Map::BakeTiles()
 {

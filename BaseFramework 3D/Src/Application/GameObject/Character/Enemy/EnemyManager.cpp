@@ -12,6 +12,7 @@
 #include"../../UI/UIMap/UIMapManager.h"
 #include"../../UI/UIMap/UIMap_Enemy/UIMap_Enemy.h"
 #include"../../../Scene/GameScene/GameScene.h"
+
 void EnemyManager::Init()
 {
 	SetEnemyListPlayer();
@@ -148,42 +149,6 @@ void EnemyManager::SetPlayer(std::shared_ptr<PlayerBase> _spPlayer)
 	}
 }
 
-void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
-{
-	std::shared_ptr<Giant>spBoss = std::make_shared<Giant>();
-	spBoss->Init();
-	spBoss->SetPlayer(m_wpPlayer.lock());
-	spBoss->SetMapManager(m_wpMapManager.lock());
-	spBoss->SetSpawnPos(_spawnPos);
-	spBoss->SetCamera(m_wpCamera.lock());
-	spBoss->AddUIList(m_wpUIManager.lock());
-	spBoss->SetGameScene(m_wpGameScene.lock());
-	spBoss->SetEnemyManager(m_wpEnemyManager.lock());
-	spBoss->SetHitDamage(m_wpHitDamage.lock());
-
-	int floor = 1;
-	auto spGameScene = m_wpGameScene.lock();
-	if (spGameScene)
-	{
-		floor = spGameScene->GetDisplayFloor();
-	}
-	spBoss->SetLV(floor);
-
-	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
-	if (spMapManager)
-	{
-		spMapManager->MapHitEnemy(spBoss);
-	}
-
-	m_spEnemyBoss = spBoss;
-
-	if (m_spEnemyBoss)
-	{
-		m_enemyUpdateList.push_back(m_spEnemyBoss);
-	}
-
-}
-
 void EnemyManager::SetEnemyUpdateList(std::shared_ptr<MapManager> _spMapManager)
 {
 	if (!_spMapManager) { return; }
@@ -212,16 +177,6 @@ void EnemyManager::SetVisionFlg(bool _flg)
 		enemy->SetVisionFlg(_flg);
 	}
 }
-
-void EnemyManager::SetEnemyListPlayer()
-{
-	for (const auto& enemy : m_enemyList)
-	{
-		enemy->SetPlayer(m_wpPlayer.lock());
-	}
-}
-
-
 
 void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
@@ -264,4 +219,48 @@ void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 	}
 	m_enemyList.push_back(spEnemyAmbush);
 
+}
+
+void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
+{
+	std::shared_ptr<Giant>spBoss = std::make_shared<Giant>();
+	spBoss->Init();
+	spBoss->SetPlayer(m_wpPlayer.lock());
+	spBoss->SetMapManager(m_wpMapManager.lock());
+	spBoss->SetSpawnPos(_spawnPos);
+	spBoss->SetCamera(m_wpCamera.lock());
+	spBoss->AddUIList(m_wpUIManager.lock());
+	spBoss->SetGameScene(m_wpGameScene.lock());
+	spBoss->SetEnemyManager(m_wpEnemyManager.lock());
+	spBoss->SetHitDamage(m_wpHitDamage.lock());
+
+	int floor = 1;
+	auto spGameScene = m_wpGameScene.lock();
+	if (spGameScene)
+	{
+		floor = spGameScene->GetDisplayFloor();
+	}
+	spBoss->SetLV(floor);
+
+	std::shared_ptr<MapManager> spMapManager = m_wpMapManager.lock();
+	if (spMapManager)
+	{
+		spMapManager->MapHitEnemy(spBoss);
+	}
+
+	m_spEnemyBoss = spBoss;
+
+	if (m_spEnemyBoss)
+	{
+		m_enemyUpdateList.push_back(m_spEnemyBoss);
+	}
+
+}
+
+void EnemyManager::SetEnemyListPlayer()
+{
+	for (const auto& enemy : m_enemyList)
+	{
+		enemy->SetPlayer(m_wpPlayer.lock());
+	}
 }

@@ -12,6 +12,26 @@
 #include"../MapObj/TreasureChest/TreasureChest.h"
 #include"../MapObj/MapObjManager.h"
 
+//A*の探索で、優先度付きキューに入れる1件分
+struct PathQueueItem
+{
+	//合計のコスト
+	float m_fCost;
+	//ゴールまでの推定コスト
+	float m_hCost;
+	//ノード
+	Node* m_node;
+
+	//優先度付きキューで小さい順に並べるための比較(fCostが同じならhCostで比べる)
+	// _other ... 比べる相手
+	//戻り値 ... 自分の方が大きければtrue
+	bool operator>(const PathQueueItem& _other) const
+	{
+		if (m_fCost == _other.m_fCost) return m_hCost > _other.m_hCost;
+		return m_fCost > _other.m_fCost;
+	}
+};
+
 void MapManager::Init()
 {
 	m_spMapGenerate = std::make_shared<MapGenerate>();
@@ -87,6 +107,251 @@ void MapManager::GenerateDepthMapFromLight()
 	}
 }
 
+bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
+{
+	// ワールド座標 → タイル座標へ変換（切り下げ）
+	int tileX = static_cast<int>(std::floor(_pos.x / m_mapTileSiz));
+	int tileY = static_cast<int>(std::floor(-_pos.z / m_mapTileSiz));
+
+	// タイル座標 → チャンク番号へ変換
+	int cx = static_cast<int>(std::floor(static_cast<float>(tileX) / m_chunkSize));
+	int cy = static_cast<int>(std::floor(static_cast<float>(tileY) / m_chunkSize));
+
+	// チャンク配列が存在する場合、配列の範囲内に安全に収める（クランプ）
+	if (!m_chunks.empty())
+	{
+		int maxCy = static_cast<int>(m_chunks.size()) - 1;
+		cy = std::clamp(cy, 0, std::max(0, maxCy));
+		if (maxCy >= 0 && !m_chunks[cy].empty())
+		{
+			int maxCx = static_cast<int>(m_chunks[cy].size()) - 1;
+			cx = std::clamp(cx, 0, std::max(0, maxCx));
+		}
+	}
+	return GetChunksUpdate({ static_cast<float>(cx), static_cast<float>(cy) });
+}
+
+bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
+{
+	// チャンク範囲チェック
+	auto inRange = [&](int _x, int _y)
+		{
+			return _y >= 0 && _y < static_cast<int>(m_chunks.size()) &&
+				_x >= 0 && _x < static_cast<int>(m_chunks[_y].size());
+		};
+	// float から int へ正確に変換（誤差防止）
+	int targetCx = static_cast<int>(std::round(_chunkNum.x));
+	int targetCy = static_cast<int>(std::round(_chunkNum.y));
+	int playerCx = static_cast<int>(std::round(m_chunkNum.x));
+	int playerCy = static_cast<int>(std::round(m_chunkNum.y));
+
+	// 修正：dy に .y、dx に .x を使用
+	for (int dy = -static_cast<int>(m_updateChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y); dy++)
+	{
+		for (int dx = -static_cast<int>(m_updateChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x); dx++)
+		{
+			int ncx = playerCx + dx;
+			int ncy = playerCy + dy;
+			if (!inRange(ncx, ncy)) { continue; }
+			// int 型同士で安全・確実な比較
+			if (targetCx == ncx && targetCy == ncy)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool MapManager::GetChunksDraw(Math::Vector2 _chunkNum)
+{
+	// チャンク範囲チェック
+	auto inRange = [&](int _x, int _y)
+		{
+			return _y >= 0 && _y < static_cast<int>(m_chunks.size()) &&
+				_x >= 0 && _x < static_cast<int>(m_chunks[_y].size());
+		};
+	// float から int へ正確に変換（誤差防止）
+	int targetCx = static_cast<int>(std::round(_chunkNum.x));
+	int targetCy = static_cast<int>(std::round(_chunkNum.y));
+	int playerCx = static_cast<int>(std::round(m_chunkNum.x));
+	int playerCy = static_cast<int>(std::round(m_chunkNum.y));
+
+	// 修正：dy に .y、dx に .x を使用
+	for (int dy = -static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy++)
+	{
+		for (int dx = -static_cast<int>(m_updateChunkRadius.x + m_drawChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x + m_drawChunkRadius.x); dx++)
+		{
+			int ncx = playerCx + dx;
+			int ncy = playerCy + dy;
+			if (!inRange(ncx, ncy)) { continue; }
+			// int 型同士で安全・確実な比較
+			if (targetCx == ncx && targetCy == ncy)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+Math::Vector3 MapManager::GetRandomPos()
+{
+	Math::Vector3 retPos = {};
+	while (1)
+	{
+		auto it = m_mapObj.begin();
+		std::advance(it, rand() % m_mapObj.size());
+		auto& randomElem = *it;
+
+		if (randomElem->GetMapObjType() == MapObjType::Ground)
+		{
+			retPos = randomElem->GetPos();
+			break;
+		}
+	}
+
+	return retPos;
+}
+
+Math::Vector3 MapManager::GetChunkCenterPos()
+{
+	// チャンク番号（float なので int にキャスト）
+	int cx = static_cast<int>(m_chunkNum.x);
+	int cy = static_cast<int>(m_chunkNum.y);
+
+	// チャンクのワールド座標サイズ
+	float chunkWorldSize = m_chunkSize * m_mapTileSiz;
+
+	// チャンクの左上（minX, minZ）
+	float minX = cx * chunkWorldSize;
+	float minZ = -(cy * chunkWorldSize);
+
+	// チャンク中心
+	float centerX = minX + chunkWorldSize * 0.5f;
+	float centerZ = minZ - chunkWorldSize * 0.5f;
+
+
+	// Y は地面高さに合わせる（必要なら変更）
+	return Math::Vector3(centerX, m_mapBasePos.y, centerZ);
+}
+
+void MapManager::SetCamera(const std::shared_ptr<CameraBase>& _spCamera)
+{
+	m_wpCamera = _spCamera;
+
+	for (const auto& mapObj : m_mapObj)
+	{
+		mapObj->SetCamera(_spCamera);
+		_spCamera->ResolveCameraOcclusionObject(mapObj);
+	}
+
+	m_spMapGenerate->SetCamera(_spCamera);
+}
+
+void MapManager::SetPlayerChunk(Math::Vector3 _pos)
+{
+	// ワールド座標 → タイル座標へ変換
+	int tileX = static_cast<int>(_pos.x / m_mapTileSiz);
+	int tileY = static_cast<int>(-_pos.z / m_mapTileSiz);
+
+	// タイル座標 → チャンク番号へ変換
+	int cx = tileX / m_chunkSize;
+	int cy = tileY / m_chunkSize;
+
+	//今までと同じなら変えなくてOK
+	if (m_chunkNum.x == cx && m_chunkNum.y == cy)
+	{
+		m_isChunkChanged = false;
+		return;
+	}
+
+	m_isChunkChanged = true;
+	m_updateChunks.clear();
+	m_drawChunks.clear();
+	m_chunkNum = { static_cast<float>(cx),static_cast<float>(cy) };
+
+	// チャンク範囲チェック
+	auto inRange = [&](int _x, int _y)
+		{
+			return _y >= 0 && _y < m_chunks.size() &&
+				_x >= 0 && _x < m_chunks[_y].size();
+		};
+
+	if (m_updateChunkRadius.x <= 0)
+	{
+		m_updateChunkRadius.x = 1;
+	}
+
+	if (m_updateChunkRadius.y <= 0)
+	{
+		m_updateChunkRadius.y = 1;
+	}
+
+	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
+	std::unordered_set<std::shared_ptr<MapBase>> uniqueDrawSet;
+
+
+
+	for (int dy = -(int)m_updateChunkRadius.y - m_drawChunkRadius.y; dy <= (int)m_updateChunkRadius.y + m_drawChunkRadius.y; dy++)
+	{
+		for (int dx = -(int)m_updateChunkRadius.x - m_drawChunkRadius.x; dx <= (int)m_updateChunkRadius.x + m_drawChunkRadius.x; dx++)
+		{
+			int ncx = cx + dx;
+			int ncy = cy + dy;
+
+			if (!inRange(ncx, ncy)) continue;
+
+			for (auto& wpMapObj : m_chunks[ncy][ncx])
+			{
+				if (auto spMapObj = wpMapObj.lock())
+				{
+					if (dy >= -(int)m_updateChunkRadius.y && dy <= (int)m_updateChunkRadius.y &&
+						dx >= -(int)m_updateChunkRadius.x && dx <= (int)m_updateChunkRadius.x)
+					{
+						uniqueUpdateSet.insert(spMapObj);
+					}
+					uniqueDrawSet.insert(spMapObj);
+				}
+			}
+		}
+	}
+
+	int num = 1;
+
+	// 最後に push_back
+	m_updateChunks.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
+	m_drawChunks.assign(uniqueDrawSet.begin(), uniqueDrawSet.end());
+
+	int drawMinChunkX =
+		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
+
+	int drawMaxChunkX =
+		cx + ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
+
+	int drawMinChunkY =
+		cy - ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
+
+	int drawMaxChunkY =
+		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
+
+	// ワールド座標に変換
+	float worldMinX = drawMinChunkX * m_chunkSize * m_mapTileSiz;
+
+	float worldMaxX = (drawMaxChunkX + 1) * m_chunkSize * m_mapTileSiz;
+
+	float worldMinZ = -(drawMinChunkY * m_chunkSize * m_mapTileSiz);
+
+	float worldMaxZ = -((drawMaxChunkY + 1) * m_chunkSize * m_mapTileSiz);
+
+	float sizeX = fabsf(worldMaxX - worldMinX);
+	float sizeZ = fabsf(worldMaxZ - worldMinZ);
+	float sizeY = m_mapTileSiz * m_spMapGenerate->GetHeightLevelMax();
+
+	m_boxPos = GetChunkCenterPos();
+	m_boxSiz = { sizeX, sizeY * 2.0f, sizeZ };
+}
+
 void MapManager::MapHit(const std::shared_ptr<KdGameObject>& _spObj)
 {
 	if (!_spObj) return;
@@ -143,19 +408,6 @@ void MapManager::MapHit(const std::shared_ptr<KdGameObject>& _spObj)
 void MapManager::MapHitEnemy(const std::shared_ptr<EnemyBase>& _spObj)
 {
 	MapHit(_spObj);
-}
-
-void MapManager::SetCamera(const std::shared_ptr<CameraBase>& _spCamera)
-{
-	m_wpCamera = _spCamera;
-
-	for (const auto& mapObj : m_mapObj)
-	{
-		mapObj->SetCamera(_spCamera);
-		_spCamera->ResolveCameraOcclusionObject(mapObj);
-	}
-
-	m_spMapGenerate->SetCamera(_spCamera);
 }
 
 void MapManager::GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _mapType)
@@ -243,6 +495,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _mapTy
 
 			int roomEnemyNum = mapRoomList[i][0].m_roomEnemyNum;
 
+			//敵を出す候補の床1つ分
 			struct EnemySpawnList {
 				Math::Vector3 m_pos;
 				int m_roomID = 0;
@@ -464,311 +717,6 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	}
 }
 
-void MapManager::SetPlayerChunk(Math::Vector3 _pos)
-{
-	// ワールド座標 → タイル座標へ変換
-	int tileX = static_cast<int>(_pos.x / m_mapTileSiz);
-	int tileY = static_cast<int>(-_pos.z / m_mapTileSiz);
-
-	// タイル座標 → チャンク番号へ変換
-	int cx = tileX / m_chunkSize;
-	int cy = tileY / m_chunkSize;
-
-	//今までと同じなら変えなくてOK
-	if (m_chunkNum.x == cx && m_chunkNum.y == cy)
-	{
-		m_isChunkChanged = false;
-		return;
-	}
-
-	m_isChunkChanged = true;
-	m_updateChunks.clear();
-	m_drawChunks.clear();
-	m_chunkNum = { static_cast<float>(cx),static_cast<float>(cy) };
-
-	// チャンク範囲チェック
-	auto inRange = [&](int _x, int _y)
-		{
-			return _y >= 0 && _y < m_chunks.size() &&
-				_x >= 0 && _x < m_chunks[_y].size();
-		};
-
-	if (m_updateChunkRadius.x <= 0)
-	{
-		m_updateChunkRadius.x = 1;
-	}
-
-	if (m_updateChunkRadius.y <= 0)
-	{
-		m_updateChunkRadius.y = 1;
-	}
-
-	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
-	std::unordered_set<std::shared_ptr<MapBase>> uniqueDrawSet;
-
-
-
-	for (int dy = -(int)m_updateChunkRadius.y - m_drawChunkRadius.y; dy <= (int)m_updateChunkRadius.y + m_drawChunkRadius.y; dy++)
-	{
-		for (int dx = -(int)m_updateChunkRadius.x - m_drawChunkRadius.x; dx <= (int)m_updateChunkRadius.x + m_drawChunkRadius.x; dx++)
-		{
-			int ncx = cx + dx;
-			int ncy = cy + dy;
-
-			if (!inRange(ncx, ncy)) continue;
-
-			for (auto& wpMapObj : m_chunks[ncy][ncx])
-			{
-				if (auto spMapObj = wpMapObj.lock())
-				{
-					if (dy >= -(int)m_updateChunkRadius.y && dy <= (int)m_updateChunkRadius.y &&
-						dx >= -(int)m_updateChunkRadius.x && dx <= (int)m_updateChunkRadius.x)
-					{
-						uniqueUpdateSet.insert(spMapObj);
-					}
-					uniqueDrawSet.insert(spMapObj);
-				}
-			}
-		}
-	}
-
-	int num = 1;
-
-	// 最後に push_back
-	m_updateChunks.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
-	m_drawChunks.assign(uniqueDrawSet.begin(), uniqueDrawSet.end());
-
-	int drawMinChunkX =
-		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
-
-	int drawMaxChunkX =
-		cx + ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
-
-	int drawMinChunkY =
-		cy - ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
-
-	int drawMaxChunkY =
-		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
-
-	// ワールド座標に変換
-	float worldMinX = drawMinChunkX * m_chunkSize * m_mapTileSiz;
-
-	float worldMaxX = (drawMaxChunkX + 1) * m_chunkSize * m_mapTileSiz;
-
-	float worldMinZ = -(drawMinChunkY * m_chunkSize * m_mapTileSiz);
-
-	float worldMaxZ = -((drawMaxChunkY + 1) * m_chunkSize * m_mapTileSiz);
-
-	float sizeX = fabsf(worldMaxX - worldMinX);
-	float sizeZ = fabsf(worldMaxZ - worldMinZ);
-	float sizeY = m_mapTileSiz * m_spMapGenerate->GetHeightLevelMax();
-
-	m_boxPos = GetChunkCenterPos();
-	m_boxSiz = { sizeX, sizeY * 2.0f, sizeZ };
-}
-
-bool MapManager::GetChunksUpdate(Math::Vector3 _pos)
-{
-	// ワールド座標 → タイル座標へ変換（切り下げ）
-	int tileX = static_cast<int>(std::floor(_pos.x / m_mapTileSiz));
-	int tileY = static_cast<int>(std::floor(-_pos.z / m_mapTileSiz));
-
-	// タイル座標 → チャンク番号へ変換
-	int cx = static_cast<int>(std::floor(static_cast<float>(tileX) / m_chunkSize));
-	int cy = static_cast<int>(std::floor(static_cast<float>(tileY) / m_chunkSize));
-
-	// チャンク配列が存在する場合、配列の範囲内に安全に収める（クランプ）
-	if (!m_chunks.empty())
-	{
-		int maxCy = static_cast<int>(m_chunks.size()) - 1;
-		cy = std::clamp(cy, 0, std::max(0, maxCy));
-		if (maxCy >= 0 && !m_chunks[cy].empty())
-		{
-			int maxCx = static_cast<int>(m_chunks[cy].size()) - 1;
-			cx = std::clamp(cx, 0, std::max(0, maxCx));
-		}
-	}
-	return GetChunksUpdate({ static_cast<float>(cx), static_cast<float>(cy) });
-}
-
-bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
-{
-	// チャンク範囲チェック
-	auto inRange = [&](int _x, int _y)
-		{
-			return _y >= 0 && _y < static_cast<int>(m_chunks.size()) &&
-				_x >= 0 && _x < static_cast<int>(m_chunks[_y].size());
-		};
-	// float から int へ正確に変換（誤差防止）
-	int targetCx = static_cast<int>(std::round(_chunkNum.x));
-	int targetCy = static_cast<int>(std::round(_chunkNum.y));
-	int playerCx = static_cast<int>(std::round(m_chunkNum.x));
-	int playerCy = static_cast<int>(std::round(m_chunkNum.y));
-
-	// 修正：dy に .y、dx に .x を使用
-	for (int dy = -static_cast<int>(m_updateChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y); dy++)
-	{
-		for (int dx = -static_cast<int>(m_updateChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x); dx++)
-		{
-			int ncx = playerCx + dx;
-			int ncy = playerCy + dy;
-			if (!inRange(ncx, ncy)) { continue; }
-			// int 型同士で安全・確実な比較
-			if (targetCx == ncx && targetCy == ncy)
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-bool MapManager::GetChunksDraw(Math::Vector2 _chunkNum)
-{
-	// チャンク範囲チェック
-	auto inRange = [&](int _x, int _y)
-		{
-			return _y >= 0 && _y < static_cast<int>(m_chunks.size()) &&
-				_x >= 0 && _x < static_cast<int>(m_chunks[_y].size());
-		};
-	// float から int へ正確に変換（誤差防止）
-	int targetCx = static_cast<int>(std::round(_chunkNum.x));
-	int targetCy = static_cast<int>(std::round(_chunkNum.y));
-	int playerCx = static_cast<int>(std::round(m_chunkNum.x));
-	int playerCy = static_cast<int>(std::round(m_chunkNum.y));
-
-	// 修正：dy に .y、dx に .x を使用
-	for (int dy = -static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y + m_drawChunkRadius.y); dy++)
-	{
-		for (int dx = -static_cast<int>(m_updateChunkRadius.x + m_drawChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x + m_drawChunkRadius.x); dx++)
-		{
-			int ncx = playerCx + dx;
-			int ncy = playerCy + dy;
-			if (!inRange(ncx, ncy)) { continue; }
-			// int 型同士で安全・確実な比較
-			if (targetCx == ncx && targetCy == ncy)
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-Math::Vector3 MapManager::GetRandomPos()
-{
-	Math::Vector3 retPos = {};
-	while (1)
-	{
-		auto it = m_mapObj.begin();
-		std::advance(it, rand() % m_mapObj.size());
-		auto& randomElem = *it;
-
-		if (randomElem->GetMapObjType() == MapObjType::Ground)
-		{
-			retPos = randomElem->GetPos();
-			break;
-		}
-	}
-
-	return retPos;
-}
-
-Math::Vector3 MapManager::GetChunkCenterPos()
-{
-	// チャンク番号（float なので int にキャスト）
-	int cx = static_cast<int>(m_chunkNum.x);
-	int cy = static_cast<int>(m_chunkNum.y);
-
-	// チャンクのワールド座標サイズ
-	float chunkWorldSize = m_chunkSize * m_mapTileSiz;
-
-	// チャンクの左上（minX, minZ）
-	float minX = cx * chunkWorldSize;
-	float minZ = -(cy * chunkWorldSize);
-
-	// チャンク中心
-	float centerX = minX + chunkWorldSize * 0.5f;
-	float centerZ = minZ - chunkWorldSize * 0.5f;
-
-
-	// Y は地面高さに合わせる（必要なら変更）
-	return Math::Vector3(centerX, m_mapBasePos.y, centerZ);
-}
-
-
-
-void MapManager::CreateNodeGrid(int _width, int _height, float _tileSize)
-{
-	// 1タイルあたり 3x3（中央＋周囲8マス = 全9ノード）に分割
-	int gridWidth = _width;
-	int gridHeight = _height;
-
-	m_nodes.resize(gridHeight);
-	for (int y = 0; y < gridHeight; y++)
-	{
-		m_nodes[y].resize(gridWidth);
-
-		for (int x = 0; x < gridWidth; x++)
-		{
-			Node& node = m_nodes[y][x];
-
-			// グリッド座標
-			node.m_pos = Math::Vector2(static_cast<float>(x), static_cast<float>(y));
-
-			// 初期値(通れないで初期化)
-			node.m_walkable = false;
-
-			// A* 用の初期化
-			node.m_gCost = FLT_MAX;
-			node.m_hCost = 0;
-			node.m_parent = nullptr;
-		}
-	}
-}
-
-void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& _mapData)
-{
-	int height = static_cast<int>(_mapData.size());
-	if (height == 0) return;
-	int width = static_cast<int>(_mapData[0].size());
-	for (int y = 0; y < height; y++)
-	{
-		for (int x = 0; x < width; x++)
-		{
-			// 床ではない（壁/空きマス）場合はスキップ
-			if (!_mapData[y][x]) continue;
-			// 隣接マス（上下左右）が「マップ外」または「床ではない（＝壁がある）」かを判定
-			bool wallNorth = (y == 0) || !_mapData[y - 1][x];          // 上側（Y-1）に壁
-			bool wallSouth = (y == height - 1) || !_mapData[y + 1][x];  // 下側（Y+1）に壁
-			bool wallWest = (x == 0) || !_mapData[y][x - 1];          // 左側（X-1）に壁
-			bool wallEast = (x == width - 1) || !_mapData[y][x + 1];  // 右側（X+1）に壁
-			m_nodes[y][x].m_walkable = _mapData[y][x];
-			//// タイル内の 3x3 サブノードに対してフラグを設定
-			//for (int dy = 0; dy < 3; dy++)
-			//{
-			//	for (int dx = 0; dx < 3; dx++)
-			//	{
-			//		int subX = x * 3 + dx;
-			//		int subY = y * 3 + dy;
-			//		if (subY >= static_cast<int>(m_nodes.size()) || subX >= static_cast<int>(m_nodes[subY].size()))
-			//		{
-			//			continue;
-			//		}
-			//		// 基本は通行可能 (true) に初期化
-			//		bool isWalkable = true;
-			//		// 壁が立っている側のサブノード列は通行不可 (false) に設定
-			//		if (wallNorth && dy == 0) isWalkable = false; // 上端（dy = 0）
-			//		if (wallSouth && dy == 2) isWalkable = false; // 下端（dy = 2）
-			//		if (wallWest && dx == 0) isWalkable = false; // 左端（dx = 0）
-			//		if (wallEast && dx == 2) isWalkable = false; // 右端（dx = 2）
-			//		m_nodes[subY][subX].walkable = isWalkable;
-			//	}
-			//}
-		}
-	}
-}
-
 Math::Vector3 MapManager::NodeToWorld(const Node* _node) const
 {
 	if (!_node) return Math::Vector3::Zero;
@@ -802,25 +750,6 @@ Node* MapManager::WorldToNode(const Math::Vector3& _worldPos)
 
 	return &m_nodes[y][x];
 }
-
-struct PathQueueItem
-{
-	//合計のコスト
-	float m_fCost;
-	//ゴールまでの推定コスト
-	float m_hCost;
-	//ノード
-	Node* m_node;
-
-	//優先度付きキューで小さい順に並べるための比較(fCostが同じならhCostで比べる)
-	// _other ... 比べる相手
-	//戻り値 ... 自分の方が大きければtrue
-	bool operator>(const PathQueueItem& _other) const
-	{
-		if (m_fCost == _other.m_fCost) return m_hCost > _other.m_hCost;
-		return m_fCost > _other.m_fCost;
-	}
-};
 
 std::vector<Node*> MapManager::FindPath(Node* _start, Node* _goal)
 {
@@ -910,21 +839,6 @@ std::vector<Node*> MapManager::FindPath(Node* _start, Node* _goal)
 	return {};
 }
 
-std::vector<Node*> MapManager::BuildPath(Node* _goal) const
-{
-	std::vector<Node*> path;
-	Node* current = _goal;
-
-	while (current != nullptr)
-	{
-		path.push_back(current);
-		current = current->m_parent;
-	}
-
-	std::reverse(path.begin(), path.end());
-	return path;
-}
-
 std::vector<Node*> MapManager::GetNeighbors(Node* _node)
 {
 	std::vector<Node*> neighbors;
@@ -960,4 +874,90 @@ std::vector<Node*> MapManager::GetNeighbors(Node* _node)
 	}
 
 	return neighbors;
+}
+
+void MapManager::CreateNodeGrid(int _width, int _height, float _tileSize)
+{
+	// 1タイルあたり 3x3（中央＋周囲8マス = 全9ノード）に分割
+	int gridWidth = _width;
+	int gridHeight = _height;
+
+	m_nodes.resize(gridHeight);
+	for (int y = 0; y < gridHeight; y++)
+	{
+		m_nodes[y].resize(gridWidth);
+
+		for (int x = 0; x < gridWidth; x++)
+		{
+			Node& node = m_nodes[y][x];
+
+			// グリッド座標
+			node.m_pos = Math::Vector2(static_cast<float>(x), static_cast<float>(y));
+
+			// 初期値(通れないで初期化)
+			node.m_walkable = false;
+
+			// A* 用の初期化
+			node.m_gCost = FLT_MAX;
+			node.m_hCost = 0;
+			node.m_parent = nullptr;
+		}
+	}
+}
+
+void MapManager::ApplyWalkableFromMap(const std::vector<std::vector<bool>>& _mapData)
+{
+	int height = static_cast<int>(_mapData.size());
+	if (height == 0) return;
+	int width = static_cast<int>(_mapData[0].size());
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			// 床ではない（壁/空きマス）場合はスキップ
+			if (!_mapData[y][x]) continue;
+			// 隣接マス（上下左右）が「マップ外」または「床ではない（＝壁がある）」かを判定
+			bool wallNorth = (y == 0) || !_mapData[y - 1][x];          // 上側（Y-1）に壁
+			bool wallSouth = (y == height - 1) || !_mapData[y + 1][x];  // 下側（Y+1）に壁
+			bool wallWest = (x == 0) || !_mapData[y][x - 1];          // 左側（X-1）に壁
+			bool wallEast = (x == width - 1) || !_mapData[y][x + 1];  // 右側（X+1）に壁
+			m_nodes[y][x].m_walkable = _mapData[y][x];
+			//// タイル内の 3x3 サブノードに対してフラグを設定
+			//for (int dy = 0; dy < 3; dy++)
+			//{
+			//	for (int dx = 0; dx < 3; dx++)
+			//	{
+			//		int subX = x * 3 + dx;
+			//		int subY = y * 3 + dy;
+			//		if (subY >= static_cast<int>(m_nodes.size()) || subX >= static_cast<int>(m_nodes[subY].size()))
+			//		{
+			//			continue;
+			//		}
+			//		// 基本は通行可能 (true) に初期化
+			//		bool isWalkable = true;
+			//		// 壁が立っている側のサブノード列は通行不可 (false) に設定
+			//		if (wallNorth && dy == 0) isWalkable = false; // 上端（dy = 0）
+			//		if (wallSouth && dy == 2) isWalkable = false; // 下端（dy = 2）
+			//		if (wallWest && dx == 0) isWalkable = false; // 左端（dx = 0）
+			//		if (wallEast && dx == 2) isWalkable = false; // 右端（dx = 2）
+			//		m_nodes[subY][subX].walkable = isWalkable;
+			//	}
+			//}
+		}
+	}
+}
+
+std::vector<Node*> MapManager::BuildPath(Node* _goal) const
+{
+	std::vector<Node*> path;
+	Node* current = _goal;
+
+	while (current != nullptr)
+	{
+		path.push_back(current);
+		current = current->m_parent;
+	}
+
+	std::reverse(path.begin(), path.end());
+	return path;
 }

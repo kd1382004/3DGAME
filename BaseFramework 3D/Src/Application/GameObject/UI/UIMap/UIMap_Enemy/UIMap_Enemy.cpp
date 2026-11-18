@@ -26,16 +26,15 @@ void UIMap_EnemyManage::DrawSprite()
 	}
 }
 
-void UIMap_EnemyManage::PosListReset()
-{
-	m_posList.clear();
-}
-
 void UIMap_EnemyManage::SetEnemyPosAngleList(Math::Vector3 _pos, float _angle)
 {
  	m_posList.push_back({ _pos,_angle });
 }
 
+void UIMap_EnemyManage::PosListReset()
+{
+	m_posList.clear();
+}
 
 Math::Vector2 UIMap_EnemyManage::Change2DPos(Math::Vector3 _pos)
 {

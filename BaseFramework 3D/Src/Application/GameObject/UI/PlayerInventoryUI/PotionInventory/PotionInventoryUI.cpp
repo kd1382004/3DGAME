@@ -100,28 +100,6 @@ void PotionInventoryUI::Init()
 	m_scrollThumbSiz.y = m_scrollTrackSiz.y - m_scrollTrackInset * 2;
 }
 
-bool PotionInventoryUI::OnInventoryOpen()
-{
-	// 開いたときは消耗品から
-	m_nowCategory = ItemCategory_Consumable;
-
-	// 開いたときは一番上から表示
-	m_scrollRow = 0;
-	m_scrollDragFlg = false;
-
-	AddPotionTexInfo();
-	if (m_itemIconInfo.size() > 0)
-	{
-		m_spContext->m_spSelectExplanationTex = m_itemIconInfo[0].m_spExplanationTex;
-		m_spContext->m_spSelectNameTex = m_itemIconInfo[0].m_spNameTex;
-		m_selectPotionID = m_itemIconInfo[0].m_itemID;
-		return true;
-	}
-
-	m_spContext->m_spSelectNameTex = m_spContext->m_spNotSelectNameTex;
-	return false;
-}
-
 void PotionInventoryUI::OnSelect()
 {
 	if (m_itemIconInfo.size() != 0)
@@ -220,6 +198,28 @@ void PotionInventoryUI::DrawSprite()
 
 	//スクロールバーの描画
 	ScrollBarDraw();
+}
+
+bool PotionInventoryUI::OnInventoryOpen()
+{
+	// 開いたときは消耗品から
+	m_nowCategory = ItemCategory_Consumable;
+
+	// 開いたときは一番上から表示
+	m_scrollRow = 0;
+	m_scrollDragFlg = false;
+
+	AddPotionTexInfo();
+	if (m_itemIconInfo.size() > 0)
+	{
+		m_spContext->m_spSelectExplanationTex = m_itemIconInfo[0].m_spExplanationTex;
+		m_spContext->m_spSelectNameTex = m_itemIconInfo[0].m_spNameTex;
+		m_selectPotionID = m_itemIconInfo[0].m_itemID;
+		return true;
+	}
+
+	m_spContext->m_spSelectNameTex = m_spContext->m_spNotSelectNameTex;
+	return false;
 }
 
 void PotionInventoryUI::AddPotionTexInfo()

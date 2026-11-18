@@ -5,6 +5,7 @@ class  MapBase;
 class  CameraBase;
 
 
+//溜め攻撃で飛ばす衝撃波のステータス
 struct StatusShockwave
 {
 	// 何体までヒットしていいか
@@ -30,20 +31,27 @@ struct StatusShockwave
 class  Dagger_ChargeAttack :public KdGameObject
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	Dagger_ChargeAttack() {};
+
 	//デストラクタ
 	~Dagger_ChargeAttack()override {};
 
+	//---- 基本の処理 ----
+
 	//初期化
 	void Init()override;
+
 	//更新
 	void Update()override;
-
 
 	//エフェクトの描画
 	void DrawEffect()override;
 
+	//---- 設定 ----
 
 	//Statusセット
 	//_hitNum...何体まで当たっていいか
@@ -104,6 +112,19 @@ public:
 
 private:
 
+	//---- 型 ----
+
+	//残像用
+	struct GhostTrail
+	{
+		//残像の座標
+		Math::Vector3 m_pos;
+		float m_alpha;      // 透明度
+		float m_lifeTime;   // 残像の寿命
+	};
+
+	//---- メンバ変数 ----
+
 	// 当たったときに揺らすカメラ
 	std::weak_ptr<CameraBase> m_wpCamera;
 
@@ -119,15 +140,14 @@ private:
 	//衝撃波のステータス
 	StatusShockwave m_shockwaveStatus;
 
-
 	// ポリゴン
 	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
 
 	// ポリゴンスケール変数 (X: 幅, Y: 長さ)
 	Math::Vector2 m_polyScale = { 2.0f, 1.0f };
+
 	// 上下の厚み（全高）
 	float m_polyThickness = 0.6f;
-
 
 	// 座標
 	Math::Vector3 m_pos = Math::Vector3::Zero;
@@ -136,40 +156,37 @@ private:
 	//進む角度
 	float m_angle = 0;
 
-
 	// --- 当たり判定用パラメータ (BOX判定用) ---
 	// BOXのハーフサイズ (X:幅/2, Y:長さ/2, Z:厚み/2)
 	Math::Vector3 m_hitBoxExtents = { 0.25f, 0.6f, 0.25f };
+
 	// BOXのローカルオフセット (基部から刃の中心までの距離)
 	Math::Vector3 m_hitBoxLocalOffset = { 0.0f, 0.6f, 0.0f };
+
 	// 前フレームのワールド座標および行列
 	Math::Vector3 m_prevTipPos = Math::Vector3::Zero;
+
 	//前フレームの根元の位置(ワールド)
 	Math::Vector3 m_prevBasePos = Math::Vector3::Zero;
 	Math::Matrix  m_prevWeaponParentMat = Math::Matrix::Identity; // 追加：前フレーム行列
 	bool m_isFirstFrame = true;
-	//このフレームですでに当たったキャラか
-	// _spChara ... 調べるキャラ
-	//戻り値 ... 当たっていたらtrue
-	bool IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara);
 
 	// 前フレームの位置およびワールド行列
 	Math::Matrix  m_prevWorldMat = Math::Matrix::Identity;
-
-
-	//残像用
-	struct GhostTrail
-	{
-		//残像の座標
-		Math::Vector3 m_pos;
-		float m_alpha;      // 透明度
-		float m_lifeTime;   // 残像の寿命
-	};
 
 	//残像の一覧
 	std::vector<GhostTrail> m_trails;
 	float m_trailSpawnInterval = 0.002f; //ごとに残像生成
 	float m_trailTimer = 0.0f;
+
+	//---- 取得 ----
+
+	//このフレームですでに当たったキャラか
+	// _spChara ... 調べるキャラ
+	//戻り値 ... 当たっていたらtrue
+	bool IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara);
+
+	//---- その他の処理 ----
 
 	//残像の更新
 	void GhostTrailUpdate();

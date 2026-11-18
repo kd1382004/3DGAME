@@ -4,6 +4,7 @@
 #include"../../Character/CharacterBase.h"
 
 #include"../../../Scene/SceneManager.h"
+
 void Sword::Init()
 {
 	m_weaponStatusFilePath = "Asset/Data/ObjeData/Weapon/Sword/BaseWeaponStatus.json";
@@ -268,22 +269,41 @@ void Sword::DrawLit()
 
 }
 
-void Sword::ChargeAttackPlay()
+const std::vector<ComboStep>& Sword::GetComboList()
 {
-	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
+	constexpr int kBaseComboCount = 3;
+	const int unlocked = std::max(0, kBaseComboCount + GetWeaponsStrengtheningLv(WeaponsStrengthening_Characteristic));
+	const size_t count = std::min(m_comboList.size(), static_cast<size_t>(unlocked));
+
+	m_nowLvComboList.assign(m_comboList.begin(), m_comboList.begin() + count);
+
+	int lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].m_lv;
+	if (lv > 0)
 	{
-		m_chargeAttackMaxDamage = m_characterAttackPower + (m_baseWeaponStatus.m_attackPower * (m_chargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2);
+		for (size_t i = 0; i < m_nowLvComboList.size(); i++)
+		{
+			auto& step = m_nowLvComboList[i];
 
+			// 元データが足りないときは最後の段を使う
+			const auto& base = m_comboList[std::min(i, m_comboList.size() - 1)];
+
+			step.m_damageRate = base.m_damageRate;
+			step.m_speed = base.m_speed;
+			if (lv > 0)
+			{
+				float fi = (float)i;
+				step.m_damageRate += (0.1f + 0.1f * lv) * fi;
+				step.m_speed += (0.1f + 0.01f * lv) * fi;
+
+				if (step.m_speed >= base.m_speed * 1.5)
+				{
+					step.m_speed = base.m_speed * 1.5;
+				}
+			}
+		}
 	}
-
-
-	//レベル2を止める
-	auto spEffect2 = m_wpChargeLV2Effect.lock();
-	if (spEffect2 && spEffect2->IsPlaying())
-	{
-		spEffect2->StopEffect();
-	}
-
+	m_finalSlashDoneFlg = false;
+	return m_nowLvComboList;
 }
 
 void Sword::SetNowChargeTime(float _time)
@@ -451,6 +471,24 @@ void Sword::SetAttackFlg(bool _flg)
 	}
 }
 
+void Sword::ChargeAttackPlay()
+{
+	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
+	{
+		m_chargeAttackMaxDamage = m_characterAttackPower + (m_baseWeaponStatus.m_attackPower * (m_chargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2);
+
+	}
+
+
+	//レベル2を止める
+	auto spEffect2 = m_wpChargeLV2Effect.lock();
+	if (spEffect2 && spEffect2->IsPlaying())
+	{
+		spEffect2->StopEffect();
+	}
+
+}
+
 void Sword::StopWeaponSE()
 {
 	if (m_spChargeSE)
@@ -483,43 +521,6 @@ void Sword::StopWeaponSE()
 	{
 		spEffect2->StopEffect();
 	}
-}
-
-const std::vector<ComboStep>& Sword::GetComboList()
-{
-	constexpr int kBaseComboCount = 3;
-	const int unlocked = std::max(0, kBaseComboCount + GetWeaponsStrengtheningLv(WeaponsStrengthening_Characteristic));
-	const size_t count = std::min(m_comboList.size(), static_cast<size_t>(unlocked));
-
-	m_nowLvComboList.assign(m_comboList.begin(), m_comboList.begin() + count);
-
-	int lv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic2].m_lv;
-	if (lv > 0)
-	{
-		for (size_t i = 0; i < m_nowLvComboList.size(); i++)
-		{
-			auto& step = m_nowLvComboList[i];
-
-			// 元データが足りないときは最後の段を使う
-			const auto& base = m_comboList[std::min(i, m_comboList.size() - 1)];
-
-			step.m_damageRate = base.m_damageRate;
-			step.m_speed = base.m_speed;
-			if (lv > 0)
-			{
-				float fi = (float)i;
-				step.m_damageRate += (0.1f + 0.1f * lv) * fi;
-				step.m_speed += (0.1f + 0.01f * lv) * fi;
-
-				if (step.m_speed >= base.m_speed * 1.5)
-				{
-					step.m_speed = base.m_speed * 1.5;
-				}
-			}
-		}
-	}
-	m_finalSlashDoneFlg = false;
-	return m_nowLvComboList;
 }
 
 bool Sword::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)

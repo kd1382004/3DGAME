@@ -5,10 +5,16 @@ class EnemyBase;
 class EnemyCrowdController
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	EnemyCrowdController() {};
+
 	//デストラクタ
 	~EnemyCrowdController() {};
+
+	//---- 基本の処理 ----
 
 	//敵の移動方向を、ほかの敵とぶつからないように決める
 	// _enemy ... 動かす敵
@@ -16,6 +22,9 @@ public:
 	void Update(EnemyBase* _enemy, float _dt);
 
 private:
+
+	//---- その他の処理 ----
+
 	//プレイヤーへ向かう
 	// _enemy ... 計算する敵
 	Math::Vector3 CalcSeparation(EnemyBase* _enemy);

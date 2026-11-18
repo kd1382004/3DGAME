@@ -3,11 +3,16 @@
 class ResultDisplayBase:public KdGameObject
 {
 public:
+
+	//---- コンストラクタ・デストラクタ ----
+
 	//コンストラクタ
 	ResultDisplayBase() {}
+
 	//デストラクタ
 	~ResultDisplayBase() {}
 
+	//---- 基本の処理 ----
 
 	//初期化
 	virtual void Init()override {}
@@ -17,9 +22,7 @@ public:
 
 	//描画前の処理
 	virtual void PreDraw()override {}
+
 	//2Dの描画
 	virtual void DrawSprite()override {}
-
-private:
-
 };

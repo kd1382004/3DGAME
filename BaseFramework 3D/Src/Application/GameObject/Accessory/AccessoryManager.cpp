@@ -39,6 +39,14 @@ void AccessoryManager::PostUpdate()
 	}
 }
 
+void AccessoryManager::GenerateDepthMapFromLight()
+{
+	for (auto accessory : m_accessoryList)
+	{
+		accessory->GenerateDepthMapFromLight();
+	}
+}
+
 void AccessoryManager::DrawLit()
 {
 	for (auto accessory : m_accessoryList)
@@ -52,14 +60,5 @@ void AccessoryManager::DrawBright()
 	for (auto accessory : m_accessoryList)
 	{
 		accessory->DrawBright();
-	}
-}
-
-
-void AccessoryManager::GenerateDepthMapFromLight()
-{
-	for (auto accessory : m_accessoryList)
-	{
-		accessory->GenerateDepthMapFromLight();
 	}
 }

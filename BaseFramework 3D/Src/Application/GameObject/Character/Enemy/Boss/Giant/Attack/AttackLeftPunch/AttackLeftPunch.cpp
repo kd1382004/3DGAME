@@ -1,5 +1,11 @@
 ﻿#include "AttackLeftPunch.h"
 #include"../../../../../Player/PlayerBase.h"
+
+void AttackLeftPunch::DrawLit()
+{
+
+}
+
 void AttackLeftPunch::AttackLeftPunchUpdate()
 {
 
@@ -39,11 +45,6 @@ void AttackLeftPunch::AttackLeftPunchUpdate()
 		Math::Matrix boxMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_angleY)) * Math::Matrix::CreateTranslation(m_targetCenterPos);
 		m_pDebugWire->AddDebugBox(boxMat, m_boxSiz, Math::Vector3::Zero, true,kRedColor);
 	}
-}
-
-void AttackLeftPunch::DrawLit()
-{
-
 }
 
 void AttackLeftPunch::SetAttackStatus()
