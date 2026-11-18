@@ -107,42 +107,38 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	//次に使う部屋ID(部屋を置くたびに1進む。交差点では進めない)
 	int roomID = kInitialRoomID;
 
-	//区画の数を決める(区画が足りないときは _roomNum が減る)
-	DecideAreaDiv(_mapSiz, _roomNum);
-
-	//マップを区画に分ける
-	DivideAreas(_mapSiz);
-
-	//どの区画を交差点にするか決める
-	DecideDummyAreas(_roomNum);
-
-	//区画ごとに、部屋か交差点を1つ置く
-	for (auto& row : m_areaGrid)
+	//部屋(と交差点)を置く。どちらの置き方にするかは抽選で決める
+	bool useArea = (KdRandom::GetInt(1, 100) <= kAreaLayoutRate);
+	if (useArea)
 	{
-		for (auto& area : row)
-		{
-			if (area.m_isDummy)
-			{
-				PlaceDummyInArea(area, map);
-			}
-			else if (!PlaceRoomInArea(area, map, roomIDVector, roomID))
-			{
-				// 区画が小さくて部屋が入らなかったら交差点にする
-				area.m_isDummy = true;
-				PlaceDummyInArea(area, map);
-			}
-		}
+		//区画分割による生成
+		PlaceRoomsByArea(_mapSiz, _roomNum, map, roomIDVector, roomID);
+	}
+	else
+	{
+		//単純なランダム生成
+		PlaceRoomsRandom(_mapSiz, _roomNum, map, roomIDVector, roomID);
 	}
 
 	//部屋IDごとの部屋の種類(添え字は部屋ID。交差点は含まない)
 	std::vector<RoomType> roomTypeList(roomID);
 
 	/////////////////////////////////////////////////////
-	//それぞれの数とかのちに調整
+	//安全な部屋にする部屋を1つだけ先に決める(部屋IDは kInitialRoomID から始まる)
+	int safeRoomID = KdRandom::GetInt(kInitialRoomID, roomID - 1);
+
 	for (int i = 0; i < roomID; i++)
 	{
 		//何用の部屋か決める
-		roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_TrapRoom);
+		if (i == safeRoomID)
+		{
+			roomTypeList[i] = RoomType_SafeRoom;
+		}
+		else
+		{
+			//安全な部屋以外(敵の部屋・宝箱部屋)から引く
+			roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_TreasureChestRoom);
+		}
 	}
 
 	/////////////////////////////////////////////////////
@@ -761,7 +757,6 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				if (m_roomInfoList[i][j].m_roomEnemyNum == 0) { m_roomInfoList[i][j].m_roomEnemyNum = 1; }
 				break;
 			case RoomType_TreasureChestRoom:
-			case RoomType_TrapRoom:
 				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_notEnemyRoom);
 				if (m_roomInfoList[i][j].m_roomEnemyNum == 0) { m_roomInfoList[i][j].m_roomEnemyNum = 1; }
 				break;
@@ -1052,6 +1047,36 @@ void MapGenerate::SaveRoomSiz(std::string _filePath)
 //===================================================
 // 区画分割(部屋と交差点の配置)
 //===================================================
+
+void MapGenerate::PlaceRoomsByArea(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID)
+{
+	//区画の数を決める(区画が足りないときは _roomNum が減る)
+	DecideAreaDiv(_mapSiz, _roomNum);
+
+	//マップを区画に分ける
+	DivideAreas(_mapSiz);
+
+	//どの区画を交差点にするか決める
+	DecideDummyAreas(_roomNum);
+
+	//区画ごとに、部屋か交差点を1つ置く
+	for (auto& row : m_areaGrid)
+	{
+		for (auto& area : row)
+		{
+			if (area.m_isDummy)
+			{
+				PlaceDummyInArea(area, _map);
+			}
+			else if (!PlaceRoomInArea(area, _map, _roomIDVector, _roomID))
+			{
+				// 区画が小さくて部屋が入らなかったら交差点にする
+				area.m_isDummy = true;
+				PlaceDummyInArea(area, _map);
+			}
+		}
+	}
+}
 
 //区画の数を決めて m_areaDivX / m_areaDivY に入れる
 //区画が正方形に近く、余る区画(交差点)が少ない組み合わせを選ぶ
@@ -1377,7 +1402,7 @@ std::vector<ConnectPair> MapGenerate::GetRoomConnectionPairs(const std::vector<R
 		for (size_t j = i + 1; j < _nodeList.size(); j++)
 		{
 			// 隣の区画どうしでなければ、つなぐ候補にしない
-			if (!IsAdjacentArea(_nodeList[i], _nodeList[j])) { continue; }
+			//if (!IsAdjacentArea(_nodeList[i], _nodeList[j])) { continue; }
 
 			float dist = std::abs(_nodeList[i].m_center.x - _nodeList[j].m_center.x) + std::abs(_nodeList[i].m_center.y - _nodeList[j].m_center.y);
 
@@ -2452,6 +2477,9 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* _map)
 
 bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 {
+
+
+	//---- 高さの以上チェック -----
 	for (int i = 0; i < _map.size(); i++)
 	{
 		for (int j = 0; j < _map[i].size(); j++)
@@ -2782,4 +2810,119 @@ bool MapGenerate::IsSetTorch(int _x, int _y, const std::vector<std::vector<Floor
 
 
 	return true;
+}
+
+void MapGenerate::PlaceRoomsRandom(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID)
+{
+	int mapSizX = static_cast<int>(_mapSiz.x);
+	int mapSizY = static_cast<int>(_mapSiz.y);
+
+	// 1部屋につき最大50回試行、できなかったらスキップ
+	const int maxTry = 50;
+
+	while (true)
+	{
+		// ===== 毎回まっさらな状態から作り直す =====
+		for (auto& row : _map)
+		{
+			std::fill(row.begin(), row.end(), FloorInfo{});
+		}
+		for (auto& row : _roomIDVector)
+		{
+			std::fill(row.begin(), row.end(), -1);
+		}
+		m_roomInfo.clear();
+		_roomID = kInitialRoomID;
+		m_roomNum = 0;
+		// ==========================================
+
+		for (int i = 0; i < _roomNum; i++)
+		{
+			for (int t = 0; t < maxTry; t++)
+			{
+				//////////////////////////////////////////
+				// 部屋のサイズ決定(縦横とも奇数にする)
+				int roomW = KdRandom::GetInt(m_roomMin, m_roomMax);
+				int roomH = KdRandom::GetInt(m_roomMin, m_roomMax);
+				if (roomW % 2 == 0) { roomW += 1; }
+				if (roomH % 2 == 0) { roomH += 1; }
+
+				//////////////////////////////////////////
+				// 部屋の左上番号
+				int maxX = std::max(0, mapSizX - roomW - 1);
+				int maxY = std::max(0, mapSizY - roomH - 1);
+
+				int roomX = KdRandom::GetInt(0, maxX);
+				int roomY = KdRandom::GetInt(0, maxY);
+
+				//////////////////////////////////////////
+				// 部屋が空いてるかチェック(周りに margin マス空いているか)
+				bool canPlace = true;
+
+				//部屋同士何タイル開けるか(通路に坂を置ける長さを残す)
+				int minMargin = kHeightLevelMax + 2;
+				int aX = KdRandom::GetInt(minMargin, minMargin + 2);
+				int aY = KdRandom::GetInt(minMargin, minMargin + 2);
+
+				for (int y = roomY - aY; y < roomY + roomH + aY && canPlace; y++)
+				{
+					for (int x = roomX - aX; x < roomX + roomW + aX; x++)
+					{
+						//マップの外ならスキップ
+						if (y < 0 || y >= mapSizY) { continue; }
+						if (x < 0 || x >= mapSizX) { continue; }
+
+						if (_map[y][x].m_tileType != TileType::None)
+						{
+							canPlace = false;
+							break;
+						}
+					}
+				}
+
+				if (!canPlace) { continue; }
+
+				//////////////////////////////////////////
+				// 空いてるなら作る
+				int heightLevel = KdRandom::GetInt(0, kHeightLevel);
+
+				for (int y = roomY; y < roomY + roomH; y++)
+				{
+					for (int x = roomX; x < roomX + roomW; x++)
+					{
+						_map[y][x].m_tileType = TileType::Room; // 部屋
+						_map[y][x].m_heightLevel = heightLevel;
+						_roomIDVector[y][x] = _roomID; // 部屋ID
+					}
+				}
+
+				//部屋の情報を登録する
+				RoomInfo info;
+				info.m_roomID = _roomID;
+				info.m_center = { (float)(roomX + (roomW - 1) / 2), (float)(roomY + (roomH - 1) / 2) };
+				info.m_roomEnd.m_farLeft = roomX;
+				info.m_roomEnd.m_farRight = roomX + roomW - 1;
+				info.m_roomEnd.m_topEnd = roomY;
+				info.m_roomEnd.m_downEnd = roomY + roomH - 1;
+				info.m_heightLevel = heightLevel;
+
+				//区画は使わない
+				info.m_areaX = 0;
+				info.m_areaY = 0;
+				info.m_isDummy = false;
+
+				m_roomInfo.push_back(info);
+
+				m_roomNum++;
+				_roomID++;
+				break; // この部屋は成功したので次の部屋へ
+			}
+		}
+
+		//最低限の部屋を超えてたら終わり
+		if (kMinRoomNum <= m_roomNum)
+		{
+			break;
+		}
+	}
 }

@@ -4,31 +4,42 @@ class MapBase;
 class MapObjManager;
 class CameraBase;
 
+//////////////////////////////////////////////////////
+// マップ生成で使う型
+//////////////////////////////////////////////////////
+
+//---- マス(タイル) ----
+
+//マス1つの種類
 enum class TileType
 {
-	None = 0,   // 何もない
-	Floor,  // 床（通路）
-	Room,    // 部屋
-	Slope	//階段(床にあるやつ)
+	None = 0,	// 何もない(壁の外。歩けない)
+	Floor,		// 床（通路・交差点）
+	Room,		// 部屋の床
+	Slope		// 坂(高さの違う床をつなぐ)
 };
 
-
+//マス1つ分の情報
+//マップは std::vector<std::vector<FloorInfo>> で、[y][x] の2次元に並べて持つ
 struct FloorInfo
 {
 	//タイルの種類
 	TileType m_tileType = TileType::None;
 
-	//階層
+	//階層(床の高さ。0 が一番下)
 	int m_heightLevel = 0;
 
-	//回転
+	//回転(坂の向きなどに使う。度)
 	int m_angle = 0;
 
-	//松明を置いたかどうか
+	//松明を置いたかどうか(同じマスに2つ置かないため)
 	bool m_setTorchFlg = false;
 };
 
+//---- 部屋 ----
 
+//部屋の四方の端(マス番号)
+//端のマスも部屋に含む
 struct RoomEnd
 {
 	//右端
@@ -44,12 +55,14 @@ struct RoomEnd
 	int m_downEnd;
 };
 
+//部屋(または交差点)1つ分の情報
+//通路でつなぐ「点」としても使う(区画分割では交差点も同じ型で持つ)
 struct RoomInfo
 {
-	//部屋ID
+	//部屋ID(交差点は -1)
 	int m_roomID = 0;
 
-	//中心
+	//中心(マス)
 	Math::Vector2 m_center;
 
 	//部屋の端
@@ -64,10 +77,9 @@ struct RoomInfo
 	//部屋の階層
 	int m_heightLevel;
 
-
-	//この部屋(交差点)がある区画の列番号
+	//この部屋(交差点)がある区画の列番号(ランダム配置のときは0)
 	int m_areaX = 0;
-	//この部屋(交差点)がある区画の行番号
+	//この部屋(交差点)がある区画の行番号(ランダム配置のときは0)
 	int m_areaY = 0;
 
 	//部屋ではなく交差点(通路の分かれ道)ならtrue
@@ -75,7 +87,10 @@ struct RoomInfo
 	bool m_isDummy = false;
 };
 
+//---- 区画分割 ----
+
 //区画(マップを格子状に分けた1つ分)の情報
+//区画1つにつき、部屋か交差点を1つ置く
 struct AreaInfo
 {
 	//区画の列番号(左から0)
@@ -96,7 +111,10 @@ struct AreaInfo
 	bool m_isDummy = false;
 };
 
+//---- 通路 ----
+
 //通路でつなぐ2つの部屋(または交差点)の組
+//GetRoomConnectionPairs が作り、Generate がこの順に通路を掘る
 struct ConnectPair
 {
 	//部屋A(通路を掘り始める側)
@@ -110,10 +128,11 @@ struct ConnectPair
 	int m_nodeB = -1;
 
 	//小さな輪を作るために足した辺ならtrue(最小全域木の辺ならfalse)
+	//trueの辺だけがT字路の候補になる
 	bool m_isLoop = false;
 };
 
-//部屋のどの辺から通路を出すか
+//部屋のどの辺から通路を出すか(入るか)
 enum class ExitSide
 {
 	Left,	// 左の辺
@@ -122,8 +141,10 @@ enum class ExitSide
 	Bottom,	// 下の辺
 };
 
+//---- 生成後の部屋の床 ----
 
-
+//生成し終わった部屋の床1マス分の情報
+//敵・宝箱を置くときや、外から部屋の一覧を見るとき(GetRoomInfoList)に使う
 struct RoomI
 {
 	//部屋ID
@@ -147,21 +168,17 @@ struct RoomI
 	//この床に何か置いたか
 	bool m_installation = false;
 
-
 	//チャンク番号
 	Math::Vector2 m_chunk;
-
 
 	//この床のマップオブジェクト
 	std::shared_ptr<MapBase> m_spMap;
 };
 
 
-
-
 //////////////////////////////////////////////////////
 // ダンジョンのマップを作るクラス
-// マップを区画に分けて部屋と交差点を置き、隣の区画どうしを
+// 階ごとに「区画分割」か「ランダム配置」で部屋を置き、部屋どうしを
 // くねくねした通路(小さな輪・T字路つき)でつないで、床・壁・坂などを作る
 //////////////////////////////////////////////////////
 class MapGenerate
@@ -254,10 +271,15 @@ private:
 	//プレイヤースポーン部屋,階段部屋,その他の3つが最低限必要な数
 	static const int kMinRoomNum = 3;
 
+	//---- 部屋の置き方 ----
+
+	//区画分割で部屋を置く確率(%)。外れたらランダム配置にする
+	static const int kAreaLayoutRate = 50;
+
 	//---- 高さ(階層) ----
 
 	//階層の数
-	static const int kHeightLevel = 4;
+	static const int kHeightLevel = 2;
 
 	//階層の最大数
 	static const int kHeightLevelMax = kHeightLevel + 1;
@@ -292,10 +314,10 @@ private:
 	static const int kWiggleMinRun = 2;
 
 	//部屋がまっすぐ並んでいるときに、わざと寄り道する確率(%)
-	static const int kWiggleBumpRate = 80;
+	static const int kWiggleBumpRate = 70;
 
 	//寄り道で横にずれる最大マス数
-	static const int kWiggleBumpMax = 3;
+	static const int kWiggleBumpMax = 5;
 
 	//出口・入口の位置を選び直す最大回数
 	static const int kEdgeRetryMax = 10;
@@ -362,7 +384,7 @@ private:
 
 	//部屋のサイズ(MapSiz.json から読み込む)
 	int m_roomMax = 0; //最大値
-	int m_roomMin = 0;//最小値
+	int m_roomMin = 0; //最小値
 
 	//---- 部屋と交差点の情報 ----
 
@@ -377,6 +399,13 @@ private:
 
 	//交差点の一覧(本物の部屋の m_roomInfo とは分けて持つ)
 	std::vector<RoomInfo> m_dummyNodeList;
+
+	//---- 部屋の置き方 ----
+
+	//今回の生成で区画分割を使ったならtrue、ランダム配置ならfalse
+	//(PlaceRoomsByArea / PlaceRoomsRandom の先頭で入れる)
+	//trueのときだけ、つなぐ候補を隣の区画どうしに絞る
+	bool m_isAreaLayout = true;
 
 	//---- 区画 ----
 
@@ -435,6 +464,7 @@ private:
 
 	//---- 外から受け取るもの ----
 
+	//マップオブジェクトの管理
 	std::weak_ptr<MapObjManager>m_wpMapObjManager;
 
 	//カメラ
@@ -454,7 +484,27 @@ private:
 	// _filePath ... 保存するファイルのパス
 	void SaveRoomSiz(std::string _filePath);
 
-	//---- 区画分割(部屋と交差点の配置) ----
+	//---- 部屋の置き方(どちらか1つを Generate から呼ぶ) ----
+
+	//区画分割で、マップに部屋と交差点を置く
+	//区画の数を決めて区画に分け、区画ごとに部屋か交差点を1つ置く
+	// _mapSiz ... マップの大きさ(マス)
+	// _roomNum ... 置きたい部屋の数(区画が足りないときは区画数まで減らして書き戻す)
+	// _map ... マップ(部屋と交差点のタイルを書き込む)
+	// _roomIDVector ... マスごとの部屋ID(部屋のマスに書き込む)
+	// _roomID ... 次に使う部屋ID(部屋を置くたびに1進める)
+	void PlaceRoomsByArea(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID);
+
+	//ランダムな位置に部屋を置く(区画分割を使わないやり方)
+	//重ならない場所が見つかるまでくり返し、部屋が kMinRoomNum 個に届かなければ全部作り直す
+	// _mapSiz ... マップの大きさ(マス)
+	// _roomNum ... 置きたい部屋の数
+	// _map ... マップ(部屋のタイルを書き込む)
+	// _roomIDVector ... マスごとの部屋ID(部屋のマスに書き込む)
+	// _roomID ... 次に使う部屋ID(部屋を置くたびに1進める)
+	void PlaceRoomsRandom(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID);
+
+	//---- 区画分割(PlaceRoomsByArea の中で使う) ----
 
 	//区画の数を決めて m_areaDivX / m_areaDivY に入れる
 	//区画が正方形に近く、余る区画(交差点)が少ない組み合わせを選ぶ
@@ -488,7 +538,8 @@ private:
 	//---- つなぐ組(最小全域木＋小さな輪) ----
 
 	//つなぐ部屋の組を作る
-	//隣の区画どうしを最小全域木(クラスカル法)でつなぎ、2×2区画の小さな輪になる辺を足す
+	//最小全域木(クラスカル法)でつなぎ、小さな輪になる辺を足す
+	//区画分割のときは、隣の区画どうしだけを候補にする
 	//木の辺が先、輪の辺が後の順に並ぶ(T字路は木の通路が先に掘られている前提)
 	// _nodeList ... 部屋と交差点をつなげたリスト(connectNodeList)
 	//戻り値 ... つなぐ組のリスト
@@ -534,7 +585,7 @@ private:
 	// _b ... 通路の終わりの部屋
 	// _map ... 今のマップ
 	// _stopAtExisting ... すでにある床に着いたら止めるか
-	std::vector<Math::Vector3> GenerateCorridorPath(const RoomInfo& _a, const RoomInfo& _b,const std::vector<std::vector<FloorInfo>>& _map, bool _stopAtExisting = true);
+	std::vector<Math::Vector3> GenerateCorridorPath(const RoomInfo& _a, const RoomInfo& _b, const std::vector<std::vector<FloorInfo>>& _map, bool _stopAtExisting = true);
 
 	//位置が部屋の中か、部屋の上下左右の隣にあるか
 	// _pos ... 調べる位置(マス)
@@ -685,7 +736,4 @@ private:
 	//敵のスポーン位置を決める
 	// _map ... マップ
 	void EnemySpawnListDecision(std::vector<std::vector<int>> _map);
-
 };
-
-

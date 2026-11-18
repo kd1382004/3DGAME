@@ -51,13 +51,13 @@ void MapManager::DrawLit()
 
 	if (m_spBoxModel)
 	{
-		auto spCamera = m_wpCamera.lock();
-		if (spCamera)
-		{
-			Math::Vector3 pos = spCamera->GetPos();
-			m_boxPos.x = pos.x;
-			m_boxPos.z = pos.z;
-		}
+		//auto spCamera = m_wpCamera.lock();
+		//if (spCamera)
+		//{
+		//	Math::Vector3 pos = spCamera->GetPos();
+		//	m_boxPos.x = pos.x;
+		//	m_boxPos.z = pos.z;
+		//}
 
 
 		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_boxPos);
@@ -305,49 +305,48 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _mapTy
 	{
 		std::list<Math::Vector3> treasureChestPosList;
 
+		//////////////////////////////////////////
+		// 部屋ごとに chestNum 個置く
 		for (size_t i = 0; i < mapRoomList.size(); i++)
 		{
 			if (mapRoomList[i].empty()) { continue; }
 			int chestNum = mapRoomList[i][0].m_roomTreasureChestNum;
-			int roomType = mapRoomList[i][0].m_roomType;
+			if (chestNum <= 0) { continue; }
 
-			// 宝箱を置ける床（Installation == false）が存在するかチェック
-			int freeTileCount = 0;
-			for (const auto& r : mapRoomList[i])
+			//この部屋の、何も置いていない床の番号を集める
+			std::vector<int> freeFloors;
+			for (size_t j = 0; j < mapRoomList[i].size(); j++)
 			{
-				if (!r.m_installation) { freeTileCount++; }
+				if (!mapRoomList[i][j].m_installation)
+				{
+					freeFloors.push_back(static_cast<int>(j));
+				}
 			}
-			if (freeTileCount == 0) { continue; }
 
-			int tryCount = 0;
-			int maxTry = static_cast<int>(mapRoomList[i].size()) * 3;
-
-			while (chestNum > 0 && tryCount < maxTry)
+			//シャッフルする(フィッシャー–イェーツ)
+			for (int k = static_cast<int>(freeFloors.size()) - 1; k > 0; k--)
 			{
-				tryCount++;
-				int roomNum = KdRandom::GetInt(0, static_cast<int>(mapRoomList[i].size()) - 1);
-				if (mapRoomList[i][roomNum].m_installation)
-				{
-					continue;
-				}
+				std::swap(freeFloors[k], freeFloors[KdRandom::GetInt(0, k)]);
+			}
 
-				float spawnRate = (roomType == RoomType::RoomType_TreasureChestRoom || roomType == RoomType::RoomType_SafeRoom) ? 1.0f : 0.4f;
+			//前から chestNum 個置く(床が足りなければ置けるだけ)
+			int placeNum = std::min(chestNum, static_cast<int>(freeFloors.size()));
+			for (int n = 0; n < placeNum; n++)
+			{
+				int j = freeFloors[n];
 
-				if (KdRandom::GetFloat(0.0f, 1.0f) <= spawnRate)
-				{
-					Math::Vector3 pos = mapRoomList[i][roomNum].m_pos;
-					mapRoomList[i][roomNum].m_installation = true;
+				mapRoomList[i][j].m_installation = true;
 
-					int x = static_cast<int>(mapRoomList[i][roomNum].m_xy.x);
-					int y = static_cast<int>(mapRoomList[i][roomNum].m_xy.y);
-					mapData[y][x] = false;
-					treasureChestPosList.push_back(pos);
-				}
+				int x = static_cast<int>(mapRoomList[i][j].m_xy.x);
+				int y = static_cast<int>(mapRoomList[i][j].m_xy.y);
+				mapData[y][x] = false;
 
-				chestNum--;
+				treasureChestPosList.push_back(mapRoomList[i][j].m_pos);
 			}
 		}
 
+		//////////////////////////////////////////
+		// 宝箱を作る
 		for (const auto& pos : treasureChestPosList)
 		{
 			std::shared_ptr<TreasureChest> spTreasureChest = std::make_shared<TreasureChest>();
@@ -360,8 +359,6 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _mapTy
 			int cx = tileX / m_chunkSize;
 			int cy = tileY / m_chunkSize;
 			spTreasureChest->SetChunkNum(Math::Vector2(static_cast<float>(cx), static_cast<float>(cy)));
-
-
 
 			auto spUIManage = m_wpUIManager.lock();
 
@@ -376,7 +373,6 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _mapTy
 			spMapObjManager->AddMapObj(spTreasureChest);
 		}
 	}
-
 
 
 
@@ -525,8 +521,8 @@ void MapManager::SetPlayerChunk(Math::Vector3 _pos)
 			{
 				if (auto spMapObj = wpMapObj.lock())
 				{
-					if (dy >= -(int)m_updateChunkRadius.y && dy <= (int)m_updateChunkRadius.y + m_drawChunkRadius.y &&
-						dx >= -(int)m_updateChunkRadius.x && dx <= (int)m_updateChunkRadius.x + m_drawChunkRadius.x)
+					if (dy >= -(int)m_updateChunkRadius.y && dy <= (int)m_updateChunkRadius.y &&
+						dx >= -(int)m_updateChunkRadius.x && dx <= (int)m_updateChunkRadius.x)
 					{
 						uniqueUpdateSet.insert(spMapObj);
 					}

@@ -18,14 +18,20 @@ enum RoomType
 	//部屋じゃない
 	RoomType_NORoom,
 
-	//敵が多く出てくる部屋
+
+
+
+	//敵が多く出てくる部屋 --- 部屋の種類増やすときはこの中↓ ---
 	RoomType_EnemyRoom,
 
-	//宝箱が多い部屋
+
+
+
+
+	//宝箱が多い部屋 --- 部屋の種類増やすときはこの中↑ ---
 	RoomType_TreasureChestRoom,
 
-	//トラップが多い部屋
-	RoomType_TrapRoom,
+
 
 	//敵がわかない部屋
 	RoomType_SafeRoom,
