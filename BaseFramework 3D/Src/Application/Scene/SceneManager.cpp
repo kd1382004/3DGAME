@@ -179,8 +179,6 @@ void SceneManager::Init()
 		ChangeScene(m_currentSceneType);
 		m_fogFlg = true;
 
-		KdShaderManager::Instance().WorkAmbientController().SetDirLightShadowArea({ 400.0f, 400.0f }, 70.0f);
-
 		//Fog(霧)
 		//distance...距離
 		//height ...高さ

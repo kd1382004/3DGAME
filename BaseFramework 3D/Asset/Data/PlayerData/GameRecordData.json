@@ -128,26 +128,26 @@
             "Floors": [
                 {
                     "DisplayFloor": 3,
-                    "EnemyKillCount": 11,
-                    "PlayTimeSc": 206.10011291503906,
-                    "TreasureChestsNum": 14
+                    "EnemyKillCount": 1,
+                    "PlayTimeSc": 15.897021293640137,
+                    "TreasureChestsNum": 0
                 },
                 {
                     "DisplayFloor": 1,
-                    "EnemyKillCount": 10,
-                    "PlayTimeSc": 145.54031372070313,
-                    "TreasureChestsNum": 9
+                    "EnemyKillCount": 0,
+                    "PlayTimeSc": 0.9290001392364502,
+                    "TreasureChestsNum": 0
                 },
                 {
                     "DisplayFloor": 2,
                     "EnemyKillCount": 0,
-                    "PlayTimeSc": 22.518125534057617,
-                    "TreasureChestsNum": 5
+                    "PlayTimeSc": 0.913000226020813,
+                    "TreasureChestsNum": 0
                 },
                 {
                     "DisplayFloor": 3,
                     "EnemyKillCount": 1,
-                    "PlayTimeSc": 38.038856506347656,
+                    "PlayTimeSc": 14.05501937866211,
                     "TreasureChestsNum": 0
                 }
             ],
@@ -158,15 +158,15 @@
         "Floors": [
             {
                 "DisplayFloor": 1,
-                "EnemyKillCount": 4,
-                "PlayTimeSc": 37.62590789794922,
-                "TreasureChestsNum": 4
+                "EnemyKillCount": 0,
+                "PlayTimeSc": 1.4399999380111694,
+                "TreasureChestsNum": 0
             },
             {
                 "DisplayFloor": 1,
-                "EnemyKillCount": 4,
-                "PlayTimeSc": 37.62590789794922,
-                "TreasureChestsNum": 4
+                "EnemyKillCount": 0,
+                "PlayTimeSc": 1.4399999380111694,
+                "TreasureChestsNum": 0
             }
         ],
         "PlayerDead": false

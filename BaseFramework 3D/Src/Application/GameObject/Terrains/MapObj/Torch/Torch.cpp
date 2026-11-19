@@ -119,23 +119,19 @@ void Torch::PreDraw()
 	}
 
 
-	// エフェクトオブジェクトを取得
-	if (auto spEffect = m_wpAuraEffect.lock())
+	// 炎のエフェクト
+	// 描画範囲内(出現中・表示中) かつ 画面内 のときだけ出す
+	// 描画範囲から出て消え始めたら(FadingOut)止める
+	FadeState fadeState = m_fader.GetState();
+	bool isDrawRange = (fadeState == FadeState::FadingIn || fadeState == FadeState::Visible);
+
+	if (isDrawRange && m_isInView)
 	{
-		int handle = spEffect->GetHandle();
-		if (m_isInView)
-		{
-			// 画面内に映っている時：一時停止解除（再生）
-			DirectX::SimpleMath::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
-			KdEffekseerManager::GetInstance().SetPos(handle, worldEffectPos);
-			KdEffekseerManager::GetInstance().SetPause(handle, false);
-		}
-		else
-		{
-			// 画面外に出ている時：一時停止（負荷を0にする）
-			spEffect->SetLoop(false);
-			spEffect->StopEffect();
-		}
+		PlayFireEffect();
+	}
+	else
+	{
+		StopFireEffect();
 	}
 }
 
@@ -144,8 +140,7 @@ void Torch::DrawLit()
 	if (!m_spTorchModel) { return; }
 	if (!m_isInView) { return; }
 
-
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTorchModel, m_mWorld);
+	DrawModelWithFade(*m_spTorchModel);
 }
 
 void Torch::GenerateDepthMapFromLight()
@@ -153,8 +148,7 @@ void Torch::GenerateDepthMapFromLight()
 	if (!m_spTorchModel) { return; }
 	if (!m_isInView) { return; }
 
-
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTorchModel, m_mWorld);
+	DrawModelWithFade(*m_spTorchModel, false);
 }
 
 void Torch::SetPos(const Math::Vector3& _pos)
@@ -176,12 +170,7 @@ void Torch::SetRotation(Math::Matrix _rMat)
 
 void Torch::Release()
 {
-	// エフェクトオブジェクトを取得
-	if (auto spEffect = m_wpAuraEffect.lock())
-	{
-		spEffect->SetLoop(false);
-		spEffect->StopEffect();
-	}
+	StopFireEffect();
 
 	if (m_spFireSE)
 	{
@@ -189,32 +178,45 @@ void Torch::Release()
 	}
 }
 
-void Torch::SetEffectUpdate(bool _flg)
+void Torch::SetSoundUpdate(bool _flg)
 {
+	// 鳴らすほうは PostUpdate で再生している(更新チャンク内だけ呼ばれる)
 	if (!_flg)
 	{
-		if (auto spEffect = m_wpAuraEffect.lock())
-		{
-			// SetLoop(false) してから StopEffect を呼ぶことで自動再再生を防ぎ、消去＆停止させる
-			spEffect->SetLoop(false);
-			spEffect->StopEffect();
-		}
-
 		if (m_spFireSE && m_spFireSE->IsPlaying())
 		{
 			m_spFireSE->Stop();
 		}
 	}
-	else
+}
+
+void Torch::PlayFireEffect()
+{
+	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
+
+	auto spEffect = m_wpAuraEffect.lock();
+	if (spEffect && spEffect->IsPlaying())
 	{
-		auto spEffect = m_wpAuraEffect.lock();
-		if (!spEffect || !spEffect->IsPlaying())
-		{
-			// 処理範囲内に戻ったら再再生
-			Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
-			m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
-				"Fire/Fire.efkefc", worldEffectPos, 1.0f, 1.0f, true
-			);
-		}
+		// もう出ているなら位置だけ合わせる
+		KdEffekseerManager::GetInstance().SetPos(spEffect->GetHandle(), worldEffectPos);
+		return;
 	}
+
+	// 出ていなければ出す
+	m_wpAuraEffect = KdEffekseerManager::GetInstance().Play(
+		"Fire/Fire.efkefc", worldEffectPos, 1.0f, 1.0f, true
+	);
+}
+
+void Torch::StopFireEffect()
+{
+	if (auto spEffect = m_wpAuraEffect.lock())
+	{
+		// SetLoop(false) してから StopEffect を呼ぶことで自動再再生を防ぎ、消去＆停止させる
+		spEffect->SetLoop(false);
+		spEffect->StopEffect();
+	}
+
+	// 止めたものは使い回さず、次は新しく出す
+	m_wpAuraEffect.reset();
 }

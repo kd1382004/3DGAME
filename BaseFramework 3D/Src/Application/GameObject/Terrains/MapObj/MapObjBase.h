@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include"../../../Info/Fader/Fader.h"
 
 class CameraBase;
 class GameScene;
@@ -22,6 +22,10 @@ public:
 	//戻り値 ... チャンク番号
 	const Math::Vector2 GetChunkNum() { return m_chunkNum; }
 
+	//出現・消失のフェードを返す
+	//戻り値 ... フェード
+	Fader& GetFader() { return m_fader; }
+
 	//---- 設定 ----
 
 	//カメラをセット
@@ -42,7 +46,19 @@ public:
 
 protected:
 
+	//---- 描画の補助 ----
+
+	//フェード(ディゾルブ)をかけてモデルを描く
+	//消え終わっていたら何も描かない
+	// _model  ... 描くモデル
+	// _isEdge ... ディゾルブの縁を光らせるか(影の描画では false)
+	void DrawModelWithFade(KdModelWork& _model, bool _isEdge = true);
+
+
 	//---- メンバ変数 ----
+
+	//描画範囲に出入りしたときの出現・消失
+	Fader m_fader{ 1.0f };
 
 	//ゲームシーン
 	std::weak_ptr<GameScene>m_wpGameScene;

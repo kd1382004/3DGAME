@@ -74,8 +74,12 @@ public:
 	//初期化
 	void Init() override;
 
+	//更新前の処理
+	void PreUpdate() override;
+
 	//更新
 	void Update() override;
+
 
 	//更新後の処理
 	void PostUpdate() override;
@@ -276,6 +280,9 @@ private:
 
 	//チャンクを囲むボックスのモデル
 	std::shared_ptr<KdModelData>m_spBoxModel;
+
+	//生成直後の1回目か(最初に描画範囲に入ったものはフェードなしで表示する)
+	bool m_isFirstDraw = true;
 
 	//---- 取得 ----
 

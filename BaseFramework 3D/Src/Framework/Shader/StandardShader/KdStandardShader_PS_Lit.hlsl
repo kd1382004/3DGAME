@@ -385,6 +385,10 @@ float4 main(VSOutput In) : SV_Target0
 			outColor = lerp(outColor, g_HeightFogColor, fogRate);
 		}
 	}
+
+
+	totalBrightness = saturate(totalBrightness);
+	outColor *= totalBrightness;
 	
 	//------------------------------------------
 	// 距離フォグ
@@ -409,8 +413,6 @@ float4 main(VSOutput In) : SV_Target0
 		}
 	}
 	
-	totalBrightness = saturate(totalBrightness);
-	outColor *= totalBrightness;
 	//------------------------------------------
 	// 出力
 	//------------------------------------------

@@ -46,6 +46,26 @@ void MapManager::Init()
 	}
 }
 
+void MapManager::PreUpdate()
+{
+	// Updateの前の更新処理
+	// オブジェクトリストの整理 ・・・ 無効なオブジェクトを削除
+	auto it = m_drawChunks.begin();
+
+	while (it != m_drawChunks.end())
+	{
+		if ((*it)->GetFader().IsHidden())
+		{
+			// 無効なオブジェクトをリストから削除
+			it = m_drawChunks.erase(it);
+		}
+		else
+		{
+			++it;	// 次の要素へイテレータを進める
+		}
+	}
+}
+
 void MapManager::Update()
 {
 	for (const auto& mapObj : m_updateChunks)
@@ -71,15 +91,6 @@ void MapManager::DrawLit()
 
 	if (m_spBoxModel)
 	{
-		auto spCamera = m_wpCamera.lock();
-		if (spCamera)
-		{
-			Math::Vector3 pos = spCamera->GetPos();
-			m_boxPos.x = pos.x;
-			m_boxPos.z = pos.z;
-		}
-
-
 		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_boxPos);
 		Math::Matrix sMat = Math::Matrix::CreateScale(m_boxSiz / 2);
 		Math::Matrix mat = sMat * tMat;
@@ -145,7 +156,6 @@ bool MapManager::GetChunksUpdate(Math::Vector2 _chunkNum)
 	int playerCx = static_cast<int>(std::round(m_chunkNum.x));
 	int playerCy = static_cast<int>(std::round(m_chunkNum.y));
 
-	// 修正：dy に .y、dx に .x を使用
 	for (int dy = -static_cast<int>(m_updateChunkRadius.y); dy <= static_cast<int>(m_updateChunkRadius.y); dy++)
 	{
 		for (int dx = -static_cast<int>(m_updateChunkRadius.x); dx <= static_cast<int>(m_updateChunkRadius.x); dx++)
@@ -268,7 +278,6 @@ void MapManager::SetPlayerChunk(Math::Vector3 _pos)
 
 	m_isChunkChanged = true;
 	m_updateChunks.clear();
-	m_drawChunks.clear();
 	m_chunkNum = { static_cast<float>(cx),static_cast<float>(cy) };
 
 	// チャンク範囲チェック
@@ -289,7 +298,7 @@ void MapManager::SetPlayerChunk(Math::Vector3 _pos)
 	}
 
 	std::unordered_set<std::shared_ptr<MapBase>> uniqueUpdateSet;
-	std::unordered_set<std::shared_ptr<MapBase>> uniqueDrawSet;
+	std::unordered_set<std::shared_ptr<MapBase>> inDrawRangeSet;
 
 
 
@@ -311,29 +320,57 @@ void MapManager::SetPlayerChunk(Math::Vector3 _pos)
 					{
 						uniqueUpdateSet.insert(spMapObj);
 					}
-					uniqueDrawSet.insert(spMapObj);
+
+					inDrawRangeSet.insert(spMapObj);
 				}
 			}
 		}
 	}
 
-	int num = 1;
-
 	// 最後に push_back
 	m_updateChunks.assign(uniqueUpdateSet.begin(), uniqueUpdateSet.end());
-	m_drawChunks.assign(uniqueDrawSet.begin(), uniqueDrawSet.end());
+
+	// 描画範囲内 → 出現させる
+	for (auto& sp : inDrawRangeSet)
+	{
+		if (m_isFirstDraw)
+		{
+			// 生成直後はフェードなしでいきなり表示
+			sp->GetFader().SetVisibleImmediate();
+		}
+		else
+		{
+			// 表示中・出現中なら何もしない
+			sp->GetFader().FadeIn();
+		}
+	}
+	m_isFirstDraw = false;
+
+	// 前回描画していて範囲外になったもの → 消失させて、消え終わるまで描画リストに残す
+	std::vector<std::shared_ptr<MapBase>> newDraw(inDrawRangeSet.begin(), inDrawRangeSet.end());
+	for (auto& sp : m_drawChunks)
+	{
+		if (inDrawRangeSet.count(sp)) { continue; }
+		if (sp->GetFader().IsHidden()) { continue; }
+
+		sp->GetFader().FadeOut();
+		newDraw.push_back(sp);
+	}
+	m_drawChunks = std::move(newDraw);
+
+
 
 	int drawMinChunkX =
-		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
+		cx - ((int)m_updateChunkRadius.x + m_drawChunkRadius.x + 1);
 
 	int drawMaxChunkX =
-		cx + ((int)m_updateChunkRadius.x + m_drawChunkRadius.x - 1);
+		cx + ((int)m_updateChunkRadius.x + m_drawChunkRadius.x + 1);
 
 	int drawMinChunkY =
-		cy - ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
+		cy - ((int)m_updateChunkRadius.y + m_drawChunkRadius.y + 1);
 
 	int drawMaxChunkY =
-		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y - 1);
+		cy + ((int)m_updateChunkRadius.y + m_drawChunkRadius.y + 1);
 
 	// ワールド座標に変換
 	float worldMinX = drawMinChunkX * m_chunkSize * m_mapTileSiz;
@@ -418,6 +455,10 @@ void MapManager::GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _mapTy
 {
 	m_chunks.clear();
 	m_mapObj.clear();
+
+	m_updateChunks.clear();
+	m_drawChunks.clear();
+	m_isFirstDraw = true;
 	m_chunkNum = { -999,-999 };
 
 	if (!m_spMapGenerate) { return; }
@@ -653,7 +694,8 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 	m_chunkNum = { -999,-999 };
 	m_mapObj.clear();
 	m_chunks.clear();
-
+	m_updateChunks.clear();
+	m_drawChunks.clear();
 	if (!m_spMapGenerate) { return; }
 
 	//敵が歩ける一覧
@@ -679,6 +721,9 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSiz, MapType _type)
 		for (const auto& mapObj : m_mapObj)
 		{
 			mapObj->SetPlayer(spPlayerBase);
+
+
+			mapObj->GetFader().SetVisibleImmediate();
 		}
 	}
 	////////////////////////////////////////////////////

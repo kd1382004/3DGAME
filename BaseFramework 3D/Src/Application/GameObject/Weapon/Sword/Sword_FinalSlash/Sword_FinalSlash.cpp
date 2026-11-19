@@ -29,6 +29,7 @@ void Sword_FinalSlash::Init()
 	loadTex(m_spRingTex, texPath + "FinalSlash_Ring.png");
 	loadTex(m_spRingGlowTex, texPath + "FinalSlash_RingGlow.png");
 	// 黒い稲妻（FinalSlash_Bolt0.png 〜 FinalSlash_Bolt2.png）
+	
 	for (int i = 0; i < kBoltTexNum; i++)
 	{
 		loadTex(m_spBoltTex[i], texPath + "FinalSlash_Bolt" + std::to_string(i) + ".png");
@@ -121,118 +122,169 @@ void Sword_FinalSlash::DrawEffect()
 {
 	if (!m_spPoly) { return; }
 	if (m_state != State::Charge && m_state != State::Fade) { return; }
-	//---------- 板を置く行列を2枚分（十字）作る ----------
-	// _widthRate : 横幅の倍率（箱の横幅 × これ）
-	// _lengthRate: 長さの倍率（箱の長さ × これ）
-	// _rollDeg   : 板を傾ける角度（稲妻用。線と光は 0）
-	// _flip      : 左右反転するか（稲妻用。線と光は false）
-	// 戻り値     : [0] = 1枚目、[1] = 2枚目（1枚目を Y 軸で 90 度回したもの）
-	auto makeCrossMats = [&](float _widthRate, float _lengthRate = 1.0f,
-		float _rollDeg = 0.0f, bool _flip = false)
+
+	//今の段階の描く値
+	const DrawParam param = CalcDrawParam();
+
+	//==================================================
+	// 行列を作る（共通）
+	//==================================================
+	const auto lineMats = MakeCrossMats(param.m_lineWidthRate, param.m_lineLengthRate);
+	const auto glowMats = MakeCrossMats(param.m_glowWidthRate, param.m_lineLengthRate);
+	const auto haloMats = MakeCrossMats(param.m_haloScale, param.m_haloScale);
+
+	//==================================================
+	// 描く（共通）… もや → 光 → 線 → 稲妻
+	//==================================================
+	auto& shader = KdShaderManager::Instance().m_StandardShader;
+
+	//ブレンドを変えた回数(最後に同じ回数だけ戻す)
+	int blendChangeNum = 0;
+
+	//---------- 黒いもや（Alpha）… 描く時だけ ----------
+	if (param.m_drawHalo)
+	{
+		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
+		blendChangeNum++;
+		m_spPoly->SetMaterial(m_spDarkHaloTex);
+		for (auto& mat : haloMats) { shader.DrawPolygon(*m_spPoly, mat, param.m_haloColor); }
+	}
+
+	//リングの光
+	if (param.m_drawRing)
+	{
+		m_spPoly->SetMaterial(m_spRingGlowTex);
+		shader.DrawPolygon(*m_spPoly, param.m_ringMat, param.m_ringGlowColor);
+	}
+
+	//---------- 光と線（加算）… いつも描く ----------
+	KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
+	blendChangeNum++;
+
+	m_spPoly->SetMaterial(m_spGlowTex);
+	for (auto& mat : glowMats) { shader.DrawPolygon(*m_spPoly, mat, param.m_glowColor); }
+
+	m_spPoly->SetMaterial(m_spLineTex);
+	for (auto& mat : lineMats) { shader.DrawPolygon(*m_spPoly, mat, param.m_lineColor); }
+
+	//黒い輪
+	if (param.m_drawRing)
+	{
+		m_spPoly->SetMaterial(m_spRingTex);
+		shader.DrawPolygon(*m_spPoly, param.m_ringMat, param.m_ringColor);
+	}
+
+	//---------- 稲妻（Alpha）… 描く時だけ ----------
+	KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
+	blendChangeNum++;
+	if (param.m_drawBolt)
+	{
+		// 何番目の稲妻から使うか（1本なら真ん中、5本なら全部）
+		const int startIndex = (kBoltNum - param.m_boltNum) / 2;
+
+		for (int i = 0; i < param.m_boltNum; i++)
 		{
-			// 大きさ（箱の横幅・長さに合わせる。反転なら横幅をマイナス）
-			const float w = m_obb.Extents.x * 2.0f * _widthRate * (_flip ? -1.0f : 1.0f);
-			const float h = m_obb.Extents.y * 2.0f * _lengthRate;
-			const Math::Matrix scale = Math::Matrix::CreateScale(w, h, 1.0f);
+			const int n = startIndex + i;
 
-			// 板そのものを傾ける（板の面の中で回す）
-			const Math::Matrix roll = Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(_rollDeg));
+			// 放射状の基本の角度 ＋ ランダムのずれ
+			const float deg = m_boltBaseDeg[n] + m_boltRollDegs[n];
 
-			// 箱の向きと位置
-			const Math::Matrix rot = Math::Matrix::CreateFromQuaternion(m_obb.Orientation);
-			const Math::Matrix trans = Math::Matrix::CreateTranslation(m_obb.Center);
+			const auto boltMats = MakeCrossMats(param.m_boltWidthRate, param.m_boltLengthRate, deg, m_boltFlipFlgs[n]);
 
-			// 2枚目用：Y 軸で 90 度回して十字にする
-			const Math::Matrix cross = Math::Matrix::CreateRotationY(DirectX::XM_PIDIV2);
+			m_spPoly->SetMaterial(m_spBoltTex[m_boltIndices[n]]);
+			for (auto& mat : boltMats) { shader.DrawPolygon(*m_spPoly, mat, param.m_boltColor); }
+		}
+	}
 
-			std::array<Math::Matrix, 2> mats;
-			mats[0] = scale * roll * rot * trans;
-			mats[1] = scale * roll * cross * rot * trans;
-			return mats;
-		};
+	//変えたブレンドを元に戻す(変えた回数だけ戻す)
+	for (int i = 0; i < blendChangeNum; i++)
+	{
+		KdShaderManager::Instance().UndoBlendState();
+	}
+}
 
-	//---------- 描くのに使う値（段階ごとに下で入れる） ----------
-	const Math::Color clearColor = { 1.0f, 1.0f, 1.0f, 0.0f };	// 透明（初期値用）
+void Sword_FinalSlash::DrawBright()
+{
+	if (!m_spPoly) { return; }
+	if (m_state != State::Charge && m_state != State::Fade) { return; }
 
-	// 線の横幅の倍率（箱の横幅 × これ）
-	float lineWidthRate = 1.0f;
+	const DrawParam param = CalcDrawParam();
+	auto& shader = KdShaderManager::Instance().m_StandardShader;
 
-	// 線の長さの倍率（箱の長さ × これ。光と稲妻も同じ長さにする）
-	float lineLengthRate = 1.0f;
+	//ブレンドは BeginBright で加算になっているので、ここでは変えない
+	//(変えると EndBright で元に戻らなくなる)
 
-	// 線の色と透明度
-	Math::Color lineColor = clearColor;
+	//光(Glow)
+	m_spPoly->SetMaterial(m_spGlowTex);
+	for (auto& mat : MakeCrossMats(param.m_glowWidthRate, param.m_lineLengthRate))
+	{
+		shader.DrawPolygon(*m_spPoly, mat, param.m_glowColor * m_bloomRate);
+	}
 
-	// 光（Glow）の横幅の倍率
-	float glowWidthRate = 1.0f;
+	//線(Line)
+	m_spPoly->SetMaterial(m_spLineTex);
+	for (auto& mat : MakeCrossMats(param.m_lineWidthRate, param.m_lineLengthRate))
+	{
+		shader.DrawPolygon(*m_spPoly, mat, param.m_lineColor * m_bloomRate);
+	}
 
-	// 光の色と透明度
-	Math::Color glowColor = clearColor;
+	//衝撃波リングの光
+	if (param.m_drawRing)
+	{
+		m_spPoly->SetMaterial(m_spRingGlowTex);
+		shader.DrawPolygon(*m_spPoly, param.m_ringMat, param.m_ringGlowColor * m_bloomRate);
+	}
 
-	// 稲妻を描くか
-	bool drawBolt = false;
 
-	// 稲妻の色と透明度
-	Math::Color boltColor = clearColor;
+	if (param.m_drawBolt)
+	{
+		// 何番目の稲妻から使うか（1本なら真ん中、5本なら全部）
+		const int startIndex = (kBoltNum - param.m_boltNum) / 2;
 
-	// 黒いもやを描くか
-	bool drawHalo = false;
+		for (int i = 0; i < param.m_boltNum; i++)
+		{
+			const int n = startIndex + i;
 
-	// 黒いもやの大きさの倍率（縦・横とも）
-	float haloScale = 1.0f;
+			// 放射状の基本の角度 ＋ ランダムのずれ
+			const float deg = m_boltBaseDeg[n] + m_boltRollDegs[n];
 
-	// 黒いもやの色と透明度
-	Math::Color haloColor = clearColor;
+			const auto boltMats = MakeCrossMats(param.m_boltWidthRate, param.m_boltLengthRate, deg, m_boltFlipFlgs[n]);
 
-	//描く稲妻の本数
-	int boltNum = 0;
+			m_spPoly->SetMaterial(m_spBoltTex[m_boltIndices[n]]);
+			for (auto& mat : boltMats) { shader.DrawPolygon(*m_spPoly, mat, param.m_boltColor); }
+		}
+	}
+}
 
-	//稲妻の横幅の倍率
-	float boltWidthRate = 3.0f;
+Sword_FinalSlash::DrawParam Sword_FinalSlash::CalcDrawParam() const
+{
+	DrawParam param;
 
-	//稲妻の長さの倍率
-	float boltLengthRate = 1.0f;
-
-	// 衝撃波リングを描くか（Fade の最初の m_ringTime 秒だけ）
-	bool drawRing = false;
-
-	// 衝撃波リングの大きさ（m。直径）
-	float ringSize = 0.0f;
-
-	// 衝撃波リングの光の色と透明度（加算）
-	Math::Color ringGlowColor = clearColor;
-
-	// 衝撃波リングの黒い輪の色と透明度（Alpha）
-	Math::Color ringColor = clearColor;
-
-	//==================================================
-	//  段階ごとに値を入れる
-	//==================================================
 	if (m_state == State::Charge)
 	{
 		//---------- 溜め（m_chargeRate：0〜1） ----------
 		// 線の太さ：0.5 → 0.8 倍
-		lineWidthRate = 0.5f + 0.3f * m_chargeRate;
-		lineLengthRate = 1.0f;
+		param.m_lineWidthRate = 0.5f + 0.3f * m_chargeRate;
+		param.m_lineLengthRate = 1.0f;
 
 		// 色（RGB は暗い赤、A は透明度）
-		lineColor = m_chargeColor;
-		lineColor.A(0.3f + 0.5f * m_chargeRate);			// 0.3 → 0.8
+		param.m_lineColor = m_chargeColor;
+		param.m_lineColor.A(0.3f + 0.5f * m_chargeRate);			// 0.3 → 0.8
 
-		glowWidthRate = lineWidthRate * 3.5f;
-		glowColor = m_chargeColor;
-		glowColor.A(0.5f * m_chargeRate);					// 0 → 0.5
+		param.m_glowWidthRate = param.m_lineWidthRate * 3.5f;
+		param.m_glowColor = m_chargeColor;
+		param.m_glowColor.A(0.5f * m_chargeRate);					// 0 → 0.5
 
 		// 稲妻はチラ見せ中だけ、薄く
-		drawBolt = m_boltPeekFlg;
-		boltColor = { 1.0f, 1.0f, 1.0f, 0.4f };
+		param.m_drawBolt = m_boltPeekFlg;
+		param.m_boltColor = { 1.0f, 1.0f, 1.0f, 0.4f };
 
 		// 溜めではもやは出さない
-		drawHalo = false;
+		param.m_drawHalo = false;
 
-		boltNum = 1;
-		boltWidthRate = 3.0;
-		boltLengthRate = 1.0;
+		param.m_boltNum = 1;
+		param.m_boltWidthRate = 3.0f;
+		param.m_boltLengthRate = 1.0f;
 	}
 	else
 	{
@@ -244,126 +296,89 @@ void Sword_FinalSlash::DrawEffect()
 		const float remain = 1.0f - m_fadeRate;
 
 		// 線の太さ：弾けた瞬間は m_burstWidthRate、そのあと 1.6 → 1.2 倍に細く
-		lineWidthRate = isBurstFlash ? m_burstWidthRate : std::lerp(m_burstWidthRate, 1.2f, m_fadeRate);
+		param.m_lineWidthRate = isBurstFlash ? m_burstWidthRate : std::lerp(m_burstWidthRate, 1.2f, m_fadeRate);
 
 		// 線の長さ：1.0 → m_fadeLengthRate 倍に伸びる
-		lineLengthRate = std::lerp(1.0f, m_fadeLengthRate, m_fadeRate);
+		param.m_lineLengthRate = std::lerp(1.0f, m_fadeLengthRate, m_fadeRate);
 
 		// 線の色：明るい赤。弾けた瞬間は真っ白に近いくらいはっきり、そのあと薄くなる
-		lineColor = m_burstColor;
-		lineColor.A(isBurstFlash ? 1.0f : remain);
+		param.m_lineColor = m_burstColor;
+		param.m_lineColor.A(isBurstFlash ? 1.0f : remain);
 
 		// 光：線の 4.5 倍の太さ。線より早く消える（2乗）
-		glowWidthRate = lineWidthRate * 4.5f;
-		glowColor = m_burstColor;
-		glowColor.A(isBurstFlash ? 1.0f : remain * remain);
+		param.m_glowWidthRate = param.m_lineWidthRate * 4.5f;
+		param.m_glowColor = m_burstColor;
+		param.m_glowColor.A(isBurstFlash ? 1.0f : remain * remain);
 
 		// 稲妻：ずっと描く。線と同じだけ薄くなる
-		drawBolt = true;
-		boltColor = { 1.0f, 1.0f, 1.0f, isBurstFlash ? 1.0f : remain };
+		param.m_drawBolt = true;
+		param.m_boltColor = { 1.0f, 1.0f, 1.0f, isBurstFlash ? 1.0f : remain };
 
 		// 黒いもや：弾けた瞬間から少し広がりながら引いていく
-		drawHalo = true;
-		haloScale = m_darkHaloScale * std::lerp(1.0f, 1.3f, m_fadeRate);
-		haloColor = { 1.0f, 1.0f, 1.0f, 0.8f * (isBurstFlash ? 1.0f : remain) };
+		param.m_drawHalo = true;
+		param.m_haloScale = m_darkHaloScale * std::lerp(1.0f, 1.3f, m_fadeRate);
+		param.m_haloColor = { 1.0f, 1.0f, 1.0f, 0.8f * (isBurstFlash ? 1.0f : remain) };
 
-
-		boltNum = 5;
-		boltWidthRate = m_burstBoltWidthRate;
+		param.m_boltNum = 5;
+		param.m_boltWidthRate = m_burstBoltWidthRate;
 		if (isBurstFlash)
 		{
-			boltLengthRate = m_burstBoltLengthRate;
+			param.m_boltLengthRate = m_burstBoltLengthRate;
 		}
 		else
 		{
-			boltLengthRate = m_burstBoltLengthRate * std::lerp(1.0, m_fadeLengthRate, m_fadeRate);
+			param.m_boltLengthRate = m_burstBoltLengthRate * std::lerp(1.0f, m_fadeLengthRate, m_fadeRate);
 		}
 
-
-
+		// 衝撃波リング
 		float ringRate = m_timer / m_ringTime;
 		ringRate = std::clamp(ringRate, 0.0f, 1.0f);
 		if (ringRate < 1)
 		{
-			drawRing = true;
+			param.m_drawRing = true;
 
 			const float inv = 1.0f - ringRate;
 			const float ringEase = 1.0f - inv * inv * inv;
 
-			ringSize = std::lerp(m_ringStartSize, m_ringEndSize, ringEase);
+			param.m_ringSize = std::lerp(m_ringStartSize, m_ringEndSize, ringEase);
 
 			float ringAlpha = 1 - ringRate;
-			ringGlowColor = m_ringGlowColor;
-			ringGlowColor.A(ringAlpha);
+			param.m_ringGlowColor = m_ringGlowColor;
+			param.m_ringGlowColor.A(ringAlpha);
 
-			ringColor = { 1,1,1,ringAlpha };
+			param.m_ringColor = { 1, 1, 1, ringAlpha };
 		}
 	}
 
-	//==================================================
-	// 行列を作る（共通）
-	//==================================================
-	const auto lineMats = makeCrossMats(lineWidthRate, lineLengthRate);
-	const auto glowMats = makeCrossMats(glowWidthRate, lineLengthRate);
-	const auto haloMats = makeCrossMats(haloScale, haloScale);
-	const Math::Matrix ringMat = Math::Matrix::CreateScale(ringSize, ringSize, 1.0f) * Math::Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Math::Matrix::CreateTranslation(m_obb.Center);
-	//==================================================
-	// 描く（共通）… もや → 光 → 線 → 稲妻
-	//==================================================
-	auto& shader = KdShaderManager::Instance().m_StandardShader;
+	// 衝撃波リングの行列（地面と平行に寝かせて、箱の真ん中に置く）
+	param.m_ringMat = Math::Matrix::CreateScale(param.m_ringSize, param.m_ringSize, 1.0f)
+		* Math::Matrix::CreateRotationX(DirectX::XM_PIDIV2)
+		* Math::Matrix::CreateTranslation(m_obb.Center);
 
-	//---------- 黒いもや（Alpha）… 描く時だけ ----------
-	if (drawHalo)
-	{
-		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
-		m_spPoly->SetMaterial(m_spDarkHaloTex);
-		for (auto& mat : haloMats) { shader.DrawPolygon(*m_spPoly, mat, haloColor); }
-	}
+	return param;
+}
 
-	//リングの光
-	if (drawRing)
-	{
-		m_spPoly->SetMaterial(m_spRingGlowTex);
-		shader.DrawPolygon(*m_spPoly, ringMat, ringGlowColor);
-	}
+std::array<Math::Matrix, 2> Sword_FinalSlash::MakeCrossMats(float _widthRate, float _lengthRate, float _rollDeg, bool _flip) const
+{
+	// 大きさ（箱の横幅・長さに合わせる。反転なら横幅をマイナス）
+	const float w = m_obb.Extents.x * 2.0f * _widthRate * (_flip ? -1.0f : 1.0f);
+	const float h = m_obb.Extents.y * 2.0f * _lengthRate;
+	const Math::Matrix scale = Math::Matrix::CreateScale(w, h, 1.0f);
 
-	//---------- 光と線（加算）… いつも描く ----------
-	KdShaderManager::Instance().ChangeBlendState(KdBlendState::Add);
+	// 板そのものを傾ける（板の面の中で回す）
+	const Math::Matrix roll = Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(_rollDeg));
 
-	m_spPoly->SetMaterial(m_spGlowTex);
-	for (auto& mat : glowMats) { shader.DrawPolygon(*m_spPoly, mat, glowColor); }
+	// 箱の向きと位置
+	const Math::Matrix rot = Math::Matrix::CreateFromQuaternion(m_obb.Orientation);
+	const Math::Matrix trans = Math::Matrix::CreateTranslation(m_obb.Center);
 
-	m_spPoly->SetMaterial(m_spLineTex);
-	for (auto& mat : lineMats) { shader.DrawPolygon(*m_spPoly, mat, lineColor); }
+	// 2枚目用：Y 軸で 90 度回して十字にする
+	const Math::Matrix cross = Math::Matrix::CreateRotationY(DirectX::XM_PIDIV2);
 
-	//黒い輪 
-	if (drawRing)
-	{
-		m_spPoly->SetMaterial(m_spRingTex);
-		shader.DrawPolygon(*m_spPoly, ringMat, ringColor);
-	}
-
-
-	//---------- 稲妻（Alpha）… 描く時だけ ----------
-	KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
-	if (drawBolt)
-	{
-		// 何番目の稲妻から使うか（1本なら真ん中、5本なら全部）
-		const int startIndex = (kBoltNum - boltNum) / 2;
-
-		for (int i = 0; i < boltNum; i++)
-		{
-			const int n = startIndex + i;
-
-			// 放射状の基本の角度 ＋ ランダムのずれ
-			const float deg = m_boltBaseDeg[n] + m_boltRollDegs[n];
-
-			const auto boltMats = makeCrossMats(boltWidthRate, boltLengthRate, deg, m_boltFlipFlgs[n]);
-
-			m_spPoly->SetMaterial(m_spBoltTex[m_boltIndices[n]]);
-			for (auto& mat : boltMats) { shader.DrawPolygon(*m_spPoly, mat, boltColor); }
-		}
-	}
+	std::array<Math::Matrix, 2> mats;
+	mats[0] = scale * roll * rot * trans;
+	mats[1] = scale * roll * cross * rot * trans;
+	return mats;
 }
 
 void Sword_FinalSlash::SetSlashStatus(const DirectX::BoundingOrientedBox& _obb, float _damage, float _knockback, const Math::Vector3& _dir, float _defenseIgnore, float _chargeTime)

@@ -4,106 +4,6 @@
 #include"../../../../Scene/SceneManager.h"
 #include"../../../../Scene/PrepareScene/PrepareScene.h"
 
-namespace
-{
-	/////////////////////////////////////////////////////////////////
-	// レイアウト
-	// 座標はフレームワークと同じ(画面の真ん中が0,0・右と上がプラス)
-	// 特に書いていなければ、画像の「真ん中」の位置
-	/////////////////////////////////////////////////////////////////
-
-	//---------- 見出し・所持金 ----------
-	const Math::Vector2 kTitlePos = { 38.0f, 314.0f };	// 「ショップ」(260×80)
-	const Math::Vector2 kMoneyPanelPos = { 485.0f, 314.0f };	// 所持金パネル(250×64)
-	const Math::Vector2 kMoneyLabelPos = { 430.0f, 314.0f };	// 「所持金」(116×56)
-	const Math::Vector2 kMoneyNumPos = { 490.0f, 314.0f };	// 所持金の数字(左端)。「G」はこの右
-
-	//---------- タブ(150×58) ----------
-	const Math::Vector2 kTabPos = { -15.0f, 245.0f };	// 1つ目のタブ
-	constexpr float kTabSpace = 158.0f;					// 右へずらす量(150 + すき間8)
-	constexpr float kTabW = 150.0f, kTabH = 58.0f;
-
-	//---------- 商品一覧(700×200) ----------
-	const Math::Vector2 kListPos = { 260.0f, 110.0f };
-	constexpr float kListW = 700.0f, kListH = 200.0f;
-	const Math::Vector2 kSlotPos = { -24.0f, 138.0f };	// 1つ目の枠(64×64)
-	constexpr float kSlotSiz = 64.0f, kSlotSpace = 96.0f;
-	constexpr int   kListVisibleNum = 7;
-	constexpr float kSlotUnderY = 84.0f;				// 枠の下の文字(売切れ・所持済み・未入荷)の真ん中のy
-	constexpr float kSlotPriceY = 82.0f;				// 枠の下の値段の真ん中のy
-
-	//---------- 商品詳細(700×240) ----------
-	const Math::Vector2 kDetailPos = { 260.0f, -118.0f };
-	const Math::Vector2 kDetailIconPos = { 4.0f,  -88.0f };	// 大きいアイコン(真ん中)
-	const Math::Vector2 kDetailNamePos = { -70.0f, -158.0f };	// 名前(左上)
-	const Math::Vector2 kDetailExplPos = { 90.0f,  -34.0f };	// 説明(左上)
-	const Math::Vector2 kPivotLeftTop = { 0.0f, 1.0f };		// 左上を基準に描く
-
-	//---------- 所持・値段の欄(334×206) ----------
-	const Math::Vector2 kInfoPos = { 433.0f, -118.0f };
-	constexpr float kInfoLabelX = 318.0f;		// 項目(「所持」など 76×52)の真ん中のx
-	constexpr float kInfoValueX = 362.0f;		// 値の左端のx
-	constexpr float kInfoButtonX = 536.0f;		// 買う・売るボタン(92×38)の真ん中のx
-	constexpr float kInfoRow0Y = -49.0f, kInfoRowSpace = 44.0f;	// 1行目の真ん中のy と、下の行へずらす量
-	constexpr float kButtonW = 92.0f, kButtonH = 38.0f, kSmallSiz = 36.0f;
-
-	constexpr float kHaveTextX = 400.0f;	// 「あり」「なし」(76×48)の真ん中のx
-	constexpr float kDashX = 394.0f;	// 「ー」(48×34)の真ん中のx
-
-	// 1行目の右側の「在庫 〇」
-	constexpr float kStockLabelX     = 494.0f;	// 「在庫」(76×52)の真ん中のx
-	constexpr float kStockNumRightX  = 582.0f;	// 在庫の数の右端(買う・売るボタンの右端にそろえる)
-	constexpr float kStockNumMaxW    = 50.0f;	// 在庫の数の最大幅(「在庫」の右 〜 欄の右端)
-	constexpr float kInfoHaveNumMaxW = 54.0f;	// 1行目の所持の数の最大幅(「個」が「在庫」にかぶらないように。3桁まで)
-
-	// 買値・売値の数字の右端(4桁 + カンマ「2,900」の右端にそろえる)。「G」はこのすぐ右
-	constexpr float kInfoPriceRightX = 452.0f;
-	constexpr float kInfoGoldX = 476.0f;	// 「G」(40×42)の真ん中のx
-
-	// 数量の行の -・+ ボタン(36×36)の真ん中のx。数字は2つの間の真ん中
-	constexpr float kCountMinusX = 374.0f;
-	constexpr float kCountPlusX = 464.0f;
-	constexpr float kCountNumX = 419.0f;
-
-	//---------- 持ち物(700×104) ----------
-	const Math::Vector2 kHavePos = { 260.0f, -298.0f };
-	constexpr float kHaveW = 700.0f, kHaveH = 104.0f;
-	const Math::Vector2 kHaveLabelPos = { -22.0f, -286.0f };	// 「持ち物」(104×52)
-	constexpr float kHaveItemX = 60.0f, kHaveItemY = -284.0f;	// 1つ目のアイコン(40×40)の真ん中
-	constexpr float kHaveSpace = 130.0f;
-	constexpr int   kHaveVisibleNum = 4;
-
-	//---------- スクロールバー ----------
-	constexpr float kTrackH = 16.0f;
-	constexpr float kTrackInset = 2.0f;
-
-	//---------- 数字が超えてはいけない横幅(桁が増えても隣にかぶらないように) ----------
-	constexpr float kMoneyNumMaxW = 72.0f;	// 所持金(「所持金」と「G」の間)
-	constexpr float kListPriceMaxW = 70.0f;	// 一覧のアイコンの下の値段(枠の間隔96 - 「G」)
-	constexpr float kInfoValueMaxW = 96.0f;	// 右の欄の値
-	constexpr float kCountNumMaxW = 40.0f;	// 数量(-と+の間)
-	constexpr float kHaveNumMaxW = 44.0f;	// 持ち物の個数(「×」の右 〜 次の持ち物)
-
-	// 数字1文字の大きさ(NumDrawの画像)
-	constexpr float kNumGlyphW = 9.0f;
-
-	// 1行目から _i 行下の行の真ん中のy
-	float InfoRowY(int _i) { return kInfoRow0Y - kInfoRowSpace * _i; }
-
-	// ポーションの画像フォルダ名(PotionsTypeの順)
-	const std::string kPotionName[PotionsTypeMax] =
-	{
-		"InstantHealPotion", "AttackBaseUPPotion", "AttackBoostPotion", "InstantStaminaHealPotion",
-		"StaminaMaxUPPotion", "StaminaRegenBaseUPPotion", "StaminaRegenBoostPotion",
-	};
-
-	// 武器の画像フォルダ名(PlayerWeaponInfoの順)
-	const std::string kWeaponName[PlayerWeaponInfoSize] = { "Dagger", "Sword" };
-}
-
-/////////////////////////////////////////////////////////////////////
-// 初期化・データ
-/////////////////////////////////////////////////////////////////////
 void ShopDisplay::Init()
 {
 	LoadTex();
@@ -120,16 +20,19 @@ void ShopDisplay::Init()
 		m_thumbMinW = static_cast<float>(spL->GetWidth() + spG->GetWidth() + spR->GetWidth());
 	}
 
-	// スクロールの場所(レールの左端のx・真ん中のy・長さ)
-	m_listScroll.m_trackLeft = -60.0f; m_listScroll.m_trackY = 40.0f; m_listScroll.m_trackW = 640.0f;
-	m_listScroll.m_visibleNum = kListVisibleNum;
-	m_haveScroll.m_trackLeft = 40.0f; m_haveScroll.m_trackY = -324.0f; m_haveScroll.m_trackW = 520.0f;
-	m_haveScroll.m_visibleNum = kHaveVisibleNum;
+	//商品一覧のスクロールの場所(レールの左端のx・真ん中のy・長さ)
+	m_listScroll.m_trackLeft = -60.0f;
+	m_listScroll.m_trackY = 40.0f;
+	m_listScroll.m_trackW = 640.0f;
+	m_listScroll.m_visibleNum = m_listVisibleNum;
+
+	//持ち物のスクロールの場所
+	m_haveScroll.m_trackLeft = 40.0f;
+	m_haveScroll.m_trackY = -324.0f;
+	m_haveScroll.m_trackW = 520.0f;
+	m_haveScroll.m_visibleNum = m_haveVisibleNum;
 }
 
-/////////////////////////////////////////////////////////////////////
-// 更新
-/////////////////////////////////////////////////////////////////////
 void ShopDisplay::Update()
 {
 	// 開いているタブでなければ何もしない
@@ -141,8 +44,8 @@ void ShopDisplay::Update()
 	//---------- タブ ----------
 	for (int t = 0; t < static_cast<int>(ShopTab::TabSize); t++)
 	{
-		const Math::Vector2 tabPos = { kTabPos.x + kTabSpace * t, kTabPos.y };
-		if (MouseHit(tabPos, kTabW, kTabH))
+		const Math::Vector2 tabPos = { m_tabPos.x + m_tabSpace * t, m_tabPos.y };
+		if (MouseHit(tabPos, m_tabW, m_tabH))
 		{
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 			if (m_clickFlg && m_tab != static_cast<ShopTab>(t))
@@ -162,24 +65,24 @@ void ShopDisplay::Update()
 	const int haveNum = static_cast<int>(GetHaveList().size());
 
 	ScrollCalc(m_listScroll, listNum);
-	ScrollUpdate(m_listScroll, listNum, kListPos, kListW, kListH);
+	ScrollUpdate(m_listScroll, listNum, m_listPos, m_listW, m_listH);
 	ScrollCalc(m_listScroll, listNum);
 
 	ScrollCalc(m_haveScroll, haveNum);
-	ScrollUpdate(m_haveScroll, haveNum, kHavePos, kHaveW, kHaveH);
+	ScrollUpdate(m_haveScroll, haveNum, m_havePos, m_haveW, m_haveH);
 	ScrollCalc(m_haveScroll, haveNum);
 
 	//---------- 商品一覧(カーソル・選択) ----------
 	m_hoverIndex = -1;
 	if (!m_listScroll.m_dragFlg)
 	{
-		for (int slot = 0; slot < kListVisibleNum; slot++)
+		for (int slot = 0; slot < m_listVisibleNum; slot++)
 		{
 			int index = m_listScroll.m_index + slot;
 			if (index >= listNum) { break; }
 
-			const Math::Vector2 slotPos = { kSlotPos.x + kSlotSpace * slot, kSlotPos.y };
-			if (MouseHit(slotPos, kSlotSiz, kSlotSiz))
+			const Math::Vector2 slotPos = { m_slotPos.x + m_slotSpace * slot, m_slotPos.y };
+			if (MouseHit(slotPos, m_slotSiz, m_slotSiz))
 			{
 				MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 				m_hoverIndex = index;
@@ -197,9 +100,17 @@ void ShopDisplay::Update()
 	//---------- 数量の＋／－(消耗品・素材だけ) ----------
 	if (IsStackTab() && m_selectIndex < GetListNum())
 	{
-		const float rowY = InfoRowY(1);
-		if (m_clickFlg && MouseHit({ kCountMinusX, rowY }, kSmallSiz, kSmallSiz)) { m_count--; m_clickFlg = false; }
-		if (m_clickFlg && MouseHit({ kCountPlusX,  rowY }, kSmallSiz, kSmallSiz)) { m_count++; m_clickFlg = false; }
+		const float rowY = GetInfoRowY(1);
+		if (m_clickFlg && MouseHit({ m_countMinusX, rowY }, m_smallButtonSiz, m_smallButtonSiz))
+		{
+			m_count--;
+			m_clickFlg = false;
+		}
+		if (m_clickFlg && MouseHit({ m_countPlusX, rowY }, m_smallButtonSiz, m_smallButtonSiz))
+		{
+			m_count++;
+			m_clickFlg = false;
+		}
 		m_count = std::clamp(m_count, 1, 99);
 	}
 
@@ -207,9 +118,6 @@ void ShopDisplay::Update()
 	BuySellUpdate();
 }
 
-/////////////////////////////////////////////////////////////////////
-// 描画
-/////////////////////////////////////////////////////////////////////
 void ShopDisplay::DrawSprite()
 {
 	// 開いているタブでなければ何もしない
@@ -228,72 +136,31 @@ void ShopDisplay::DrawSprite()
 
 void ShopDisplay::LoadShopData()
 {
-	auto readJson = [](const std::string& _path) -> nlohmann::json
-		{
-			std::ifstream file(_path);
-			if (!file)
-			{
-				KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayのファイルが見つかりません : %s\n"), _path.c_str());
-				return nlohmann::json::object();
-			}
-			nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-			if (data.is_discarded()) { return nlohmann::json::object(); }
-			return data;
-		};
+	const nlohmann::json master = ReadJson(m_shopMasterPath, true);
+	const nlohmann::json stock = ReadJson(m_shopStockPath, true);
+	const nlohmann::json inventory = ReadJson(m_inventoryPath, true);
 
-	const nlohmann::json master = readJson(m_shopMasterPath);
-	const nlohmann::json stock = readJson(m_shopStockPath);
-	const nlohmann::json inventory = readJson(m_inventoryPath);
+	//値段(マスター)
+	ReadPrice(master, "potions", m_potionItem, PotionsTypeMax);
+	ReadPrice(master, "materials", m_materialItem, MaterialTypeMax);
+	ReadPrice(master, "weapons", m_weaponItem, PlayerWeaponInfoSize);
 
-	// 値段(マスター)
-	auto readMaster = [&](const char* _key, ShopItem* _items, int _num)
-		{
-			if (!master.contains(_key)) { return; }
-			for (const auto& item : master[_key])
-			{
-				int id = item.value("id", -1);
-				if (id < 0 || id >= _num) { continue; }
-				_items[id].m_buyPrice = item.value("buyPrice", 0);
-				_items[id].m_sellPrice = item.value("sellPrice", 0);
-			}
-		};
-	readMaster("potions", m_potionItem, PotionsTypeMax);
-	readMaster("materials", m_materialItem, kMaterialNum);
-	readMaster("weapons", m_weaponItem, PlayerWeaponInfoSize);
+	//在庫
+	ReadStock(stock, "potions", m_potionItem, PotionsTypeMax);
+	ReadStock(stock, "materials", m_materialItem, MaterialTypeMax);
+	ReadStock(stock, "weapons", m_weaponItem, PlayerWeaponInfoSize);
 
-	// 在庫
-	auto readStock = [&](const char* _key, ShopItem* _items, int _num)
-		{
-			if (!stock.contains(_key)) { return; }
-			for (const auto& item : stock[_key])
-			{
-				int id = item.value("id", -1);
-				if (id < 0 || id >= _num) { continue; }
-				_items[id].m_stock = item.value("stock", 0);
-			}
-		};
-	readStock("potions", m_potionItem, PotionsTypeMax);
-	readStock("materials", m_materialItem, kMaterialNum);
-	readStock("weapons", m_weaponItem, PlayerWeaponInfoSize);
+	//持ち物
+	ReadHave(inventory, "potions", m_potionHave, PotionsTypeMax);
+	ReadHave(inventory, "weaponStrengtheningMaterials", m_materialHave, MaterialTypeMax);
 
-	// 持ち物
-	auto readHave = [&](const char* _key, int* _have, int _num)
-		{
-			for (int i = 0; i < _num; i++) { _have[i] = 0; }
-			if (!inventory.contains(_key)) { return; }
-			for (const auto& item : inventory[_key])
-			{
-				int id = item.value("id", -1);
-				if (id < 0 || id >= _num) { continue; }
-				_have[id] = item.value("num", 0);
-			}
-		};
-	readHave("potions", m_potionHave, PotionsTypeMax);
-	readHave("weaponStrengtheningMaterials", m_materialHave, kMaterialNum);
-
-	// 武器(無ければダガー(最初の武器)だけ持っている)
-	for (int i = 0; i < PlayerWeaponInfoSize; i++) { m_weaponOwned[i] = false; }
+	//武器(無ければダガー(最初の武器)だけ持っている)
+	for (int i = 0; i < PlayerWeaponInfoSize; i++)
+	{
+		m_weaponOwned[i] = false;
+	}
 	m_weaponOwned[PlayerWeaponInfo_Dagger] = true;
+
 	if (inventory.contains("weapons"))
 	{
 		for (const auto& item : inventory["weapons"])
@@ -334,22 +201,29 @@ void ShopDisplay::DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos
 
 void ShopDisplay::DrawPrice(long _price, float _rowY)
 {
-	// 右端を kInfoPriceRightX にそろえる(桁が変わっても「G」の位置は動かない)
-	DrawNum(_price, RAligned, { kInfoPriceRightX, _rowY }, 2.0f, true, kInfoValueMaxW);
-	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { kInfoGoldX, _rowY - 1.0f });
+	// 右端を m_infoPriceRightX にそろえる(桁が変わっても「G」の位置は動かない)
+	DrawNum(_price, RAligned, { m_infoPriceRightX, _rowY }, 2.0f, true, m_infoValueMaxW);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { m_infoGoldX, _rowY - 1.0f });
 }
 
 void ShopDisplay::DrawStock(int _stock)
 {
 	// 「在庫」と、その右に数(右端を買う・売るボタンの右端にそろえる)
-	DrawTex(m_spTex[static_cast<int>(ShopTex::StockLabel)], { kStockLabelX, InfoRowY(0) });
-	DrawNum(std::max(0, _stock), RAligned, { kStockNumRightX, InfoRowY(0) }, 2.0f, false, kStockNumMaxW);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::StockLabel)], { m_stockLabelX, GetInfoRowY(0) });
+	DrawNum(std::max(0, _stock), RAligned, { m_stockNumRightX, GetInfoRowY(0) }, 2.0f, false, m_stockNumMaxW);
 }
 
 void ShopDisplay::DrawButton(ShopButton _button, const Math::Vector2& _pos, bool _enable)
 {
-	float w = kButtonW, h = kButtonH;
-	if (_button == ShopButton::Plus || _button == ShopButton::Minus) { w = h = kSmallSiz; }
+	float w = m_buttonW;
+	float h = m_buttonH;
+
+	//＋・－ボタンは小さい
+	if (_button == ShopButton::Plus || _button == ShopButton::Minus)
+	{
+		w = m_smallButtonSiz;
+		h = m_smallButtonSiz;
+	}
 
 	ButtonState state = ButtonState::Disable;
 	if (_enable)
@@ -359,46 +233,50 @@ void ShopDisplay::DrawButton(ShopButton _button, const Math::Vector2& _pos, bool
 	DrawTex(m_spButtonTex[static_cast<int>(_button)][static_cast<int>(state)], _pos);
 }
 
+void ShopDisplay::DrawListPrice(int _price, float _slotX)
+{
+	const float numW = GetNumWidth(_price, 2.0f, false, m_listPriceMaxW);
+	const float left = _slotX - (numW + 24.0f) / 2.0f;
+	DrawNum(_price, LAligned, { left, m_slotPriceY }, 2.0f, false, m_listPriceMaxW);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { left + numW + 12.0f, m_slotPriceY + 2.0f }, 0.5f);
+}
+
+void ShopDisplay::DrawInfoLabel(ShopTex _tex, int _row)
+{
+	DrawTex(m_spTex[static_cast<int>(_tex)], { m_infoLabelX, GetInfoRowY(_row) });
+}
+
 void ShopDisplay::DrawHeader()
 {
-	DrawTex(m_spTex[static_cast<int>(ShopTex::Title)], kTitlePos);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::Title)], m_titlePos);
 
-	// 所持金(数字の右に「G」)
-	DrawTex(m_spTex[static_cast<int>(ShopTex::MoneyPanel)], kMoneyPanelPos);
-	DrawTex(m_spTex[static_cast<int>(ShopTex::MoneyLabel)], kMoneyLabelPos);
-	DrawNum(m_money, LAligned, kMoneyNumPos, 2.0f, true, kMoneyNumMaxW);
-	const float numW = GetNumWidth(m_money, 2.0f, true, kMoneyNumMaxW);
-	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { kMoneyNumPos.x + numW + 24.0f, kMoneyNumPos.y - 1.0f });
+	//所持金(数字は右揃え、「G」はいつも同じ位置)
+	DrawTex(m_spTex[static_cast<int>(ShopTex::MoneyPanel)], m_moneyPanelPos);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::MoneyLabel)], m_moneyLabelPos);
+	DrawNum(m_money, RAligned, { m_moneyNumRightX, m_moneyNumPos.y }, 2.0f, true, m_moneyNumMaxW);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { m_moneyGoldX, m_moneyNumPos.y - 1.0f });
+
 
 	// タブ
 	for (int t = 0; t < static_cast<int>(ShopTab::TabSize); t++)
 	{
 		const int select = (m_tab == static_cast<ShopTab>(t)) ? 1 : 0;
-		DrawTex(m_spTabTex[t][select], { kTabPos.x + kTabSpace * t, kTabPos.y });
+		DrawTex(m_spTabTex[t][select], { m_tabPos.x + m_tabSpace * t, m_tabPos.y });
 	}
 }
 
 void ShopDisplay::DrawList()
 {
-	DrawTex(m_spTex[static_cast<int>(ShopTex::ListPanel)], kListPos);
-
-	// 値段 + G(半分の大きさ)を、枠の真ん中にそろえて描く
-	auto drawPrice = [&](int _price, float _slotX)
-		{
-			const float numW = GetNumWidth(_price, 2.0f, false, kListPriceMaxW);
-			const float left = _slotX - (numW + 24.0f) / 2.0f;
-			DrawNum(_price, LAligned, { left, kSlotPriceY }, 2.0f, false, kListPriceMaxW);
-			DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { left + numW + 12.0f, kSlotPriceY + 2.0f }, 0.5f);
-		};
+	DrawTex(m_spTex[static_cast<int>(ShopTex::ListPanel)], m_listPos);
 
 	const int listNum = GetListNum();
-	for (int slot = 0; slot < kListVisibleNum; slot++)
+	for (int slot = 0; slot < m_listVisibleNum; slot++)
 	{
 		const int index = m_listScroll.m_index + slot;
 		if (index >= listNum) { break; }
 
-		const Math::Vector2 slotPos = { kSlotPos.x + kSlotSpace * slot, kSlotPos.y };
-		const Math::Vector2 underPos = { slotPos.x, kSlotUnderY };
+		const Math::Vector2 slotPos = { m_slotPos.x + m_slotSpace * slot, m_slotPos.y };
+		const Math::Vector2 underPos = { slotPos.x, m_slotUnderY };
 
 		if (IsStackTab())
 		{
@@ -411,7 +289,7 @@ void ShopDisplay::DrawList()
 			}
 			else
 			{
-				drawPrice(GetStackItem(index).m_buyPrice, slotPos.x);
+				DrawListPrice(GetStackItem(index).m_buyPrice, slotPos.x);
 			}
 		}
 		else if (m_tab == ShopTab::Weapon)
@@ -425,7 +303,7 @@ void ShopDisplay::DrawList()
 			}
 			else
 			{
-				drawPrice(m_weaponItem[index].m_buyPrice, slotPos.x);
+				DrawListPrice(m_weaponItem[index].m_buyPrice, slotPos.x);
 			}
 		}
 
@@ -445,9 +323,7 @@ void ShopDisplay::DrawList()
 
 void ShopDisplay::DrawDetail()
 {
-	DrawTex(m_spTex[static_cast<int>(ShopTex::DetailPanel)], kDetailPos);
-
-	auto label = [&](ShopTex _tex, int _i) { DrawTex(m_spTex[static_cast<int>(_tex)], { kInfoLabelX, InfoRowY(_i) }); };
+	DrawTex(m_spTex[static_cast<int>(ShopTex::DetailPanel)], m_detailPos);
 
 	if (IsStackTab() && m_selectIndex < GetListNum())
 	{
@@ -456,26 +332,26 @@ void ShopDisplay::DrawDetail()
 		const int have = GetStackHave(id);
 
 		// アイコン(40px → 3倍)・名前・説明(名前と説明は長さが違うので左上基準)
-		DrawTex(GetStackTex(id, ItemTex::Icon), kDetailIconPos, 3.0f);
-		DrawTex(GetStackTex(id, ItemTex::Name), kDetailNamePos, 1.0f, kPivotLeftTop);
-		DrawTex(GetStackTex(id, ItemTex::Explanation), kDetailExplPos, 1.0f, kPivotLeftTop);
+		DrawTex(GetStackTex(id, ItemTex::Icon), m_detailIconPos, 3.0f);
+		DrawTex(GetStackTex(id, ItemTex::Name), m_detailNamePos, 1.0f, m_pivotLeftTop);
+		DrawTex(GetStackTex(id, ItemTex::Explanation), m_detailExplPos, 1.0f, m_pivotLeftTop);
 
-		DrawTex(m_spTex[static_cast<int>(ShopTex::PriceInfoPanel)], kInfoPos);
+		DrawTex(m_spTex[static_cast<int>(ShopTex::PriceInfoPanel)], m_infoPos);
 
 		// 所持 〇 個
-		label(ShopTex::HaveLabel, 0);
-		DrawNum(have, LAligned, { kInfoValueX, InfoRowY(0) }, 2.0f, false, kInfoHaveNumMaxW);
-		const float haveW = GetNumWidth(have, 2.0f, false, kInfoHaveNumMaxW);
-		DrawTex(m_spTex[static_cast<int>(ShopTex::Count)], { kInfoValueX + haveW + 28.0f, InfoRowY(0) + 1.0f });
+		DrawInfoLabel(ShopTex::HaveLabel, 0);
+		DrawNum(have, LAligned, { m_infoValueX, GetInfoRowY(0) }, 2.0f, false, m_infoHaveNumMaxW);
+		const float haveW = GetNumWidth(have, 2.0f, false, m_infoHaveNumMaxW);
+		DrawTex(m_spTex[static_cast<int>(ShopTex::Count)], { m_infoValueX + haveW + 28.0f, GetInfoRowY(0) + 1.0f });
 
 		// 在庫 〇(同じ行の右側)
 		DrawStock(item.m_stock);
 
 		// 数量 － 〇 ＋(数字は-と+の真ん中)
-		label(ShopTex::CountLabel, 1);
-		DrawButton(ShopButton::Minus, { kCountMinusX, InfoRowY(1) }, m_count > 1);
-		DrawNum(m_count, CAligned, { kCountNumX, InfoRowY(1) }, 2.0f, false, kCountNumMaxW);
-		DrawButton(ShopButton::Plus, { kCountPlusX, InfoRowY(1) }, true);
+		DrawInfoLabel(ShopTex::CountLabel, 1);
+		DrawButton(ShopButton::Minus, { m_countMinusX, GetInfoRowY(1) }, m_count > 1);
+		DrawNum(m_count, CAligned, { m_countNumX, GetInfoRowY(1) }, 2.0f, false, m_countNumMaxW);
+		DrawButton(ShopButton::Plus, { m_countPlusX, GetInfoRowY(1) }, true);
 
 		// 買値・売値 … 数量分の合計
 		const long buyTotal = static_cast<long>(item.m_buyPrice) * m_count;
@@ -486,14 +362,14 @@ void ShopDisplay::DrawDetail()
 		const bool canSell = (have >= m_count);
 
 		// 買値 〇 G [買う]
-		label(ShopTex::BuyPriceLabel, 2);
-		DrawPrice(buyTotal, InfoRowY(2));
-		DrawButton(ShopButton::Buy, { kInfoButtonX, InfoRowY(2) }, canBuy);
+		DrawInfoLabel(ShopTex::BuyPriceLabel, 2);
+		DrawPrice(buyTotal, GetInfoRowY(2));
+		DrawButton(ShopButton::Buy, { m_infoButtonX, GetInfoRowY(2) }, canBuy);
 
 		// 売値 〇 G [売る]
-		label(ShopTex::SellPriceLabel, 3);
-		DrawPrice(sellTotal, InfoRowY(3));
-		DrawButton(ShopButton::Sell, { kInfoButtonX, InfoRowY(3) }, canSell);
+		DrawInfoLabel(ShopTex::SellPriceLabel, 3);
+		DrawPrice(sellTotal, GetInfoRowY(3));
+		DrawButton(ShopButton::Sell, { m_infoButtonX, GetInfoRowY(3) }, canSell);
 	}
 	else if (m_tab == ShopTab::Weapon && m_selectIndex < PlayerWeaponInfoSize)
 	{
@@ -502,60 +378,60 @@ void ShopDisplay::DrawDetail()
 		const bool owned = m_weaponOwned[id];
 
 		// アイコン(64px → 2倍)・名前・説明
-		DrawTex(m_spWeaponTex[id][static_cast<int>(ItemTex::Icon)], kDetailIconPos, 2.0f);
-		DrawTex(m_spWeaponTex[id][static_cast<int>(ItemTex::Name)], kDetailNamePos, 1.0f, kPivotLeftTop);
-		DrawTex(m_spWeaponTex[id][static_cast<int>(ItemTex::Explanation)], kDetailExplPos, 1.0f, kPivotLeftTop);
+		DrawTex(m_spWeaponTex[id][static_cast<int>(ItemTex::Icon)], m_detailIconPos, 2.0f);
+		DrawTex(m_spWeaponTex[id][static_cast<int>(ItemTex::Name)], m_detailNamePos, 1.0f, m_pivotLeftTop);
+		DrawTex(m_spWeaponTex[id][static_cast<int>(ItemTex::Explanation)], m_detailExplPos, 1.0f, m_pivotLeftTop);
 
-		DrawTex(m_spTex[static_cast<int>(ShopTex::PriceInfoPanel)], kInfoPos);
+		DrawTex(m_spTex[static_cast<int>(ShopTex::PriceInfoPanel)], m_infoPos);
 
 		// 所持 あり/なし
-		label(ShopTex::HaveLabel, 0);
-		DrawTex(m_spTex[static_cast<int>(owned ? ShopTex::Have : ShopTex::NotHave)], { kHaveTextX, InfoRowY(0) });
+		DrawInfoLabel(ShopTex::HaveLabel, 0);
+		DrawTex(m_spTex[static_cast<int>(owned ? ShopTex::Have : ShopTex::NotHave)], { m_haveTextX, GetInfoRowY(0) });
 
 		// 在庫 〇(同じ行の右側)
 		DrawStock(item.m_stock);
 
 		// 買値(持っていたら ー)
-		label(ShopTex::BuyPriceLabel, 1);
+		DrawInfoLabel(ShopTex::BuyPriceLabel, 1);
 		if (owned)
 		{
-			DrawTex(m_spTex[static_cast<int>(ShopTex::Dash)], { kDashX, InfoRowY(1) + 1.0f });
+			DrawTex(m_spTex[static_cast<int>(ShopTex::Dash)], { m_dashX, GetInfoRowY(1) + 1.0f });
 		}
 		else
 		{
-			DrawPrice(item.m_buyPrice, InfoRowY(1));
+			DrawPrice(item.m_buyPrice, GetInfoRowY(1));
 		}
 
 		// 武器は売れないので、売値の行と売るボタンは出さない
 
 		// 買える:持っていない・在庫あり・お金が足りる
 		const bool canBuy = !owned && item.m_stock > 0 && m_money >= item.m_buyPrice;
-		DrawButton(ShopButton::Buy, { kInfoButtonX, InfoRowY(1) }, canBuy);
+		DrawButton(ShopButton::Buy, { m_infoButtonX, GetInfoRowY(1) }, canBuy);
 	}
 }
 
 void ShopDisplay::DrawInventory()
 {
-	DrawTex(m_spTex[static_cast<int>(ShopTex::InventoryPanel)], kHavePos);
-	DrawTex(m_spTex[static_cast<int>(ShopTex::InventoryLabel)], kHaveLabelPos);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::InventoryPanel)], m_havePos);
+	DrawTex(m_spTex[static_cast<int>(ShopTex::InventoryLabel)], m_haveLabelPos);
 
 	const std::vector<HaveItem> list = GetHaveList();
-	for (int slot = 0; slot < kHaveVisibleNum; slot++)
+	for (int slot = 0; slot < m_haveVisibleNum; slot++)
 	{
 		const int index = m_haveScroll.m_index + slot;
 		if (index >= static_cast<int>(list.size())) { break; }
 
 		// アイコン(40px) → 「×」 → 個数 の順に右へ並べる
-		const float x = kHaveItemX + kHaveSpace * slot;
+		const float x = m_haveItemX + m_haveSpace * slot;
 		const auto& spIcon = list[index].m_spIcon;
 		if (spIcon)
 		{
 			// アイコンは40pxに揃える(武器は64px → 縮める)
 			const float scale = 40.0f / static_cast<float>(spIcon->GetWidth());
-			DrawTex(spIcon, { x, kHaveItemY }, scale);
+			DrawTex(spIcon, { x, m_haveItemY }, scale);
 		}
-		DrawTex(m_spTex[static_cast<int>(ShopTex::Times)], { x + 44.0f, kHaveItemY });
-		DrawNum(list[index].m_num, LAligned, { x + 60.0f, kHaveItemY }, 2.0f, false, kHaveNumMaxW);
+		DrawTex(m_spTex[static_cast<int>(ShopTex::Times)], { x + 44.0f, m_haveItemY });
+		DrawNum(list[index].m_num, LAligned, { x + 60.0f, m_haveItemY }, 2.0f, false, m_haveNumMaxW);
 	}
 
 	ScrollDraw(m_haveScroll, ShopTex::InventoryTrack);
@@ -566,7 +442,7 @@ int ShopDisplay::GetListNum() const
 	switch (m_tab)
 	{
 	case ShopTab::Consumable: return PotionsTypeMax;
-	case ShopTab::Material:   return kMaterialNum;
+	case ShopTab::Material:   return MaterialTypeMax;
 	case ShopTab::Weapon:     return PlayerWeaponInfoSize;
 	default:                  return 0;
 	}
@@ -590,7 +466,7 @@ std::vector<ShopDisplay::HaveItem> ShopDisplay::GetHaveList() const
 		}
 		break;
 	case ShopTab::Material:
-		for (int i = 0; i < kMaterialNum; i++)
+		for (int i = 0; i < MaterialTypeMax; i++)
 		{
 			if (m_materialHave[i] > 0) { list.push_back({ m_spMaterialTex[i][static_cast<int>(ItemTex::Icon)], m_materialHave[i] }); }
 		}
@@ -606,7 +482,7 @@ float ShopDisplay::GetNumWidth(long _num, float _siz, bool _separator, float _ma
 	// 桁数(3桁区切りのカンマも1文字分)
 	const int digits = static_cast<int>(std::to_string(std::abs(_num)).size());
 	const int commas = _separator ? (digits - 1) / 3 : 0;
-	const float w = (digits + commas) * kNumGlyphW * _siz;
+	const float w = (digits + commas) * m_numGlyphW * _siz;
 
 	// 超えてはいけない横幅があれば、その幅に縮む
 	return (_maxW > 0.0f && w > _maxW) ? _maxW : w;
@@ -688,7 +564,7 @@ void ShopDisplay::LoadTex()
 	// ポーション(アイコン・名前・説明)
 	for (int i = 0; i < PotionsTypeMax; i++)
 	{
-		const std::string dir = item + "Potion/" + kPotionName[i] + "/";
+		const std::string dir = item + "Potion/" + m_potionName[i] + "/";
 		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Icon)], dir + "Icon.png");
 		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Name)], dir + "SelectNameBase.png");
 		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Explanation)], dir + "SelectExplanationBase.png");
@@ -697,13 +573,13 @@ void ShopDisplay::LoadTex()
 	// 武器(アイコン・名前・説明)
 	for (int i = 0; i < PlayerWeaponInfoSize; i++)
 	{
-		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Icon)], item + "PlayerInventory/WeponStrengtheningIcon/" + kWeaponName[i] + "/WeponStrengtheningIcon8.png");
-		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Name)], item + "WeaponsStrengthening/" + kWeaponName[i] + "/Icon/SelectNameBase.png");
-		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Explanation)], item + "WeaponsStrengthening/" + kWeaponName[i] + "/Icon/SelectExplanationBase.png");
+		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Icon)], item + "PlayerInventory/WeponStrengtheningIcon/" + m_weaponName[i] + "/WeponStrengtheningIcon8.png");
+		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Name)], item + "WeaponsStrengthening/" + m_weaponName[i] + "/Icon/SelectNameBase.png");
+		LoadOneTex(m_spWeaponTex[i][static_cast<int>(ItemTex::Explanation)], item + "WeaponsStrengthening/" + m_weaponName[i] + "/Icon/SelectExplanationBase.png");
 	}
 
 	// 強化素材(アイコン・名前・説明)
-	for (int i = 0; i < kMaterialNum; i++)
+	for (int i = 0; i < MaterialTypeMax; i++)
 	{
 		const std::string dir = item + "WeaponsStrengtheningItem/WeaponStrengthening_Crystal" + std::to_string(i + 1) + "/";
 		LoadOneTex(m_spMaterialTex[i][static_cast<int>(ItemTex::Icon)], dir + "Icon.png");
@@ -712,9 +588,6 @@ void ShopDisplay::LoadTex()
 	}
 }
 
-/////////////////////////////////////////////////////////////////////
-// 画像の読み込み
-/////////////////////////////////////////////////////////////////////
 void ShopDisplay::LoadOneTex(std::shared_ptr<KdTexture>& _spTex, const std::string& _path)
 {
 	if (_spTex) { return; }
@@ -726,14 +599,11 @@ void ShopDisplay::LoadOneTex(std::shared_ptr<KdTexture>& _spTex, const std::stri
 	}
 }
 
-/////////////////////////////////////////////////////////////////////
-// 横スクロール(EquipDisplayと同じ動き)
-/////////////////////////////////////////////////////////////////////
 void ShopDisplay::ScrollCalc(HScroll& _scroll, int _total)
 {
 	const int   maxIndex = std::max(0, _total - _scroll.m_visibleNum);
-	const float innerX = _scroll.m_trackLeft + kTrackInset;
-	const float innerW = _scroll.m_trackW - kTrackInset * 2.0f;
+	const float innerX = _scroll.m_trackLeft + m_trackInset;
+	const float innerW = _scroll.m_trackW - m_trackInset * 2.0f;
 
 	// スクロールの必要がなければ、つまみはレールいっぱい
 	if (maxIndex == 0)
@@ -769,10 +639,10 @@ void ShopDisplay::ScrollUpdate(HScroll& _scroll, int _total, const Math::Vector2
 
 	const float mx = static_cast<float>(MouseInfo::Instance().m_windowPos.x);
 
-	const float trackLeft = _scroll.m_trackLeft + kTrackInset;
-	const float trackRight = _scroll.m_trackLeft + _scroll.m_trackW - kTrackInset;
+	const float trackLeft = _scroll.m_trackLeft + m_trackInset;
+	const float trackRight = _scroll.m_trackLeft + _scroll.m_trackW - m_trackInset;
 
-	const bool isOnTrack = MouseHit({ (trackLeft + trackRight) / 2.0f, _scroll.m_trackY }, trackRight - trackLeft, kTrackH);
+	const bool isOnTrack = MouseHit({ (trackLeft + trackRight) / 2.0f, _scroll.m_trackY }, trackRight - trackLeft, m_trackH);
 	const bool isOnThumb = isOnTrack && mx >= _scroll.m_thumbX && mx <= _scroll.m_thumbX + _scroll.m_thumbW;
 
 	//---------- ドラッグ開始 ----------
@@ -823,8 +693,16 @@ void ShopDisplay::ScrollUpdate(HScroll& _scroll, int _total, const Math::Vector2
 	if (!_scroll.m_dragFlg && MouseHit(_panelPos, _panelW, _panelH))
 	{
 		int wheel = MouseInfo::Instance().GetMouseWheelValue();
-		if (wheel >= 1) { _scroll.m_index -= 1; }
-		else if (wheel <= -1) { _scroll.m_index += 1; }
+		//奥に回す → 左へ
+		if (wheel >= 1)
+		{
+			_scroll.m_index -= 1;
+		}
+		//手前に回す → 右へ
+		else if (wheel <= -1)
+		{
+			_scroll.m_index += 1;
+		}
 	}
 
 	_scroll.m_hoverFlg = isOnThumb || _scroll.m_dragFlg;
@@ -836,7 +714,7 @@ void ShopDisplay::ScrollDraw(const HScroll& _scroll, ShopTex _track)
 	// 左端を基準に、横に並べて描く
 	const Math::Vector2 pivotLeft = { 0.0f, 0.5f };
 
-	DrawTexSize(m_spTex[static_cast<int>(_track)], { _scroll.m_trackLeft, _scroll.m_trackY }, _scroll.m_trackW, kTrackH, pivotLeft);
+	DrawTexSize(m_spTex[static_cast<int>(_track)], { _scroll.m_trackLeft, _scroll.m_trackY }, _scroll.m_trackW, m_trackH, pivotLeft);
 
 	const bool hover = _scroll.m_hoverFlg;
 	const auto& spL = m_spTex[static_cast<int>(hover ? ShopTex::ThumbLeftHover : ShopTex::ThumbLeft)];
@@ -849,10 +727,13 @@ void ShopDisplay::ScrollDraw(const HScroll& _scroll, ShopTex _track)
 	const float rw = static_cast<float>(spR->GetWidth());
 	const float y = _scroll.m_trackY;
 
-	DrawTexSize(spL, { _scroll.m_thumbX, y }, lw, kTrackH, pivotLeft);
+	DrawTexSize(spL, { _scroll.m_thumbX, y }, lw, m_trackH, pivotLeft);
 	const float midW = _scroll.m_thumbW - lw - rw;
-	if (midW > 0.0f) { DrawTexSize(spM, { _scroll.m_thumbX + lw, y }, midW, kTrackH, pivotLeft); }
-	DrawTexSize(spR, { _scroll.m_thumbX + _scroll.m_thumbW - rw, y }, rw, kTrackH, pivotLeft);
+	if (midW > 0.0f)
+	{
+		DrawTexSize(spM, { _scroll.m_thumbX + lw, y }, midW, m_trackH, pivotLeft);
+	}
+	DrawTexSize(spR, { _scroll.m_thumbX + _scroll.m_thumbW - rw, y }, rw, m_trackH, pivotLeft);
 
 	// 持ち手はつまみの真ん中
 	DrawTex(spG, { _scroll.m_thumbX + _scroll.m_thumbW / 2.0f, y });
@@ -865,12 +746,11 @@ void ShopDisplay::BuySellUpdate()
 	const int buyRow = IsStackTab() ? 2 : 1;
 	const int sellRow = buyRow + 1;
 
-	const Math::Vector2 buyPos = { kInfoButtonX, InfoRowY(buyRow) };
-	const Math::Vector2 sellPos = { kInfoButtonX, InfoRowY(sellRow) };
-
+	const Math::Vector2 buyPos = { m_infoButtonX, GetInfoRowY(buyRow) };
+	const Math::Vector2 sellPos = { m_infoButtonX, GetInfoRowY(sellRow) };
 
 	bool success = false;
-	if (m_clickFlg && MouseHit(buyPos, kButtonW, kButtonH))
+	if (m_clickFlg && MouseHit(buyPos, m_buttonW, m_buttonH))
 	{
 		if (IsStackTab())
 		{
@@ -887,14 +767,13 @@ void ShopDisplay::BuySellUpdate()
 	}
 
 	// 売るボタンは消耗品・素材のタブだけ(武器は売れない)
-	if (IsStackTab() && m_clickFlg && MouseHit(sellPos, kButtonW, kButtonH))
+	if (IsStackTab() && m_clickFlg && MouseHit(sellPos, m_buttonW, m_buttonH))
 	{
 		// 選んでいる商品を、数量(m_count)の分だけ売る
 		success = SellStackItem(m_selectIndex, m_count);
 
 		m_clickFlg = false;
 	}
-
 
 	if (success)
 	{
@@ -906,10 +785,14 @@ bool ShopDisplay::BuyStackItem(int _index, int _count)
 {
 	//---------- 今のタブの配列を決める ----------
 	// 消耗品と素材で配列が違うので、ポインタで同じように扱う
-	ShopItem* items = nullptr;	// 商品(値段・在庫)
-	int* have = nullptr;	// 持っている数
-	int       num = 0;		// 商品の種類数
+	//商品(値段・在庫)
+	ShopItem* items = nullptr;
 
+	//持っている数
+	int* have = nullptr;
+
+	//商品の種類数
+	int num = 0;
 
 	if (m_tab == ShopTab::Consumable)
 	{
@@ -921,14 +804,13 @@ bool ShopDisplay::BuyStackItem(int _index, int _count)
 	{
 		items = m_materialItem;
 		have = m_materialHave;
-		num = kMaterialNum;
+		num = MaterialTypeMax;
 	}
 	else
 	{
 		// 武器のタブはBuyWeaponで買う
 		return false;
 	}
-
 
 	//----------  買えるか調べる ----------
 	// 番号が範囲外
@@ -942,18 +824,21 @@ bool ShopDisplay::BuyStackItem(int _index, int _count)
 	// 合計の値段
 	const long total = static_cast<long>(item.m_buyPrice) * _count;
 
-
 	// 在庫が足りない
 	if (item.m_stock < _count) { return false; }
 
 	// お金が足りない
 	if (m_money < total) { return false; }
 
-
 	//---------- 買う ----------
-	m_money -= total;		// お金を払う
-	item.m_stock -= _count;	// お店の在庫が減る
-	have[_index] += _count;	// 自分の持ち物が増える
+	//お金を払う
+	m_money -= total;
+
+	//お店の在庫が減る
+	item.m_stock -= _count;
+
+	//自分の持ち物が増える
+	have[_index] += _count;
 
 	return true;
 }
@@ -962,10 +847,14 @@ bool ShopDisplay::SellStackItem(int _index, int _count)
 {
 	//---------- 今のタブの配列を決める ----------
 	// 消耗品と素材で配列が違うので、ポインタで同じように扱う
-	ShopItem* items = nullptr;	// 商品(値段・在庫)
-	int* have = nullptr;	// 持っている数
-	int       num = 0;		// 商品の種類数
+	//商品(値段・在庫)
+	ShopItem* items = nullptr;
 
+	//持っている数
+	int* have = nullptr;
+
+	//商品の種類数
+	int num = 0;
 
 	if (m_tab == ShopTab::Consumable)
 	{
@@ -977,20 +866,19 @@ bool ShopDisplay::SellStackItem(int _index, int _count)
 	{
 		items = m_materialItem;
 		have = m_materialHave;
-		num = kMaterialNum;
+		num = MaterialTypeMax;
 	}
 	else
 	{
-		// 武器のタブはBuyWeaponで買う
+		// 武器は売れない
 		return false;
 	}
 
-
-	//----------  買えるか調べる ----------
+	//----------  売れるか調べる ----------
 	// 番号が範囲外
 	if (_index < 0 || _index >= num) { return false; }
 
-	// 0個以下は買えない
+	// 0個以下は売れない
 	if (_count <= 0) { return false; }
 
 	ShopItem& item = items[_index];
@@ -998,15 +886,18 @@ bool ShopDisplay::SellStackItem(int _index, int _count)
 	// 合計の値段
 	const long total = static_cast<long>(item.m_sellPrice) * _count;
 
-
 	// 所持量が足りない
 	if (have[_index] < _count) { return false; }
 
-
 	//---------- 売る ----------
-	m_money += total;		// お金をもらう
-	item.m_stock += _count;	// お店の在庫が増える
-	have[_index] -= _count;	// 自分の持ち物が減る
+	//お金をもらう
+	m_money += total;
+
+	//お店の在庫が増える
+	item.m_stock += _count;
+
+	//自分の持ち物が減る
+	have[_index] -= _count;
 
 	return true;
 }
@@ -1014,70 +905,158 @@ bool ShopDisplay::SellStackItem(int _index, int _count)
 bool ShopDisplay::BuyWeapon(int _id)
 {
 	//---------- 買えるか調べる ----------
-	if (_id < 0 || _id >= PlayerWeaponInfoSize) { return false; }	// 番号が範囲外
+	//番号が範囲外
+	if (_id < 0 || _id >= PlayerWeaponInfoSize) { return false; }
 
-	ShopItem& item = m_weaponItem[_id];		// 書き換えるので参照(&)で取る
+	//書き換えるので参照(&)で取る
+	ShopItem& item = m_weaponItem[_id];
 
-	if (m_weaponOwned[_id]) { return false; }	// もう持っている(同じ武器は2本いらない)
-	if (item.m_stock <= 0) { return false; }	// 在庫がない(未入荷)
-	if (m_money < item.m_buyPrice) { return false; }	// お金が足りない
+	//もう持っている(同じ武器は2本いらない)
+	if (m_weaponOwned[_id]) { return false; }
+
+	//在庫がない(未入荷)
+	if (item.m_stock <= 0) { return false; }
+
+	//お金が足りない
+	if (m_money < item.m_buyPrice) { return false; }
 
 	//---------- 買う ----------
-	m_money -= item.m_buyPrice;		// お金を払う
-	item.m_stock -= 1;				// お店の在庫が減る
-	m_weaponOwned[_id] = true;		// 持っている武器になる
+
+	//お金を払う
+	m_money -= item.m_buyPrice;
+
+	//お店の在庫が減る
+	item.m_stock -= 1;
+
+	//持っている武器になる
+	m_weaponOwned[_id] = true;
 
 	return true;
 }
 
 void ShopDisplay::SaveShopData()
 {
-	//---------- 読み込み・書き込み ----------
-	auto readJson = [](const std::string& _path) -> nlohmann::json
-		{
-			std::ifstream file(_path);
-			if (!file) { return nlohmann::json::object(); }
-			nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-			if (data.is_discarded()) { return nlohmann::json::object(); }
-			return data;
-		};
+	//お店の在庫(ShopStockData.json)
+	nlohmann::json stock = ReadJson(m_shopStockPath, false);
+	WriteStock(stock, "potions", m_potionItem, PotionsTypeMax);
+	WriteStock(stock, "materials", m_materialItem, MaterialTypeMax);
+	WriteStock(stock, "weapons", m_weaponItem, PlayerWeaponInfoSize);
+	WriteJson(m_shopStockPath, stock);
 
-	auto writeJson = [](const std::string& _path, const nlohmann::json& _data)
-		{
-			std::ofstream file(_path);
-			if (!file)
-			{
-				KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayの保存に失敗しました : %s\n"), _path.c_str());
-				return;
-			}
-			file << _data.dump(4);	// 4 … 字下げの幅(今のファイルと同じ見た目)
-		};
-
-	// 配列 _key の中で "id" が合う要素の _valueKey に、_getValue(id) を書く
-	// (ファイルに無いidは書かない。順番が違っても id で合わせる)
-	auto writeArray = [](nlohmann::json& _data, const char* _key, const char* _valueKey, auto _getValue, int _num)
-		{
-			if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
-			for (auto& item : _data[_key])
-			{
-				int id = item.value("id", -1);
-				if (id < 0 || id >= _num) { continue; }
-				item[_valueKey] = _getValue(id);
-			}
-		};
-
-	//---------- お店の在庫(ShopStockData.json) ----------
-	nlohmann::json stock = readJson(m_shopStockPath);
-	writeArray(stock, "potions", "stock", [&](int _id) { return m_potionItem[_id].m_stock; }, PotionsTypeMax);
-	writeArray(stock, "materials", "stock", [&](int _id) { return m_materialItem[_id].m_stock; }, kMaterialNum);
-	writeArray(stock, "weapons", "stock", [&](int _id) { return m_weaponItem[_id].m_stock; }, PlayerWeaponInfoSize);
-	writeJson(m_shopStockPath, stock);
-
-	//---------- 持ち物とお金(PlayerInventoryData.json) ----------
-	nlohmann::json inventory = readJson(m_inventoryPath);
-	writeArray(inventory, "potions", "num", [&](int _id) { return m_potionHave[_id]; }, PotionsTypeMax);
-	writeArray(inventory, "weaponStrengtheningMaterials", "num", [&](int _id) { return m_materialHave[_id]; }, kMaterialNum);
-	writeArray(inventory, "weapons", "owned", [&](int _id) { return m_weaponOwned[_id]; }, PlayerWeaponInfoSize);
+	//持ち物とお金(PlayerInventoryData.json)
+	nlohmann::json inventory = ReadJson(m_inventoryPath, false);
+	WriteHave(inventory, "potions", m_potionHave, PotionsTypeMax);
+	WriteHave(inventory, "weaponStrengtheningMaterials", m_materialHave, MaterialTypeMax);
+	WriteOwned(inventory, "weapons", m_weaponOwned, PlayerWeaponInfoSize);
 	inventory["money"] = m_money;
-	writeJson(m_inventoryPath, inventory);
+	WriteJson(m_inventoryPath, inventory);
+}
+
+nlohmann::json ShopDisplay::ReadJson(const std::string& _path, bool _isLog)
+{
+	std::ifstream file(_path);
+	if (!file)
+	{
+		if (_isLog)
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayのファイルが見つかりません : %s\n"), _path.c_str());
+		}
+		return nlohmann::json::object();
+	}
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded()) { return nlohmann::json::object(); }
+
+	return data;
+}
+
+void ShopDisplay::WriteJson(const std::string& _path, const nlohmann::json& _data)
+{
+	std::ofstream file(_path);
+	if (!file)
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayの保存に失敗しました : %s\n"), _path.c_str());
+		return;
+	}
+
+	//4 … 字下げの幅(今のファイルと同じ見た目)
+	file << _data.dump(4);
+}
+
+void ShopDisplay::ReadPrice(const nlohmann::json& _master, const char* _key, ShopItem* _items, int _num)
+{
+	if (!_master.contains(_key)) { return; }
+
+	for (const auto& item : _master[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		_items[id].m_buyPrice = item.value("buyPrice", 0);
+		_items[id].m_sellPrice = item.value("sellPrice", 0);
+	}
+}
+
+void ShopDisplay::ReadStock(const nlohmann::json& _stock, const char* _key, ShopItem* _items, int _num)
+{
+	if (!_stock.contains(_key)) { return; }
+
+	for (const auto& item : _stock[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		_items[id].m_stock = item.value("stock", 0);
+	}
+}
+
+void ShopDisplay::ReadHave(const nlohmann::json& _inventory, const char* _key, int* _have, int _num)
+{
+	for (int i = 0; i < _num; i++)
+	{
+		_have[i] = 0;
+	}
+
+	if (!_inventory.contains(_key)) { return; }
+
+	for (const auto& item : _inventory[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		_have[id] = item.value("num", 0);
+	}
+}
+
+void ShopDisplay::WriteStock(nlohmann::json& _data, const char* _key, const ShopItem* _items, int _num)
+{
+	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
+
+	for (auto& item : _data[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		item["stock"] = _items[id].m_stock;
+	}
+}
+
+void ShopDisplay::WriteHave(nlohmann::json& _data, const char* _key, const int* _have, int _num)
+{
+	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
+
+	for (auto& item : _data[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		item["num"] = _have[id];
+	}
+}
+
+void ShopDisplay::WriteOwned(nlohmann::json& _data, const char* _key, const bool* _owned, int _num)
+{
+	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
+
+	for (auto& item : _data[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		item["owned"] = _owned[id];
+	}
 }

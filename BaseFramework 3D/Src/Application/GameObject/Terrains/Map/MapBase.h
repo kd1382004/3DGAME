@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include"../../../Info/Fader/Fader.h"
 
 class CameraBase;
 class PlayerBase;
@@ -44,8 +45,6 @@ enum RoomType
 	//階段部屋
 	RoomType_Stairs
 };
-
-
 
 
 class MapBase :public KdGameObject
@@ -94,6 +93,10 @@ public:
 	//戻り値 ... 部屋ID
 	int GetRoomID() { return m_roomID; }
 
+	//出現・消失のフェードを返す
+	//戻り値 ... フェード
+	Fader& GetFader() { return m_fader; }
+
 	//---- 設定 ----
 
 	//回転をセット
@@ -125,6 +128,8 @@ public:
 	void SetModel(std::shared_ptr<KdModelWork>_spModel) { m_spModel = _spModel; }
 
 
+	//テクスチャのくり返し回数をセット
+	// _tiling ... x が横、y が縦
 	void SetUVTiling(const Math::Vector2& _tiling) { m_uvTiling = _tiling; }
 
 protected:
@@ -157,5 +162,8 @@ protected:
 
 	//テクスチャのくり返し回数。x が横、y が縦
 	Math::Vector2 m_uvTiling = { 1.0f, 1.0f };
+
+	//描画範囲に出入りしたときの出現・消失
+	Fader m_fader{ 1.0f };
 };
 

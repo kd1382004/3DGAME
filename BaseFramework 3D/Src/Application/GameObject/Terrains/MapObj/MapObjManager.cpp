@@ -51,7 +51,8 @@ void MapObjManager::PreUpdate()
 
 		while (it != m_mapObjDrawList.end())
 		{
-			if ((*it)->IsExpired())	// IsExpired() ・・・ 無効ならtrue
+			// 無効なもの・消え終わったものを外す
+			if ((*it)->IsExpired() || (*it)->GetFader().IsHidden())
 			{
 				// 無効なオブジェクトをリストから削除
 				it = m_mapObjDrawList.erase(it);
@@ -85,7 +86,6 @@ void MapObjManager::GenerateDepthMapFromLight()
 	for (auto& obj : m_mapObjDrawList)
 	{
 		if (!obj) continue;
-		if (!obj->IsInView()) continue; // 画面外スキップ
 
 		obj->GenerateDepthMapFromLight();
 	}
@@ -93,9 +93,15 @@ void MapObjManager::GenerateDepthMapFromLight()
 
 void MapObjManager::PreDraw()
 {
+	float deltaTime = DeltaTime::Instance().GetRealDeltaTime();
+
 	for (auto& obj : m_mapObjDrawList)
 	{
 		if (!obj) continue;
+
+		//出現・消失のフェードを進める
+		obj->GetFader().Update(deltaTime);
+
 		obj->PreDraw();
 	}
 }
@@ -105,7 +111,6 @@ void MapObjManager::DrawLit()
 	for (auto& obj : m_mapObjDrawList)
 	{
 		if (!obj) continue;
-		if (!obj->IsInView()) continue; // 画面外スキップ
 
 		obj->DrawLit();
 	}
@@ -140,7 +145,10 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 	if (!_spMapManager) { return; }
 
 	m_mapObjUpdateList.clear();
-	m_mapObjDrawList.clear();
+
+	// 今回の描画範囲内のもの
+	std::unordered_set<std::shared_ptr<MapObjBase>> inDrawRangeSet;
+
 	for (auto& obj : m_mapObjList)
 	{
 		Math::Vector2 chunkNum = obj->GetChunkNum();
@@ -153,33 +161,46 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 		{
 			obj->SetInChunk(false);
 		}
-		
+
 		if (_spMapManager->GetChunksDraw(chunkNum))
 		{
-			m_mapObjDrawList.push_back(obj);
+			inDrawRangeSet.insert(obj);
 		}
 	}
-}
 
-void MapObjManager::SetMapObjDrawList(std::shared_ptr<MapManager> _spMapManager)
-{
-	if (!_spMapManager) { return; }
-
-	m_mapObjDrawList.clear();
+	// 描画範囲内 → 出現させる
+	std::list<std::shared_ptr<MapObjBase>> newDrawList;
 	for (auto& obj : m_mapObjList)
 	{
-		Math::Vector2 chunkNum = obj->GetChunkNum();
-		if (_spMapManager->GetChunksUpdate(chunkNum))
+		if (!inDrawRangeSet.count(obj)) { continue; }
+
+		if (m_isFirstDraw)
 		{
-			obj->SetInChunk(true);
+			// 生成直後はフェードなしでいきなり表示
+			obj->GetFader().SetVisibleImmediate();
 		}
 		else
 		{
-			obj->SetInChunk(false);
+			// 表示中・出現中なら何もしない
+			obj->GetFader().FadeIn();
 		}
+		newDrawList.push_back(obj);
+	}
+	m_isFirstDraw = false;
+
+	// 前回描画していて範囲外になったもの → 消失させて、消え終わるまで描画リストに残す
+	for (auto& obj : m_mapObjDrawList)
+	{
+		if (inDrawRangeSet.count(obj)) { continue; }
+		if (obj->GetFader().IsHidden()) { continue; }
+
+		obj->GetFader().FadeOut();
+		newDrawList.push_back(obj);
 	}
 
+	m_mapObjDrawList = std::move(newDrawList);
 }
+
 
 void MapObjManager::ObjSetCamera(std::shared_ptr<CameraBase> _spCameraBase)
 {

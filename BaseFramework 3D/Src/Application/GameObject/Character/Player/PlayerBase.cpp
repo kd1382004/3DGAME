@@ -449,14 +449,6 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		m_wpStaminaGauge = spStaminaGauge;
 		_spUIManager->AddUIObj(spStaminaGauge);
 
-		std::shared_ptr<SkillGage>spSkillGauge = std::make_shared<SkillGage>();
-		spSkillGauge->Init();
-		spSkillGauge->Set2DPos({ 500,-330 });
-		m_wpSkillGauge = spSkillGauge;
-		_spUIManager->AddUIObj(spSkillGauge);
-
-
-
 		std::shared_ptr<ItemGetUIController>spItemGetUIController = std::make_shared<ItemGetUIController>();
 		spItemGetUIController->Init();
 		_spUIManager->AddUIObj(spItemGetUIController);

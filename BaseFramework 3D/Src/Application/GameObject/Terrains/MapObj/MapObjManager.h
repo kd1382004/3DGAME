@@ -62,10 +62,6 @@ public:
 	// _spMapManager ... マップの管理
 	void SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManager);
 
-	//描画するチャンクにあるオブジェクトを描画リストに入れる
-	// _spMapManager ... マップの管理
-	void SetMapObjDrawList(std::shared_ptr<MapManager> _spMapManager);
-
 	//ゲームシーンをセット
 	// _spGameScene ... ゲームシーン
 	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
@@ -73,7 +69,14 @@ public:
 	//---- その他の処理 ----
 
 	//マップオブジェクトを全部消す
-	void ResetMapObj() { m_mapObjList.clear(); }
+	//(更新・描画リストも消して、前の階のオブジェクトがフェードアウトで残らないようにする)
+	void ResetMapObj()
+	{
+		m_mapObjList.clear();
+		m_mapObjUpdateList.clear();
+		m_mapObjDrawList.clear();
+		m_isFirstDraw = true;
+	}
 
 	//全部のマップオブジェクトにカメラをセット
 	// _spCameraBase ... カメラ
@@ -98,4 +101,7 @@ private:
 
 	//ゲームシーン
 	std::weak_ptr<GameScene>m_wpGameScene;
+
+	//生成直後の1回目か(最初に描画範囲に入ったものはフェードなしで表示する)
+	bool m_isFirstDraw = true;
 };

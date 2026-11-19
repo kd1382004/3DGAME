@@ -45,9 +45,10 @@ public:
 	// _spCamera ... カメラ
 	void SetCamera(std::shared_ptr<CameraBase>_spCamera) { m_wpCamera = _spCamera; }
 
-	//チャンク内にいるかをセット(エフェクトを出すか切り替える)
-	// _flg ... チャンク内にいるか
-	void SetInChunk(bool _flg)override { SetEffectUpdate(_flg); };
+	//更新チャンク内にいるかをセット(音を鳴らすか切り替える)
+	//炎のエフェクトは描画範囲(フェード)に合わせて PreDraw で切り替える
+	// _flg ... 更新チャンク内にいるか
+	void SetInChunk(bool _flg)override { SetSoundUpdate(_flg); };
 
 private:
 
@@ -95,7 +96,13 @@ private:
 
 	//---- 設定 ----
 
-	//炎のエフェクトを出すか切り替える
-	// _flg ... 出すか
-	void SetEffectUpdate(bool _flg);
+	//炎の音を鳴らすか切り替える
+	// _flg ... 鳴らすか
+	void SetSoundUpdate(bool _flg);
+
+	//炎のエフェクトを出す(もう出ていたら位置だけ合わせる)
+	void PlayFireEffect();
+
+	//炎のエフェクトを止める
+	void StopFireEffect();
 };

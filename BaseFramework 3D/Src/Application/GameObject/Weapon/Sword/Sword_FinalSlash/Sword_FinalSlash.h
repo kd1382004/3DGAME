@@ -25,9 +25,10 @@ public:
 	void Update()override;
 	//エフェクトの描画
 	void DrawEffect()override;
+	void DrawBright()override;
 
 	// 出すときに Sword から呼ぶ
-	// _obb    : 斬撃の跡の判定（ワールド）
+	// _obb    : 斬撃の跡の判定（ワールド)
 	// _damage : 弾けたときのダメージ
 	// _dir    : ノックバックの向き
 	// _knockback ... ノックバックの強さ
@@ -242,4 +243,83 @@ private:
 
 	//稲妻の向きと形をランダムに決め直す
 	void RandomizeBolts();
+
+
+
+	//---- 型 ----
+
+	//描くのに使う値(段階ごとに CalcDrawParam で入れる)
+	struct DrawParam
+	{
+		//線の横幅の倍率
+		float m_lineWidthRate = 1.0f;
+
+		//線の長さの倍率
+		float m_lineLengthRate = 1.0f;
+
+		//線の色と透明度
+		Math::Color m_lineColor = { 1, 1, 1, 0 };
+
+		//光の横幅の倍率
+		float m_glowWidthRate = 1.0f;
+
+		//光の色と透明度
+		Math::Color m_glowColor = { 1, 1, 1, 0 };
+
+		//稲妻を描くか
+		bool m_drawBolt = false;
+
+		//稲妻の色と透明度
+		Math::Color m_boltColor = { 1, 1, 1, 0 };
+
+		//描く稲妻の本数
+		int m_boltNum = 0;
+
+		//稲妻の横幅の倍率
+		float m_boltWidthRate = 3.0f;
+
+		//稲妻の長さの倍率
+		float m_boltLengthRate = 1.0f;
+
+		//黒いもやを描くか
+		bool m_drawHalo = false;
+
+		//黒いもやの大きさの倍率(縦・横とも)
+		float m_haloScale = 1.0f;
+
+		//黒いもやの色と透明度
+		Math::Color m_haloColor = { 1, 1, 1, 0 };
+
+		//衝撃波リングを描くか(Fade の最初の m_ringTime 秒だけ)
+		bool m_drawRing = false;
+
+		//衝撃波リングの大きさ(m。直径)
+		float m_ringSize = 0.0f;
+
+		//衝撃波リングの行列
+		Math::Matrix m_ringMat = Math::Matrix::Identity;
+
+		//衝撃波リングの光の色と透明度(加算)
+		Math::Color m_ringGlowColor = { 1, 1, 1, 0 };
+
+		//衝撃波リングの黒い輪の色と透明度(Alpha)
+		Math::Color m_ringColor = { 1, 1, 1, 0 };
+	};
+
+	//---- その他の処理 ----
+
+	//今の段階の描く値を計算する
+	//戻り値 ... 描く値
+	DrawParam CalcDrawParam() const;
+
+	//板を置く行列を2枚分(十字)作る
+	// _widthRate  ... 横幅の倍率
+	// _lengthRate ... 長さの倍率
+	// _rollDeg    ... 板を傾ける角度
+	// _flip       ... 左右反転するか
+	//戻り値 ... [0] = 1枚目、[1] = 2枚目
+	std::array<Math::Matrix, 2> MakeCrossMats(float _widthRate, float _lengthRate = 1.0f, float _rollDeg = 0.0f, bool _flip = false) const;
+
+	//ブルームの強さ(ブルームに描く色の倍率)
+	float m_bloomRate = 1.0f;
 };

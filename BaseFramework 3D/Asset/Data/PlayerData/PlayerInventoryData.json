@@ -1,52 +1,52 @@
 {
-    "money": 1074,
+    "money": 1502,
     "potions": [
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "num": 16
+            "num": 46
         },
         {
             "id": 1,
             "name": "AttackBaseUPPotion",
-            "num": 8
+            "num": 46
         },
         {
             "id": 2,
             "name": "AttackBoostPotion",
-            "num": 28
+            "num": 74
         },
         {
             "id": 3,
             "name": "InstantStaminaHealPotion",
-            "num": 22
+            "num": 68
         },
         {
             "id": 4,
             "name": "StaminaMaxUPPotion",
-            "num": 0
+            "num": 46
         },
         {
             "id": 5,
             "name": "StaminaRegenBaseUPPotion",
-            "num": 0
+            "num": 46
         },
         {
             "id": 6,
             "name": "StaminaRegenBoostPotion",
-            "num": 12
+            "num": 58
         }
     ],
     "weaponStrengtheningMaterials": [
         {
             "id": 0,
             "name": "WeaponStrengthening_Crystal1",
-            "num": 7
+            "num": 53
         },
         {
             "id": 1,
             "name": "WeaponStrengthening_Crystal2",
-            "num": 8
+            "num": 41
         }
     ],
     "weapons": [

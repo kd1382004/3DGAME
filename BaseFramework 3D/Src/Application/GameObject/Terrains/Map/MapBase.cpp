@@ -50,17 +50,27 @@ void MapBase::DrawLit()
 {
 	if (!m_spModel) { return; }
 	if (!m_isInView) { return; }
+	if (m_fader.IsHidden()) { return; }
 
-	if (m_mapObjType == MapObjType::Wall|| m_mapObjType == MapObjType::Ground)
+	bool isNoCull = (m_mapObjType == MapObjType::Wall || m_mapObjType == MapObjType::Ground);
+	if (isNoCull)
 	{
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullNone);
 	}
 
+	// ディゾルブ
+	float         edgeRange = 0.04f;
+	Math::Vector3 edgeColor = { 0.25f, 0.35f, 0.4f };
+	KdShaderManager::Instance().m_StandardShader.SetDissolve(m_fader.GetDissolve(), &edgeRange, &edgeColor);
+
 	KdShaderManager::Instance().m_StandardShader.SetUVTiling(m_uvTiling);
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
-	KdShaderManager::Instance().m_StandardShader.SetUVTiling({ 1.0f, 1.0f });
 
-	if (m_mapObjType == MapObjType::Wall || m_mapObjType == MapObjType::Ground)
+	// 後片付け
+	KdShaderManager::Instance().m_StandardShader.SetUVTiling({ 1.0f, 1.0f });
+	KdShaderManager::Instance().m_StandardShader.SetDissolve(0.0f);
+
+	if (isNoCull)
 	{
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
 	}
@@ -72,8 +82,14 @@ void MapBase::GenerateDepthMapFromLight()
 
 	// 床タイルは影を落とす必要がないためシャドウマップ生成から除外
 	if (m_mapObjType == MapObjType::Ground) { return; }
-	
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);;
+
+	// 消えているものは影も落とさない
+	if (m_fader.IsHidden()) { return; }
+
+	// 影も本体と一緒に消えていくようにディゾルブをかける
+	KdShaderManager::Instance().m_StandardShader.SetDissolve(m_fader.GetDissolve());
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+	KdShaderManager::Instance().m_StandardShader.SetDissolve(0.0f);
 }
 
 void MapBase::PreDraw()
@@ -84,6 +100,9 @@ void MapBase::PreDraw()
 	{
 		m_isInView = CheckInScreen(spCamera->GetBoundingFrustum(), m_frustumBox);
 	}
+
+	//出現・消失のフェードを進める
+	m_fader.Update(DeltaTime::Instance().GetRealDeltaTime());
 }
 
 void MapBase::SetRotation(Math::Matrix _rMat)

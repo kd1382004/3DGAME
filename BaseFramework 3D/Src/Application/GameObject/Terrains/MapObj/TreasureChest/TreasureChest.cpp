@@ -257,7 +257,7 @@ void TreasureChest::GenerateDepthMapFromLight()
 
 	if (m_spTreasureChestModel)
 	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTreasureChestModel, m_mWorld);
+		DrawModelWithFade(*m_spTreasureChestModel, false);
 	}
 }
 
@@ -276,10 +276,9 @@ void TreasureChest::DrawLit()
 {
 	if (!m_isInView) { return; }
 
-
 	if (m_spTreasureChestModel)
 	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spTreasureChestModel, m_mWorld);
+		DrawModelWithFade(*m_spTreasureChestModel);
 	}
 }
 
