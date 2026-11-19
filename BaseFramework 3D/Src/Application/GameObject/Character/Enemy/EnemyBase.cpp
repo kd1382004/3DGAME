@@ -17,6 +17,8 @@
 
 #include"EnemyCrowdController/EnemyCrowdController.h"
 
+#include"../../DropCoin/DropCoin.h"
+
 void EnemyBase::Init()
 {
 	if (!m_spCrowdController)
@@ -330,7 +332,11 @@ void EnemyBase::PlayerChase()
 
 		Math::Vector3 dir = m_playerPos - m_pos;
 
-		if (m_playerChaseDir > dir.Length())
+		// 止まっているときは「走り出す距離」、走っているときは「止まる距離」と比べる
+		bool isStopped = (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Idle);
+		float stopDist = isStopped ? m_playerChaseResumeDir : m_playerChaseDir;
+
+		if (stopDist > dir.Length())
 		{
 
 			if (m_enemyAnimeMode == EnemyAnimeMode::EnemyAnimeMode_Run)
@@ -437,6 +443,37 @@ void EnemyBase::SetDead()
 
 	// 倒れた音（質感ごと）
 	PlayMaterialSE("Asset/Sound/SE/Enemy/Death/", 1.0f);
+
+
+
+	//---- コインを落とす処理 ----
+
+	// LV1 で m_coin、1上がるごとに +15%
+	float coinScale = 1.0f + (m_status.m_LV - 1) * 0.15f;
+	int totalCoin = static_cast<int>(std::round(m_coin * coinScale));  // 合計額
+
+	// 0コインなら何も出さない
+	if (totalCoin <= 0) { return; }
+
+	const int baseCoinVal = 10;   // LV1 のときの1枚あたりの額
+
+	// 1枚あたりの額も同じ倍率で増やす → 枚数はレベルに関係なくほぼ一定
+	int coinVal = std::max(1, static_cast<int>(std::round(baseCoinVal * coinScale)));
+	int coinNum = std::max(1, totalCoin / coinVal);
+	// 枚数が決まったので、割り切れなかった余りを出す
+	int remainder = totalCoin - coinVal * coinNum;
+
+	for (int i = 0; i < coinNum; i++)
+	{
+		std::shared_ptr<DropCoin> spDropCoin = std::make_shared<DropCoin>();
+		spDropCoin->Init();
+		spDropCoin->SetPos(m_pos);
+		// 余りは最後の1枚に足して、合計がずれないようにする
+		spDropCoin->SetValue(i == coinNum - 1 ? coinVal + remainder : coinVal);
+		spDropCoin->SetPlayer(m_wpPlayer.lock());
+		SceneManager::Instance().AddObject(spDropCoin);
+	}
+
 }
 
 void EnemyBase::SetAttackGaugePercent(float _percent)

@@ -51,7 +51,7 @@ void MapBase::DrawLit()
 	if (!m_spModel) { return; }
 	if (!m_isInView) { return; }
 
-	if (m_mapObjType == MapObjType::Wall)
+	if (m_mapObjType == MapObjType::Wall|| m_mapObjType == MapObjType::Ground)
 	{
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullNone);
 	}
@@ -60,7 +60,7 @@ void MapBase::DrawLit()
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
 	KdShaderManager::Instance().m_StandardShader.SetUVTiling({ 1.0f, 1.0f });
 
-	if (m_mapObjType == MapObjType::Wall)
+	if (m_mapObjType == MapObjType::Wall || m_mapObjType == MapObjType::Ground)
 	{
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
 	}

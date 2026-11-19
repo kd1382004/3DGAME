@@ -119,8 +119,8 @@ private:
 	{
 		//残像の座標
 		Math::Vector3 m_pos;
-		float m_alpha;      // 透明度
-		float m_lifeTime;   // 残像の寿命
+		float m_alpha = 0.0f;      // 透明度
+		float m_lifeTime = 0.0f;   // 残像の寿命
 	};
 
 	//---- メンバ変数 ----

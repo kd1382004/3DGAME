@@ -39,7 +39,7 @@ protected:
 	std::vector<Math::Vector3>m_posList;
 
 	//ボタンの数
-	int m_posListNum;
+	int m_posListNum = 0;
 
 	//選ぶボタンを変えたときの音
 	std::shared_ptr < KdSoundInstance> m_spButtonChange;

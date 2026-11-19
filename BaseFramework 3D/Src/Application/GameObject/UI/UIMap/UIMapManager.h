@@ -93,5 +93,5 @@ private:
 	Math::Vector3 m_base3DPos;
 
 	//1タイルの大きさ
-	float m_tileSiz;
+	float m_tileSiz = 10.0f;
 };

@@ -44,5 +44,5 @@ private:
 	std::shared_ptr<KdTexture> m_spFrameTexture = nullptr;
 
 	//ゲージの割合(0〜1)
-	float m_gaugePercent;
+	float m_gaugePercent = 0.0f;
 };

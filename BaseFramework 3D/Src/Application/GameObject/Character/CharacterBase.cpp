@@ -474,7 +474,7 @@ void CharacterBase::UpdateKnockback()
 
 	// 3. Ease を使って位置を補間（仮の位置）
 	Math::Vector3 nextPos = m_knockbackStartPos + towardEndVec * EaseInOutSine(progress);
-
+	nextPos.y = m_pos.y;
 	// 3.5 壁衝突判定
 	if (RaycastFromTo(nextPos))
 	{

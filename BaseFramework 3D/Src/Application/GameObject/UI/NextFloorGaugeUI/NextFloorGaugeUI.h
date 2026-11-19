@@ -41,7 +41,7 @@ private:
 	std::shared_ptr<KdTexture> m_spGaugeTexture = nullptr;
 
 	//ゲージの割合(0〜1)
-	float m_gaugePercent;
+	float m_gaugePercent = 0.0f;
 
 	//表示するか
 	bool m_drawFlg = false;

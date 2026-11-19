@@ -418,6 +418,9 @@
     <Filter Include="Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay">
       <UniqueIdentifier>{b8f4526c-8318-4ff2-8c4b-d6977fd3a44c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\DropCoin">
+      <UniqueIdentifier>{92a0fefd-5ce8-455f-bfb9-3cb737d7968a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -951,6 +954,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay\RecordsDisplay.h">
       <Filter>Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\DropCoin\DropCoin.h">
+      <Filter>Src\Application\GameObject\DropCoin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1441,6 +1447,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay\RecordsDisplay.cpp">
       <Filter>Src\Application\GameObject\UI\PrepareSceneUI\RecordsDisplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\DropCoin\DropCoin.cpp">
+      <Filter>Src\Application\GameObject\DropCoin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

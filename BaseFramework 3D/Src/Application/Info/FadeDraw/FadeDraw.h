@@ -77,10 +77,10 @@ private:
 	Math::Color m_color;
 
 	//フェードにかける時間(秒)
-	float m_time;
+	float m_time = 1.0f;
 
 	//フェードを始めてからの時間(秒)
-	float m_nowTime;
+	float m_nowTime = 0.0f;
 
 	//---- コンストラクタ・デストラクタ ----
 

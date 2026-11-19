@@ -74,7 +74,7 @@ private:
 	bool m_drawFlg = false;
 
 	//サイズ
-	float m_siz;
+	float m_siz = 1.0f;
 
 	//HPバー背景
 	std::shared_ptr<KdTexture>m_spHPBarBackTex = nullptr;

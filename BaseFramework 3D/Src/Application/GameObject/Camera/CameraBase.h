@@ -162,7 +162,7 @@ protected:
 
 
 	//当たり判定をする半径(この円ないならあたり判定)
-	float m_detectRange;
+	float m_detectRange = 0.0f;
 
 	//ターゲットの1フレーム前の座標
 	Math::Vector3 m_targetOldPos;

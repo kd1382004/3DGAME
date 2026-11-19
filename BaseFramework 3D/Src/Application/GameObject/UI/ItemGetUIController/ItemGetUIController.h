@@ -37,7 +37,7 @@ struct GetItem
 	bool m_drawFlg = false;
 
 	//アイテムの番号
-	int m_ID;
+	int m_ID = 0;
 };
 
 //入手したアイテムの種類
@@ -103,7 +103,7 @@ private:
 	std::shared_ptr<KdTexture>m_spBack2Tex;
 
 	//アルファ
-	float m_alpha;
+	float m_alpha = 0.0f;
 
 	//ポーションの画像一覧
 	std::shared_ptr<PotionTexInfo>m_spPotionTexInfo;

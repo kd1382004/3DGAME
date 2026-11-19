@@ -35,13 +35,13 @@ private:
 	struct WeaponsStrengtheningInfo
 	{
 		//現LV
-		int m_lv;
+		int m_lv = 0;
 
 		//強化に使うアイテムの番号
 		int m_strengtheningItemID = 0;
 
 		//次のLVにするために必要な強化アイテムの数
-		int m_nextLvNum;
+		int m_nextLvNum = 0;
 
 		//最大レベルか
 		bool m_lvMaxFlg = false;
@@ -66,7 +66,7 @@ private:
 
 
 		//強化アイテムの数
-		int m_num;
+		int m_num = 0;
 
 		//強化アイテムの画像
 		std::shared_ptr<KdTexture>m_spIconStrengtheningTex;

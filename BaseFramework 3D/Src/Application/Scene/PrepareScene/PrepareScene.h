@@ -72,7 +72,7 @@ private:
 	//---- メンバ変数 ----
 
 	// 装備変更画面で選択中の武器
-	PlayerWeaponInfo m_selectWeapon;
+	PlayerWeaponInfo m_selectWeapon = PlayerWeaponInfo_Dagger;
 
 	//UIの管理
 	std::shared_ptr<UIManager> m_spUIManager;

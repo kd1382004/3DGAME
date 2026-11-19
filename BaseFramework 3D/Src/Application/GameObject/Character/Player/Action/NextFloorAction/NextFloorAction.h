@@ -54,8 +54,8 @@ protected:
 	std::weak_ptr<NextFloorGaugeUI> m_wpNextFloorGaugeUI;
 
 	//次の階に行くアクションキー
-	int m_actionKey;
+	int m_actionKey = 'E';
 
 	//長押しカウント
-	int m_nextFloorCount;
+	int m_nextFloorCount = 0;
 };

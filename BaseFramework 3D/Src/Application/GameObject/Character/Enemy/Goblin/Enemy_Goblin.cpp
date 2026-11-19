@@ -79,6 +79,7 @@ void Goblin::Init()
 		}
 	}
 	m_playerChaseDir = 2;
+	m_playerChaseResumeDir = 2.5f;
 	m_material = EnemyMaterial::Flesh;
 }
 
@@ -268,16 +269,16 @@ void Goblin::ChangeAnime()
 	switch (m_enemyAnimeMode)
 	{
 	case EnemyBase::EnemyAnimeMode_Idle:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_idleAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_idleAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Walk:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_walkAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_walkAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Run:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_runAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_runAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Attack:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_slammingDownAttackAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_slammingDownAttackAnime), 0.1f, false);
 		m_attackFlg = true;
 		if (m_spCrying3DSE)
 		{
@@ -287,7 +288,7 @@ void Goblin::ChangeAnime()
 		}
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_dieAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_goblinAnimeName.m_dieAnime), 0.2f, false);
 		break;
 	default:
 		break;

@@ -505,7 +505,7 @@ void PlayerBase::AddMaxHP(int _boost, bool _flg)
 void PlayerBase::SetDead()
 {
 	m_nowPlayerAnimeMode = PlayerAnimeMode::DeathAnime;
-	m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_deathAnime), false);
+	m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_deathAnime), 0.2f, false);
 
 	// 倒れた音（2回呼ばれても1回だけ鳴らす）
 	if (!m_isDead)
@@ -1200,28 +1200,28 @@ void PlayerBase::PlayerAnimeModeUpdate()
 		switch (m_nowPlayerAnimeMode)
 		{
 		case PlayerBase::IdleAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_idleAnime), true);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_idleAnime), 0.2f, true);
 			break;
 		case PlayerBase::WalkAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_walkAnime), true);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_walkAnime), 0.2f, true);
 			break;
 		case PlayerBase::RunAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_runAnime), true);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_runAnime), 0.2f, true);
 			break;
 		case PlayerBase::PickUpAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_pickUpAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_pickUpAnime), 0.2f, false);
 			break;
 		case PlayerBase::SwordAttackAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_attackAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_attackAnime), 0.1f, false);
 			break;
 		case PlayerBase::PunchAttackAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_punchAttackAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_punchAttackAnime), 0.1f, false);
 			break;
 		case PlayerBase::RollAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_evasionAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_evasionAnime), 0.1f, false);
 			break;
 		case PlayerBase::DeathAnime:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_deathAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_deathAnime), 0.2f, false);
 			break;
 		default:
 			break;
@@ -1336,7 +1336,7 @@ void PlayerBase::EvasionUpdate()
 				CancelCombo();
 
 				// 攻撃アニメが終わっていなくても、すぐに回避アニメへ切り替える
-				m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_playerAnimeName.m_evasionAnime), false);
+				m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_playerAnimeName.m_evasionAnime), 0.1f, false);
 				m_oldPlayerAnimeMode = PlayerBase::RollAnime;
 			}
 

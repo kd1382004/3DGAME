@@ -157,21 +157,15 @@
     "Latest": {
         "Floors": [
             {
-                "DisplayFloor": 2,
-                "EnemyKillCount": 9,
-                "PlayTimeSc": 59.563385009765625,
+                "DisplayFloor": 1,
+                "EnemyKillCount": 4,
+                "PlayTimeSc": 37.62590789794922,
                 "TreasureChestsNum": 4
             },
             {
                 "DisplayFloor": 1,
-                "EnemyKillCount": 0,
-                "PlayTimeSc": 2.4219980239868164,
-                "TreasureChestsNum": 0
-            },
-            {
-                "DisplayFloor": 2,
-                "EnemyKillCount": 9,
-                "PlayTimeSc": 57.14154052734375,
+                "EnemyKillCount": 4,
+                "PlayTimeSc": 37.62590789794922,
                 "TreasureChestsNum": 4
             }
         ],

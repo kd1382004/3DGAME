@@ -595,10 +595,10 @@ protected:
 	float m_animePercentNow = 0.0f;
 
 	//軌跡を出し始める進み具合
-	float m_animePercentPolyStart;
+	float m_animePercentPolyStart = 0.0f;
 
 	//軌跡を出し終わる進み具合
-	float m_animePercentPolyEnd;
+	float m_animePercentPolyEnd = 0.0f;
 
 	//コンボの一覧
 	std::vector<ComboStep> m_comboList;

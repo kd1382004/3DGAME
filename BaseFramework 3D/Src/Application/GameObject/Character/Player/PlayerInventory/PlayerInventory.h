@@ -6,9 +6,9 @@ class ItemGetUIController;
 struct Inventory
 {
 	//アイテムの番号
-	int m_ID;
+	int m_ID = 0;
 	//持っている数
-	int m_num;
+	int m_num = 0;
 	//アイテムの名前
 	std::string m_name;
 };

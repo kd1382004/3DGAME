@@ -38,6 +38,6 @@ private:
 	//---- メンバ変数 ----
 
 	//床の種類
-	GroundType m_groundType;
+	GroundType m_groundType = Floor;
 };
 

@@ -116,7 +116,7 @@ struct Status
 	Stamina m_stamina;
 
 	//LV
-	int m_LV;
+	int m_LV = 1;
 };
 
 class CharacterBase : public KdGameObject
@@ -365,7 +365,7 @@ protected:
 	Math::Vector3 m_pos;
 
 	//サイズ
-	float m_siz;
+	float m_siz = 1.0f;
 
 	//移動方向
 	Math::Vector3 m_moveVec;
@@ -395,7 +395,7 @@ protected:
 	std::weak_ptr<CameraBase>m_wpCamera;
 
 	//のけぞり時間
-	float m_hitStunTimer;
+	float m_hitStunTimer = 0.0f;
 
 	//のけぞり中か
 	bool m_hitStunFlg = false;

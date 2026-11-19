@@ -171,7 +171,12 @@ protected:
 
 	//プレイヤー座標
 	Math::Vector3 m_playerPos;
+
+	// これより近づいたら止まる
 	float m_playerChaseDir = 1;
+
+	// 止まっているとき、これより離れたら走り出す
+	float m_playerChaseResumeDir = 1.5f;
 
 	//出現位置
 	Math::Vector3 m_spawnPos = { 0,0,0 };
@@ -192,7 +197,7 @@ protected:
 	bool m_returnSpawnPosFlg = false;
 
 	//待機時間
-	float m_stayTime;
+	float m_stayTime = 0.0f;
 
 	//プレイヤーを見逃したときの待機時間
 	float m_lostSightWaitTime = 2;
@@ -210,7 +215,7 @@ protected:
 	float m_repathTimer = 0.0f;
 
 	//徘徊半径
-	float m_wanderRadius;
+	float m_wanderRadius = 0.0f;
 
 	//今のアニメーションの状態
 	EnemyAnimeMode m_enemyAnimeMode = EnemyAnimeMode_Idle;
@@ -226,13 +231,16 @@ protected:
 	std::weak_ptr<AttackGage>m_wpAttackGauge;
 
 	//攻撃ゲージの溜まり具合(0〜1)
-	float m_attackGaugePercent;
+	float m_attackGaugePercent = 0.0f;
 
 	//視界を表示するか
 	bool m_isVisionFlg = false;
 
 	//体の質感（ヒットエフェクトの種類を決める）
 	EnemyMaterial m_material = EnemyMaterial::Flesh;
+
+
+	int m_coin = 100;
 
 private:
 

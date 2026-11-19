@@ -45,7 +45,7 @@ private:
 	struct BuffUIInfo {
 
 		//バフ(ポーション)の番号
-		int m_ID;
+		int m_ID = 0;
 		//残り時間の針の角度
 		float m_angle = 0;
 		//表示位置

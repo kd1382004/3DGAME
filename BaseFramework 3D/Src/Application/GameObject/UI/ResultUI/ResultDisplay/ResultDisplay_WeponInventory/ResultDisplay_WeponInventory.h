@@ -50,11 +50,11 @@ private:
 	struct ItemIconInfo
 	{
 		//アイテムの番号
-		int m_itemID;
+		int m_itemID = 0;
 		//表示位置
 		Math::Vector2 m_2DPos;
 		//所持数
-		int m_num;
+		int m_num = 0;
 		//マウスが乗っているか
 		bool m_hit = false;
 
@@ -72,13 +72,13 @@ private:
 	struct WeaponsStrengtheningInfo
 	{
 		//現LV
-		int m_lv;
+		int m_lv = 0;
 
 		//強化の番号
-		int m_ID;
+		int m_ID = 0;
 
 		//次のLVにするために必要な強化アイテムの数
-		int m_nextLvNum;
+		int m_nextLvNum = 0;
 
 		//強化が可能かどうか
 		bool m_strengtheningFlg = false;
@@ -103,7 +103,7 @@ private:
 
 
 		//強化アイテムの数
-		int m_num;
+		int m_num = 0;
 
 		//強化アイテムの画像
 		std::shared_ptr<KdTexture>m_spIconStrengtheningTex;
@@ -127,7 +127,7 @@ private:
 		int m_preconditionNodeIndex = -1;
 
 		//選ばれているか
-		bool m_chooseFlg;
+		bool m_chooseFlg = false;
 	};
 
 	//武器強化の項目の番号
@@ -223,7 +223,7 @@ private:
 	bool m_preconditionNodeFlg = false;
 
 	//選んでいる強化の番号
-	int m_selectWeaponsStrengtheningID;
+	int m_selectWeaponsStrengtheningID = 0;
 
 	//選んでいる強化アイコンの大きさ
 	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;

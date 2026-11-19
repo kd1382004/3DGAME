@@ -51,7 +51,7 @@ private:
 	std::shared_ptr<KdTexture>m_spDamageOverlayTex;
 
 	//今の濃さ(不透明度)
-	float m_damageOverlayAlpha;
+	float m_damageOverlayAlpha = 0.0f;
 
 	//1秒で薄くなる速さ
 	float m_damageOverlayFadeSpeed = 1.0f;

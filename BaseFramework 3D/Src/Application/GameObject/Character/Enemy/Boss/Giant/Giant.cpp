@@ -36,6 +36,7 @@ void Giant::Init()
 		m_playerChaseFlg = true;
 		m_attackFlg = false;
 		m_playerChaseDir = 4;
+		m_playerChaseResumeDir = 4.5f;
 
 		if (!m_spRun3DSE)
 		{
@@ -310,15 +311,15 @@ void Giant::AttackMode()
 		switch (m_giantAttackMode)
 		{
 		case Giant::LeftPunchAttack:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_leftPunchAttackAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_leftPunchAttackAnime), 0.1f, false);
 			m_attackFlg = true;
 			m_attackCoolTime = m_attackCoolTimeMax;
 			break;
 		case Giant::RightAttack:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_rightAttackAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_rightAttackAnime), 0.1f, false);
 			break;
 		case Giant::JumpSlamAttack:
-			m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_jumpSlamAttackAnime), false);
+			m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_jumpSlamAttackAnime), 0.1f, false);
 			m_isAttackJumpSlamHITFlg = false;
 			m_jumpStartPos = m_pos;
 			m_jumpSlamAttackMode = JumpSlamAttackMode_JumpSlamAttack;
@@ -352,13 +353,13 @@ void Giant::ChangeAttackAnime()
 	switch (m_giantAttackMode)
 	{
 	case Giant::LeftPunchAttack:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_leftPunchAttackAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_leftPunchAttackAnime), 0.1f, false);
 		break;
 	case Giant::RightAttack:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_rightAttackAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_rightAttackAnime), 0.1f, false);
 		break;
 	case Giant::JumpSlamAttack:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_jumpSlamAttackAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_jumpSlamAttackAnime), 0.1f, false);
 		break;
 	default:
 		break;
@@ -473,7 +474,7 @@ void Giant::JumpSlamAttackMode_JumpSlamAttackUpdate()
 	if (p == 1)
 	{
 		m_jumpSlamAttackMode = JumpSlamAttackMode_Idle;
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_idleAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_idleAnime), 0.2f, true);
 		m_attackJumpSlamIdleNow = m_attackJumpSlamIdleMax;
 		return;
 	}
@@ -641,18 +642,18 @@ void Giant::ChangeAnime()
 	switch (m_enemyAnimeMode)
 	{
 	case EnemyBase::EnemyAnimeMode_Idle:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_idleAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_idleAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Walk:
 	case EnemyBase::EnemyAnimeMode_Run:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_runAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_runAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Attack:
 		ChangeAttackAnime();
 		m_attackFlg = true;
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_giantAnimeName.m_dieAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_giantAnimeName.m_dieAnime), 0.2f, false);
 		break;
 	default:
 		break;

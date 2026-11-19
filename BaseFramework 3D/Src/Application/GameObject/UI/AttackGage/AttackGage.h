@@ -92,5 +92,5 @@ private:
 	Math::Rectangle m_attackGaugeTexRect;
 
 	//ゲージの割合(0〜1)
-	float m_attackGaugeTexPercent;
+	float m_attackGaugeTexPercent = 0.0f;
 };

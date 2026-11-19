@@ -32,7 +32,7 @@ private:
 	struct PlayerStatusInfo
 	{
 		//HPや攻撃力などの数値
-		int m_num;
+		int m_num = 0;
 
 		//数値の位置
 		Math::Vector2 m_numPos;

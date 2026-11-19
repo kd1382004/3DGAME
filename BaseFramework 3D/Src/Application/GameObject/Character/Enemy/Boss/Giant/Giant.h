@@ -113,10 +113,10 @@ private:
 	std::weak_ptr<GameScene> m_wpGameScene;
 
 	//今の攻撃の種類
-	GiantAttackMode m_giantAttackMode;
+	GiantAttackMode m_giantAttackMode = LeftPunchAttack;
 
 	//攻撃中か
-	bool m_attackFlg;
+	bool m_attackFlg = false;
 
 	//次の攻撃までの経過時間
 	float m_attackCoolTime = 0;
@@ -140,7 +140,7 @@ private:
 	std::weak_ptr<AttackJumpSlam>m_wpAttackJumpSlam;
 
 	//今のジャンプ攻撃の状態
-	JumpSlamAttackMode m_jumpSlamAttackMode;
+	JumpSlamAttackMode m_jumpSlamAttackMode = JumpSlamAttackMode_Idle;
 
 	//hitする時間
 

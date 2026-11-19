@@ -132,10 +132,10 @@ private:
 	std::shared_ptr<UIManager> m_spUIManager;
 
 	//階層
-	int m_displayFloor;
+	int m_displayFloor = 0;
 
 	//マップを作るときに使う階層
-	int m_mapGenerateDisplayFloor;
+	int m_mapGenerateDisplayFloor = 0;
 
 	//マップの大きさが大きくなる最大の階層
 	int m_mapGenerateDisplayFloorMax = 9;
@@ -144,13 +144,13 @@ private:
 	int m_bossInterval = 3;
 
 	//マップ成長率
-	int m_mapLinearGrowthPerFloor;
+	int m_mapLinearGrowthPerFloor = 0;
 
 	//1階ごとにマップの横の大きさが増える量
-	float m_mapLinearGrowthPerFloorX;
+	float m_mapLinearGrowthPerFloorX = 0.0f;
 
 	//1階ごとにマップの縦の大きさが増える量
-	float m_mapLinearGrowthPerFloorY;
+	float m_mapLinearGrowthPerFloorY = 0.0f;
 
 	//ゲーム結果
 	int m_killEnemy = 0;

@@ -90,6 +90,18 @@ public:
 		return m_time / m_spAnimation->m_maxLength;
 	}
 
+
+	void CrossFade(const std::shared_ptr<KdAnimationData>& next, float fadeSec, bool isLoop = true)
+	{
+		if (m_spAnimation == next) { return; } // 同じモーションなら何もしない
+		m_spPrevAnimation = m_spAnimation;
+		m_prevTime = m_time;
+		m_prevIsLoop = m_isLoop;
+		m_fadeTime = 0.0f;
+		m_fadeLength = fadeSec;
+		SetAnimation(next, isLoop);
+	}
+
 private:
 
 	std::shared_ptr<KdAnimationData>	m_spAnimation = nullptr;	// 再生するアニメーションデータ
@@ -97,4 +109,16 @@ private:
 	float m_time = 0.0f;
 
 	bool m_isLoop = false;
+
+
+	//自分追加
+	std::shared_ptr<KdAnimationData> m_spPrevAnimation = nullptr; // 前のモーション
+	float m_prevTime = 0.0f;   // 前のモーションの再生位置
+	bool  m_prevIsLoop = false;
+	float m_fadeTime = 0.0f;   // フェード開始からの経過秒
+	float m_fadeLength = 0.0f;   // フェードにかける秒数
+
+
+	struct SRT { Math::Vector3 s; Math::Quaternion r; Math::Vector3 t; };
+	void SamplePose(KdAnimationData& anim, float time, std::vector<SRT>& out);
 };

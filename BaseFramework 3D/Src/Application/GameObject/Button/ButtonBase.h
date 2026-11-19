@@ -64,7 +64,7 @@ protected:
 	float m_hitScale = 1.5;
 
 	//選ばれているか(マウスが乗っているか)
-	bool m_choseFlg;
+	bool m_choseFlg = false;
 
 	//不透明度
 	float m_alpha = 1;

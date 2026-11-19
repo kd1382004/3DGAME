@@ -75,7 +75,7 @@ private:
 	struct InventoryTypeChange
 	{
 		//タブの種類
-		InventoryType m_ID;
+		InventoryType m_ID = PotionInventory;
 		//ボタンの位置
 		Math::Vector2 m_2DPos;
 		//マウスが乗っているか

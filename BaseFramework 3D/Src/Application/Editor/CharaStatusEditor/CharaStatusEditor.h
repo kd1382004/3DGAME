@@ -53,13 +53,13 @@ private:
 	// 編集する値1つ分(JSONのどこにあるか・どう表示するか)
 	struct FieldInfo
 	{
-		const char* m_group;			// JSONの1段目のキー("HP" など)
-		const char* m_key;				// JSONの2段目のキー("baseHP" など)
-		const char* m_label;			// 表示名
-		const char* m_help;				// マウスを乗せたときの説明
-		const char* m_fallbackKey;		// 値が無いときに代わりに使う同じグループのキー(無ければnullptr)
-		float       m_step;				// +/- ボタンで増える量
-		bool        m_isInt;			// 整数で扱うか
+		const char* m_group = nullptr;			// JSONの1段目のキー("HP" など)
+		const char* m_key = nullptr;				// JSONの2段目のキー("baseHP" など)
+		const char* m_label = nullptr;			// 表示名
+		const char* m_help = nullptr;				// マウスを乗せたときの説明
+		const char* m_fallbackKey = nullptr;		// 値が無いときに代わりに使う同じグループのキー(無ければnullptr)
+		float       m_step = 0.0f;				// +/- ボタンで増える量
+		bool        m_isInt = false;			// 整数で扱うか
 	};
 
 	//---- メンバ変数 ----

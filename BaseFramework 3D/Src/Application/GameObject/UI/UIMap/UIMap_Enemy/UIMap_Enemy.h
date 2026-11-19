@@ -78,7 +78,7 @@ private:
 		//敵の座標(ワールド)
 		Math::Vector3 m_pos;
 		//向き
-		float m_angle;
+		float m_angle = 0.0f;
 		//表示するか
 		bool m_drawFlg = false;
 	};
@@ -89,10 +89,10 @@ private:
 	Math::Vector2 m_mapTexSiz = { };
 
 	//向き
-	float m_angle;
+	float m_angle = 0.0f;
 
 	//1タイルの大きさ
-	float m_tileSiz;
+	float m_tileSiz = 10.0f;
 
 	//ミニマップの基準位置(画面)
 	Math::Vector2 m_basePos;

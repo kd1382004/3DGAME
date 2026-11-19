@@ -338,10 +338,10 @@ protected:
 	ActionKeyConfig m_keyConfig;
 
 	//今の移動の状態
-	MoveMode m_moveMode;
+	MoveMode m_moveMode = MoveStop;
 
 	//ジャンプ力(+の値)
-	float m_jumpPower;
+	float m_jumpPower = 0.0f;
 
 	//ジャンプフラグ
 	//今飛べる状態にいるかどうか
@@ -359,10 +359,10 @@ protected:
 	PlayerAnimeName m_playerAnimeName;
 
 	//今のアニメーションの状態
-	PlayerAnimeMode m_nowPlayerAnimeMode;
+	PlayerAnimeMode m_nowPlayerAnimeMode = IdleAnime;
 
 	//前のアニメーションの状態
-	PlayerAnimeMode m_oldPlayerAnimeMode;
+	PlayerAnimeMode m_oldPlayerAnimeMode = IdleAnime;
 
 	//UI
 	std::weak_ptr<UIMap_Player>m_wpUIMap_Player;

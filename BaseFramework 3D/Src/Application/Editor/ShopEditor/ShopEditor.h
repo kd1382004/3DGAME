@@ -40,8 +40,8 @@ private:
 	// 商品の種類(JSONのキー)
 	struct Category
 	{
-		const char* m_key;		// "potions" / "materials" / "weapons"
-		const char* m_label;		// タブに出す名前
+		const char* m_key = nullptr;		// "potions" / "materials" / "weapons"
+		const char* m_label = nullptr;		// タブに出す名前
 	};
 
 	//---- メンバ変数 ----

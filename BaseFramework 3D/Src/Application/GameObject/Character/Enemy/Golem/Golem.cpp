@@ -66,6 +66,7 @@ void Golem::Init()
 	}
 
 	m_playerChaseDir = 3;
+	m_playerChaseResumeDir = 3.5f;
 	m_material = EnemyMaterial::Stone;
 }
 
@@ -202,16 +203,16 @@ void Golem::ChangeAnime()
 	switch (m_enemyAnimeMode)
 	{
 	case EnemyBase::EnemyAnimeMode_Idle:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_idleAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_idleAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Walk:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_walkAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_walkAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Run:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dashAnime), true);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dashAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Attack:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_smashAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_smashAnime), 0.1f, false);
 		m_attackFlg = true;
 		// 攻撃を始めるときのうなり声
 		if (m_spCrying3DSE)
@@ -222,7 +223,7 @@ void Golem::ChangeAnime()
 		}
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
-		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dieAnime), false);
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dieAnime), 0.2f, false);
 		break;
 	default:
 		break;

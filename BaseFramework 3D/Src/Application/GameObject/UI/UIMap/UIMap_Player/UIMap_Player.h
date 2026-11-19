@@ -72,10 +72,10 @@ private:
 	float m_siz = 1.0f;
 
 	//向き
-	float m_angle;
+	float m_angle = 0.0f;
 
 	//1タイルの大きさ
-	float m_tileSiz;
+	float m_tileSiz = 10.0f;
 
 	//ミニマップの基準位置(画面)
 	Math::Vector2 m_basePos;

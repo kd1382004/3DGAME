@@ -258,7 +258,7 @@ private:
 	std::shared_ptr<MapGenerate> m_spMapGenerate;
 
 	//1チャンクのタイル数(縦横)
-	int m_chunkSize;
+	int m_chunkSize = 1;
 
 	//更新チャンク
 	//縦横に+-xyずつ

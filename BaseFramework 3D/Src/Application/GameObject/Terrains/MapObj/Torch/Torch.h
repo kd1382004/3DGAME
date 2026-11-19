@@ -78,7 +78,7 @@ private:
 	Math::Vector3 m_effectLocalColor;
 
 	//光の半径
-	float m_radius;
+	float m_radius = 0.0f;
 
 	//揺れの時間
 	float m_flickerTime = 0.0f;

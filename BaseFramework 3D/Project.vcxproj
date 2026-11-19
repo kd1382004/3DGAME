@@ -306,6 +306,7 @@
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayreLV\PlayreLV.h" />
+    <ClInclude Include="Src\Application\GameObject\DropCoin\DropCoin.h" />
     <ClInclude Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.h" />
     <ClInclude Include="Src\Application\GameObject\Effect\EffectBase.h" />
     <ClInclude Include="Src\Application\GameObject\Effect\EffectManager.h" />
@@ -478,6 +479,7 @@
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBuffManager\PlayerBuffManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerInventory\PlayerInventory.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayreLV\PlayreLV.cpp" />
+    <ClCompile Include="Src\Application\GameObject\DropCoin\DropCoin.cpp" />
     <ClCompile Include="Src\Application\GameObject\Effect\DamageOverlay\DamageOverlay.cpp" />
     <ClCompile Include="Src\Application\GameObject\Effect\EffectBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Effect\EffectManager.cpp" />

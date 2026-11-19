@@ -155,9 +155,57 @@ void KdAnimationData::Node::Interpolate(Math::Matrix& rDst, float time)
 	}
 }
 
+
+
+
+void  KdAnimator::SamplePose(KdAnimationData& anim, float time, std::vector<SRT>& out)
+{
+	for (auto& n : anim.m_nodes) {
+		auto& d = out[n.m_nodeOffset];
+		n.InterpolateScales(d.s, time);
+		n.InterpolateRotations(d.r, time);
+		n.InterpolateTranslations(d.t, time);
+	}
+}
+
 void KdAnimator::AdvanceTime(std::vector<KdModelWork::Node>& rNodes, float speed)
 {
 	if (!m_spAnimation) { return; }
+
+	if (m_spPrevAnimation && m_fadeTime < m_fadeLength)
+	{
+		std::vector<SRT> a(rNodes.size());
+		for (size_t i = 0; i < rNodes.size(); ++i)
+			rNodes[i].m_localTransform.Decompose(a[i].s, a[i].r, a[i].t);
+		std::vector<SRT> b = a;
+
+		SamplePose(*m_spPrevAnimation, m_prevTime, a);
+		SamplePose(*m_spAnimation, m_time, b);
+
+		float w = m_fadeTime / m_fadeLength;
+		w = w * w * (3.0f - 2.0f * w); // smoothstep（手順6で差し替え可）
+
+		for (size_t i = 0; i < rNodes.size(); ++i) {
+			Math::Vector3    s = Math::Vector3::Lerp(a[i].s, b[i].s, w);
+			Math::Quaternion r = Math::Quaternion::Slerp(a[i].r, b[i].r, w);
+			Math::Vector3    t = Math::Vector3::Lerp(a[i].t, b[i].t, w);
+			rNodes[i].m_localTransform = Math::Matrix::CreateScale(s)
+				* Math::Matrix::CreateFromQuaternion(r) * Math::Matrix::CreateTranslation(t);
+		}
+
+		float dt = DeltaTime::Instance().GetGameDeltaTime();
+		m_fadeTime += dt;
+		m_prevTime += speed * dt;
+		if (m_prevTime >= m_spPrevAnimation->m_maxLength)
+			m_prevTime = m_prevIsLoop ? 0.0f : m_spPrevAnimation->m_maxLength;
+		m_time += speed * dt;
+		if (m_time >= m_spAnimation->m_maxLength)
+			m_time = m_isLoop ? 0.0f : m_spAnimation->m_maxLength;
+
+		if (m_fadeTime >= m_fadeLength) { m_spPrevAnimation = nullptr; } // フェード終了
+		return;
+	}
+
 
 	// 全てのアニメーションノード（モデルの行列を補間する情報）の行列補間を実行する
 	for (auto& rAnimNode : m_spAnimation->m_nodes)

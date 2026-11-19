@@ -43,16 +43,16 @@ struct FloorInfo
 struct RoomEnd
 {
 	//右端
-	int m_farRight;
+	int m_farRight = 0;
 
 	//左端
-	int m_farLeft;
+	int m_farLeft = 0;
 
 	//上
-	int m_topEnd;
+	int m_topEnd = 0;
 
 	//下
-	int m_downEnd;
+	int m_downEnd = 0;
 };
 
 //部屋(または交差点)1つ分の情報
@@ -75,7 +75,7 @@ struct RoomInfo
 	bool m_stairsRoom = false;
 
 	//部屋の階層
-	int m_heightLevel;
+	int m_heightLevel = 0;
 
 	//この部屋(交差点)がある区画の列番号(ランダム配置のときは0)
 	int m_areaX = 0;
@@ -148,13 +148,13 @@ enum class ExitSide
 struct RoomI
 {
 	//部屋ID
-	int m_roomID;
+	int m_roomID = 0;
 
 	//部屋の床の座標
 	Math::Vector3 m_pos;
 
 	//部屋のType
-	int m_roomType;
+	int m_roomType = 0;
 
 	//部屋あたりの敵の数
 	int m_roomEnemyNum = 0;

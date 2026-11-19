@@ -106,7 +106,7 @@ private:
 	float m_targetHeight = 1.0f;          // プレイヤーの足元ではなく胸あたりを狙う
 
 	//今の状態
-	DropState m_dropStateMode;
+	DropState m_dropStateMode = DropState::Pop;
 
 
 	//宝箱から飛び出す

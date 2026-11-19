@@ -4,7 +4,7 @@
 struct Texs
 {
 	//アイテムの番号
-	int m_ID;
+	int m_ID = 0;
 	//アイテムの名前(フォルダ名)
 	std::string m_name;
 	//アイコンの画像
