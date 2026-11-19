@@ -8,6 +8,7 @@ class EquipDisplay;
 class RecordsDisplay;
 class PrepareSceneDisplay;
 class ShopEditor;
+class CharaStatusEditor;
 class GameButton;
 
 
@@ -102,6 +103,12 @@ private:
 
 	//ショップのエディタを開いているか
 	bool m_shopEditorOpenFlg = false;
+
+	// キャラの初期ステータスを決めるEditor(ImGui)
+	std::shared_ptr<CharaStatusEditor> m_spCharaStatusEditor;
+
+	//キャラの初期ステータスのエディタを開いているか
+	bool m_charaStatusEditorOpenFlg = false;
 
 	//---- その他の処理 ----
 

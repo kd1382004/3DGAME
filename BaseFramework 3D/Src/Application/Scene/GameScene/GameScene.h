@@ -19,6 +19,7 @@ class UIManager;
 class WeaponStrengtheningEditor;
 class TreasureChestTableEditor;
 class ComboStepEditor;
+class CharaStatusEditor;
 
 
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
@@ -183,6 +184,9 @@ private:
 
 	//コンボのImGui
 	std::shared_ptr<ComboStepEditor> m_spComboStepEditor;
+
+	//キャラの初期ステータスのImGui
+	std::shared_ptr<CharaStatusEditor> m_spCharaStatusEditor;
 
 	//ImGuiで開けるエディタの一覧
 	std::vector<EditorEntry> m_editors;

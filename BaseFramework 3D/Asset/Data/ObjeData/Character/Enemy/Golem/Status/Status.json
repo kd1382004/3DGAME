@@ -1,26 +1,26 @@
 {
-	"HP": {
-		"baseHP": 100.0
-	},
-	"LV": {
-		"LV": 1
-	},
-	"attck": {
-		"baseAttckPowe": 10.0
-	},
-	"defense": {
-		"baseDefensePowe": 100.0
-	},
-	"moveSpeed": {
-		"baseSpeed": 5,
-		"runMovePowe": 2,
-		"walkMovePowe": 5
-	},
-	"stamina": {
-		"dashStaminaDrainPerSec": 10.0,
-		"staminaMax": 100.0,
-		"staminaNow": 100.0,
-		"staminaRegenBuff": 0.0,
-		"staminaRegenPerSec": 1.0
-	}
+    "HP": {
+        "baseHP": 550.0
+    },
+    "LV": {
+        "LV": 1
+    },
+    "attck": {
+        "baseAttckPowe": 21.0
+    },
+    "defense": {
+        "baseDefensePowe": 40.0
+    },
+    "moveSpeed": {
+        "baseSpeed": 5,
+        "runMovePowe": 8.0,
+        "walkMovePowe": 4.0
+    },
+    "stamina": {
+        "dashStaminaDrainPerSec": 10.0,
+        "staminaMax": 100.0,
+        "staminaNow": 100.0,
+        "staminaRegenBuff": 0.0,
+        "staminaRegenPerSec": 1.0
+    }
 }

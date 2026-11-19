@@ -17,6 +17,7 @@
 #include"../../GameObject/UI/PrepareSceneUI/RecordsDisplay/RecordsDisplay.h"
 
 #include"../../Editor/ShopEditor/ShopEditor.h"
+#include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"
 
 PrepareScene::~PrepareScene()
 {
@@ -53,6 +54,9 @@ void PrepareScene::ImGUI()
 
 		// ショップの値段を決めるEditor
 		ImGui::Checkbox(U8("ショップの値段"), &m_shopEditorOpenFlg);
+
+		// キャラの初期ステータスを決めるEditor
+		ImGui::Checkbox(U8("キャラの初期ステータス"), &m_charaStatusEditorOpenFlg);
 	}
 	ImGui::End();
 
@@ -65,6 +69,11 @@ void PrepareScene::ImGUI()
 		{
 			m_spShopDisplay->LoadShopData();
 		}
+	}
+
+	if (m_charaStatusEditorOpenFlg && m_spCharaStatusEditor)
+	{
+		m_spCharaStatusEditor->Draw(&m_charaStatusEditorOpenFlg);
 	}
 }
 
@@ -100,6 +109,9 @@ void PrepareScene::Init()
 
 	// ショップの値段を決めるEditor
 	m_spShopEditor = std::make_shared<ShopEditor>("Asset/Data/Shop/ShopMasterData.json");
+
+	// キャラの初期ステータスを決めるEditor
+	m_spCharaStatusEditor = std::make_shared<CharaStatusEditor>(m_playerStatusFilePath);
 
 	// 装備変更
 	m_spEquipDisplay = std::make_shared<EquipDisplay>();

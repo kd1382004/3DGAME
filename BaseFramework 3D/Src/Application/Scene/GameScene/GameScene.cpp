@@ -49,6 +49,7 @@
 #include"../../GameObject/Weapon/WeaponStrengtheningEditor/WeaponStrengtheningEditor.h"
 #include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestTableEditor/TreasureChestTableEditor.h"
 #include"../../GameObject/Weapon/ComboStep/ComboStepEditor.h"
+#include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"
 
 GameScene::~GameScene()
 {
@@ -74,8 +75,6 @@ void GameScene::ImGUI()
 	//ImGUI
 	if (ImGui::TreeNode(U8("階数")))
 	{
-		ImGui::InputInt(U8("マップ広さMAX"), &m_mapGenerateDisplayFloorMax, 1, 1);
-
 		if (ImGui::Button(U8("次の階")))
 		{
 			GenerateMap();
@@ -369,6 +368,7 @@ void GameScene::Init()
 	m_spWSEditor = std::make_shared<WeaponStrengtheningEditor>(m_weaponStrengtheningMSDateFilePath);
 	m_spTCTableEditor = std::make_shared<TreasureChestTableEditor>();
 	m_spComboStepEditor = std::make_shared<ComboStepEditor>();
+	m_spCharaStatusEditor = std::make_shared<CharaStatusEditor>(m_playerStatusFilePath);
 
 	// コンボのプレビュー用モデルをシーンに置く（専用ウィンドウに描く。描いた後はゲームのカメラに戻す）
 	m_spComboStepEditor->SetPreviewMainCamera(m_spCamera);
@@ -392,6 +392,7 @@ void GameScene::Init()
 	m_editors.push_back({ U8("武器強化"), false, [this](bool* _open) { m_spWSEditor->Draw(_open); } });
 	m_editors.push_back({ U8("宝箱のドロップテーブル"), false, [this](bool* _open) { m_spTCTableEditor->Draw(_open); } });
 	m_editors.push_back({ U8("武器のコンボ"), false, [this](bool* _open) { m_spComboStepEditor->Draw(_open); } });
+	m_editors.push_back({ U8("キャラの初期ステータス"), false, [this](bool* _open) { m_spCharaStatusEditor->Draw(_open); } });
 
 }
 

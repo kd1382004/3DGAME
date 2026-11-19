@@ -3,19 +3,19 @@
         {
             "id": 0,
             "name": "WeaponStrengthening_Crystal1",
-            "stock": 5
+            "stock": 11
         },
         {
             "id": 1,
             "name": "WeaponStrengthening_Crystal2",
-            "stock": 3
+            "stock": 6
         }
     ],
     "potions": [
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "stock": 76
+            "stock": 83
         },
         {
             "id": 1,
@@ -25,12 +25,12 @@
         {
             "id": 2,
             "name": "AttackBoostPotion",
-            "stock": 28
+            "stock": 36
         },
         {
             "id": 3,
             "name": "InstantStaminaHealPotion",
-            "stock": 35
+            "stock": 37
         },
         {
             "id": 4,
@@ -45,7 +45,7 @@
         {
             "id": 6,
             "name": "StaminaRegenBoostPotion",
-            "stock": 22
+            "stock": 23
         }
     ],
     "weapons": [
