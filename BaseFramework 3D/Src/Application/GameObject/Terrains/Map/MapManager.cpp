@@ -394,7 +394,11 @@ void MapManager::MapHit(const std::shared_ptr<KdGameObject>& _spObj)
 
 				if (!spMapObj) continue;
 
-				float distSq = Math::Vector3::DistanceSquared(spMapObj->GetPos(), pos);
+				//壁は縦に伸ばしていて、位置は一番下の段にあるので、高さを無視して横の距離だけで測る
+				Math::Vector3 objPos = spMapObj->GetPos();
+				float dx = objPos.x - pos.x;
+				float dz = objPos.z - pos.z;
+				float distSq = dx * dx + dz * dz;
 
 				if (distSq <= hitCheckDistSq)
 				{

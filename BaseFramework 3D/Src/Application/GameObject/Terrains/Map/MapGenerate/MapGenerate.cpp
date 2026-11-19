@@ -148,7 +148,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 		else
 		{
 			roomTypeList[i] = (RoomType)KdRandom::GetInt((int)RoomType_EnemyRoom, (int)RoomType_TreasureChestRoom);
-		}	
+		}
 	}
 
 	/////////////////////////////////////////////////////
@@ -654,25 +654,36 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 						}
 
 
-						for (int i = startH; i <= kHeightLevelMax; i++)
+						int cx = std::min(chunkW - 1, x / kChunkSize);
+						int cy = std::min(chunkH - 1, y / kChunkSize);
+						Math::Vector2 chunkNum = { static_cast<float>(cx) ,static_cast<float>(cy) };
+
+						//一番下の段から一番上までの段数
+						int layerNum = kHeightLevelMax - startH + 1;
+
+						bool createStairs = dir.m_allowStairs && isStairsRoom && !stairsPlaced;
+						if (createStairs)
 						{
-							bool createStairs = dir.m_allowStairs && isStairsRoom && !stairsPlaced;
-							if (createStairs)
-							{
-								stairsPlaced = true;
-							}
+							//一番下の段は階段にする
+							stairsPlaced = true;
+							std::shared_ptr<MapBase>spStairs = CreateWallOrStairs(wallPos, dir.m_rotY, true, _ret, rID, x, y, map, chunkNum);
+							m_chunks[cy][cx].push_back(spStairs);
 
-							if (i != startH)
+							//その上を1本の壁にする(松明は付けない)
+							if (layerNum - 1 > 0)
 							{
-								torchFlg = false;
+								Math::Vector3 upperPos = wallPos;
+								upperPos.y += _tileSiz;
+								std::shared_ptr<MapBase>spWall = CreateWallOrStairs(upperPos, dir.m_rotY, false, _ret, rID, x, y, map, chunkNum, nullptr, layerNum - 1);
+								m_chunks[cy][cx].push_back(spWall);
 							}
-							int cx = std::min(chunkW - 1, x / kChunkSize);
-							int cy = std::min(chunkH - 1, y / kChunkSize);
-							std::shared_ptr<MapBase>spWall = CreateWallOrStairs(wallPos, dir.m_rotY, createStairs, _ret, rID, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) }, &torchFlg);
-
+						}
+						else
+						{
+							//一番下の段から一番上までを1本の壁にする
+							//(松明は一番下の段の高さに付き、付けたら torchFlg が false になってこのマスにはもう付けない)
+							std::shared_ptr<MapBase>spWall = CreateWallOrStairs(wallPos, dir.m_rotY, false, _ret, rID, x, y, map, chunkNum, &torchFlg, layerNum);
 							m_chunks[cy][cx].push_back(spWall);
-
-							wallPos.y += _tileSiz;
 						}
 					}
 				}
@@ -751,6 +762,9 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				m_roomInfoList[i][j].m_installation = true;
 				*_playerSpawnPos = m_roomInfoList[i][j].m_pos;
 				_playerSpawnPos->y += 1;
+
+				//スポーン位置を決めたので、もう探さない
+				playerSpawn = true;
 			}
 		}
 
@@ -807,7 +821,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			num = std::clamp(num,
 				std::min(mine, max),
 				std::max(mine, max));
-			m_roomInfoList[i][j].m_roomTreasureChestNum = static_cast<int>(std::ceil(num));;
+			m_roomInfoList[i][j].m_roomTreasureChestNum = static_cast<int>(std::ceil(num));
 
 		}
 	}
@@ -836,12 +850,6 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	//チャンク対応
 	int chunkW = std::max(1, static_cast<int>(std::ceil(_mapSiz.x / static_cast<float>(kChunkSize))));
 	int chunkH = std::max(1, static_cast<int>(std::ceil(_mapSiz.y / static_cast<float>(kChunkSize))));
-
-	m_chunks.resize(chunkH);
-	for (auto& row : m_chunks)
-	{
-		row.resize(chunkW);
-	}
 
 	m_chunks.resize(chunkH);
 	for (auto& row : m_chunks)
@@ -969,44 +977,38 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 
 					int startH = map[y][x].m_heightLevel;
 					bool torchFlg = true;
-					for (int i = map[y][x].m_heightLevel; i <= kHeightLevelMax; i++)
-					{
 
-						if (i != startH)
-						{
-							torchFlg = false;
-						}
+					//一番下の段から一番上までを1本の壁にする
+					int layerNum = kHeightLevelMax - startH + 1;
 
-						int cx = std::min(chunkW - 1, x / kChunkSize);
-						int cy = std::min(chunkH - 1, y / kChunkSize);
-						std::shared_ptr<MapBase>spWall = CreateWallOrStairs(wallPos, dir.m_rotY, false, _ret, 0, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) }, &torchFlg);
-
-						m_chunks[cy][cx].push_back(spWall);
-
-						wallPos.y += _tileSiz;
-					}
-
-				}
-
-
-				{
-					std::shared_ptr<FloorBase> spMapA = std::make_shared<FloorBase>();
-
-					float yPos = _tileSiz * kHeightLevelMax;
-
-					Math::Vector3 pos = { xPos,yPos,zPos };
-
-					spMapA->Init();
-					spMapA->SetPos(pos);
-					spMapA->SetMapObjType(MapObjType::None);
-					spMapA->SetGroundType(GroundType::Room);
-					spMapA->SetRoomID(0);
-					_ret->push_back(spMapA);
 					int cx = std::min(chunkW - 1, x / kChunkSize);
 					int cy = std::min(chunkH - 1, y / kChunkSize);
-					m_chunks[cy][cx].push_back(spMapA);
+					std::shared_ptr<MapBase>spWall = CreateWallOrStairs(wallPos, dir.m_rotY, false, _ret, 0, x, y, map, { static_cast<float>(cx) ,static_cast<float>(cy) }, &torchFlg, layerNum);
+
+					m_chunks[cy][cx].push_back(spWall);
+
 				}
+
 			}
+
+			{
+				std::shared_ptr<FloorBase> spMapA = std::make_shared<FloorBase>();
+
+				float yPos = _tileSiz * kHeightLevelMax;
+
+				Math::Vector3 pos = { xPos,yPos,zPos };
+
+				spMapA->Init();
+				spMapA->SetPos(pos);
+				spMapA->SetMapObjType(MapObjType::None);
+				spMapA->SetGroundType(GroundType::Room);
+				spMapA->SetRoomID(0);
+				_ret->push_back(spMapA);
+				int cx = std::min(chunkW - 1, x / kChunkSize);
+				int cy = std::min(chunkH - 1, y / kChunkSize);
+				m_chunks[cy][cx].push_back(spMapA);
+			}
+
 		}
 	}
 
@@ -1042,7 +1044,6 @@ void MapGenerate::LoadRoomSiz(std::string _filePath)
 
 void MapGenerate::SaveRoomSiz(std::string _filePath)
 {
-	;
 	nlohmann::json data;
 	data["room"]["sizeMin"] = m_roomMin;
 	data["room"]["sizeMax"] = m_roomMax;
@@ -1134,7 +1135,7 @@ void MapGenerate::PlaceRoomsRandom(const Math::Vector2& _mapSiz, int& _roomNum, 
 				bool canPlace = true;
 
 				//部屋同士何タイル開けるか(通路に坂を置ける長さを残す)
-				int minMargin = kHeightLevelMax + 2;
+				int minMargin = kHeightLevel + 2;
 				int aX = KdRandom::GetInt(minMargin, minMargin + 2);
 				int aY = KdRandom::GetInt(minMargin, minMargin + 2);
 
@@ -1717,107 +1718,60 @@ void MapGenerate::UnionSet(std::vector<int>& _parent, int _a, int _b)
 std::vector<Math::Vector3> MapGenerate::GenerateCorridorPath(const RoomInfo& _a, const RoomInfo& _b, const std::vector<std::vector<FloorInfo>>& _map, bool _stopAtExisting)
 {
 	int hA = _a.m_heightLevel;
-	int hB = _b.m_heightLevel;
-	std::vector<Math::Vector3> ans;
 
-	// くねくね通路のマスの並びを作る(部屋Aの出口 → 部屋Bの入口)
-	std::vector<Math::Vector2> path2D = BuildWigglePath(_a, _b, _map);
+	//予備用に、最後に作ったパスと終わりの高さを覚えておく
+	std::vector<Math::Vector2> lastPath;
+	int lastHB = _b.m_heightLevel;
 
-	int totalSteps = static_cast<int>(path2D.size());
-	if (totalSteps == 0) return ans;
-
-	// 部屋Aを出た後、部屋（Room B他）または既存の通路（Floor/Slopee）に当たったらそこで終了
-	int actualSteps = totalSteps;
-	if (_stopAtExisting)
+	for (int retry = 0; retry < kSlopeRetryMax; retry++)
 	{
-		for (int i = 0; i < totalSteps; i++)
+		//① くねくね通路のマスの並びを作る(部屋Aの出口 → 部屋Bの入口)
+		std::vector<Math::Vector2> path2D = BuildWigglePath(_a, _b, _map);
+		if (path2D.empty()) { return {}; }
+
+		//② 既存の床に当たったら、そこで切る(終わりの高さはつながる床に合わせる)
+		int hB = _b.m_heightLevel;
+		if (_stopAtExisting)
 		{
-			int x = static_cast<int>(path2D[i].x);
-			int y = static_cast<int>(path2D[i].y);
+			CutPathAtExisting(path2D, _a, _map, hB);
+		}
 
-			if (y >= 0 && y < static_cast<int>(_map.size()) &&
-				x >= 0 && x < static_cast<int>(_map[y].size()))
+		lastPath = path2D;
+		lastHB = hB;
+
+		//③ 必要な段差の数と、置く場所(まっすぐな所)を決める
+		int needNum = std::abs(hB - hA);
+		std::vector<int> slopeIndices;
+		if (!PickSlopeIndices(FindSlopeCandidates(path2D), needNum, slopeIndices))
+		{
+			//まっすぐな所が足りない → 形を作り直す
+			continue;
+		}
+
+		//④ 段差の場所を越えるたびに、次のマスから1段ずつ高さを変える
+		int step = (hB > hA) ? 1 : -1;
+		int curH = hA;
+		size_t next = 0;
+
+		std::vector<Math::Vector3> ans;
+		ans.reserve(path2D.size());
+		for (int i = 0; i < static_cast<int>(path2D.size()); i++)
+		{
+			ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(curH) });
+
+			//このマスが段差の場所なら、次のマスから1段変える(このマスが坂になる)
+			if (next < slopeIndices.size() && slopeIndices[next] == i)
 			{
-				bool inRoomA = (x >= _a.m_roomEnd.m_farLeft && x <= _a.m_roomEnd.m_farRight &&
-					y >= _a.m_roomEnd.m_topEnd && y <= _a.m_roomEnd.m_downEnd);
-
-				if (!inRoomA)
-				{
-					// 直接既存床に到達
-					if (_map[y][x].m_tileType != TileType::None)
-					{
-						hB = _map[y][x].m_heightLevel;
-						actualSteps = i + 1;
-						path2D.resize(actualSteps);
-						break;
-					}
-
-					// 隣接マス（上下左右）に部屋A以外の既存通路があるかチェックし、あればそのマスに合流・接続して終了
-					static const int dx[] = { 0, 0, -1, 1 };
-					static const int dy[] = { -1, 1, 0, 0 };
-					bool hitNeighbor = false;
-					for (int d = 0; d < 4; d++)
-					{
-						int nx = x + dx[d];
-						int ny = y + dy[d];
-						if (ny >= 0 && ny < static_cast<int>(_map.size()) &&
-							nx >= 0 && nx < static_cast<int>(_map[ny].size()))
-						{
-							// 直前のマスでなければ判定
-							if (i > 0 && nx == static_cast<int>(path2D[i - 1].x) && ny == static_cast<int>(path2D[i - 1].y)) continue;
-
-							bool neighborInRoomA = (nx >= _a.m_roomEnd.m_farLeft && nx <= _a.m_roomEnd.m_farRight &&
-								ny >= _a.m_roomEnd.m_topEnd && ny <= _a.m_roomEnd.m_downEnd);
-
-							if (!neighborInRoomA && _map[ny][nx].m_tileType != TileType::None)
-							{
-								hB = _map[ny][nx].m_heightLevel;
-								actualSteps = i + 1;
-								path2D.resize(actualSteps);
-								hitNeighbor = true;
-								break;
-							}
-						}
-					}
-					if (hitNeighbor) break;
-				}
+				curH += step;
+				next++;
 			}
 		}
+
+		return ans;
 	}
 
-	totalSteps = actualSteps;
-
-	ans.reserve(totalSteps);
-
-	int curH = hA;
-	ans.push_back({ path2D[0].x, path2D[0].y, static_cast<float>(curH) });
-
-	for (int i = 1; i < totalSteps; i++)
-	{
-		int stepsLeftAfter = (totalSteps - 1) - i;
-		int neededDiff = hB - curH;
-
-		// 残りのステップ数に対して高さ差が追いつかない場合（必要高さ差 >= 残りステップ数+1）、強制的に1ずつ高さを変化
-		if (std::abs(neededDiff) >= stepsLeftAfter + 1)
-		{
-			int step = (neededDiff > 0) ? 1 : -1;
-			curH += step;
-		}
-		else
-		{
-			// 通常は線形補間で目標高さを決定し、差分を反映
-			float ratio = static_cast<float>(i) / static_cast<float>(totalSteps - 1);
-			float hFloat = static_cast<float>(hA) + static_cast<float>(hB - hA) * ratio;
-			int targetH = static_cast<int>(std::round(hFloat));
-
-			int step = std::clamp(targetH - curH, -1, 1);
-			curH += step;
-		}
-
-		ans.push_back({ path2D[i].x, path2D[i].y, static_cast<float>(curH) });
-	}
-
-	return ans;
+	//⑤ 何度作ってもまっすぐな所が足りなければ、今までどおり線形補間にする
+	return AssignHeightsLinear(lastPath, hA, lastHB);
 }
 
 //位置が部屋の中か、部屋の上下左右の隣にあるか(通路が部屋に届いたか)
@@ -2595,7 +2549,7 @@ bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 {
 
 
-	//---- 高さの以上チェック -----
+	//---- 高さの異常チェック -----
 	for (int i = 0; i < _map.size(); i++)
 	{
 		for (int j = 0; j < _map[i].size(); j++)
@@ -2642,6 +2596,95 @@ bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 		}
 	}
 
+	//---- 全部の部屋に歩いて行けるかチェック -----
+	if (!m_roomInfo.empty())
+	{
+		int mapH = static_cast<int>(_map.size());
+		int mapW = static_cast<int>(_map[0].size());
+
+		static const int dx[] = { 0, 0, -1, 1 };
+		static const int dy[] = { -1, 1, 0, 0 };
+
+		//1つ目の部屋の中心から、歩いて行けるマスを全部たどる(BFS)
+		std::vector<std::vector<bool>> visited(mapH, std::vector<bool>(mapW, false));
+		std::queue<std::pair<int, int>> q;
+
+		int sx = static_cast<int>(m_roomInfo[0].m_center.x);
+		int sy = static_cast<int>(m_roomInfo[0].m_center.y);
+		q.push({ sx, sy });
+		visited[sy][sx] = true;
+
+		while (!q.empty())
+		{
+			auto [x, y] = q.front();
+			q.pop();
+
+			for (int d = 0; d < 4; d++)
+			{
+				int nx = x + dx[d];
+				int ny = y + dy[d];
+				if (nx < 0 || nx >= mapW || ny < 0 || ny >= mapH) { continue; }
+				if (visited[ny][nx]) { continue; }
+				if (_map[ny][nx].m_tileType == TileType::None) { continue; }
+
+				//同じ高さか、どちらかが坂で1段差なら進める
+				int diff = std::abs(_map[y][x].m_heightLevel - _map[ny][nx].m_heightLevel);
+				bool isSlope = (_map[y][x].m_tileType == TileType::Slope || _map[ny][nx].m_tileType == TileType::Slope);
+				if (diff != 0 && !(isSlope && diff == 1)) { continue; }
+
+				visited[ny][nx] = true;
+				q.push({ nx, ny });
+			}
+		}
+
+		//どれか1つでもたどり着けない部屋があれば異常
+		for (const auto& room : m_roomInfo)
+		{
+			if (!visited[static_cast<int>(room.m_center.y)][static_cast<int>(room.m_center.x)])
+			{
+				return false;
+			}
+		}
+	}
+
+	//---- 部屋の数チェック -----
+	//スポーン部屋・階段部屋・その他が別々に必要
+	if (static_cast<int>(m_roomInfo.size()) < kMinRoomNum)
+	{
+		return false;
+	}
+
+	//---- 坂の向きと高さチェック -----
+	for (int y = 0; y < static_cast<int>(_map.size()); y++)
+	{
+		for (int x = 0; x < static_cast<int>(_map[y].size()); x++)
+		{
+			if (_map[y][x].m_tileType != TileType::Slope) { continue; }
+
+			//高い側と低い側のマス(SlopeCheck の向きと同じ)
+			int hx = x, hy = y, lx = x, ly = y;
+			switch (_map[y][x].m_angle)
+			{
+			case 0:   hy = y + 1; ly = y - 1; break;
+			case 180: hy = y - 1; ly = y + 1; break;
+			case 270: hx = x + 1; lx = x - 1; break;
+			case 90:  hx = x - 1; lx = x + 1; break;
+			default: return false;
+			}
+
+			//両側ともマップの中で、床がある
+			if (hy < 0 || hy >= static_cast<int>(_map.size()) || hx < 0 || hx >= static_cast<int>(_map[0].size())) { return false; }
+			if (ly < 0 || ly >= static_cast<int>(_map.size()) || lx < 0 || lx >= static_cast<int>(_map[0].size())) { return false; }
+			if (_map[hy][hx].m_tileType == TileType::None || _map[ly][lx].m_tileType == TileType::None) { return false; }
+
+			//高い側は坂と同じ高さ、低い側は1段低い
+			int h = _map[y][x].m_heightLevel;
+			if (_map[hy][hx].m_heightLevel != h) { return false; }
+			if (_map[ly][lx].m_heightLevel != h - 1) { return false; }
+		}
+	}
+
+
 	//異常なし
 	return true;
 }
@@ -2663,7 +2706,7 @@ bool MapGenerate::IsNeedWall(int _nx, int _ny, const std::vector<std::vector<Flo
 	return false;
 }
 
-std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& _map, Math::Vector2 _chunkNum, bool* _torchFlg)
+std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& _map, Math::Vector2 _chunkNum, bool* _torchFlg, int _layerNum)
 {
 	if (_isStairs)
 	{
@@ -2687,7 +2730,29 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 		auto spWall = std::make_shared<WallBase>();
 		spWall->SetModel(m_spWallModel);
 		spWall->Init();
-		spWall->SetPos(_pos);
+
+
+		//モデルの一番下の y(原点基準)
+		float wallBottomY = 0.0f;	
+		if (auto spData = m_spWallModel->GetData())
+		{
+			bool first = true;
+			for (int nodeIndex : spData->GetDrawMeshNodeIndices())
+			{
+				const auto& node = spData->GetOriginalNodes()[nodeIndex];
+				if (!node.m_spMesh) { continue; }
+				const DirectX::BoundingBox& box = node.m_spMesh->GetBoundingBox();
+				float bottom = box.Center.y - box.Extents.y;
+				if (first || bottom < wallBottomY) { wallBottomY = bottom; first = false; }
+			}
+		}
+		Math::Vector3 wallPos = _pos;
+		wallPos.y += -wallBottomY * static_cast<float>(_layerNum - 1);
+
+		//順番は 位置 → 拡大 → 回転(SetRotation は今の位置と拡大を残して行列を作り直す)
+		spWall->SetPos(wallPos);
+		spWall->SetScale(Math::Vector3(1.0f, static_cast<float>(_layerNum), 1.0f));	//縦に伸ばす
+		spWall->SetUVTiling({ 1.0f, static_cast<float>(_layerNum) });				//テクスチャを縦にくり返す
 		if (_rotYDegree != 0.0f)
 		{
 			spWall->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
@@ -2754,23 +2819,22 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 
 		}
 
-		if (placeTorch)
+		bool placed = placeTorch && SetTorch(_rotYDegree, _pos, spWall, _chunkNum);
+		if (placed)
 		{
-			SetTorch(_rotYDegree, _pos, spWall, _chunkNum);
-
 			_map[_y][_x].m_setTorchFlg = true;
 		}
 
-		*_torchFlg = !placeTorch;
+		*_torchFlg = !placed;
 
 		return spWall;
 	}
 }
 
-void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _spObj, Math::Vector2 _chunk)
+bool MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _spObj, Math::Vector2 _chunk)
 {
 	std::shared_ptr<MapObjManager>spMapObjManager = m_wpMapObjManager.lock();
-	if (!spMapObjManager) { return; }
+	if (!spMapObjManager) { return false; }
 
 	//壁に松明を
 	Math::Vector3 pos = _pos;
@@ -2825,9 +2889,10 @@ void MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_pt
 		spTorch->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
 		spTorch->SetCamera(m_wpCamera.lock());
 		spMapObjManager->AddMapObj(spTorch);
+		return true;
 	}
 
-
+	return false;
 }
 
 bool MapGenerate::IsCornerWall(int _x, int _y, const std::vector<std::vector<FloorInfo>>& _map)
@@ -2925,4 +2990,172 @@ bool MapGenerate::IsSetTorch(int _x, int _y, const std::vector<std::vector<Floor
 
 
 	return true;
+}
+
+//===================================================
+// 通路の高さ(段差をまっすぐな所にだけ置く)
+//===================================================
+
+//パスの中で、段差(坂)を置けるマスの番号を集める(前後と一直線に並んでいる所だけ)
+std::vector<int> MapGenerate::FindSlopeCandidates(const std::vector<Math::Vector2>& _path2D) const
+{
+	std::vector<int> candidates;
+
+	//両端(部屋の出入口のマス)は除くので、1 〜 size-2 を見る
+	for (int i = 1; i + 1 < static_cast<int>(_path2D.size()); i++)
+	{
+		const auto& prev = _path2D[i - 1];
+		const auto& cur = _path2D[i];
+		const auto& next = _path2D[i + 1];
+
+		//横一直線か、縦一直線なら置ける
+		bool sameY = (prev.y == cur.y && cur.y == next.y);
+		bool sameX = (prev.x == cur.x && cur.x == next.x);
+
+		if (sameX || sameY)
+		{
+			candidates.push_back(i);
+		}
+	}
+
+	return candidates;
+}
+
+//段差を置く場所を、kSlopeMinGap 以上あけて必要な数だけ選ぶ
+bool MapGenerate::PickSlopeIndices(const std::vector<int>& _candidates, int _needNum, std::vector<int>& _result) const
+{
+	_result.clear();
+	if (_needNum <= 0) { return true; }
+
+	//候補をシャッフルして、段差の場所がいつも同じにならないようにする
+	std::vector<int> shuffled = _candidates;
+	for (int i = static_cast<int>(shuffled.size()) - 1; i > 0; i--)
+	{
+		std::swap(shuffled[i], shuffled[KdRandom::GetInt(0, i)]);
+	}
+
+	//前から見て、すでに選んだ場所と kSlopeMinGap 以上離れていれば選ぶ
+	for (int idx : shuffled)
+	{
+		bool farEnough = true;
+		for (int picked : _result)
+		{
+			if (std::abs(idx - picked) < kSlopeMinGap)
+			{
+				farEnough = false;
+				break;
+			}
+		}
+		if (!farEnough) { continue; }
+
+		_result.push_back(idx);
+		if (static_cast<int>(_result.size()) >= _needNum) { break; }
+	}
+
+	//足りなかった
+	if (static_cast<int>(_result.size()) < _needNum) { return false; }
+
+	//高さを前から割り振るので、小さい順に並べる
+	std::sort(_result.begin(), _result.end());
+	return true;
+}
+
+//パスを、既存の床に当たった所(または隣に来た所)で切る
+void MapGenerate::CutPathAtExisting(std::vector<Math::Vector2>& _path2D, const RoomInfo& _a, const std::vector<std::vector<FloorInfo>>& _map, int& _hB) const
+{
+	static const int dx[] = { 0, 0, -1, 1 };
+	static const int dy[] = { -1, 1, 0, 0 };
+
+	// (_x, _y) が部屋Aの中ならtrue
+	auto inRoomA = [&](int _x, int _y)
+		{
+			return _x >= _a.m_roomEnd.m_farLeft && _x <= _a.m_roomEnd.m_farRight &&
+				_y >= _a.m_roomEnd.m_topEnd && _y <= _a.m_roomEnd.m_downEnd;
+		};
+
+	// 部屋Aを出た後、部屋(Room B他)または既存の通路(Floor/Slope)に当たったらそこで切る
+	for (int i = 0; i < static_cast<int>(_path2D.size()); i++)
+	{
+		int x = static_cast<int>(_path2D[i].x);
+		int y = static_cast<int>(_path2D[i].y);
+
+		if (y < 0 || y >= static_cast<int>(_map.size()) ||
+			x < 0 || x >= static_cast<int>(_map[y].size()))
+		{
+			continue;
+		}
+
+		if (inRoomA(x, y)) { continue; }
+
+		// 直接既存床に到達
+		if (_map[y][x].m_tileType != TileType::None)
+		{
+			_hB = _map[y][x].m_heightLevel;
+			_path2D.resize(i + 1);
+			return;
+		}
+
+		// 隣接マス(上下左右)に部屋A以外の既存の床があれば、このマスで合流して切る
+		for (int d = 0; d < 4; d++)
+		{
+			int nx = x + dx[d];
+			int ny = y + dy[d];
+			if (ny < 0 || ny >= static_cast<int>(_map.size()) ||
+				nx < 0 || nx >= static_cast<int>(_map[ny].size()))
+			{
+				continue;
+			}
+
+			// 直前のマスは見ない
+			if (i > 0 && nx == static_cast<int>(_path2D[i - 1].x) && ny == static_cast<int>(_path2D[i - 1].y)) { continue; }
+
+			if (!inRoomA(nx, ny) && _map[ny][nx].m_tileType != TileType::None)
+			{
+				_hB = _map[ny][nx].m_heightLevel;
+				_path2D.resize(i + 1);
+				return;
+			}
+		}
+	}
+}
+
+//高さを線形補間で割り振る(段差の場所が足りないときの予備)
+std::vector<Math::Vector3> MapGenerate::AssignHeightsLinear(const std::vector<Math::Vector2>& _path2D, int _hA, int _hB) const
+{
+	std::vector<Math::Vector3> ans;
+
+	int totalSteps = static_cast<int>(_path2D.size());
+	if (totalSteps == 0) { return ans; }
+
+	ans.reserve(totalSteps);
+
+	int curH = _hA;
+	ans.push_back({ _path2D[0].x, _path2D[0].y, static_cast<float>(curH) });
+
+	for (int i = 1; i < totalSteps; i++)
+	{
+		int stepsLeftAfter = (totalSteps - 1) - i;
+		int neededDiff = _hB - curH;
+
+		// 残りのステップ数に対して高さ差が追いつかない場合（必要高さ差 >= 残りステップ数+1）、強制的に1ずつ高さを変化
+		if (std::abs(neededDiff) >= stepsLeftAfter + 1)
+		{
+			int step = (neededDiff > 0) ? 1 : -1;
+			curH += step;
+		}
+		else
+		{
+			// 通常は線形補間で目標高さを決定し、差分を反映
+			float ratio = static_cast<float>(i) / static_cast<float>(totalSteps - 1);
+			float hFloat = static_cast<float>(_hA) + static_cast<float>(_hB - _hA) * ratio;
+			int targetH = static_cast<int>(std::round(hFloat));
+
+			int step = std::clamp(targetH - curH, -1, 1);
+			curH += step;
+		}
+
+		ans.push_back({ _path2D[i].x, _path2D[i].y, static_cast<float>(curH) });
+	}
+
+	return ans;
 }

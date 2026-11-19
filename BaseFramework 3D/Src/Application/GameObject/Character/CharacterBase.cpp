@@ -760,8 +760,10 @@ void CharacterBase::CollisionUpdate()
 			if (!spGameObj) continue;
 
 
-			//処理軽減
-			float dist = (GetPos() - spGameObj->GetPos()).Length();
+			//処理軽減(縦に伸ばした壁の位置は一番下の段にあるので、高さを無視して横の距離だけで測る)
+			Math::Vector3 diff = GetPos() - spGameObj->GetPos();
+			diff.y = 0.0f;
+			float dist = diff.Length();
 			if (dist >= m_detectRange) { continue; }
 
 			std::list<KdCollider::CollisionResult> retBumpList;

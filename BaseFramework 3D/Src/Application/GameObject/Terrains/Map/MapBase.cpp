@@ -56,12 +56,13 @@ void MapBase::DrawLit()
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullNone);
 	}
 
-
+	KdShaderManager::Instance().m_StandardShader.SetUVTiling(m_uvTiling);
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+	KdShaderManager::Instance().m_StandardShader.SetUVTiling({ 1.0f, 1.0f });
 
 	if (m_mapObjType == MapObjType::Wall)
 	{
-		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullNone);
+		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
 	}
 }
 

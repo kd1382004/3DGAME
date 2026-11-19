@@ -124,6 +124,9 @@ public:
 	// _spModel ... モデル
 	void SetModel(std::shared_ptr<KdModelWork>_spModel) { m_spModel = _spModel; }
 
+
+	void SetUVTiling(const Math::Vector2& _tiling) { m_uvTiling = _tiling; }
+
 protected:
 
 	//---- メンバ変数 ----
@@ -151,5 +154,8 @@ protected:
 
 	//部屋なら部屋番号を保存
 	int m_roomID = -999;
+
+	//テクスチャのくり返し回数。x が横、y が縦
+	Math::Vector2 m_uvTiling = { 1.0f, 1.0f };
 };
 

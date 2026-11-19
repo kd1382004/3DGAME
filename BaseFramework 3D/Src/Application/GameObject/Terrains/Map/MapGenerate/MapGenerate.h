@@ -282,7 +282,15 @@ private:
 	static const int kHeightLevel = 2;
 
 	//階層の最大数
-	static const int kHeightLevelMax = kHeightLevel + 1;
+	static const int kHeightLevelMax = kHeightLevel + 100;
+
+	//---- 通路の段差 ----
+
+	//段差の場所が足りないときに、通路の形を作り直す最大回数
+	static const int kSlopeRetryMax = 5;
+
+	//段差どうしを何マス以上離すか(2未満だと続けて上がって坂にならない)
+	static const int kSlopeMinGap = 2;
 
 	//---- チャンク ----
 
@@ -292,9 +300,9 @@ private:
 	//---- 区画分割 ----
 
 	//区画の内側に空ける余白(マス)。隣の部屋との距離はこの2倍になる
-	//今までの部屋の間隔(kHeightLevelMax + 2)を、両側の区画で半分ずつ持つ
-	//※ kHeightLevelMax を使うので、kHeightLevelMax より後ろに置く
-	static const int kAreaPadding = (kHeightLevelMax + 2 + 1) / 2;
+	//今までの部屋の間隔(kHeightLevel + 2)を、両側の区画で半分ずつ持つ
+	//※ kHeightLevel を使うので、kHeightLevel より後ろに置く
+	static const int kAreaPadding = (kHeightLevel + 2 + 1) / 2;
 
 	//区画数を選ぶときに、余る区画(交差点になる区画)をどれだけ嫌うか
 	static constexpr float kAreaAspectWeight = 0.05f;
@@ -669,6 +677,33 @@ private:
 
 	//---- 高さ・坂 ----
 
+	//パスの中で、段差(坂)を置けるマスの番号を集める
+	//前後のマスと一直線に並んでいる所だけ(曲がり角と両端は除く)
+	// _path2D ... 通路のマスの並び
+	//戻り値 ... 段差を置ける番号の一覧
+	std::vector<int> FindSlopeCandidates(const std::vector<Math::Vector2>& _path2D) const;
+
+	//段差を置く場所を、kSlopeMinGap 以上あけて _needNum 個選ぶ
+	// _candidates ... 段差を置ける番号の一覧
+	// _needNum ... 必要な段差の数(高さの差)
+	// _result ... 選んだ番号(小さい順)
+	//戻り値 ... 足りたらtrue
+	bool PickSlopeIndices(const std::vector<int>& _candidates, int _needNum, std::vector<int>& _result) const;
+
+	//パスを、既存の床に当たった所(または隣に来た所)で切る
+	// _path2D ... 通路のマスの並び(切ったものに書き換える)
+	// _a ... 部屋A(この部屋のマスは無視する)
+	// _map ... マップ
+	// _hB ... 切った場合は、つながる床の高さを入れる
+	void CutPathAtExisting(std::vector<Math::Vector2>& _path2D, const RoomInfo& _a, const std::vector<std::vector<FloorInfo>>& _map, int& _hB) const;
+
+	//高さを線形補間で割り振る(段差の場所が足りないときの予備)
+	// _path2D ... 通路のマスの並び
+	// _hA ... 始まりの高さ
+	// _hB ... 終わりの高さ
+	//戻り値 ... 高さつきのマスの並び
+	std::vector<Math::Vector3> AssignHeightsLinear(const std::vector<Math::Vector2>& _path2D, int _hA, int _hB) const;
+
 	//坂を置ける場所か調べて置く
 	// _map ... マップ
 	void SlopeCheck(std::vector<std::vector<FloorInfo>>* _map);
@@ -703,14 +738,16 @@ private:
 	// _map ... マップ
 	// _chunkNum ... チャンク番号
 	// _torchFlg ... 松明を置いたかを入れる先(nullptrなら置かない)
-	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& _map, Math::Vector2 _chunkNum, bool* _torchFlg = nullptr);
+	// _layerNum ... 何段ぶんの高さの壁にするか(1なら今までどおり1段)
+	std::shared_ptr<MapBase> CreateWallOrStairs(const Math::Vector3& _pos, float _rotYDegree, bool _isStairs, std::list<std::shared_ptr<MapBase>>* _ret, int _roomID, int _x, int _y, std::vector<std::vector<FloorInfo>>& _map, Math::Vector2 _chunkNum, bool* _torchFlg = nullptr, int _layerNum = 1);
 
 	//松明を置く
 	// _rotYDegree ... Y軸の回転(度)
 	// _pos ... 置く座標
 	// _spObj ... くっつける壁
 	// _chunk ... チャンク番号
-	void SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_spObj, Math::Vector2 _chunk);
+	//戻り値 ... 置けたらtrue
+	bool SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_spObj, Math::Vector2 _chunk);
 
 	//角なら設置
 	// _x ... マスのx

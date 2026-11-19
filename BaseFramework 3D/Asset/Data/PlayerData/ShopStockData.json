@@ -15,7 +15,7 @@
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "stock": 63
+            "stock": 76
         },
         {
             "id": 1,
@@ -25,12 +25,12 @@
         {
             "id": 2,
             "name": "AttackBoostPotion",
-            "stock": 3
+            "stock": 28
         },
         {
             "id": 3,
             "name": "InstantStaminaHealPotion",
-            "stock": 5
+            "stock": 35
         },
         {
             "id": 4,
@@ -45,7 +45,7 @@
         {
             "id": 6,
             "name": "StaminaRegenBoostPotion",
-            "stock": 3
+            "stock": 22
         }
     ],
     "weapons": [
