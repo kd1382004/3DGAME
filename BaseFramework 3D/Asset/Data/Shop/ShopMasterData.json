@@ -4,14 +4,14 @@
             "buyPrice": 500,
             "id": 0,
             "name": "WeaponStrengthening_Crystal1",
-            "sellPrice": 125,
+            "sellPrice": 150,
             "startStock": 5
         },
         {
             "buyPrice": 800,
             "id": 1,
             "name": "WeaponStrengthening_Crystal2",
-            "sellPrice": 200,
+            "sellPrice": 240,
             "startStock": 5
         }
     ],
@@ -20,49 +20,49 @@
             "buyPrice": 50,
             "id": 0,
             "name": "InstantHealPotion",
-            "sellPrice": 12,
+            "sellPrice": 15,
             "startStock": 5
         },
         {
             "buyPrice": 300,
             "id": 1,
             "name": "AttackBaseUPPotion",
-            "sellPrice": 75,
+            "sellPrice": 90,
             "startStock": 1
         },
         {
             "buyPrice": 100,
             "id": 2,
             "name": "AttackBoostPotion",
-            "sellPrice": 25,
+            "sellPrice": 30,
             "startStock": 3
         },
         {
             "buyPrice": 40,
             "id": 3,
             "name": "InstantStaminaHealPotion",
-            "sellPrice": 10,
+            "sellPrice": 12,
             "startStock": 5
         },
         {
             "buyPrice": 300,
             "id": 4,
             "name": "StaminaMaxUPPotion",
-            "sellPrice": 75,
+            "sellPrice": 90,
             "startStock": 1
         },
         {
             "buyPrice": 300,
             "id": 5,
             "name": "StaminaRegenBaseUPPotion",
-            "sellPrice": 75,
+            "sellPrice": 90,
             "startStock": 1
         },
         {
             "buyPrice": 80,
             "id": 6,
             "name": "StaminaRegenBoostPotion",
-            "sellPrice": 20,
+            "sellPrice": 24,
             "startStock": 3
         }
     ],
@@ -78,7 +78,7 @@
             "buyPrice": 1000,
             "id": 1,
             "name": "Sword",
-            "sellPrice": 0,
+            "sellPrice": 300,
             "startStock": 1
         }
     ]

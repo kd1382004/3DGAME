@@ -1,5 +1,6 @@
 ﻿#include "MapBase.h"
 #include"../../Camera/CameraBase.h"
+#include"../../../Scene/SceneManager.h"
 
 void MapBase::Init()
 {
@@ -60,7 +61,7 @@ void MapBase::DrawLit()
 
 	// ディゾルブ
 	float         edgeRange = 0.04f;
-	Math::Vector3 edgeColor = { 0.25f, 0.35f, 0.4f };
+	Math::Vector3 edgeColor = { SceneManager::Instance().GetFogCol() };
 	KdShaderManager::Instance().m_StandardShader.SetDissolve(m_fader.GetDissolve(), &edgeRange, &edgeColor);
 
 	KdShaderManager::Instance().m_StandardShader.SetUVTiling(m_uvTiling);

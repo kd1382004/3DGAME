@@ -116,6 +116,7 @@ void PrepareSceneDisplay::DrawSprite()
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
 		if (!m_spMenuTex[i]) { continue; }
+		if (!m_spNotMenuTex[i]) { continue; }
 
 		float w = m_menuDrawSiz[i].x;
 		float h = m_menuDrawSiz[i].y;
@@ -125,12 +126,25 @@ void PrepareSceneDisplay::DrawSprite()
 			w *= m_mouseHitScale;
 			h *= m_mouseHitScale;
 		}
+		//選ばれているか、マウスが乗っていたら明るい画像
+		const bool isSelect = IsMenuSelected(static_cast<PrepareMenu>(i)) || m_mouseHitFlg[i];
+		KdTexture* pTex;
+		
+		if (isSelect)
+		{
+			pTex = m_spMenuTex[i].get();
+		}
+		else
+		{
+			pTex = m_spNotMenuTex[i].get();
+		}
+		
 
 		//pivotを{0,0.5}にして左端基準で描画
 		KdShaderManager::Instance().m_spriteShader.DrawTex(
-			m_spMenuTex[i].get(),
+			pTex,
 			static_cast<int>(m_menuPos[i].x), static_cast<int>(m_menuPos[i].y),
-			w, h,
+			static_cast<int>(w), static_cast<int>(h),
 			nullptr, &kWhiteColor, { 0.0f, 0.5f });
 	}
 
@@ -145,6 +159,24 @@ void PrepareSceneDisplay::SetMoney(long _money)
 {
 	//マイナスにはしない
 	m_money = std::max(0L, _money);
+}
+
+bool PrepareSceneDisplay::IsMenuSelected(PrepareMenu _menu) const
+{
+	auto spScene = m_wpPrepareScene.lock();
+	if (!spScene) { return true; }
+
+	const PrepareScene::PrepareTab nowTab = spScene->GetCurrentTab();
+
+	//メニューとタブを対応させる(並び順が違うので1つずつ)
+	switch (_menu)
+	{
+	case PrepareMenu::Equip:   return nowTab == PrepareScene::PrepareTab::Equip;
+	case PrepareMenu::Shop:    return nowTab == PrepareScene::PrepareTab::Shop;
+	case PrepareMenu::Records: return nowTab == PrepareScene::PrepareTab::Records;
+	case PrepareMenu::Explore: return nowTab == PrepareScene::PrepareTab::None;
+	default:                   return false;
+	}
 }
 
 void PrepareSceneDisplay::Draw()
@@ -210,13 +242,26 @@ void PrepareSceneDisplay::LoadMenuTex()
 {
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
-		if (m_spMenuTex[i]) { continue; }
-
-		m_spMenuTex[i] = std::make_shared<KdTexture>();
-		if (!m_spMenuTex[i]->Load(m_menuTexPath[i]))
+		if (!m_spMenuTex[i])
 		{
-			KdDebugGUI::Instance().AddLog(U8("[Error] PrepareMenuの画像が読み込めません : %s\n"), m_menuTexPath[i].c_str());
+			m_spMenuTex[i] = std::make_shared<KdTexture>();
+			if (!m_spMenuTex[i]->Load(m_menuTexPath[i]))
+			{
+				KdDebugGUI::Instance().AddLog(U8("[Error] PrepareMenuの画像が読み込めません : %s\n"), m_menuTexPath[i].c_str());
+			}
 		}
+
+	
+
+		if (!m_spNotMenuTex[i])
+		{
+			m_spNotMenuTex[i] = std::make_shared<KdTexture>();
+			if (!m_spNotMenuTex[i]->Load(m_menuNotTexPath[i]))
+			{
+				KdDebugGUI::Instance().AddLog(U8("[Error] PrepareMenuの画像が読み込めません : %s\n"), m_menuTexPath[i].c_str());
+			}
+		}
+
 	}
 }
 

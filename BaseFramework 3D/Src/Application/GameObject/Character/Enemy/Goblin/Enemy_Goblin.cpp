@@ -133,27 +133,27 @@ void Goblin::PreUpdate()
 		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 		if (!spCamera) { return; }
 
-		if (CheckInScreen(spCamera->GetBoundingFrustum(), m_pos, m_viewDistance))
-		{
-			// 視界範囲描画
-			Math::Vector3 pos = GetPos();
-			Math::Vector3 eyePos = pos + Math::Vector3(0, 1.0f, 0);
-			Math::Vector3 dir = m_mWorld.Backward();
-			dir.Normalize();
+		//if (CheckInScreen(spCamera->GetBoundingFrustum(), m_pos, m_viewDistance))
+		//{
+		//	// 視界範囲描画
+		//	Math::Vector3 pos = GetPos();
+		//	Math::Vector3 eyePos = pos + Math::Vector3(0, 1.0f, 0);
+		//	Math::Vector3 dir = m_mWorld.Backward();
+		//	dir.Normalize();
 
-			// 壁などの遮蔽物を考慮した照射距離を算出
-			float lightDist = m_viewDistance;
+		//	// 壁などの遮蔽物を考慮した照射距離を算出
+		//	float lightDist = m_viewDistance;
 
-			// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
-			KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
-				{ 0.5f, 0.0f, 0.0f },			// 光の色・強度
-				lightDist,						// 遮蔽された照射距離
-				m_pos,							// 位置
-				dir,							// 前方方向
-				m_viewAngle * 0.5f,				// 照射角 
-				false
-			);
-		}
+		//	// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
+		//	KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
+		//		{ 0.5f, 0.0f, 0.0f },			// 光の色・強度
+		//		lightDist,						// 遮蔽された照射距離
+		//		m_pos,							// 位置
+		//		dir,							// 前方方向
+		//		m_viewAngle * 0.5f,				// 照射角 
+		//		false
+		//	);
+		//}
 	}
 
 }

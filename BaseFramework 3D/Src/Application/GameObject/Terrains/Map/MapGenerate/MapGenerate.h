@@ -282,7 +282,7 @@ private:
 	static const int kHeightLevel = 2;
 
 	//階層の最大数
-	static const int kHeightLevelMax = kHeightLevel + 1;
+	static const int kHeightLevelMax = kHeightLevel + 5;
 
 	//---- 通路の段差 ----
 
@@ -351,9 +351,9 @@ private:
 	struct RoomEnemyPercent
 	{
 		//敵の部屋
-		float m_enemyRoom = 0.2f;
+		float m_enemyRoom = 0.1f;
 		//敵の部屋以外
-		float m_notEnemyRoom = 0.15f;
+		float m_notEnemyRoom = 0.05f;
 		//安全な部屋
 		float m_safeRoom = 0.0f;
 	};

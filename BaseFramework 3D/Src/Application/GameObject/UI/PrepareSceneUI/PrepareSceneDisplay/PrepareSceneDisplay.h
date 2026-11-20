@@ -4,6 +4,8 @@
 
 class PrepareScene;
 
+enum PrepareMenu;
+
 class PrepareSceneDisplay :public UIBase
 {
 public:
@@ -55,6 +57,8 @@ public:
 	//所持金をセット
 	// _money ... 所持金
 	void SetMoney(long _money);
+
+
 
 private:
 
@@ -115,6 +119,9 @@ private:
 	//メニューボタンの画像
 	std::shared_ptr<KdTexture> m_spMenuTex[static_cast<int>(PrepareMenu::MenuSize)];
 
+	//メニューボタンの選ばれてないとき画像
+	std::shared_ptr<KdTexture> m_spNotMenuTex[static_cast<int>(PrepareMenu::MenuSize)];
+
 	//メニューボタンの位置
 	Math::Vector2 m_menuPos[static_cast<int>(PrepareMenu::MenuSize)];
 
@@ -134,6 +141,14 @@ private:
 		"Asset/Textures/Button/PrepareMenu/EquipButton.png",
 		"Asset/Textures/Button/PrepareMenu/ShopButton.png",
 		"Asset/Textures/Button/PrepareMenu/RecordsButton.png",
+	};
+	//メニューボタンの選ばれてない画像のパス(PrepareMenuの順)
+	const std::string m_menuNotTexPath[static_cast<int>(PrepareMenu::MenuSize)] =
+	{
+		"Asset/Textures/Button/PrepareMenu/ExploreButton_Unselected.png",
+		"Asset/Textures/Button/PrepareMenu/EquipButton_Unselected.png",
+		"Asset/Textures/Button/PrepareMenu/ShopButton_Unselected.png",
+		"Asset/Textures/Button/PrepareMenu/RecordsButton_Unselected.png",
 	};
 
 	//パネルの画像
@@ -268,4 +283,11 @@ private:
 
 	//Play履歴(RECORDS) … 履歴画面を開く
 	void OnRecords();
+
+
+	//メニューボタンが選ばれているかを返す
+	//タブを何も開いていないときは、全部選ばれている見た目にする
+	// _menu ... メニューの種類
+	//戻り値 ... 選ばれていればtrue
+	bool IsMenuSelected(PrepareMenu _menu) const;
 };

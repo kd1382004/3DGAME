@@ -101,6 +101,9 @@ public:
 	//戻り値 ... プレイヤーの武器
 	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_playerWeaponInfo; }
 
+
+	const Math::Vector3 GetFogCol() { return m_FOGCol; }
+
 	//---- 設定 ----
 
 	// 次のシーンをセット (次のフレームから切り替わる)

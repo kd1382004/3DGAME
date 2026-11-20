@@ -155,13 +155,48 @@ void Dagger::Update()
 
 
 			m_hitCharactersList.push_back(spGameObj);
-			float damage = m_characterAttackPower * (m_baseWeaponStatus.m_attackPower + (m_chargeLV * 0.2)) + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2) * 10;
+			//攻撃の強化：1段階ごとに +20%(強化なしで1.0倍、Lv5で2.0倍)
+			const float strengthenRate = 1.0f + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2f;
+			float damage = m_characterAttackPower * (m_baseWeaponStatus.m_attackPower + (m_chargeLV * 0.2f)) * strengthenRate;
 			damage *= GetComboDamageRate();   // コンボの段のダメージ倍率
 			Math::Vector3 dir = currTipPos - m_prevTipPos;
 			if (dir.LengthSquared() < 0.0001f) dir = Math::Vector3::Forward;
-
 			// 当てる前に生きていたか（とどめの判定用）
 			const bool wasAlive = !spGameObj->GetIsDead();
+
+	
+
+			if (m_spHitSE)
+			{
+				m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				m_spHitSE->Play();
+			}
+
+			// ---- エフェクト・ダメージ表示の位置を求める ----
+			// 刃の根元→先端へレイを飛ばして、敵の表面に当たった点を使う
+			Math::Vector3 effectPos = currTipPos;	// 当たらなかったときは刃の先端
+			{
+				Math::Vector3 bladeDir = currTipPos - currBasePos;
+				const float bladeLen = bladeDir.Length();
+				if (bladeLen > 0.0001f)
+				{
+					bladeDir /= bladeLen;
+
+					KdCollider::RayInfo ray;
+					ray.m_pos = currBasePos;
+					ray.m_dir = bladeDir;
+					ray.m_range = bladeLen;
+					ray.m_type = KdCollider::TypeDamage;
+
+					std::list<KdCollider::CollisionResult> rayResults;
+					if (spGameObj->Intersects(ray, &rayResults) && !rayResults.empty())
+					{
+						effectPos = rayResults.front().m_hitPos;
+					}
+				}
+			}
+
+			KdEffekseerManager::GetInstance().Play("Hit/Weapon/Dagger/Hit_Dagger.efkefc", effectPos, 3.0f, 1.0f, false);
 
 			spGameObj->OnAttackHit(
 				damage,
@@ -170,7 +205,7 @@ void Dagger::Update()
 				m_baseWeaponStatus.m_startup,
 				false,
 				m_defenseIgnore,
-				results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
+				&effectPos	// 当たった位置
 			);
 
 			// ヒットストップ（段・チャージ・最後の段・とどめで強弱をつける）
@@ -185,16 +220,6 @@ void Dagger::Update()
 				const float shakePower = hitStopTime * 1.6f + m_chargeLV * 0.03f;
 				spParent->CameraShake(shakeTime, shakePower);
 			}
-
-			if (m_spHitSE)
-			{
-				m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-				m_spHitSE->Play();
-			}
-
-
-			//エフェクト
-			KdEffekseerManager::GetInstance().Play("Hit/Weapon/Dagger/Hit_Dagger.efkefc", results.begin()->m_hitPos, 3.0f, 1.0f, false);
 		}
 	}
 
@@ -403,7 +428,8 @@ void Dagger::ChargeAttackPlay()
 {
 	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
 	{
-		m_chargeAttackMaxDamage = m_characterAttackPower + (m_baseWeaponStatus.m_attackPower * (m_chargeLV * 0.2)) * (1 + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2);
+		//チャージ攻撃：(武器倍率 + チャージ段階×0.2) × 強化倍率(1段階ごとに +20%)
+		m_chargeAttackMaxDamage = m_characterAttackPower * (m_baseWeaponStatus.m_attackPower + m_chargeLV * 0.2f) * (1.0f + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2f);
 
 		std::shared_ptr<Dagger_ChargeAttack>spDagger_ChargeAttack;
 

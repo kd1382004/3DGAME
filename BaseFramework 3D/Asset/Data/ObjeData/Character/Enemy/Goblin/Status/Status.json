@@ -1,12 +1,12 @@
 {
     "HP": {
-        "baseHP": 120.0
+        "baseHP": 900.0
     },
     "LV": {
         "LV": 1
     },
     "attck": {
-        "baseAttckPowe": 12.0
+        "baseAttckPowe": 120.0
     },
     "defense": {
         "baseDefensePowe": 12.0

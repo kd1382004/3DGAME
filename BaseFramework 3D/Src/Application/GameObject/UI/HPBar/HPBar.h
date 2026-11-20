@@ -51,6 +51,10 @@ public:
 	// _LV ... レベル
 	void SetLV(int _LV);
 
+	void SetMaxHP(float _maxHP) { m_maxHP = _maxHP; }
+
+	void SetDrawMemoryFlg(bool _flg) { m_drawMemoryFlg = _flg; }
+
 	//---- その他の処理 ----
 
 	//画面上の座標をセット(バーの左端の位置も計算する)
@@ -91,6 +95,9 @@ private:
 	//HPバー本体
 	std::shared_ptr<KdTexture>m_spHPBarTex = nullptr;
 
+	//HPバーメモリ
+	std::shared_ptr<KdTexture>m_spHPMemoryTex = nullptr;
+
 	//本体の描画位置
 	Math::Vector2 m_HPBarTex2DPos = Math::Vector2::Zero;
 
@@ -101,7 +108,7 @@ private:
 	Math::Rectangle  m_HPBarTexRect;
 
 	//色
-	Math::Color  	m_HPBarTexColor = { 0.35f, 0.85f, 0.30f, 1.0f };
+	Math::Color  	m_HPBarTexColor = { 0.35f, 0.85f, 0.30f, 0.8f };
 
 	//パーセント
 	float m_HPBarTexPercent = 1;
@@ -116,7 +123,7 @@ private:
 	Math::Vector2 m_HPBarDelayTex2DPos = Math::Vector2::Zero;
 
 	//色
-	Math::Color  m_HPBarDelayTexColor = { 0.85f, 0.2f, 0.15f, 1.0f };
+	Math::Color  m_HPBarDelayTexColor = { 0.85f, 0.2f, 0.15f, 0.8f };
 
 	//画像の切り取り範囲
 	Math::Rectangle  m_HPBarDelayTexRect;
@@ -143,4 +150,12 @@ private:
 
 	//遅れて減るバーの描画前の処理
 	void HPBarDelayPreDraw();
+
+
+	//1目盛りあたりのHP
+	const float m_hpPerScale = 100.0f;
+
+	float m_maxHP = 0;
+
+	bool m_drawMemoryFlg = false;
 };

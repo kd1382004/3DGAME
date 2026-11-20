@@ -1,5 +1,5 @@
 ﻿#include "MapObjBase.h"
-
+#include"../../../Scene/SceneManager.h"
 void MapObjBase::DrawModelWithFade(KdModelWork& _model, bool _isEdge)
 {
 
@@ -10,7 +10,7 @@ void MapObjBase::DrawModelWithFade(KdModelWork& _model, bool _isEdge)
 	if (_isEdge)
 	{
 		float         edgeRange = 0.04f;
-		Math::Vector3 edgeColor = { 0.25f, 0.35f, 0.4f };
+		Math::Vector3 edgeColor = { SceneManager::Instance().GetFogCol()};
 		shader.SetDissolve(m_fader.GetDissolve(), &edgeRange, &edgeColor);
 	}
 	else

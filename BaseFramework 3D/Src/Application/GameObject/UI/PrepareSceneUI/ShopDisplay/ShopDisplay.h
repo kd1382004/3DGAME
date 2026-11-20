@@ -406,10 +406,10 @@ private:
 	const float m_infoButtonX = 536.0f;
 
 	//1行目の真ん中のy
-	const float m_infoRow0Y = -49.0f;
+	const float m_infoRow0Y = -45.0f;
 
 	//下の行へずらす量
-	const float m_infoRowSpace = 44.0f;
+	const float m_infoRowSpace = 37.0f;
 
 	//買う・売るボタンの横幅
 	const float m_buttonW = 92.0f;
@@ -507,6 +507,33 @@ private:
 	//所持金の「G」(40×42)の真ん中のx
 	const float m_moneyGoldX = 586.0f;
 
+	//---- 購入価格・売却価格(左右2列) ----
+
+	//左の列(購入)の真ん中のx
+	const float m_buyColCenterX = 355.0f;
+
+	//右の列(売却)の真ん中のx
+	const float m_sellColCenterX = 512.0f;
+
+	//ラベル(購入価格・売却価格)の真ん中のy
+	const float m_priceLabelY = -114.0f;
+
+	//値段(数字と G)の真ん中のy
+	const float m_priceNumY = -144.0f;
+
+	//ボタン(購入・売却)の真ん中のy
+	const float m_priceButtonY = -181.0f;
+
+	//列の真ん中から、数字の右端まで
+	const float m_priceNumOffsetX = 20.0f;
+
+	//列の真ん中から、「G」の真ん中まで
+	const float m_priceGoldOffsetX = 44.0f;
+
+	//値段の数字の最大幅
+	const float m_priceNumMaxW = 80.0f;
+
+
 	//---- 描画 ----
 
 	//画像を描く
@@ -535,10 +562,11 @@ private:
 	// _maxW      ... 超えてはいけない横幅(0なら制限なし。超えるときは横を縮める)
 	void DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _siz = 2.0f, bool _separator = false, float _maxW = 0.0f);
 
-	//右の欄の買値・売値を描く(数字は右揃え、「G」はいつも同じ位置)
-	// _price ... 値段
-	// _rowY  ... その行の真ん中のy
-	void DrawPrice(long _price, float _rowY);
+	//値段の列(ラベル・数字・「G」)を描く
+	// _label   ... ラベルの画像(購入価格・売却価格)
+	// _price   ... 値段
+	// _centerX ... 列の真ん中のx
+	void DrawPrice(ShopTex _label, long _price, float _centerX);
 
 	//右の欄の1行目の右側に「在庫 〇」を描く
 	// _stock ... 在庫の数
@@ -730,4 +758,13 @@ private:
 	//今の在庫・持ち物・お金をJSONに保存する(買った・売った後に呼ぶ)
 	//ShopStockData.json と PlayerInventoryData.json を書き換える
 	void SaveShopData();
+
+
+	//「購入」ボタンの真ん中を返す
+	//戻り値 ... 座標
+	Math::Vector2 GetBuyButtonPos() const { return { m_buyColCenterX, m_priceButtonY }; }
+
+	//「売却」ボタンの真ん中を返す
+	//戻り値 ... 座標
+	Math::Vector2 GetSellButtonPos() const { return { m_sellColCenterX, m_priceButtonY }; }
 };

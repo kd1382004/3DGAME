@@ -11,7 +11,7 @@ void Slope::Init()
 	if (!m_pCollider)
 	{
 		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape("Slope", m_spModel, KdCollider::TypeGround | KdCollider::TypeCameraOcclusion/*| KdCollider::TypeBump*/);
+		m_pCollider->RegisterCollisionShape("Slope", m_spModel, KdCollider::TypeGround | KdCollider::TypeCameraOcclusion);
 	}
 
 	MapBase::Init();

@@ -364,6 +364,9 @@ protected:
 	//座標
 	Math::Vector3 m_pos;
 
+	//前のフレーム座標
+	Math::Vector3 m_prevPos;
+
 	//サイズ
 	float m_siz = 1.0f;
 

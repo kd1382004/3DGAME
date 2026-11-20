@@ -307,7 +307,7 @@ void Giant::AttackMode()
 			m_moveVec = m_playerPos - m_pos;
 			m_moveVec.Normalize();
 		}
-
+		m_giantAttackMode = GiantAttackMode::JumpSlamAttack;
 		switch (m_giantAttackMode)
 		{
 		case Giant::LeftPunchAttack:
@@ -604,6 +604,8 @@ void Giant::AttackJumpSlamUpdate()
 		JumpSlamAttackMode_JumpSlamAttackUpdate();
 		break;
 	case Giant::JumpSlamAttackMode_Idle:
+		//待機へのクロスフェード中もジャンプアニメの前進が混ざるので打ち消す
+		AttackJumpSlamAnimeUpdate();
 		JumpSlamAttackMode_IdleUpdate();
 		break;
 	default:

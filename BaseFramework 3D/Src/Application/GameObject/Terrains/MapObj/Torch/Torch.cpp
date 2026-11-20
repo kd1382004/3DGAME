@@ -63,16 +63,13 @@ void Torch::Init()
 	m_effectLocalPos = { 0.0f, 1.0f,-0.7f };
 
 
-	m_effectLocalColor = { 20,8,0 };
+	m_effectLocalColor = { 24, 10, 2 };
 
 	m_radius = 25;
 }
 
 void Torch::PostUpdate()
 {
-
-
-
 	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
 	if (!spCamera) { return; }
 	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
@@ -83,7 +80,7 @@ void Torch::PostUpdate()
 	// 周期の違う波を重ねて、規則的に見えないようにする
 	float wave = std::sin(m_flickerTime * 7.0f) * 0.6f
 		+ std::sin(m_flickerTime * 13.0f + 1.3f) * 0.3f
-		+ std::sin(m_flickerTime * 23.0f + 2.7f) * 0.1f; // -1～1の範囲
+		+ std::sin(m_flickerTime * 23.0f + 2.7f) * 0.1f; 
 
 	float radius = m_radius * (1.0f + wave * m_flickerAmount);
 

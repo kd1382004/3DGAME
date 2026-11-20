@@ -690,7 +690,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 
 				{
-					//tenzyou
+					//天井
 					std::shared_ptr<FloorBase> spMapA = std::make_shared<FloorBase>();
 
 					Math::Vector3 floorPos = pos;
@@ -777,19 +777,19 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			switch (m_roomInfoList[i][j].m_roomType)
 			{
 			case RoomType_EnemyRoom:
-				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_enemyRoom);
+				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(std::round(m_roomInfoList[i].size() * m_roomEnemyPercent.m_enemyRoom));
 				if (m_roomInfoList[i][j].m_roomEnemyNum == 0) { m_roomInfoList[i][j].m_roomEnemyNum = 1; }
 				break;
 			case RoomType_TreasureChestRoom:
-				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_notEnemyRoom);
+				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(std::round(m_roomInfoList[i].size() * m_roomEnemyPercent.m_notEnemyRoom));
 				if (m_roomInfoList[i][j].m_roomEnemyNum == 0) { m_roomInfoList[i][j].m_roomEnemyNum = 1; }
 				break;
 			case RoomType_SafeRoom:
 			case RoomType_PlayerSpawn:
-				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(m_roomInfoList[i].size() * m_roomEnemyPercent.m_safeRoom);
+				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(std::round(m_roomInfoList[i].size() * m_roomEnemyPercent.m_safeRoom));
 				break;
 			case RoomType_Stairs:
-				m_roomInfoList[i][j].m_roomEnemyNum = static_cast<int>(1);
+				m_roomInfoList[i][j].m_roomEnemyNum = 1;
 				break;
 			default:
 				break;
@@ -1116,11 +1116,9 @@ void MapGenerate::PlaceRoomsRandom(const Math::Vector2& _mapSiz, int& _roomNum, 
 			for (int t = 0; t < maxTry; t++)
 			{
 				//////////////////////////////////////////
-				// 部屋のサイズ決定(縦横とも奇数にする)
+				// 部屋のサイズ決定
 				int roomW = KdRandom::GetInt(m_roomMin, m_roomMax);
 				int roomH = KdRandom::GetInt(m_roomMin, m_roomMax);
-				if (roomW % 2 == 0) { roomW += 1; }
-				if (roomH % 2 == 0) { roomH += 1; }
 
 				//////////////////////////////////////////
 				// 部屋の左上番号

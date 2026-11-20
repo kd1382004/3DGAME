@@ -111,10 +111,12 @@ public:
 	//ライトありの描画
 	void DrawLit()override;
 
+	void DrawBright()override;
+
 	//---- 取得 ----
 
 	//攻撃力を返す
-	int GetAttack();
+	float GetAttack();
 
 	// 武器強化
 	// 配列 m_weaponsStrengtheningInfo は常に「index = 種類(WeaponStrengtheningID)」

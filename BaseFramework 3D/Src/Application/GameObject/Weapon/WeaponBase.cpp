@@ -41,9 +41,21 @@ void WeaponBase::DrawLit()
 
 }
 
-int WeaponBase::GetAttack()
+void WeaponBase::DrawBright()
 {
-	return (m_baseWeaponStatus.m_attackPower + (m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2));
+	if (m_attackFlg && m_tPolyFlg)
+	{
+		if (m_spTPoly)
+		{
+			KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spTPoly);
+		}
+	}
+}
+
+float WeaponBase::GetAttack()
+{
+	//武器倍率 × 強化倍率(1段階ごとに +20%)
+	return m_baseWeaponStatus.m_attackPower * (1.0f + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2f);
 }
 
 void WeaponBase::SetAttackFlg(bool _flg)

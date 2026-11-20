@@ -39,6 +39,8 @@ public:
 	// _siz ... 倍率
 	void SetSiz(float _siz) { m_siz = _siz; }
 
+	void SetMaxStamina(float _maxStamina) { m_maxStamina = _maxStamina; }
+
 	//---- その他の処理 ----
 
 	//画面上の座標をセット(バーの左端の位置も計算する)
@@ -88,5 +90,14 @@ private:
 
 	//パーセント
 	float m_staminaBarTexPercent = 1;
+
+
+	//スタミナバーメモリ
+	std::shared_ptr<KdTexture>m_spstaminaMemoryTex = nullptr;
+
+	//1目盛りあたりのスタミナ
+	const float m_staminaPerScale = 10.0f;
+
+	float m_maxStamina = 0;
 };
 

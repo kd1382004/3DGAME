@@ -14,6 +14,12 @@ void HPBar::Init()
 		m_HPBarBackTexRect = { 0,0,(long)m_HPBarBackTexLength.x,(long)m_HPBarBackTexLength.y };
 	}
 
+	if (!m_spHPMemoryTex)
+	{
+		m_spHPMemoryTex = std::make_shared<KdTexture>();
+		m_spHPMemoryTex->Load("Asset/Textures/GameUI/HPBar/HPBarScaleTex.png");
+	}
+
 	if (!m_spHPBarTex)
 	{
 		m_spHPBarTex = std::make_shared<KdTexture>();
@@ -67,6 +73,8 @@ void HPBar::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarBackTex, m_HPBarBackTex2DPos.x, m_HPBarBackTex2DPos.y, m_HPBarBackTexLength.x * m_siz, m_HPBarBackTexLength.y * m_siz, &m_HPBarBackTexRect, &kWhiteColor, pivot);
 	}
 
+	
+
 	//HPバー本体
 	if (m_spHPBarTex)
 	{
@@ -80,6 +88,39 @@ void HPBar::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarTex, m_HPBarDelayTex2DPos.x, m_HPBarDelayTex2DPos.y, m_HPBarTexLength.x * m_siz * m_HPBarDelayTexPercent * m_HPBarTexProgress, m_HPBarTexLength.y * m_siz, &m_HPBarDelayTexRect, &m_HPBarDelayTexColor, pivot);
 	}
 
+	//Hpバーメモリ
+	if (m_spHPMemoryTex&& m_drawMemoryFlg)
+	{
+		//バー本体の左端と横幅(画面上)
+		const float barLeft = m_HPBarTex2DPos.x;
+		const float barWidth = m_HPBarTexLength.x * m_siz;
+
+		//目盛りの大きさ(画像の大きさ × 拡大率)
+		const int memoryW = static_cast<int>(m_spHPMemoryTex->GetWidth() * m_siz);
+		const int memoryH = static_cast<int>(m_spHPMemoryTex->GetHeight() * m_siz);
+
+		for (float hp = m_hpPerScale; hp < m_maxHP; hp += m_hpPerScale)
+		{
+			//最大HPに対する割合(0〜1)
+			float rate = hp / m_maxHP;
+
+			//バーの左端から、その割合だけ右(ドット絵なので整数に丸める)
+			int x = static_cast<int>(std::round(barLeft + barWidth * rate));
+
+			//減った部分の目盛りは少し薄くする
+			Math::Color memoryColor = { 0,0,0,1 };
+			if ((rate >= m_HPBarTexPercent))
+			{
+				memoryColor = { 0,0,0,0.4 };
+			}
+
+			//x の位置に目盛りを描く(バーと同じく左端・上下中央を基準)
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPMemoryTex,
+				x, m_HPBarTex2DPos.y,
+				memoryW, memoryH,
+				nullptr, &memoryColor, pivot);
+		}
+	}
 
 	//アイコン用フレーム
 	if (m_spHPBarIconFrameTex)

@@ -270,7 +270,7 @@ private:
 
 	//描画チャンク
 	//縦横に更新チャンクに対して+-xyずつ
-	Math::Vector2  m_drawChunkRadius = { 1, 1 };
+	Math::Vector2  m_drawChunkRadius = { 0, 0 };
 
 	//チャンクを囲むボックス
 	Math::Vector3 m_boxPos;

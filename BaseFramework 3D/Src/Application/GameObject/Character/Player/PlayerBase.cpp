@@ -431,11 +431,13 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
 		spHPBar->Init();
 		spHPBar->SetSiz(2);
+		spHPBar->SetMaxHP(m_status.m_HP.m_maxHP);
 		spHPBar->Set2DPos({ 0,-260 });
 		spHPBar->SetDrawFlg(true);
 		spHPBar->SetLV(m_status.m_LV);
 		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
 		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
+		spHPBar->SetDrawMemoryFlg(true);
 		m_wpHPBar = spHPBar;
 		_spUIManager->AddUIObj(spHPBar);
 
@@ -446,6 +448,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 		spStaminaGauge->Init();
 		spStaminaGauge->SetSiz(2);
 		spStaminaGauge->Set2DPos({ 0,-290 });
+		spStaminaGauge->SetMaxStamina(m_status.m_stamina.m_staminaMax);
 		m_wpStaminaGauge = spStaminaGauge;
 		_spUIManager->AddUIObj(spStaminaGauge);
 
@@ -490,6 +493,7 @@ void PlayerBase::AddMaxHP(int _boost, bool _flg)
 	if (spHPBar)
 	{
 		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
+		spHPBar->SetMaxHP(m_status.m_HP.m_maxHP);
 		spHPBar->SetHPBarTexPercent(percent);
 	}
 }
@@ -640,6 +644,7 @@ void PlayerBase::HPHeal(int _heal)
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
+		spHPBar->SetMaxHP(m_status.m_HP.m_maxHP);
 		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
 		spHPBar->SetHPBarTexPercentNODelayOffset(percent);
 	}

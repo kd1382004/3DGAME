@@ -387,8 +387,7 @@ float4 main(VSOutput In) : SV_Target0
 	}
 
 
-	totalBrightness = saturate(totalBrightness);
-	outColor *= totalBrightness;
+
 	
 	//------------------------------------------
 	// 距離フォグ
@@ -412,6 +411,9 @@ float4 main(VSOutput In) : SV_Target0
 			outColor += g_dissolveEmissive;
 		}
 	}
+
+	totalBrightness = saturate(totalBrightness);
+	outColor *= totalBrightness;
 	
 	//------------------------------------------
 	// 出力

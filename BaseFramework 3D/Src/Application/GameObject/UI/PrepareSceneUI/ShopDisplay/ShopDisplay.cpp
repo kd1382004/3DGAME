@@ -199,11 +199,16 @@ void ShopDisplay::DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos
 	KdShaderManager::Instance().m_spriteShader.Begin(false);
 }
 
-void ShopDisplay::DrawPrice(long _price, float _rowY)
+void ShopDisplay::DrawPrice(ShopTex _label, long _price, float _centerX)
 {
-	// 右端を m_infoPriceRightX にそろえる(桁が変わっても「G」の位置は動かない)
-	DrawNum(_price, RAligned, { m_infoPriceRightX, _rowY }, 2.0f, true, m_infoValueMaxW);
-	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { m_infoGoldX, _rowY - 1.0f });
+	//ラベル(購入価格・売却価格)
+	DrawTex(m_spTex[static_cast<int>(_label)], { _centerX, m_priceLabelY });
+
+	//数字(右揃え。桁が変わっても「G」の位置は動かない)
+	DrawNum(_price, RAligned, { _centerX + m_priceNumOffsetX, m_priceNumY }, 2.0f, true, m_priceNumMaxW);
+
+	//「G」
+	DrawTex(m_spTex[static_cast<int>(ShopTex::Gold)], { _centerX + m_priceGoldOffsetX, m_priceNumY - 1.0f });
 }
 
 void ShopDisplay::DrawStock(int _stock)
@@ -361,15 +366,13 @@ void ShopDisplay::DrawDetail()
 		const bool canBuy = (item.m_stock >= m_count) && (m_money >= buyTotal);
 		const bool canSell = (have >= m_count);
 
-		// 買値 〇 G [買う]
-		DrawInfoLabel(ShopTex::BuyPriceLabel, 2);
-		DrawPrice(buyTotal, GetInfoRowY(2));
-		DrawButton(ShopButton::Buy, { m_infoButtonX, GetInfoRowY(2) }, canBuy);
+		// 購入価格 | 売却価格(ラベルと値段)
+		DrawPrice(ShopTex::BuyPriceLabel, buyTotal, m_buyColCenterX);
+		DrawPrice(ShopTex::SellPriceLabel, sellTotal, m_sellColCenterX);
 
-		// 売値 〇 G [売る]
-		DrawInfoLabel(ShopTex::SellPriceLabel, 3);
-		DrawPrice(sellTotal, GetInfoRowY(3));
-		DrawButton(ShopButton::Sell, { m_infoButtonX, GetInfoRowY(3) }, canSell);
+		// [購入] | [売却]
+		DrawButton(ShopButton::Buy, GetBuyButtonPos(), canBuy);
+		DrawButton(ShopButton::Sell, GetSellButtonPos(), canSell);
 	}
 	else if (m_tab == ShopTab::Weapon && m_selectIndex < PlayerWeaponInfoSize)
 	{
@@ -389,24 +392,24 @@ void ShopDisplay::DrawDetail()
 		DrawTex(m_spTex[static_cast<int>(owned ? ShopTex::Have : ShopTex::NotHave)], { m_haveTextX, GetInfoRowY(0) });
 
 		// 在庫 〇(同じ行の右側)
-		DrawStock(item.m_stock);
+		DrawStock(owned ? 0 : item.m_stock);
 
-		// 買値(持っていたら ー)
-		DrawInfoLabel(ShopTex::BuyPriceLabel, 1);
+		// 左の列:購入価格(持っていたら ー)
 		if (owned)
 		{
-			DrawTex(m_spTex[static_cast<int>(ShopTex::Dash)], { m_dashX, GetInfoRowY(1) + 1.0f });
+			DrawTex(m_spTex[static_cast<int>(ShopTex::BuyPriceLabel)], { m_buyColCenterX, m_priceLabelY });
+			DrawTex(m_spTex[static_cast<int>(ShopTex::Dash)], { m_buyColCenterX, m_priceNumY + 1.0f });
 		}
 		else
 		{
-			DrawPrice(item.m_buyPrice, GetInfoRowY(1));
+			DrawPrice(ShopTex::BuyPriceLabel, item.m_buyPrice, m_buyColCenterX);
 		}
 
-		// 武器は売れないので、売値の行と売るボタンは出さない
+		// 武器は売れないので、売却価格と売却ボタンは出さない
 
-		// 買える:持っていない・在庫あり・お金が足りる
+		// 左の列:[購入]
 		const bool canBuy = !owned && item.m_stock > 0 && m_money >= item.m_buyPrice;
-		DrawButton(ShopButton::Buy, { m_infoButtonX, GetInfoRowY(1) }, canBuy);
+		DrawButton(ShopButton::Buy, GetBuyButtonPos(), canBuy);
 	}
 }
 
@@ -746,8 +749,9 @@ void ShopDisplay::BuySellUpdate()
 	const int buyRow = IsStackTab() ? 2 : 1;
 	const int sellRow = buyRow + 1;
 
-	const Math::Vector2 buyPos = { m_infoButtonX, GetInfoRowY(buyRow) };
-	const Math::Vector2 sellPos = { m_infoButtonX, GetInfoRowY(sellRow) };
+	//ボタンの位置は描画と同じ関数から取る(ずれないように)
+	const Math::Vector2 buyPos = GetBuyButtonPos();
+	const Math::Vector2 sellPos = GetSellButtonPos();
 
 	bool success = false;
 	if (m_clickFlg && MouseHit(buyPos, m_buttonW, m_buttonH))

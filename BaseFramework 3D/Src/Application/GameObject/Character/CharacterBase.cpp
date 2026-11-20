@@ -123,6 +123,7 @@ void CharacterBase::AddMaxStamina(float _boost)
 	if (spStaminaGauge)
 	{
 		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
+		spStaminaGauge->SetMaxStamina(m_status.m_stamina.m_staminaMax);
 	}
 }
 
@@ -319,6 +320,7 @@ void CharacterBase::OnAttackHit(float _damage, float _knockbackDistance, const M
 	if (spHPBar)
 	{
 		float percent = m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP;
+		spHPBar->SetMaxHP(m_status.m_HP.m_maxHP);
 		spHPBar->SetHPBarTexPercent(percent);
 	}
 
@@ -347,6 +349,7 @@ void CharacterBase::StaminaHeal(float _amount)
 	if (spStaminaGauge)
 	{
 		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
+		spStaminaGauge->SetMaxStamina(m_status.m_stamina.m_staminaMax);
 	}
 
 
@@ -423,6 +426,7 @@ void CharacterBase::StaminaManager()
 	std::shared_ptr<StaminaGage>spStaminaGauge = m_wpStaminaGauge.lock();
 	if (spStaminaGauge)
 	{
+		spStaminaGauge->SetMaxStamina(m_status.m_stamina.m_staminaMax);
 		spStaminaGauge->SetStaminaBarTexPercent(m_status.m_stamina.m_staminaNow / m_status.m_stamina.m_staminaMax);
 	}
 }
@@ -671,13 +675,26 @@ void CharacterBase::CollisionUpdate()
 	rayInfo.m_pos = GetPos();
 	// 少し高いところから飛ばす(段差の許容範囲)
 	static float enableStepHigh = 0.6f;
-	rayInfo.m_pos.y += enableStepHigh;
 
 	// レイの発射方向を設定
 	rayInfo.m_dir = Math::Vector3::Down;
+	
+	// 前のフレームからの横の移動距離(高さは無視)
+	Math::Vector3 moveDiff = m_pos - m_prevPos;
+	moveDiff.y = 0.0f;
+	float moveXZ = moveDiff.Length();
 
-	// 段差登りの許容範囲
-	rayInfo.m_range = enableStepHigh;
+	// ワープなどで大きく飛んだときに、始点が上の階まで行かないようにする
+	moveXZ = std::min(moveXZ, 2.0f);
+
+	// 段差登りの許容範囲(45度の坂なら、横に動いた分だけ地面が高くなる)
+	float startUp = enableStepHigh + moveXZ;
+
+	// 始点を少し高いところにする
+	rayInfo.m_pos.y += startUp;
+
+	// まずは始点から足元までの長さ
+	rayInfo.m_range = startUp;
 
 	// 階段・坂を下る際の吸着用に、下方向への到達距離を確保（接地中かつ上昇ジャンプ中でない場合）
 	if (m_groundHit && m_gravity >= 0.0f)
@@ -803,4 +820,7 @@ void CharacterBase::CollisionUpdate()
 	{
 		m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range);
 	}
+
+
+	m_prevPos = m_pos;
 }
