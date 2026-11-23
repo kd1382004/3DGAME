@@ -456,7 +456,7 @@ void Sword_FinalSlash::Burst()
 	// 弾けた瞬間に画面を大きく揺らす（当たらなくても揺らす）
 	if (std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock())
 	{
-		spCamera->Shake(0.35f, 0.25f);
+		spCamera->Shake(0.6f, 1);
 	}
 
 }

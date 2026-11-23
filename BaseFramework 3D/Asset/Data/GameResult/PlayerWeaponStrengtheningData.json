@@ -60,55 +60,55 @@
             "Lv": 0,
             "nextLvNum": 2,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 115
+            "strengtheningItemNum": 121
         },
         "body": {
             "Lv": 1,
             "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 115
+            "strengtheningItemNum": 121
         },
         "characteristic": {
-            "Lv": 0,
-            "nextLvNum": 5,
-            "strengtheningFlg": true,
-            "strengtheningItemNum": 91
+            "Lv": 3,
+            "nextLvNum": 7,
+            "strengtheningFlg": false,
+            "strengtheningItemNum": 98
         },
         "characteristic1": {
-            "Lv": 0,
-            "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 91
+            "Lv": 1,
+            "nextLvNum": 6,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 98
         },
         "characteristic2": {
             "Lv": 0,
             "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 91
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 98
         },
         "characteristic3": {
             "Lv": 0,
             "nextLvNum": 5,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 91
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 98
         },
         "chargeTime": {
             "Lv": 0,
             "nextLvNum": 2,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 115
+            "strengtheningItemNum": 121
         },
         "defenseIgnore": {
             "Lv": 0,
             "nextLvNum": 2,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 115
+            "strengtheningItemNum": 121
         },
         "stamina": {
             "Lv": 0,
             "nextLvNum": 2,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 115
+            "strengtheningItemNum": 121
         }
     }
 }
