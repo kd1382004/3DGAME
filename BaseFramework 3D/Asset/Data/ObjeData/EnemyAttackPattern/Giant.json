@@ -43,8 +43,8 @@
                         {
                             "p": 0.5,
                             "type": "CameraShake",
-                            "power": 0.15,
-                            "time": 0.3
+                            "power": 0.4,
+                            "time": 0.35
                         }
                     ],
                     "m_specialType": ""
@@ -103,8 +103,8 @@
                         {
                             "p": 0.45,
                             "type": "CameraShake",
-                            "power": 0.3,
-                            "time": 0.5
+                            "power": 1.0,
+                            "time": 0.6
                         }
                     ],
                     "m_specialType": ""

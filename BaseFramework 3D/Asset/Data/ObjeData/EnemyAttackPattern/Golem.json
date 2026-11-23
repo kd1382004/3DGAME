@@ -27,8 +27,8 @@
                         },
                         {
                             "p": 0.552,
-                            "power": 0.2,
-                            "time": 0.4,
+                            "power": 0.6,
+                            "time": 0.5,
                             "type": "CameraShake"
                         }
                     ],
@@ -195,8 +195,8 @@
                         },
                         {
                             "p": 0.586,
-                            "power": 0.3,
-                            "time": 0.5,
+                            "power": 0.8,
+                            "time": 0.6,
                             "type": "CameraShake"
                         }
                     ],
@@ -264,8 +264,8 @@
                         },
                         {
                             "p": 0.575,
-                            "power": 0.25,
-                            "time": 0.45,
+                            "power": 0.65,
+                            "time": 0.5,
                             "type": "CameraShake"
                         }
                     ],
