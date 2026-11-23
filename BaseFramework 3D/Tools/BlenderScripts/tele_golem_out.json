@@ -1,0 +1,42 @@
+{
+ "smash": {
+  "old_last": 120,
+  "new_last": 134,
+  "apex": 47,
+  "impact": 64,
+  "apex_new": 47,
+  "hold": 14
+ },
+ "SmashQuick": {
+  "old_last": 77,
+  "new_last": 96,
+  "apex": 29,
+  "impact": 37,
+  "apex_new": 36,
+  "hold": 12
+ },
+ "SwipeR": {
+  "old_last": 66,
+  "new_last": 83,
+  "apex": 18,
+  "impact": 22,
+  "apex_new": 23,
+  "hold": 12
+ },
+ "SwipeL": {
+  "old_last": 66,
+  "new_last": 83,
+  "apex": 18,
+  "impact": 22,
+  "apex_new": 23,
+  "hold": 12
+ },
+ "Stomp": {
+  "old_last": 70,
+  "new_last": 88,
+  "apex": 30,
+  "impact": 33,
+  "apex_new": 36,
+  "hold": 12
+ }
+}

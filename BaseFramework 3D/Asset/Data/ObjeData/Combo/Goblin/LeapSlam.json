@@ -7,16 +7,16 @@
 			"cancelPoint": 9.9,
 			"comboIndex": 0,
 			"damageRate": 1.2,
-			"evasionCancel": 0.62,
-			"hitEnd": 0.62,
-			"hitStart": 0.48,
+			"evasionCancel": 0.729,
+			"hitEnd": 0.729,
+			"hitStart": 0.629,
 			"hitStopTime": 0.07,
 			"knockbackRate": 1.5,
 			"speed": 1.0,
 			"staminaCost": 0.0,
 			"stepForward": 0.0,
-			"trailEnd": 0.62,
-			"trailStart": 0.48
+			"trailEnd": 0.729,
+			"trailStart": 0.629
 		}
 	],
 	"version": 1,

@@ -154,6 +154,9 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy">
       <UniqueIdentifier>{91008ba2-1edf-454c-8a0f-c1d57b6a1aff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Attack">
+      <UniqueIdentifier>{890852ef-e90a-4779-956b-221e4938d336}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\GameObject\Character\Enemy\EnemyAmbush">
       <UniqueIdentifier>{53105968-1db1-4ca1-9ff9-a43dfd9ea4fa}</UniqueIdentifier>
     </Filter>
@@ -687,6 +690,9 @@
     <ClInclude Include="Src\Application\GameObject\Weapon\Dagger\Dagger.h">
       <Filter>Src\Application\GameObject\Weapon\Dagger</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Attack\AttackShape.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Attack</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\EnemyBase.h">
       <Filter>Src\Application\GameObject\Character\Enemy</Filter>
     </ClInclude>
@@ -1213,6 +1219,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Weapon\Dagger\Dagger.cpp">
       <Filter>Src\Application\GameObject\Weapon\Dagger</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Attack\AttackShape.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Attack</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\EnemyBase.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy</Filter>

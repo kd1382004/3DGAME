@@ -1,15 +1,13 @@
 ﻿#include "Golem.h"
 #include"../../../Camera/CameraBase.h"
 
-//攻撃
-#include"Attack/SmashAttack/SmashAttack.h"
-
 #include"../../../../Scene/SceneManager.h"
 void Golem::Init()
 {
 	EnemyAmbush::Init();
 	m_wanderRadius = 50;
 	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/Golem/Status/Status.json";
+	m_patternFilePath = "Asset/Data/ObjeData/EnemyAttackPattern/Golem.json";
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
@@ -68,6 +66,10 @@ void Golem::Init()
 	m_playerChaseDir = 3;
 	m_playerChaseResumeDir = 3.5f;
 	m_material = EnemyMaterial::Stone;
+
+	//攻撃パターン
+	m_attackWaitNowMax = m_attackWaitMax;
+	LoadAttackPatterns();
 }
 
 void Golem::Update()
@@ -77,11 +79,8 @@ void Golem::Update()
 	{
 		if (!m_spAnimator) { return; }
 
-		// 死亡時に出しっぱなしの攻撃判定を必ず消す
-		if (auto spAttack = m_wpAttack.lock())
-		{
-			spAttack->FinishAttack_Slamming();
-		}
+		// 死亡時に出しっぱなしの攻撃判定を必ず消す(再生速度も戻る)
+		CancelPattern();
 
 		if (m_spAnimator->IsAnimationEnd())
 		{
@@ -103,7 +102,21 @@ void Golem::Update()
 		EnemyAmbush::Update();
 	}
 
-	Attack();
+	//パターン攻撃(待ち時間・選ぶ・段を進める・攻撃ゲージ。EnemyBase)
+	UpdatePatternAttack();
+
+	//攻撃中は EnemyAmbush::Update を呼ばないので、向き直し・踏み込みをここで行列に反映する
+	if (m_attackFlg)
+	{
+		Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
+		Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_angle));
+		m_mWorld = rMat * tMat;
+
+		if (m_spCrying3DSE && m_spCrying3DSE->IsPlaying())
+		{
+			m_spCrying3DSE->SetPos(m_pos);
+		}
+	}
 
 	if (m_animeChangeFlg)
 	{
@@ -119,39 +132,13 @@ void Golem::PreUpdate()
 
 
 	HPPosPostUpdate();
-
-	if (!m_playerChaseFlg && m_isVisionFlg)
-	{
-		std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
-		if (!spCamera) { return; }
-
-		if (CheckInScreen(spCamera->GetBoundingFrustum(), m_pos, m_viewDistance))
-		{
-
-			// 視界範囲描画
-			Math::Vector3 dir = m_mWorld.Backward();
-			dir.Normalize();
-			Math::Vector3 pos = GetPos();
-			Math::Vector3 eyePos = pos + Math::Vector3(0, 1.0f, 0) + dir * 2;
-
-			// 壁などの遮蔽物を考慮した照射距離を算出
-			float lightDist = m_viewDistance;
-
-			// スポットライトを追加 (色, 照射距離, 位置, 方向, 照射角度)
-			KdShaderManager::Instance().WorkAmbientController().AddSpotLight(
-				{ 0.5f, 0.0f, 0.0f },			// 光の色・強度
-				lightDist,						// 遮蔽された照射距離
-				m_pos,							// 位置
-				dir,							// 前方方向
-				m_viewAngle * 0.5f,				// 照射角 
-				false
-			);
-		}
-	}
 }
 
 void Golem::Release()
 {
+	//攻撃の当たり判定が残っていたら消す
+	CancelPattern();
+
 	if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); m_spWalk3DSE = nullptr; }
 	if (m_spCrying3DSE) { m_spCrying3DSE->Stop(); m_spCrying3DSE = nullptr; }
 	if (m_spSmash3DSE) { m_spSmash3DSE->Stop(); m_spSmash3DSE = nullptr; }
@@ -212,15 +199,7 @@ void Golem::ChangeAnime()
 		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dashAnime), 0.2f, true);
 		break;
 	case EnemyBase::EnemyAnimeMode_Attack:
-		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_smashAnime), 0.1f, false);
-		m_attackFlg = true;
-		// 攻撃を始めるときのうなり声
-		if (m_spCrying3DSE)
-		{
-			m_spCrying3DSE->SetPos(m_pos);
-			m_spCrying3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-			m_spCrying3DSE->Play(false);
-		}
+		//攻撃のアニメは段を始めるとき(EnemyBase::StartStep)に切り替える
 		break;
 	case EnemyBase::EnemyAnimeMode_Die:
 		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(m_golemAnimeName.m_dieAnime), 0.2f, false);
@@ -232,131 +211,13 @@ void Golem::ChangeAnime()
 	m_animeChangeFlg = false;
 }
 
-void Golem::Attack()
+void Golem::OnPatternStart()
 {
-	if (m_isDead) { return; }
-
-	//もし見失ってたら何もしない
-	if (!m_playerChaseFlg)
+	// 攻撃を始めるときのうなり声
+	if (m_spCrying3DSE)
 	{
-		m_attackFlg = false;
-
-		//中身あったら消す
-		std::shared_ptr<AttackBase>spAttack = m_wpAttack.lock();
-		if (spAttack)
-		{
-			spAttack->FinishAttack_Slamming();
-			m_hitTriggered = false;
-		}
-
-		return;
+		m_spCrying3DSE->SetPos(m_pos);
+		m_spCrying3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		m_spCrying3DSE->Play(false);
 	}
-
-
-
-
-	if (m_attackFlg)
-	{
-		std::shared_ptr<AttackBase>spAttack = m_wpAttack.lock();
-
-		if (m_spAnimator)
-		{
-			//アニメーションが終わったら攻撃終了
-			if (m_spAnimator->IsAnimationEnd())
-			{
-				m_attackFlg = false;
-				m_attackWait = m_attackWaitMax;
-
-				m_animeChangeFlg = true;
-				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
-				m_hitTriggered = false;
-
-				if (spAttack)
-				{
-					spAttack->FinishAttack_Slamming();
-				}
-			}
-			else
-			{
-				if (spAttack && !m_hitTriggered)
-				{
-					spAttack->SetAngleY(m_angle);
-				}
-
-				float progress = m_spAnimator->GetTime() / m_spAnimator->GetMaxLength();
-
-				if (progress > m_smashAttackAnimeHitTriggerTime && !m_hitTriggered)
-				{
-
-					if (spAttack)
-					{
-						m_hitTriggered = true;
-						spAttack->SetAttackFlg(true);
-						spAttack->SetAttackPower(NowAttack());
-
-						// ゴーレムの向いている方向に少し前（叩いた場所）
-						const float rad = DirectX::XMConvertToRadians(m_angle);
-						Math::Vector3 smashPos = m_pos + Math::Vector3{ sinf(rad), 0, cosf(rad) } * 1.5f;	// 1.5 は腕の長さに合わせて調整
-						smashPos.y = m_pos.y;	// 地面の高さ
-
-						KdEffekseerManager::GetInstance().Play("EnemyAttack/Golem/Golem_Smash.efkefc", smashPos, 2.0f, 1.0f, false);
-
-						// 叩きつけの音
-						if (m_spSmash3DSE)
-						{
-							m_spSmash3DSE->SetPos(smashPos);
-							m_spSmash3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-							m_spSmash3DSE->Play(false);
-						}
-
-						// 叩きつけで画面を揺らす（近いほど強い）
-						CameraShakeAt(smashPos, 0.4f, 0.2f, 30.0f);
-					}
-				}
-
-			}
-		}
-
-
-
-	}
-	else
-	{
-		//プレイヤーとの距離が近かったら攻撃開始
-		if ((m_pos - m_playerPos).Length() < 5)
-		{
-			if (!m_attackFlg)
-			{
-				if (m_attackWait > 0)
-				{
-					m_attackWait -= DeltaTime::Instance().GetGameDeltaTime();
-				}
-				else
-				{
-					m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Attack;
-					m_animeChangeFlg = true;
-
-					std::shared_ptr<SmashAttack>spAttack = std::make_shared<SmashAttack>();
-					m_wpAttack = spAttack;
-					spAttack->SetPos(m_pos);
-					spAttack->SetPlayer(m_wpPlayer.lock());
-					SceneManager::Instance().AddObject(spAttack);
-
-
-					m_moveVec = m_playerPos - m_pos;
-					m_moveVec.Normalize();
-
-				}
-			}
-		}
-
-	}
-
-
-
-
-
-
-	SetAttackGaugePercent(m_attackWait / m_attackWaitMax);
 }
-

@@ -205,4 +205,7 @@ private:
 
 	//シーンのイベント(毎フレーム)
 	void Event() override;
+
+	//敵の攻撃パターンを読み直す(エディターで保存したときに呼ぶ)
+	void ReloadEnemyAttackPatterns();
 };

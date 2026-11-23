@@ -12,23 +12,23 @@
             "m_name": "Slam",
             "m_stepExtras": [
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.304,
                     "m_cancelRootMotion": false,
                     "m_events": [
                         {
                             "name": "EnemyAttack/Goblin/Goblin_Slam.efkefc",
-                            "p": 0.55,
+                            "p": 0.679,
                             "type": "Effect"
                         },
                         {
                             "name": "Asset/Sound/SE/Enemy/Goblin/Slam.wav",
-                            "p": 0.55,
+                            "p": 0.679,
                             "type": "Sound"
                         }
                     ],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.304,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
@@ -36,7 +36,7 @@
                 }
             ],
             "m_waitAfter": 0,
-            "m_weight": 3
+            "m_weight": 3.0
         },
         {
             "m_comboFilePath": "Asset/Data/ObjeData/Combo/Goblin/SlapLR.json",
@@ -51,24 +51,24 @@
             "m_name": "SlapLR",
             "m_stepExtras": [
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.334,
                     "m_cancelRootMotion": false,
                     "m_events": [],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.334,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
                     "m_warnStart": 0.0
                 },
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.334,
                     "m_cancelRootMotion": false,
                     "m_events": [],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.334,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
@@ -76,7 +76,7 @@
                 }
             ],
             "m_waitAfter": 1.0,
-            "m_weight": 2.6500000953674316
+            "m_weight": 3.0
         },
         {
             "m_comboFilePath": "Asset/Data/ObjeData/Combo/Goblin/Triple.json",
@@ -92,45 +92,45 @@
             "m_name": "Triple",
             "m_stepExtras": [
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.334,
                     "m_cancelRootMotion": false,
                     "m_events": [],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.334,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
                     "m_warnStart": 0.0
                 },
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.334,
                     "m_cancelRootMotion": false,
                     "m_events": [],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.334,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
                     "m_warnStart": 0.0
                 },
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.304,
                     "m_cancelRootMotion": false,
                     "m_events": [
                         {
                             "name": "EnemyAttack/Goblin/Goblin_Slam.efkefc",
-                            "p": 0.55,
+                            "p": 0.679,
                             "type": "Effect"
                         },
                         {
                             "name": "Asset/Sound/SE/Enemy/Goblin/Slam.wav",
-                            "p": 0.55,
+                            "p": 0.679,
                             "type": "Sound"
                         },
                         {
-                            "p": 0.55,
+                            "p": 0.679,
                             "power": 0.2,
                             "time": 0.15,
                             "type": "CameraShake"
@@ -138,7 +138,7 @@
                     ],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.304,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
@@ -146,7 +146,7 @@
                 }
             ],
             "m_waitAfter": 2.0,
-            "m_weight": 1.5499999523162842
+            "m_weight": 1.5
         },
         {
             "m_comboFilePath": "Asset/Data/ObjeData/Combo/Goblin/ChargeSlam.json",
@@ -160,42 +160,38 @@
             "m_name": "ChargeSlam",
             "m_stepExtras": [
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.278,
                     "m_cancelRootMotion": false,
                     "m_events": [
                         {
-                            "name": "Asset/Sound/SE/Enemy/Goblin/CryingSound.wav",
-                            "p": 0.02,
-                            "type": "Sound"
-                        },
-                        {
                             "name": "EnemyAttack/Goblin/Goblin_Slam.efkefc",
-                            "p": 0.74,
+                            "p": 0.781,
                             "type": "Effect"
                         },
                         {
                             "name": "Asset/Sound/SE/Enemy/Goblin/Slam.wav",
-                            "p": 0.74,
+                            "p": 0.781,
                             "type": "Sound"
                         },
                         {
-                            "p": 0.74,
+                            "p": 0.781,
                             "power": 0.35,
                             "time": 0.25,
                             "type": "CameraShake"
                         }
                     ],
+                    "m_hitForward": 1.5,
                     "m_hitRadius": 1.8,
                     "m_hitShape": "Circle",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.278,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
-                    "m_warnStart": 0.35
+                    "m_warnStart": 0.325
                 }
             ],
             "m_waitAfter": 2.5,
-            "m_weight": 0.0
+            "m_weight": 1.0
         },
         {
             "m_comboFilePath": "Asset/Data/ObjeData/Combo/Goblin/Feint.json",
@@ -210,24 +206,24 @@
             "m_name": "Feint",
             "m_stepExtras": [
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.277,
                     "m_cancelRootMotion": false,
                     "m_events": [],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.277,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
                     "m_warnStart": 0.0
                 },
                 {
-                    "m_aimLockEnd": 0.3,
+                    "m_aimLockEnd": 0.334,
                     "m_cancelRootMotion": false,
                     "m_events": [],
                     "m_hitRadius": 1.0,
                     "m_hitShape": "Bone",
-                    "m_moveEnd": 0.3,
+                    "m_moveEnd": 0.334,
                     "m_moveStart": 0.0,
                     "m_moveType": "None",
                     "m_specialType": "",
@@ -235,7 +231,7 @@
                 }
             ],
             "m_waitAfter": 1.5,
-            "m_weight": 2.200000047683716
+            "m_weight": 1.0
         },
         {
             "m_comboFilePath": "Asset/Data/ObjeData/Combo/Goblin/LeapSlam.json",
@@ -245,30 +241,25 @@
             ],
             "m_maxDistance": 9,
             "m_minDistance": 4.5,
-            "m_minLV": 1,
+            "m_minLV": 4,
             "m_name": "LeapSlam",
             "m_stepExtras": [
                 {
-                    "m_aimLockEnd": 0.35,
+                    "m_aimLockEnd": 0.354,
                     "m_cancelRootMotion": false,
                     "m_events": [
                         {
-                            "name": "Asset/Sound/SE/Enemy/Goblin/CryingSound.wav",
-                            "p": 0.0,
-                            "type": "Sound"
-                        },
-                        {
                             "name": "EnemyAttack/Goblin/Goblin_Slam.efkefc",
-                            "p": 0.55,
+                            "p": 0.679,
                             "type": "Effect"
                         },
                         {
                             "name": "Asset/Sound/SE/Enemy/Goblin/Slam.wav",
-                            "p": 0.55,
+                            "p": 0.679,
                             "type": "Sound"
                         },
                         {
-                            "p": 0.55,
+                            "p": 0.679,
                             "power": 0.25,
                             "time": 0.2,
                             "type": "CameraShake"
@@ -276,15 +267,15 @@
                     ],
                     "m_hitRadius": 1.5,
                     "m_hitShape": "Circle",
-                    "m_moveEnd": 0.48,
-                    "m_moveStart": 0.1,
+                    "m_moveEnd": 0.629,
+                    "m_moveStart": 0.101,
                     "m_moveType": "LeapToTarget",
                     "m_specialType": "",
-                    "m_warnStart": 0.35
+                    "m_warnStart": 0.354
                 }
             ],
             "m_waitAfter": 2.0,
-            "m_weight": 0.0
+            "m_weight": 2.0
         }
     ],
     "version": 1

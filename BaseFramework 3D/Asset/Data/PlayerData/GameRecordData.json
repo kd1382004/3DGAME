@@ -50,10 +50,10 @@
             "Weapon": 0
         },
         "DisplayFloor": 1,
-        "EnemyKillCount": 0,
-        "GetMoney": 0,
-        "PlayDate": 1795417655,
-        "PlayTimeSc": 4.69399881362915,
+        "EnemyKillCount": 1,
+        "GetMoney": 100,
+        "PlayDate": 1795443901,
+        "PlayTimeSc": 35.78899002075195,
         "PlayerDead": true,
         "TreasureChestsNum": 0
     }

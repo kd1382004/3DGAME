@@ -7,6 +7,7 @@ class GameScene;
 class EnemyCrowdController;
 class EnemyManager;
 class AttackGage;
+class AttackShape;
 
 
 struct Node;
@@ -19,6 +20,7 @@ enum class AttackHitShape
 {
 	Bone,		// m_hitNodes の骨に付ける(今までと同じ)
 	Circle,		// 地面に円で出す(範囲攻撃)
+	Box,		// 敵の前に箱で出す(ボスのパンチなど)
 };
 
 //段の中での動き方
@@ -56,8 +58,10 @@ struct AttackStepExtra
 	float                    m_moveEnd = 0.3f;					// 動き終わる進行度
 	bool                     m_cancelRootMotion = false;		// アニメ自体の前後の動きを打ち消すか
 	AttackHitShape           m_hitShape = AttackHitShape::Bone;	// 当たり判定の形
-	float                    m_hitRadius = 1.0f;				// Circle の半径
-	float                    m_warnStart = 0.0f;				// 予告の円を出し始める進行度(Circle のとき)
+	float                    m_hitRadius = 1.0f;				// Bone・Circle の半径
+	Math::Vector3            m_hitBoxSize = { 1.0f, 1.0f, 1.0f };	// Box の大きさの半分(横・高さ・奥行き)
+	float                    m_hitForward = 0.0f;				// Circle・Box を敵の前何mに出すか(LeapToTarget のときは着地点に出すので使わない)
+	float                    m_warnStart = 0.0f;				// 予告を出し始める進行度(Circle・Box のとき)
 	std::vector<AttackEvent> m_events;							// エフェクト・音・画面の揺れ
 	std::string              m_specialType;						// 一品物の名前(空なら使わない)
 };
@@ -201,6 +205,9 @@ public:
 	//_ignoreRate ... 防御無視
 	// _hitPos ... 当たった位置(ダメージ数字を出す場所。nullptrなら頭の上)
 	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos = nullptr)override;
+
+	//攻撃パターンを読み直す(エディターで保存したときに呼ぶ。パターンを使わない敵は何もしない)
+	void ReloadAttackPatterns();
 
 protected:
 
@@ -377,8 +384,9 @@ protected:
 
 	//距離・LV・重み・クールタイムで次のパターンを選ぶ(進め方5で使う)
 	// _distance ... プレイヤーとの距離
+	// _ignoreCooldown ... trueならクールタイム中のパターンも候補に入れる(普通に選べなかったときの2回目用)
 	//戻り値 ... 選んだパターンの番号(選べなければ-1)
-	int SelectPattern(float _distance);
+	int SelectPattern(float _distance, bool _ignoreCooldown = false);
 
 	//今のパターン(攻撃していなければnullptr)
 	const AttackPattern* GetNowPattern() const;
@@ -404,11 +412,54 @@ protected:
 	static AttackStepExtra StepExtraFromJson(const nlohmann::json& _j);
 
 
+	//プレイヤーの方をすぐ向く(m_angle と m_moveVec をプレイヤーへの向きにする)
 	void FaceToPlayer();
 
 	//今の段の踏み込み(m_stepForward)を進める
 	// _progress ... 今の段の進行度(0〜1)
 	void UpdateStepForward(float _progress);
+
+	//パターン攻撃の毎フレームの処理(待ち時間・選ぶ・段を進める・攻撃ゲージ)
+	//各敵の Update から呼ぶ
+	void UpdatePatternAttack();
+
+	//パターンを始める
+	// _patternIndex ... m_patternList の番号
+	void StartPattern(int _patternIndex);
+
+	//段を始める(向き直し・アニメの切り替え・当たり判定の作り直し)
+	// _stepIndex ... 何段目か(0が1段目)
+	void StartStep(int _stepIndex);
+
+	//攻撃中の毎フレームの処理(移動・当たり判定・イベント・次の段へ・終わり)
+	void UpdateStep();
+
+	//パターンを終わる(クールタイム・待ち時間を入れて走りに戻す)
+	void EndPattern();
+
+	//パターンをこの場でやめる(当たり判定を消して番号を-1に戻すだけ。アニメも待ち時間も触らない)
+	//死んだとき・見失ったとき・解放するときに使う
+	void CancelPattern();
+
+	//今の段の当たり判定の中心(形と動き方で決まる)
+	//戻り値 ... 中心の位置
+	Math::Vector3 GetStepHitCenter() const;
+
+	//今の段のイベント(エフェクト・音・画面の揺れ)を出す
+	// _progress ... 今の段の進行度(0〜1)
+	void UpdateStepEvents(float _progress);
+
+	//今の段の飛びかかり(LeapToTarget)を進める
+	// _progress ... 今の段の進行度(0〜1)
+	void UpdateStepLeap(float _progress);
+
+	//パターンを始めたときに呼ばれる(叫び声など。敵ごとに override する)
+	virtual void OnPatternStart() {}
+
+	//m_specialType が入っている段で、毎フレーム呼ばれる(一品物の攻撃。敵ごとに override する)
+	// _specialType ... 段の m_specialType
+	// _progress ... 今の段の進行度(0〜1)
+	virtual void UpdateSpecialStep(const std::string& _specialType, float _progress) {}
 
 
 
@@ -441,11 +492,11 @@ protected:
 	//この段のイベントを出したか(m_events と同じ数。進め方7で使う)
 	std::vector<bool> m_eventDone;
 
-	//跳んだ位置(LeapToTarget 用。進め方7で使う)
-	Math::Vector3 m_jumpStartPos = Math::Vector3::Zero;
+	//跳んだ位置(LeapToTarget 用)
+	Math::Vector3 m_leapStartPos = Math::Vector3::Zero;
 
-	//着地点(LeapToTarget・Circle 用。進め方7で使う)
-	Math::Vector3 m_targetPos = Math::Vector3::Zero;
+	//着地点(LeapToTarget 用)
+	Math::Vector3 m_leapTargetPos = Math::Vector3::Zero;
 
 	//アニメの再生速度の倍率(段の m_speed。攻撃していないときは1)
 	float m_animeSpeedRate = 1.0f;
@@ -455,4 +506,22 @@ protected:
 
 	//ひるむ割合(攻撃中に、最大HPのこの割合以上のダメージを受けたら攻撃が止まる。0以下ならひるまない)
 	float m_flinchRate = 0.15f;
+
+	//パターン攻撃中か
+	bool m_attackFlg = false;
+
+	//パターン攻撃の当たり判定
+	std::weak_ptr<AttackShape> m_wpPatternAttack;
+
+	//攻撃待機時間(秒。m_waitAfter が0のパターンの後に使う)
+	float m_attackWaitMax = 5.0f;
+
+	//次の攻撃までの待機時間(秒)
+	float m_attackWait = 5.0f;
+
+	//ふっとばし距離の基準(段の m_knockbackRate を掛ける)
+	float m_patternKnockbackDistance = 1.0f;
+
+	//アニメの前後の動きを打ち消す骨の名前(m_cancelRootMotion 用。空なら打ち消さない)
+	std::string m_rootMotionNodeName;
 };

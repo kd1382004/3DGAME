@@ -106,6 +106,26 @@ void GameScene::ImGUI()
 			editor.m_draw(&editor.m_open);
 		}
 	}
+
+	//敵の攻撃パターンを保存したら、敵がすぐ読み直す
+	if (m_spEnemyAttackPatternEditor && m_spEnemyAttackPatternEditor->PopSaved())
+	{
+		ReloadEnemyAttackPatterns();
+	}
+}
+
+void GameScene::ReloadEnemyAttackPatterns()
+{
+	if (!m_spEnemyManager) { return; }
+
+	//パターンを使っていない敵は何もしない(EnemyBase::ReloadAttackPatterns)
+	for (const std::shared_ptr<EnemyBase>& spEnemy : m_spEnemyManager->GetEnemyList())
+	{
+		if (spEnemy)
+		{
+			spEnemy->ReloadAttackPatterns();
+		}
+	}
 }
 
 void GameScene::Init()
@@ -399,6 +419,9 @@ void GameScene::Init()
 	// エディターで保存したら、プレイヤーが使っているファイルならすぐ読み直す
 	m_spComboStepEditor->SetOnSaved([this](const std::string& _path)
 		{
+			//敵のコンボファイルかもしれないので、敵の攻撃パターンも読み直す
+			ReloadEnemyAttackPatterns();
+
 			if (!m_spPlayer) { return; }
 
 			const std::string saved = std::filesystem::path(_path).lexically_normal().generic_string();

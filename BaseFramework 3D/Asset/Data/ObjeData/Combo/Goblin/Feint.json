@@ -4,19 +4,19 @@
 		{
 			"acceptStart": 9.9,
 			"animeName": "Attack.004",
-			"cancelPoint": 0.8,
+			"cancelPoint": 0.84,
 			"comboIndex": 0,
 			"damageRate": 0.9,
-			"evasionCancel": 0.67,
-			"hitEnd": 0.67,
-			"hitStart": 0.56,
+			"evasionCancel": 0.736,
+			"hitEnd": 0.736,
+			"hitStart": 0.648,
 			"hitStopTime": 0.05,
 			"knockbackRate": 1.0,
 			"speed": 1.0,
 			"staminaCost": 0.0,
 			"stepForward": 0.2,
-			"trailEnd": 0.67,
-			"trailStart": 0.56
+			"trailEnd": 0.736,
+			"trailStart": 0.648
 		},
 		{
 			"acceptStart": 9.9,
@@ -24,16 +24,16 @@
 			"cancelPoint": 9.9,
 			"comboIndex": 1,
 			"damageRate": 0.9,
-			"evasionCancel": 0.5,
-			"hitEnd": 0.5,
-			"hitStart": 0.34,
+			"evasionCancel": 0.652,
+			"hitEnd": 0.652,
+			"hitStart": 0.541,
 			"hitStopTime": 0.05,
 			"knockbackRate": 1.0,
 			"speed": 1.4,
 			"staminaCost": 0.0,
 			"stepForward": 0.3,
-			"trailEnd": 0.5,
-			"trailStart": 0.34
+			"trailEnd": 0.652,
+			"trailStart": 0.541
 		}
 	],
 	"version": 1,

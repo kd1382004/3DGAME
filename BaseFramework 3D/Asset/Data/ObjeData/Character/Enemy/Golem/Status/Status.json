@@ -12,9 +12,9 @@
         "baseDefensePowe": 40.0
     },
     "moveSpeed": {
-        "baseSpeed": 5,
-        "runMovePowe": 8.0,
-        "walkMovePowe": 4.0
+        "baseSpeed": 3.0,
+        "runMovePowe": 6.0,
+        "walkMovePowe": 1.0
     },
     "stamina": {
         "dashStaminaDrainPerSec": 10.0,

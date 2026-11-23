@@ -1,6 +1,8 @@
 ﻿#include "EnemyBase.h"
 #include"../../Camera/CameraBase.h"
 #include"../../Weapon/ComboStep/ComboStepSaveLoad.h"
+#include"Attack/AttackShape.h"
+#include"../../../Scene/SceneManager.h"
 #include"../../../Scene/GameScene/GameScene.h"
 
 //プレイヤー
@@ -367,7 +369,21 @@ void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math:
 {
 	m_playerChaseFlg = true;
 
+	//実際に減ったHPを知るために、当たる前のHPを覚えておく(ひるみ用)
+	const float hpBefore = m_status.m_HP.m_nowHP;
+
 	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
+
+	//ひるみ：パターン攻撃中に、最大HPの m_flinchRate 以上のダメージを受けたら攻撃を止める
+	if (m_attackFlg && !m_isDead && m_flinchRate > 0.0f)
+	{
+		m_flinchValue += std::max(0.0f, hpBefore - m_status.m_HP.m_nowHP);
+		if (m_flinchValue >= m_status.m_HP.m_maxHP * m_flinchRate)
+		{
+			m_flinchValue = 0.0f;
+			EndPattern();	//待ち時間とクールタイムは普通に入る
+		}
+	}
 
 	// エフェクトを出す位置：当たった位置。分からないときはキャラの座標
 	const Math::Vector3 effectPos = _hitPos ? *_hitPos : m_pos;
@@ -395,6 +411,9 @@ void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math:
 
 void EnemyBase::Release()
 {
+	//パターン攻撃の当たり判定が残っていたら消す
+	CancelPattern();
+
 	std::shared_ptr<HPBar>spHPBar = m_wpHPBar.lock();
 	if (spHPBar)
 	{
@@ -509,6 +528,25 @@ void EnemyBase::EnemyAnimeModeUpdate()
 
 	//攻撃中は段の m_speed の速さで再生する(攻撃していなければ1)
 	m_spAnimator->AdvanceTime(m_spCharaModel->WorkNodes(), 60 * m_animeSpeedRate);
+
+	//m_cancelRootMotion の段は、アニメ自体の前後の動き(腰の骨の x・z)を打ち消す
+	//(Giant の AttackJumpSlamAnimeUpdate と同じ。上下の動きは残す)
+	if (m_attackFlg && !m_rootMotionNodeName.empty())
+	{
+		const AttackStepExtra* extra = GetNowStepExtra();
+		if (extra && extra->m_cancelRootMotion)
+		{
+			auto* rootNode = m_spCharaModel->FindWorkNode(m_rootMotionNodeName);
+			if (rootNode)
+			{
+				Math::Vector3 trans = rootNode->m_localTransform.Translation();
+				trans.x = 0;
+				trans.z = 0;
+				rootNode->m_localTransform.Translation(trans);
+			}
+		}
+	}
+
 	m_spCharaModel->CalcNodeMatrices();
 }
 
@@ -850,7 +888,7 @@ void EnemyBase::UpdatePatternCooldown()
 	}
 }
 
-int EnemyBase::SelectPattern(float _distance)
+int EnemyBase::SelectPattern(float _distance, bool _ignoreCooldown)
 {
 	std::vector<int> Candidate;
 
@@ -870,7 +908,7 @@ int EnemyBase::SelectPattern(float _distance)
 		{
 			continue;
 		}
-		if (list.m_cooldownTimer > 0)
+		if (!_ignoreCooldown && list.m_cooldownTimer > 0)
 		{
 			continue;
 		}
@@ -975,8 +1013,18 @@ AttackStepExtra EnemyBase::StepExtraFromJson(const nlohmann::json& _j)
 	extra.m_cancelRootMotion = _j.value("m_cancelRootMotion", extra.m_cancelRootMotion);
 
 	// 当たり判定の形
-	if (_j.value("m_hitShape", std::string("Bone")) == "Circle") { extra.m_hitShape = AttackHitShape::Circle; }
+	const std::string hitShape = _j.value("m_hitShape", std::string("Bone"));
+	if (hitShape == "Circle") { extra.m_hitShape = AttackHitShape::Circle; }
+	else if (hitShape == "Box") { extra.m_hitShape = AttackHitShape::Box; }
 	extra.m_hitRadius = _j.value("m_hitRadius", extra.m_hitRadius);
+	extra.m_hitForward = _j.value("m_hitForward", extra.m_hitForward);
+
+	// 箱の大きさの半分 [横, 高さ, 奥行き]
+	if (_j.contains("m_hitBoxSize") && _j["m_hitBoxSize"].is_array() && _j["m_hitBoxSize"].size() == 3)
+	{
+		const nlohmann::json& size = _j["m_hitBoxSize"];
+		extra.m_hitBoxSize = { size[0].get<float>(), size[1].get<float>(), size[2].get<float>() };
+	}
 	extra.m_warnStart = _j.value("m_warnStart", extra.m_warnStart);
 
 	// イベント
@@ -1046,4 +1094,367 @@ void EnemyBase::UpdateStepForward(float _progress)
 		m_pos = nextPos;
 	}
 	m_stepForwardDone = target;
+}
+
+void EnemyBase::ReloadAttackPatterns()
+{
+	//パターンを使わない敵は何もしない
+	if (m_patternFilePath.empty()) { return; }
+
+	//攻撃中なら終わらせてから読み直す(番号がずれないように)
+	if (m_attackFlg)
+	{
+		EndPattern();
+	}
+
+	LoadAttackPatterns();
+}
+
+void EnemyBase::UpdatePatternAttack()
+{
+	if (m_isDead) { return; }
+
+	UpdatePatternCooldown();
+
+	//もし見失ってたら攻撃をやめる
+	if (!m_playerChaseFlg)
+	{
+		CancelPattern();
+		return;
+	}
+
+	if (m_attackFlg)
+	{
+		//攻撃中は段を進める
+		UpdateStep();
+	}
+	else if (!m_patternList.empty())
+	{
+		if (m_attackWait > 0)
+		{
+			//次の攻撃までの待ち
+			m_attackWait -= DeltaTime::Instance().GetGameDeltaTime();
+		}
+		else
+		{
+			//距離・LV・重み・クールタイムで選ぶ(-1なら今は出せる技がない)
+			const float distance = (m_pos - m_playerPos).Length();
+			int patternIndex = SelectPattern(distance);
+
+			//クールタイムのせいでこの距離の技が全部使えないときは、クールタイムを無視してもう一度選ぶ
+			//(ゲージがたまったのに何もしない、をなくす。待ち時間があるので連発にはならない)
+			if (patternIndex < 0)
+			{
+				patternIndex = SelectPattern(distance, true);
+			}
+
+			if (patternIndex >= 0)
+			{
+				StartPattern(patternIndex);
+			}
+		}
+	}
+
+	//今回の待ちの長さで割る(0では割らない)
+	const float gauge = (m_attackWaitNowMax > 0.0f) ? m_attackWait / m_attackWaitNowMax : 0.0f;
+	SetAttackGaugePercent(gauge);
+}
+
+void EnemyBase::StartPattern(int _patternIndex)
+{
+	if (_patternIndex < 0 || _patternIndex >= (int)m_patternList.size()) { return; }
+
+	m_nowPatternIndex = _patternIndex;
+	m_attackFlg = true;
+	m_flinchValue = 0.0f;	//ひるみ値はパターンごとに数え直す
+	m_enemyAnimeMode = EnemyBase::EnemyAnimeMode_Attack;
+
+	//敵ごとの始めの処理(叫び声など)
+	OnPatternStart();
+
+	StartStep(0);
+}
+
+void EnemyBase::StartStep(int _stepIndex)
+{
+	FaceToPlayer();
+
+	m_nowStepIndex = _stepIndex;
+	m_hitOn = false;
+	m_stepForwardDone = 0.0f;
+
+	const ComboStep* step = GetNowStep();
+	const AttackStepExtra* extra = GetNowStepExtra();
+	if (!step || !extra)
+	{
+		EndPattern();
+		return;
+	}
+
+	//この段の再生速度
+	m_animeSpeedRate = step->m_speed;
+
+	//段のアニメに切り替える
+	if (m_spAnimator && m_spCharaModel)
+	{
+		m_spAnimator->CrossFade(m_spCharaModel->GetAnimation(step->m_animeName), 0.1f, false);
+	}
+
+	//イベントを「まだ出していない」に戻す
+	m_eventDone.assign(extra->m_events.size(), false);
+
+	//飛びかかりの始まりと着地点
+	m_leapStartPos = m_pos;
+	m_leapTargetPos = m_playerPos;
+
+	//前の段の当たり判定が残っていたら消して、新しく作る
+	//(段ごとに作り直すと「もう当てた」がリセットされて、連撃が全部当たる)
+	if (std::shared_ptr<AttackShape> spOld = m_wpPatternAttack.lock())
+	{
+		spOld->FinishAttack();
+	}
+
+	std::shared_ptr<AttackShape> spAttack = std::make_shared<AttackShape>();
+	m_wpPatternAttack = spAttack;
+	spAttack->SetShape(extra->m_hitShape);
+	spAttack->SetRadius(extra->m_hitRadius);
+	spAttack->SetBoxSize(extra->m_hitBoxSize);
+	spAttack->SetPos(GetStepHitCenter());
+	spAttack->SetAngleY(m_angle);
+	spAttack->SetPlayer(m_wpPlayer.lock());
+	SceneManager::Instance().AddObject(spAttack);
+}
+
+void EnemyBase::UpdateStep()
+{
+	const ComboStep* step = GetNowStep();
+	const AttackStepExtra* extra = GetNowStepExtra();
+	if (!step || !extra)
+	{
+		EndPattern();
+		return;
+	}
+
+	const float progress = GetNowStepProgress();
+
+	//踏み込み(m_stepForward が0なら何もしない)
+	UpdateStepForward(progress);
+
+	//飛びかかり(LeapToTarget のときだけ)
+	UpdateStepLeap(progress);
+
+	//一品物の攻撃(m_specialType が入っている段だけ)
+	if (!extra->m_specialType.empty())
+	{
+		UpdateSpecialStep(extra->m_specialType, progress);
+	}
+
+	std::shared_ptr<AttackShape> spAttack = m_wpPatternAttack.lock();
+	if (spAttack)
+	{
+		//当たり判定の位置と向き
+		spAttack->SetPos(GetStepHitCenter());
+		spAttack->SetAngleY(m_angle);
+		spAttack->SetKnockback(m_patternKnockbackDistance * step->m_knockbackRate, m_mWorld.Backward());
+
+		//予告(Circle・Box)：m_warnStart から当たり判定が終わるまで
+		const bool warn = (extra->m_hitShape != AttackHitShape::Bone) &&
+			progress >= extra->m_warnStart && progress <= step->m_hitEnd;
+		spAttack->SetWarnFlg(warn);
+
+		//当たり判定を出す
+		if (progress > step->m_hitStart && !m_hitOn)
+		{
+			m_hitOn = true;
+			spAttack->SetAttackPower(m_status.m_attack.m_nowAttack * step->m_damageRate);
+			spAttack->SetAttackFlg(true);
+		}
+
+		//当たり判定を止める(判定の物自体は次の段か CancelPattern で消す)
+		if (progress > step->m_hitEnd)
+		{
+			spAttack->SetAttackFlg(false);
+		}
+	}
+
+	//エフェクト・音・画面の揺れ
+	UpdateStepEvents(progress);
+
+	//最後の段はアニメの終わりで終了、それ以外は m_cancelPoint で次の段へ
+	if (IsLastStep())
+	{
+		if (m_spAnimator && m_spAnimator->IsAnimationEnd())
+		{
+			EndPattern();
+		}
+	}
+	else
+	{
+		if (progress >= step->m_cancelPoint)
+		{
+			StartStep(m_nowStepIndex + 1);
+			return;
+		}
+	}
+}
+
+void EnemyBase::EndPattern()
+{
+	//次の待ち時間(パターンが分からなければ今までどおり)
+	m_attackWait = m_attackWaitMax;
+
+	//使ったパターンを記録する(番号を-1に戻す前に)
+	if (m_nowPatternIndex >= 0 && m_nowPatternIndex < (int)m_patternList.size())
+	{
+		AttackPattern& pattern = m_patternList[m_nowPatternIndex];
+
+		//クールタイムを始める
+		pattern.m_cooldownTimer = pattern.m_cooldown;
+
+		//同じ技を続けないために覚えておく
+		m_lastPatternIndex = m_nowPatternIndex;
+
+		//m_waitAfter が入っていればその秒数だけ休む
+		if (pattern.m_waitAfter > 0.0f)
+		{
+			m_attackWait = pattern.m_waitAfter;
+		}
+	}
+
+	//今回の待ちの長さ(攻撃ゲージ用)
+	m_attackWaitNowMax = m_attackWait;
+
+	//当たり判定を消して、番号と再生速度を戻す
+	CancelPattern();
+
+	//走りに戻す
+	m_animeChangeFlg = true;
+	m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
+}
+
+void EnemyBase::CancelPattern()
+{
+	//当たり判定が残っていたら消す
+	if (std::shared_ptr<AttackShape> spAttack = m_wpPatternAttack.lock())
+	{
+		spAttack->FinishAttack();
+	}
+
+	m_attackFlg = false;
+	m_hitOn = false;
+	m_nowPatternIndex = -1;
+	m_nowStepIndex = -1;
+	m_animeSpeedRate = 1.0f;
+
+	//アニメ・待ち時間・クールタイムはここでは触らない(EndPattern との違い)
+}
+
+Math::Vector3 EnemyBase::GetStepHitCenter() const
+{
+	const AttackStepExtra* extra = GetNowStepExtra();
+	if (!extra) { return m_pos; }
+
+	//骨に付ける
+	if (extra->m_hitShape == AttackHitShape::Bone)
+	{
+		const std::string hitNode = GetNowHitNode();
+		if (!hitNode.empty() && m_spCharaModel)
+		{
+			auto* node = m_spCharaModel->FindNode(hitNode);
+			if (node)
+			{
+				return (node->m_worldTransform * m_mWorld).Translation();
+			}
+		}
+		return m_pos;
+	}
+
+	//飛びかかりの円は着地点に出す
+	if (extra->m_moveType == AttackMoveType::LeapToTarget)
+	{
+		Math::Vector3 target = m_leapTargetPos;
+		target.y = m_pos.y;
+		return target;
+	}
+
+	//円・箱は敵の前 m_hitForward に出す
+	const float rad = DirectX::XMConvertToRadians(m_angle);
+	const Math::Vector3 forward = { std::sin(rad), 0.0f, std::cos(rad) };
+	return m_pos + forward * extra->m_hitForward;
+}
+
+void EnemyBase::UpdateStepEvents(float _progress)
+{
+	const AttackStepExtra* extra = GetNowStepExtra();
+	if (!extra) { return; }
+
+	//エフェクト・画面の揺れは当たり判定の中心(地面の高さ)に出す
+	Math::Vector3 center = GetStepHitCenter();
+	center.y = m_pos.y;
+
+	for (int i = 0; i < (int)extra->m_events.size() && i < (int)m_eventDone.size(); i++)
+	{
+		const AttackEvent& ev = extra->m_events[i];
+		if (m_eventDone[i] || _progress < ev.m_progress) { continue; }
+		m_eventDone[i] = true;
+
+		switch (ev.m_type)
+		{
+		case AttackEventType::Effect:
+			if (!ev.m_name.empty())
+			{
+				KdEffekseerManager::GetInstance().Play(ev.m_name, center, 2.0f, 1.0f, false);
+			}
+			break;
+		case AttackEventType::Sound:
+			if (!ev.m_name.empty())
+			{
+				std::shared_ptr<KdSoundInstance3D> spSE = KdAudioManager::Instance().Play3D(ev.m_name, center, false);
+				if (spSE)
+				{
+					spSE->SetCurveDistanceScaler(20.0f);
+					spSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+				}
+			}
+			break;
+		case AttackEventType::CameraShake:
+			CameraShakeAt(center, ev.m_time, ev.m_power, 30.0f);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void EnemyBase::UpdateStepLeap(float _progress)
+{
+	const AttackStepExtra* extra = GetNowStepExtra();
+	if (!extra || extra->m_moveType != AttackMoveType::LeapToTarget) { return; }
+
+	//m_aimLockEnd までは、着地点をプレイヤーに合わせ続ける
+	if (_progress < extra->m_aimLockEnd)
+	{
+		m_leapTargetPos = m_playerPos;
+	}
+
+	//m_moveStart〜m_moveEnd の間に、跳んだ位置から着地点へ動く(高さは重力に任せる)
+	if (_progress < extra->m_moveStart) { return; }
+
+	const float moveLength = std::max(extra->m_moveEnd - extra->m_moveStart, 0.01f);
+	const float t = std::clamp((_progress - extra->m_moveStart) / moveLength, 0.0f, 1.0f);
+
+	Math::Vector3 pos = m_leapStartPos + (m_leapTargetPos - m_leapStartPos) * t;
+	pos.y = m_pos.y;
+	m_pos = pos;
+
+	//着地点の方を向く
+	Math::Vector3 dir = m_leapTargetPos - m_leapStartPos;
+	dir.y = 0;
+	if (dir.LengthSquared() > 0.0001f)
+	{
+		dir.Normalize();
+		m_moveVec = dir;
+		m_angle = DirectX::XMConvertToDegrees(atan2(dir.x, dir.z));
+		if (m_angle < 0.0f) { m_angle += 360.0f; }
+	}
 }

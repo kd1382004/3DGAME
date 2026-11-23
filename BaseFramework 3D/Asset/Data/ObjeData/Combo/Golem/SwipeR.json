@@ -1,0 +1,24 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Golem/golem_clean.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "SwipeR",
+			"cancelPoint": 9.9,
+			"comboIndex": 0,
+			"damageRate": 0.8,
+			"evasionCancel": 0.587,
+			"hitEnd": 0.587,
+			"hitStart": 0.451,
+			"hitStopTime": 0.08,
+			"knockbackRate": 2.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.587,
+			"trailStart": 0.451
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

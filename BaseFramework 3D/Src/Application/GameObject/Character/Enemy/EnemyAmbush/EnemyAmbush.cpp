@@ -45,6 +45,7 @@ void EnemyAmbush::Update()
 
 	AngleUpdate();
 
+
 	//座標行列を作る
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(m_pos);
 	//回転行列

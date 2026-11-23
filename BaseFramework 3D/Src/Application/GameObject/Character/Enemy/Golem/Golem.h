@@ -51,26 +51,11 @@ private:
 	//アニメーション名
 	GolemAnimeName m_golemAnimeName;
 
-	//攻撃中か
-	bool m_attackFlg = false;
-
-	//当たり判定を出したか
-	bool m_hitTriggered = false;
-
-	//攻撃の当たり判定
-	std::weak_ptr<AttackBase>m_wpAttack;
-
-	//攻撃待機時間(秒)
-	float m_attackWaitMax = 5;
+	//攻撃中か・攻撃の当たり判定・攻撃待機時間(m_attackFlg・m_wpPatternAttack・m_attackWait・m_attackWaitMax)は EnemyBase にある
+	//攻撃の中身は Asset/Data/ObjeData/EnemyAttackPattern/Golem.json(パターンのエディターで編集)
 
 	//攻撃待機時間の最小(秒)
 	float m_attackWaitMin = 2;
-
-	//次の攻撃までの待機時間(秒)
-	float m_attackWait = m_attackWaitMax;
-
-	//叩きつけ攻撃のあたり判定を出すタイミング
-	float m_smashAttackAnimeHitTriggerTime = 0.46f;
 
 	// 3D効果音
 	std::shared_ptr<KdSoundInstance3D> m_spWalk3DSE;	// 足音（1歩ぶんの音を鳴り終わるたびに鳴らし直す）
@@ -90,9 +75,6 @@ private:
 	//今の状態に合わせてアニメーションを変える
 	void ChangeAnime();
 
-	//攻撃
-	void Attack();
-
-	//叩きつけ攻撃
-	void AttacksSlammingDown();
+	//パターンを始めたときの処理(うなり声)
+	void OnPatternStart()override;
 };

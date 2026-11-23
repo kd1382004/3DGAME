@@ -1,0 +1,50 @@
+{
+ "Attack.000": {
+  "old_last": 25,
+  "new_last": 35,
+  "apex": 12,
+  "impact": 14,
+  "apex_new": 17,
+  "hold": 5
+ },
+ "Attack.001": {
+  "old_last": 16,
+  "new_last": 23,
+  "apex": 5,
+  "impact": 7,
+  "apex_new": 8,
+  "hold": 4
+ },
+ "Attack.002": {
+  "old_last": 16,
+  "new_last": 23,
+  "apex": 5,
+  "impact": 7,
+  "apex_new": 8,
+  "hold": 4
+ },
+ "Attack.003": {
+  "old_last": 43,
+  "new_last": 51,
+  "apex": 30,
+  "impact": 32,
+  "apex_new": 33,
+  "hold": 5
+ },
+ "Attack.004": {
+  "old_last": 24,
+  "new_last": 30,
+  "apex": 13,
+  "impact": 15,
+  "apex_new": 15,
+  "hold": 4
+ },
+ "Attack.005": {
+  "old_last": 24,
+  "new_last": 30,
+  "apex": 13,
+  "impact": 15,
+  "apex_new": 15,
+  "hold": 4
+ }
+}

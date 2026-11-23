@@ -9,9 +9,9 @@ namespace
 	constexpr int kMoveTypeNum = 3;
 
 	// 当たり判定の形
-	const char* kHitShapeKey[]   = { "Bone", "Circle" };
-	const char* kHitShapeLabel[] = { U8("骨に付ける"), U8("円(着地点の周り)") };
-	constexpr int kHitShapeNum = 2;
+	const char* kHitShapeKey[]   = { "Bone", "Circle", "Box" };
+	const char* kHitShapeLabel[] = { U8("骨に付ける"), U8("円(敵の前・着地点)"), U8("箱(敵の前)") };
+	constexpr int kHitShapeNum = 3;
 
 	// イベントの種類
 	const char* kEventTypeKey[]   = { "Effect", "Sound", "CameraShake" };
@@ -506,14 +506,40 @@ void EnemyAttackPatternEditor::DrawStep(nlohmann::json& _pattern, int _stepIndex
 	}
 
 	if (SelectKey(U8("当たり判定の形"), extra, "m_hitShape", kHitShapeKey, kHitShapeLabel, kHitShapeNum)) { m_dirty = true; }
-	if (extra.value("m_hitShape", std::string("Bone")) == "Circle")
+	const std::string hitShape = extra.value("m_hitShape", std::string("Bone"));
+	ImGui::Indent();
+	if (hitShape == "Bone")
 	{
-		ImGui::Indent();
+		if (DragNumber(U8("判定の球の半径(m)"), extra, "m_hitRadius", 1.0f, 0.05f, 0.0f, 50.0f)) { m_dirty = true; }
+	}
+	else if (hitShape == "Circle")
+	{
 		if (DragNumber(U8("円の半径(m)"), extra, "m_hitRadius", 1.0f, 0.05f, 0.0f, 50.0f)) { m_dirty = true; }
 		ImGui::SameLine();
-		if (DragNumber(U8("予告の円を出す進行度"), extra, "m_warnStart", 0.0f, 0.005f, 0.0f, 1.0f)) { m_dirty = true; }
-		ImGui::Unindent();
+		if (DragNumber(U8("前に出す距離(m)"), extra, "m_hitForward", 0.0f, 0.05f, -50.0f, 50.0f)) { m_dirty = true; }
+		ImGui::TextDisabled(U8("「着地点へ飛ぶ」のときは着地点に出ます(前に出す距離は使いません)"));
 	}
+	else if (hitShape == "Box")
+	{
+		// 箱の大きさの半分 [横, 高さ, 奥行き]
+		float size[3] = { 1.0f, 1.0f, 1.0f };
+		if (extra.contains("m_hitBoxSize") && extra["m_hitBoxSize"].is_array() && extra["m_hitBoxSize"].size() == 3)
+		{
+			for (int i = 0; i < 3; i++) { size[i] = extra["m_hitBoxSize"][i].get<float>(); }
+		}
+		ImGui::SetNextItemWidth(240.0f);
+		if (ImGui::DragFloat3(U8("箱の大きさの半分(横・高さ・奥行き)"), size, 0.05f, 0.0f, 50.0f, "%.2f"))
+		{
+			extra["m_hitBoxSize"] = { size[0], size[1], size[2] };
+			m_dirty = true;
+		}
+		if (DragNumber(U8("前に出す距離(m)"), extra, "m_hitForward", 0.0f, 0.05f, -50.0f, 50.0f)) { m_dirty = true; }
+	}
+	if (hitShape != "Bone")
+	{
+		if (DragNumber(U8("予告を出す進行度"), extra, "m_warnStart", 0.0f, 0.005f, 0.0f, 1.0f)) { m_dirty = true; }
+	}
+	ImGui::Unindent();
 
 	DrawEvents(extra);
 
@@ -731,6 +757,8 @@ nlohmann::json EnemyAttackPatternEditor::MakeDefaultExtra()
 	extra["m_cancelRootMotion"] = false;
 	extra["m_hitShape"] = "Bone";
 	extra["m_hitRadius"] = 1.0f;
+	extra["m_hitBoxSize"] = { 1.0f, 1.0f, 1.0f };
+	extra["m_hitForward"] = 0.0f;
 	extra["m_warnStart"] = 0.0f;
 	extra["m_events"] = nlohmann::json::array();
 	extra["m_specialType"] = "";
@@ -785,6 +813,18 @@ std::vector<std::string> EnemyAttackPatternEditor::Validate()
 			if (extra.value("m_hitShape", std::string("Bone")) == "Circle" && extra.value("m_hitRadius", 0.0f) <= 0.0f)
 			{
 				errors.push_back(stepHead + U8("円の半径が0です"));
+			}
+
+			if (extra.value("m_hitShape", std::string("Bone")) == "Box" && extra.contains("m_hitBoxSize") && extra["m_hitBoxSize"].is_array())
+			{
+				for (const nlohmann::json& v : extra["m_hitBoxSize"])
+				{
+					if (v.is_number() && v.get<float>() <= 0.0f)
+					{
+						errors.push_back(stepHead + U8("箱の大きさに0があります"));
+						break;
+					}
+				}
 			}
 
 			if (extra.value("m_hitShape", std::string("Bone")) == "Bone" && s < hitNodeNum &&
