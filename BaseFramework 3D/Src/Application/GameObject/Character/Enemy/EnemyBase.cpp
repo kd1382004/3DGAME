@@ -1,6 +1,6 @@
 ﻿#include "EnemyBase.h"
 #include"../../Camera/CameraBase.h"
-
+#include"../../Weapon/ComboStep/ComboStepSaveLoad.h"
 #include"../../../Scene/GameScene/GameScene.h"
 
 //プレイヤー
@@ -254,7 +254,7 @@ void EnemyBase::SearchPlayer()
 			if (!isBlocked)
 			{
 				m_playerChaseFlg = true;
-				
+
 				//アニメーション
 				m_animeChangeFlg = true;
 				m_enemyAnimeMode = EnemyAnimeMode::EnemyAnimeMode_Run;
@@ -389,7 +389,7 @@ void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math:
 	// 当たった音（質感ごと。武器の当たる音に重ねて鳴らす）
 	PlayMaterialSE("Asset/Sound/SE/Hit/", 0.7f);
 
-	
+
 
 }
 
@@ -507,7 +507,8 @@ void EnemyBase::EnemyAnimeModeUpdate()
 	if (!m_spAnimator) { return; }
 	if (!m_spCharaModel) { return; }
 
-	m_spAnimator->AdvanceTime(m_spCharaModel->WorkNodes(), 60);
+	//攻撃中は段の m_speed の速さで再生する(攻撃していなければ1)
+	m_spAnimator->AdvanceTime(m_spCharaModel->WorkNodes(), 60 * m_animeSpeedRate);
 	m_spCharaModel->CalcNodeMatrices();
 }
 
@@ -728,4 +729,321 @@ void EnemyBase::PlayMaterialSE(const std::string& _folder, float _volRate)
 		spSE->SetCurveDistanceScaler(20.0f);
 		spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * _volRate);
 	}
+}
+
+bool EnemyBase::LoadAttackPatterns()
+{
+	m_patternList.clear();
+	m_nowPatternIndex = -1;
+	m_nowStepIndex = -1;
+	m_lastPatternIndex = -1;
+
+	// パスが空ならパターンを使わない敵
+	if (m_patternFilePath.empty()) { return false; }
+
+	std::ifstream file(m_patternFilePath);
+	if (!file)
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] パターン一覧が開けません : %s\n"), m_patternFilePath.c_str());
+		return false;
+	}
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded() || !data.is_object() || !data.contains("m_patterns") || !data["m_patterns"].is_array())
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] パターン一覧の形が違います : %s\n"), m_patternFilePath.c_str());
+		return false;
+	}
+
+	for (const nlohmann::json& j : data["m_patterns"])
+	{
+		if (!j.is_object()) { continue; }
+
+		AttackPattern pattern;
+		pattern.m_name = j.value("m_name", std::string());
+		pattern.m_comboFilePath = j.value("m_comboFilePath", std::string());
+		pattern.m_minLV = j.value("m_minLV", 1);
+		pattern.m_minDistance = j.value("m_minDistance", 0.0f);
+		pattern.m_maxDistance = j.value("m_maxDistance", 5.0f);
+		pattern.m_weight = j.value("m_weight", 1.0f);
+		pattern.m_cooldown = j.value("m_cooldown", 0.0f);
+		pattern.m_waitAfter = j.value("m_waitAfter", 0.0f);
+
+		// 段の並びはコンボファイルから読む
+		ComboFileData combo;
+		if (!ComboStepSaveLoad::Load(pattern.m_comboFilePath, combo) || combo.m_steps.empty())
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Error] パターン %s : コンボファイルが読めないので飛ばします : %s\n"),
+				pattern.m_name.c_str(), pattern.m_comboFilePath.c_str());
+			continue;
+		}
+		pattern.m_steps = combo.m_steps;
+		const int stepNum = (int)pattern.m_steps.size();
+
+		// 段ごとの当たり判定の骨
+		if (j.contains("m_hitNodes") && j["m_hitNodes"].is_array())
+		{
+			for (const nlohmann::json& node : j["m_hitNodes"])
+			{
+				pattern.m_hitNodes.push_back(node.is_string() ? node.get<std::string>() : std::string());
+			}
+		}
+
+		// 段ごとの特別な設定
+		if (j.contains("m_stepExtras") && j["m_stepExtras"].is_array())
+		{
+			for (const nlohmann::json& extra : j["m_stepExtras"])
+			{
+				pattern.m_stepExtras.push_back(StepExtraFromJson(extra));
+			}
+		}
+
+		// 段の数に合わせる(足りない骨は1つ前の段の骨、足りない設定は普通の単発)
+		pattern.m_hitNodes.resize(stepNum);
+		for (int i = 1; i < stepNum; i++)
+		{
+			if (pattern.m_hitNodes[i].empty()) { pattern.m_hitNodes[i] = pattern.m_hitNodes[i - 1]; }
+		}
+		pattern.m_stepExtras.resize(stepNum);
+
+		// 打ち間違いの確認(見つからなくても読み込みは続ける)
+		if (m_spCharaModel)
+		{
+			for (int i = 0; i < stepNum; i++)
+			{
+				const std::string& anime = pattern.m_steps[i].m_animeName;
+				if (!m_spCharaModel->GetAnimation(anime))
+				{
+					KdDebugGUI::Instance().AddLog(U8("[Warning] パターン %s %d段目 : アニメ %s がモデルにありません\n"),
+						pattern.m_name.c_str(), i + 1, anime.c_str());
+				}
+
+				const std::string& node = pattern.m_hitNodes[i];
+				if (!node.empty() && !m_spCharaModel->FindNode(node))
+				{
+					KdDebugGUI::Instance().AddLog(U8("[Warning] パターン %s %d段目 : 骨 %s がモデルにありません\n"),
+						pattern.m_name.c_str(), i + 1, node.c_str());
+				}
+			}
+		}
+
+		KdDebugGUI::Instance().AddLog(U8("パターン %s : %d段 (LV%d〜)\n"), pattern.m_name.c_str(), stepNum, pattern.m_minLV);
+		m_patternList.push_back(pattern);
+	}
+
+	return !m_patternList.empty();
+}
+
+void EnemyBase::UpdatePatternCooldown()
+{
+
+	float dt = DeltaTime::Instance().GetGameDeltaTime();
+
+	for (auto& list : m_patternList)
+	{
+		list.m_cooldownTimer -= dt;
+
+		if (list.m_cooldownTimer <= 0)
+		{
+			list.m_cooldownTimer = 0;
+		}
+	}
+}
+
+int EnemyBase::SelectPattern(float _distance)
+{
+	std::vector<int> Candidate;
+
+	int i = -1;
+	for (const auto& list : m_patternList)
+	{
+		i++;
+		if (list.m_weight <= 0)
+		{
+			continue;
+		}
+		if (list.m_minLV > GetLV())
+		{
+			continue;
+		}
+		if (_distance < list.m_minDistance || _distance > list.m_maxDistance)
+		{
+			continue;
+		}
+		if (list.m_cooldownTimer > 0)
+		{
+			continue;
+		}
+
+		Candidate.push_back(i);
+	}
+
+	//候補が2つ以上あるなら、前に使ったパターンは外す(同じ技が続かないように)
+	if (Candidate.size() >= 2)
+	{
+		Candidate.erase(std::remove(Candidate.begin(), Candidate.end(), m_lastPatternIndex), Candidate.end());
+	}
+
+	if (Candidate.size() == 0)
+	{
+		return -1;
+	}
+
+
+	float weight = 0;
+	for (int i = 0;i < Candidate.size();i++)
+	{
+		const int Index = Candidate[i];
+		weight += m_patternList[Index].m_weight;
+	}
+	float weightMax = KdRandom::GetFloat(0, weight);
+	for (int i = 0;i < Candidate.size();i++)
+	{
+		const int Index = Candidate[i];
+		weightMax -= m_patternList[Index].m_weight;
+
+		if (weightMax <= 0)
+		{
+			return Index;
+		}
+	}
+
+
+	return Candidate[Candidate.size() - 1];
+}
+
+const AttackPattern* EnemyBase::GetNowPattern() const
+{
+	if (m_nowPatternIndex < 0 || m_nowPatternIndex >= (int)m_patternList.size()) { return nullptr; }
+	return &m_patternList[m_nowPatternIndex];
+}
+
+const ComboStep* EnemyBase::GetNowStep() const
+{
+	const AttackPattern* pattern = GetNowPattern();
+	if (!pattern) { return nullptr; }
+	if (m_nowStepIndex < 0 || m_nowStepIndex >= (int)pattern->m_steps.size()) { return nullptr; }
+	return &pattern->m_steps[m_nowStepIndex];
+}
+
+const AttackStepExtra* EnemyBase::GetNowStepExtra() const
+{
+	const AttackPattern* pattern = GetNowPattern();
+	if (!pattern) { return nullptr; }
+	if (m_nowStepIndex < 0 || m_nowStepIndex >= (int)pattern->m_stepExtras.size()) { return nullptr; }
+	return &pattern->m_stepExtras[m_nowStepIndex];
+}
+
+std::string EnemyBase::GetNowHitNode() const
+{
+	const AttackPattern* pattern = GetNowPattern();
+	if (!pattern) { return std::string(); }
+	if (m_nowStepIndex < 0 || m_nowStepIndex >= (int)pattern->m_hitNodes.size()) { return std::string(); }
+	return pattern->m_hitNodes[m_nowStepIndex];
+}
+
+float EnemyBase::GetNowStepProgress() const
+{
+	if (!m_spAnimator) { return 0.0f; }
+
+	const float length = m_spAnimator->GetMaxLength();
+	if (length <= 0.0f) { return 0.0f; }
+
+	return m_spAnimator->GetTime() / length;
+}
+
+bool EnemyBase::IsLastStep() const
+{
+	const AttackPattern* pattern = GetNowPattern();
+	if (!pattern) { return true; }
+	return m_nowStepIndex >= (int)pattern->m_steps.size() - 1;
+}
+
+AttackStepExtra EnemyBase::StepExtraFromJson(const nlohmann::json& _j)
+{
+	AttackStepExtra extra;
+	if (!_j.is_object()) { return extra; }
+
+	// 動き方
+	const std::string moveType = _j.value("m_moveType", std::string("None"));
+	if (moveType == "Step") { extra.m_moveType = AttackMoveType::Step; }
+	else if (moveType == "LeapToTarget") { extra.m_moveType = AttackMoveType::LeapToTarget; }
+
+	extra.m_aimLockEnd = _j.value("m_aimLockEnd", extra.m_aimLockEnd);
+	extra.m_moveStart = _j.value("m_moveStart", extra.m_moveStart);
+	extra.m_moveEnd = _j.value("m_moveEnd", extra.m_moveEnd);
+	extra.m_cancelRootMotion = _j.value("m_cancelRootMotion", extra.m_cancelRootMotion);
+
+	// 当たり判定の形
+	if (_j.value("m_hitShape", std::string("Bone")) == "Circle") { extra.m_hitShape = AttackHitShape::Circle; }
+	extra.m_hitRadius = _j.value("m_hitRadius", extra.m_hitRadius);
+	extra.m_warnStart = _j.value("m_warnStart", extra.m_warnStart);
+
+	// イベント
+	if (_j.contains("m_events") && _j["m_events"].is_array())
+	{
+		for (const nlohmann::json& e : _j["m_events"])
+		{
+			if (!e.is_object()) { continue; }
+
+			AttackEvent ev;
+			ev.m_progress = e.value("p", 0.0f);
+
+			const std::string type = e.value("type", std::string("Effect"));
+			if (type == "Sound") { ev.m_type = AttackEventType::Sound; }
+			else if (type == "CameraShake") { ev.m_type = AttackEventType::CameraShake; }
+
+			ev.m_name = e.value("name", std::string());
+			ev.m_power = e.value("power", 0.0f);
+			ev.m_time = e.value("time", 0.0f);
+			extra.m_events.push_back(ev);
+		}
+	}
+
+	extra.m_specialType = _j.value("m_specialType", std::string());
+	return extra;
+}
+
+void EnemyBase::FaceToPlayer()
+{
+	Math::Vector3 dir = m_playerPos - m_pos;
+	dir.y = 0;
+
+	//プレイヤーと同じ位置なら向きを変えない
+	if (dir.LengthSquared() < 0.0001f) { return; }
+
+	dir.Normalize();
+
+	//前が (sin, 0, cos) になる角度(度)
+	m_angle = DirectX::XMConvertToDegrees(atan2(dir.x, dir.z));
+	if (m_angle < 0.0f) { m_angle += 360.0f; }
+
+	//AngleUpdate が古い向きに戻さないように
+	m_moveVec = dir;
+}
+
+void EnemyBase::UpdateStepForward(float _progress)
+{
+	const ComboStep* step = GetNowStep();
+	if (!step) { return; }
+
+	// 踏み込み：段の最初から当たり判定が始まるまでに、m_stepForward だけ前へ進む
+	if (step->m_stepForward <= 0.0f) { return; }
+
+	const float endRate = std::max(step->m_hitStart, 0.05f);
+	const float target = step->m_stepForward * std::clamp(_progress / endRate, 0.0f, 1.0f);
+	const float delta = target - m_stepForwardDone;
+	if (delta <= 0.0f) { return; }
+
+	// 向いている方向（m_angle は atan2(x, z) で作っているので、前は (sin, 0, cos)）
+	const float rad = DirectX::XMConvertToRadians(m_angle);
+	const Math::Vector3 forward = { std::sin(rad), 0.0f, std::cos(rad) };
+	const Math::Vector3 nextPos = m_pos + forward * delta;
+
+	// 壁の向こうへは進まない
+	if (!RaycastFromTo(nextPos))
+	{
+		m_pos = nextPos;
+	}
+	m_stepForwardDone = target;
 }

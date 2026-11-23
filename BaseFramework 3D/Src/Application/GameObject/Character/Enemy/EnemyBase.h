@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include"../CharacterBase.h"
-
+#include"../../Weapon/ComboStep/ComboStep.h"
 class PlayerBase;
 class MapManager;
 class GameScene;
@@ -10,6 +10,76 @@ class AttackGage;
 
 
 struct Node;
+
+
+//---- 型(攻撃パターン) ----
+
+	//段の当たり判定の形
+enum class AttackHitShape
+{
+	Bone,		// m_hitNodes の骨に付ける(今までと同じ)
+	Circle,		// 地面に円で出す(範囲攻撃)
+};
+
+//段の中での動き方
+enum class AttackMoveType
+{
+	None,			// 動かない(m_stepForward の踏み込みだけ)
+	Step,			// m_moveStart〜m_moveEnd の間、前へ進む
+	LeapToTarget,	// 着地点へ飛ぶ
+};
+
+//段のイベントの種類
+enum class AttackEventType
+{
+	Effect,			// エフェクトを出す
+	Sound,			// 音を鳴らす
+	CameraShake,	// 画面を揺らす
+};
+
+//段のイベント1つ分
+struct AttackEvent
+{
+	float           m_progress = 0.0f;					// 出す進行度(ファイルでは "p")
+	AttackEventType m_type = AttackEventType::Effect;	// 種類(ファイルでは "type")
+	std::string     m_name;								// エフェクト・音のパス(ファイルでは "name")
+	float           m_power = 0.0f;						// 揺れの強さ(ファイルでは "power")
+	float           m_time = 0.0f;						// 揺れの時間(秒)(ファイルでは "time")
+};
+
+//段ごとの特別な設定(何も書いていない段は普通の単発と同じ)
+struct AttackStepExtra
+{
+	AttackMoveType           m_moveType = AttackMoveType::None;	// 動き方
+	float                    m_aimLockEnd = 0.3f;				// この進行度まで着地点をプレイヤーに合わせる
+	float                    m_moveStart = 0.0f;				// 動き始める進行度
+	float                    m_moveEnd = 0.3f;					// 動き終わる進行度
+	bool                     m_cancelRootMotion = false;		// アニメ自体の前後の動きを打ち消すか
+	AttackHitShape           m_hitShape = AttackHitShape::Bone;	// 当たり判定の形
+	float                    m_hitRadius = 1.0f;				// Circle の半径
+	float                    m_warnStart = 0.0f;				// 予告の円を出し始める進行度(Circle のとき)
+	std::vector<AttackEvent> m_events;							// エフェクト・音・画面の揺れ
+	std::string              m_specialType;						// 一品物の名前(空なら使わない)
+};
+
+//パターン1つ分
+struct AttackPattern
+{
+	std::string                  m_name;					// 名前
+	std::string                  m_comboFilePath;			// 単発を並べたコンボファイル
+	std::vector<ComboStep>       m_steps;					// コンボファイルから読んだ段の並び
+	float                        m_minDistance = 0.0f;		// 出す距離(下限)
+	float                        m_maxDistance = 5.0f;		// 出す距離(上限)
+	int                          m_minLV = 1;				// この敵のLVがこれ以上で出る
+	float                        m_weight = 1.0f;			// 出やすさ
+	float                        m_cooldown = 0.0f;		// 使った後、また使えるまでの秒数
+	float                        m_cooldownTimer = 0.0f;	// クールタイムの残り(ファイルには無い)
+	float                        m_waitAfter = 0.0f;		// 終わった後の待ち(0なら m_attackWaitMax)
+	std::vector<std::string>     m_hitNodes;				// 段ごとの当たり判定の骨
+	std::vector<AttackStepExtra> m_stepExtras;			// 段ごとの特別な設定
+};
+
+
 
 //////////////////////////////////////////////////////////////
 // 敵の体の質感
@@ -155,6 +225,9 @@ protected:
 		EnemyAnimeMode_Die
 	};
 
+
+	
+
 	//---- メンバ変数 ----
 
 	// レベルおよび基準ステータス
@@ -291,4 +364,95 @@ protected:
 	// _folder  : "Asset/Sound/SE/Hit/" など（中に Flesh.wav / Stone.wav がある）
 	// _volRate : 音量の倍率
 	void PlayMaterialSE(const std::string& _folder, float _volRate);
+
+
+	//---- 攻撃パターン ----
+
+	//m_patternFilePath のパターン一覧を読んで m_patternList に入れる
+	//戻り値 ... 1つでも読めたらtrue
+	bool LoadAttackPatterns();
+
+	//全パターンのクールタイムを減らす(進め方5で使う)
+	void UpdatePatternCooldown();
+
+	//距離・LV・重み・クールタイムで次のパターンを選ぶ(進め方5で使う)
+	// _distance ... プレイヤーとの距離
+	//戻り値 ... 選んだパターンの番号(選べなければ-1)
+	int SelectPattern(float _distance);
+
+	//今のパターン(攻撃していなければnullptr)
+	const AttackPattern* GetNowPattern() const;
+
+	//今の段(攻撃していなければnullptr)
+	const ComboStep* GetNowStep() const;
+
+	//今の段の特別な設定(攻撃していなければnullptr)
+	const AttackStepExtra* GetNowStepExtra() const;
+
+	//今の段の当たり判定を付ける骨の名前(なければ空)
+	std::string GetNowHitNode() const;
+
+	//今の段の進行度(0〜1)
+	float GetNowStepProgress() const;
+
+	//今の段が最後の段か
+	bool IsLastStep() const;
+
+	//段の特別な設定をjsonから作る(書いていない項目は初期値)
+	// _j ... 段1つ分のjson
+	//戻り値 ... 段の特別な設定
+	static AttackStepExtra StepExtraFromJson(const nlohmann::json& _j);
+
+
+	void FaceToPlayer();
+
+	//今の段の踏み込み(m_stepForward)を進める
+	// _progress ... 今の段の進行度(0〜1)
+	void UpdateStepForward(float _progress);
+
+
+
+	//---- 攻撃パターン ----
+
+	//パターン一覧ファイルのパス(空ならパターンを使わない。各敵の Init で入れる)
+	std::string m_patternFilePath;
+
+	//パターンの一覧
+	std::vector<AttackPattern> m_patternList;
+
+	//今のパターンの番号(攻撃していなければ-1)
+	int m_nowPatternIndex = -1;
+
+	//今の段の番号(攻撃していなければ-1)
+	int m_nowStepIndex = -1;
+
+	//前に使ったパターンの番号(同じ技を続けないため。進め方5で使う)
+	int m_lastPatternIndex = -1;
+
+	//この段で当たり判定を出したか
+	bool m_hitOn = false;
+
+	//この段で踏み込んだ距離(進め方4で使う)
+	float m_stepForwardDone = 0.0f;
+
+	//待ち始めたときの待ち時間(攻撃ゲージ用。進め方5で使う)
+	float m_attackWaitNowMax = 0.0f;
+
+	//この段のイベントを出したか(m_events と同じ数。進め方7で使う)
+	std::vector<bool> m_eventDone;
+
+	//跳んだ位置(LeapToTarget 用。進め方7で使う)
+	Math::Vector3 m_jumpStartPos = Math::Vector3::Zero;
+
+	//着地点(LeapToTarget・Circle 用。進め方7で使う)
+	Math::Vector3 m_targetPos = Math::Vector3::Zero;
+
+	//アニメの再生速度の倍率(段の m_speed。攻撃していないときは1)
+	float m_animeSpeedRate = 1.0f;
+
+	//ひるみ値(攻撃中に受けたダメージの合計。パターンを始めるときに0に戻す)
+	float m_flinchValue = 0.0f;
+
+	//ひるむ割合(攻撃中に、最大HPのこの割合以上のダメージを受けたら攻撃が止まる。0以下ならひるまない)
+	float m_flinchRate = 0.15f;
 };

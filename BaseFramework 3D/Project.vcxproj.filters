@@ -97,6 +97,9 @@
     <Filter Include="Src\Application\Editor\PrepareLayoutEditor">
       <UniqueIdentifier>{6b2f4c1e-8a37-4d95-b0c2-3e7f91a5d4c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Editor\EnemyAttackPatternEditor">
+      <UniqueIdentifier>{a72cf5c3-b26f-4546-b397-59d5e8ed64d4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\Editor\ShopEditor">
       <UniqueIdentifier>{afcd0a81-4fce-47dc-8f3e-b3673c68b159}</UniqueIdentifier>
     </Filter>
@@ -633,6 +636,9 @@
     <ClInclude Include="Src\Application\Editor\PrepareLayoutEditor\PrepareLayoutEditor.h">
       <Filter>Src\Application\Editor\PrepareLayoutEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Editor\EnemyAttackPatternEditor\EnemyAttackPatternEditor.h">
+      <Filter>Src\Application\Editor\EnemyAttackPatternEditor</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Editor\ShopEditor\ShopEditor.h">
       <Filter>Src\Application\Editor\ShopEditor</Filter>
     </ClInclude>
@@ -1156,6 +1162,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Editor\PrepareLayoutEditor\PrepareLayoutEditor.cpp">
       <Filter>Src\Application\Editor\PrepareLayoutEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Editor\EnemyAttackPatternEditor\EnemyAttackPatternEditor.cpp">
+      <Filter>Src\Application\Editor\EnemyAttackPatternEditor</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Editor\ShopEditor\ShopEditor.cpp">
       <Filter>Src\Application\Editor\ShopEditor</Filter>

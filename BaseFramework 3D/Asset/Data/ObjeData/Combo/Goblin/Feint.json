@@ -1,0 +1,41 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Goblin/goblin-FINAL.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "Attack.004",
+			"cancelPoint": 0.8,
+			"comboIndex": 0,
+			"damageRate": 0.9,
+			"evasionCancel": 0.67,
+			"hitEnd": 0.67,
+			"hitStart": 0.56,
+			"hitStopTime": 0.05,
+			"knockbackRate": 1.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.2,
+			"trailEnd": 0.67,
+			"trailStart": 0.56
+		},
+		{
+			"acceptStart": 9.9,
+			"animeName": "Attack.002",
+			"cancelPoint": 9.9,
+			"comboIndex": 1,
+			"damageRate": 0.9,
+			"evasionCancel": 0.5,
+			"hitEnd": 0.5,
+			"hitStart": 0.34,
+			"hitStopTime": 0.05,
+			"knockbackRate": 1.0,
+			"speed": 1.4,
+			"staminaCost": 0.0,
+			"stepForward": 0.3,
+			"trailEnd": 0.5,
+			"trailStart": 0.34
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

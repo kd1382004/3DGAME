@@ -20,6 +20,7 @@ class WeaponStrengtheningEditor;
 class TreasureChestTableEditor;
 class ComboStepEditor;
 class CharaStatusEditor;
+class EnemyAttackPatternEditor;
 
 
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
@@ -193,6 +194,9 @@ private:
 
 	//キャラの初期ステータスのImGui
 	std::shared_ptr<CharaStatusEditor> m_spCharaStatusEditor;
+
+	//敵の攻撃パターンのImGui
+	std::shared_ptr<EnemyAttackPatternEditor> m_spEnemyAttackPatternEditor;
 
 	//ImGuiで開けるエディタの一覧
 	std::vector<EditorEntry> m_editors;

@@ -52,6 +52,7 @@
 #include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestTableEditor/TreasureChestTableEditor.h"
 #include"../../GameObject/Weapon/ComboStep/ComboStepEditor.h"
 #include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"
+#include"../../Editor/EnemyAttackPatternEditor/EnemyAttackPatternEditor.h"
 
 GameScene::~GameScene()
 {
@@ -389,6 +390,7 @@ void GameScene::Init()
 	m_spTCTableEditor = std::make_shared<TreasureChestTableEditor>();
 	m_spComboStepEditor = std::make_shared<ComboStepEditor>();
 	m_spCharaStatusEditor = std::make_shared<CharaStatusEditor>(m_playerStatusFilePath);
+	m_spEnemyAttackPatternEditor = std::make_shared<EnemyAttackPatternEditor>();
 
 	// コンボのプレビュー用モデルをシーンに置く（専用ウィンドウに描く。描いた後はゲームのカメラに戻す）
 	m_spComboStepEditor->SetPreviewMainCamera(m_spCamera);
@@ -413,6 +415,7 @@ void GameScene::Init()
 	m_editors.push_back({ U8("宝箱のドロップテーブル"), false, [this](bool* _open) { m_spTCTableEditor->Draw(_open); } });
 	m_editors.push_back({ U8("武器のコンボ"), false, [this](bool* _open) { m_spComboStepEditor->Draw(_open); } });
 	m_editors.push_back({ U8("キャラの初期ステータス"), false, [this](bool* _open) { m_spCharaStatusEditor->Draw(_open); } });
+	m_editors.push_back({ U8("敵の攻撃パターン"), false, [this](bool* _open) { m_spEnemyAttackPatternEditor->Draw(_open); } });
 
 }
 
@@ -730,8 +733,8 @@ void GameScene::Event()
 	}
 
 
-	KdDebugGUI::Instance().ClearLog();
-	KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);
+	//KdDebugGUI::Instance().ClearLog();
+	//KdDebugGUI::Instance().AddLog("kaisuu: %d\n", m_displayFloor);
 
 
 
