@@ -10,7 +10,7 @@ void DropCoin::Init()
 	if (!m_spCoinModel)
 	{
 		m_spCoinModel = std::make_shared<KdModelData>();
-		m_spCoinModel->Load("Asset/Models/DropCoin/TreasureDropItem.gltf");
+		m_spCoinModel->Load("Asset/Models/DropCoin/Coin.gltf");
 	}
 
 	m_dropCoinState = DropCoinState::Pop;
@@ -55,15 +55,19 @@ void DropCoin::Update()
 
 void DropCoin::DrawLit()
 {
-	if (m_spCoinModel)
-	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCoinModel, m_mWorld);
-	}
+	//if (m_spCoinModel)
+	//{
+	//	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCoinModel, m_mWorld);
+	//}
 }
 
 void DropCoin::DrawEffect()
 {
-	//// 光らせたいときはここで描画する（今は DrawLit だけで表示）
+
+}
+
+void DropCoin::DrawBright()
+{
 	if (m_spCoinModel)
 	{
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCoinModel, m_mWorld);

@@ -1,6 +1,9 @@
 ﻿#include "PrepareScene.h"
 #include "../SceneManager.h"
 
+#include"../../GameObject/Camera/PrepareCamera/PrepareCamera.h"
+
+
 #include"../../Info/DebugInfo/DebugInfo.h"
 #include"../../Info/MouseInfo/MouseInfo.h"
 #include"../../Info/KeyInfo/KeyInfo.h"
@@ -18,6 +21,14 @@
 
 #include"../../Editor/ShopEditor/ShopEditor.h"
 #include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"
+#include"../../Editor/PrepareLayoutEditor/PrepareLayoutEditor.h"
+
+
+#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"
+#include"../../GameObject/Terrains/Camp/CampLight/CampLight.h"
+#include"../../GameObject/Terrains/Camp/CampObject/CampObject.h"
+
+#include"../../GameObject/Terrains/MapObj/Torch/Torch.h"
 
 PrepareScene::~PrepareScene()
 {
@@ -25,6 +36,18 @@ PrepareScene::~PrepareScene()
 	{
 		m_spPrepareBGM->Stop();
 	}
+
+	for (const auto& wpEf : m_wpKdEffekseerObject)
+	{
+		auto spEf = wpEf.lock();
+		if (spEf)
+		{
+			spEf->SetLoop(false);
+			spEf->StopEffect();
+		}
+
+	}
+
 }
 
 void PrepareScene::ImGUI()
@@ -57,6 +80,9 @@ void PrepareScene::ImGUI()
 
 		// キャラの初期ステータスを決めるEditor
 		ImGui::Checkbox(U8("キャラの初期ステータス"), &m_charaStatusEditorOpenFlg);
+
+		// 背景のカメラ・ライトを調整するEditor
+		ImGui::Checkbox(U8("背景とカメラ"), &m_layoutEditorOpenFlg);
 	}
 	ImGui::End();
 
@@ -74,6 +100,11 @@ void PrepareScene::ImGUI()
 	if (m_charaStatusEditorOpenFlg && m_spCharaStatusEditor)
 	{
 		m_spCharaStatusEditor->Draw(&m_charaStatusEditorOpenFlg);
+	}
+
+	if (m_layoutEditorOpenFlg && m_spLayoutEditor)
+	{
+		m_spLayoutEditor->Draw(&m_layoutEditorOpenFlg);
 	}
 }
 
@@ -147,6 +178,68 @@ void PrepareScene::Init()
 	//		m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.5);
 	//	}
 	//}
+
+
+
+
+
+
+
+	// 背景の配置を読む
+	m_campLayout = LoadCampLayout(m_campLayoutFilePath);
+	ApplyCampLayoutTune(m_campLayout, m_campLayoutTuneFilePath);
+
+	// 霧と環境光を準備画面用にする
+	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(true, false);
+	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_campFogColor, m_campFogDensity);
+	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_campAmbient);
+
+	// カメラ(タブごとに動く)
+	m_spPrepareCamera = std::make_shared<PrepareCamera>();
+	m_spPrepareCamera->Init();
+	m_spPrepareCamera->SetCameraData(m_campLayout.m_cameras);
+	m_spPrepareCamera->MoveTo("Explore", true);	// 最初から入口を映す
+	m_objList.push_back(m_spPrepareCamera);
+	KdEffekseerManager::GetInstance().SetCamera(m_spPrepareCamera->GetCamera());
+
+	// 置物
+	for (const auto& data : m_campLayout.m_objects)
+	{
+		if (data.m_kind == "Torch")
+		{
+
+			continue;
+		}
+
+		if (data.m_kind == "Campfire")
+		{
+			// 炎(焚き火の少し上)。ループ再生
+			auto ef=	KdEffekseerManager::GetInstance().Play("Campfire/Campfire.efkefc",
+				data.m_pos + Math::Vector3(0, 0, 0), 1.0f, 1.0f, true);
+
+			m_wpKdEffekseerObject.push_back(ef);
+		}
+
+		auto spObj = std::make_shared<CampObject>();
+		spObj->Init();
+		spObj->SetData(data);
+		m_objList.push_back(spObj);
+		m_campObjects.push_back(spObj);	// エディタ用に覚えておく
+	}
+
+
+	for (const auto& data : m_campLayout.m_lights)
+	{
+		if (data.m_name.rfind("Light_Torch", 0) == 0) { continue; }	// 松明は自分で光る
+		auto spLight = std::make_shared<CampLight>();
+		spLight->SetData(data);
+		m_objList.push_back(spLight);
+		m_campLights.push_back(spLight);	// エディタ用
+	}
+
+	// 背景のカメラ・ライトを調整するEditor
+	m_spLayoutEditor = std::make_shared<PrepareLayoutEditor>(m_campLayoutTuneFilePath);
+	m_spLayoutEditor->SetTargets(shared_from_this(), m_spPrepareCamera, m_campLights, m_campObjects);
 }
 
 void PrepareScene::ChangeTab(PrepareTab _tab)
@@ -161,6 +254,19 @@ void PrepareScene::ChangeTab(PrepareTab _tab)
 
 	// 出発ボタンはメニューだけのときに出す(ショップなどの画面と重なるため)
 	if (m_spGameButton) m_spGameButton->SetActive(_tab == PrepareTab::None);
+
+
+	// タブに合わせてカメラを動かす
+	if (m_spPrepareCamera)
+	{
+		switch (_tab)
+		{
+		case PrepareTab::Equip:   m_spPrepareCamera->MoveTo("Equip");   break;
+		case PrepareTab::Shop:    m_spPrepareCamera->MoveTo("Shop");    break;
+		case PrepareTab::Records: m_spPrepareCamera->MoveTo("Records"); break;
+		default:                  m_spPrepareCamera->MoveTo("Explore"); break;
+		}
+	}
 
 }
 

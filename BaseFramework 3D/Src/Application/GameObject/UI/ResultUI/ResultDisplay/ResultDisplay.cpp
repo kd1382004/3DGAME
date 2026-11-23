@@ -106,7 +106,7 @@ void ResultDisplay::SetPath(std::string _path)
 
 }
 
-void ResultDisplay::SetDisplayFloorInfo(std::vector<DisplayFloorInfo> _displayFloorInfo)
+void ResultDisplay::SetDisplayFloorInfo(const DisplayFloorInfo& _displayFloorInfo)
 {
 	m_spResultDisplay_Score->SetDisplayFloorInfo(_displayFloorInfo);
 }

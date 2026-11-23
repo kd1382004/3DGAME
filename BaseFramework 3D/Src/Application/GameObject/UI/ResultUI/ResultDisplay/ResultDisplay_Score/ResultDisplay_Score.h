@@ -31,9 +31,9 @@ public:
 
 	//---- 設定 ----
 
-	//各階の結果をセット
-	// _displayFloorInfo ... 各階の結果
-	void SetDisplayFloorInfo(std::vector<DisplayFloorInfo>_displayFloorInfo);
+	//全体の結果をセット
+	// _displayFloorInfo ... 全体の結果
+	void SetDisplayFloorInfo(const DisplayFloorInfo& _displayFloorInfo);
 
 private:
 
@@ -48,8 +48,8 @@ private:
 	//背景の画像
 	std::shared_ptr<KdTexture>m_spBackTex;
 
-	//各階の結果
-	std::vector<DisplayFloorInfo>m_displayFloorInfo;
+	//全体の結果
+	DisplayFloorInfo m_displayFloorInfo;
 
 	//「総合結果」の画像
 	std::shared_ptr<KdTexture>m_spOverallResultTex;

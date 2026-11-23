@@ -585,8 +585,8 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::LoadMergedWeaponStrengtheningDa
 
 void BaseScene::SaveGameRecord(const GameResult& _result)
 {
-	// 中身が空の結果(プレイしていない)は保存しない
-	if (_result.m_displayFloorInfo.empty()) { return; }
+	// 1階にも入っていない結果(プレイしていない)は保存しない
+	if (_result.m_displayFloorInfo.m_displayFloor <= 0) { return; }
 
 	GameRecord record = LoadGameRecord();
 
@@ -648,6 +648,78 @@ GameRecord BaseScene::LoadGameRecord()
 	return record;
 }
 
+bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
+{
+	const DisplayFloorInfo& a = _a.m_displayFloorInfo;
+	const DisplayFloorInfo& b = _b.m_displayFloorInfo;
+
+	// ① 到達階が深いほうが上
+	if (a.m_displayFloor != b.m_displayFloor) { return a.m_displayFloor > b.m_displayFloor; }
+	// ② 同じ階なら、脱出したほうが上
+	if (_a.m_playerDead != _b.m_playerDead) { return !_a.m_playerDead; }
+	// ③ それも同じなら、時間が短いほうが上
+	return a.m_playTimeSc < b.m_playTimeSc;
+}
+
+nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
+{
+	nlohmann::json data;
+
+	// 結果
+	data["PlayerDead"] = _result.m_playerDead;
+	data["DisplayFloor"] = _result.m_displayFloorInfo.m_displayFloor;
+	data["EnemyKillCount"] = _result.m_displayFloorInfo.m_enemyKillCount;
+	data["TreasureChestsNum"] = _result.m_displayFloorInfo.m_treasureChestsNum;
+	data["PlayTimeSc"] = _result.m_displayFloorInfo.m_playTimeSc;
+	data["GetMoney"] = _result.m_getMoney;
+	data["PlayDate"] = _result.m_playDate;
+
+	// 出発したときの持ち込み
+	nlohmann::json carryIn;
+	carryIn["Weapon"] = static_cast<int>(_result.m_carryIn.m_weapon);
+	carryIn["PotionNum"] = _result.m_carryIn.m_potionNum;
+	carryIn["Money"] = _result.m_carryIn.m_money;
+	data["CarryIn"] = carryIn;
+
+	return data;
+}
+
+GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
+{
+	GameResult result;
+	result.m_playerDead = _data.value("PlayerDead", false);
+
+	// 前の形式("Floors"の配列)で保存されていたら、[0]の全体の情報を読む
+	const nlohmann::json* src = &_data;
+	if (_data.contains("Floors") && _data["Floors"].is_array() && !_data["Floors"].empty())
+	{
+		src = &_data["Floors"][0];
+	}
+	result.m_displayFloorInfo.m_displayFloor = src->value("DisplayFloor", 0);
+	result.m_displayFloorInfo.m_enemyKillCount = src->value("EnemyKillCount", 0);
+	result.m_displayFloorInfo.m_treasureChestsNum = src->value("TreasureChestsNum", 0);
+	result.m_displayFloorInfo.m_playTimeSc = src->value("PlayTimeSc", 0.0f);
+
+	// 追加した項目(前の形式には無いので、無ければ初期値のまま)
+	result.m_getMoney = _data.value("GetMoney", 0L);
+	result.m_playDate = _data.value("PlayDate", 0LL);
+
+	if (_data.contains("CarryIn") && _data["CarryIn"].is_object())
+	{
+		const nlohmann::json& carryIn = _data["CarryIn"];
+
+		// 範囲外の値ならダガーにする
+		int weapon = carryIn.value("Weapon", 0);
+		if (weapon < 0 || weapon >= PlayerWeaponInfoSize) { weapon = PlayerWeaponInfo_Dagger; }
+		result.m_carryIn.m_weapon = static_cast<PlayerWeaponInfo>(weapon);
+
+		result.m_carryIn.m_potionNum = carryIn.value("PotionNum", 0);
+		result.m_carryIn.m_money = carryIn.value("Money", 0L);
+	}
+
+	return result;
+}
+
 void BaseScene::RestockShop()
 {
 	//---------- 2つのJSONを読む ----------
@@ -695,56 +767,4 @@ void BaseScene::RestockShop()
 	std::ofstream file(m_shopStockFilePath);
 	if (!file) { return; }
 	file << stock.dump(4);
-}
-
-bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
-{
-	// [0]は全体の情報
-	const DisplayFloorInfo a = _a.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _a.m_displayFloorInfo[0];
-	const DisplayFloorInfo b = _b.m_displayFloorInfo.empty() ? DisplayFloorInfo{} : _b.m_displayFloorInfo[0];
-
-	// ① 到達階が深いほうが上
-	if (a.m_displayFloor != b.m_displayFloor) { return a.m_displayFloor > b.m_displayFloor; }
-	// ② 同じ階なら、脱出したほうが上
-	if (_a.m_playerDead != _b.m_playerDead) { return !_a.m_playerDead; }
-	// ③ それも同じなら、時間が短いほうが上
-	return a.m_playTimeSc < b.m_playTimeSc;
-}
-
-nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
-{
-	nlohmann::json data;
-	data["PlayerDead"] = _result.m_playerDead;
-	data["Floors"] = nlohmann::json::array();
-
-	for (const auto& f : _result.m_displayFloorInfo)
-	{
-		nlohmann::json floor;
-		floor["DisplayFloor"] = f.m_displayFloor;
-		floor["EnemyKillCount"] = f.m_enemyKillCount;
-		floor["TreasureChestsNum"] = f.m_treasureChestsNum;
-		floor["PlayTimeSc"] = f.m_playTimeSc;
-		data["Floors"].push_back(floor);
-	}
-	return data;
-}
-
-GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
-{
-	GameResult result;
-	result.m_playerDead = _data.value("PlayerDead", false);
-
-	if (_data.contains("Floors") && _data["Floors"].is_array())
-	{
-		for (const auto& item : _data["Floors"])
-		{
-			DisplayFloorInfo f;
-			f.m_displayFloor = item.value("DisplayFloor", 0);
-			f.m_enemyKillCount = item.value("EnemyKillCount", 0);
-			f.m_treasureChestsNum = item.value("TreasureChestsNum", 0);
-			f.m_playTimeSc = item.value("PlayTimeSc", 0.0f);
-			result.m_displayFloorInfo.push_back(f);
-		}
-	}
-	return result;
 }

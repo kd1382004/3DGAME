@@ -48,6 +48,10 @@ public:
 	//戻り値 ... ポーションの画像一覧
 	std::shared_ptr<PotionTexInfo> GetPotionTexInfo() { return  m_spPotionTexInfo; }
 
+	//プレイヤーのインベントリUIを返す
+	//戻り値 ... インベントリUI
+	std::shared_ptr<PlayerInventoryUI> GetPlayerInventoryUI() { return m_spPlayerInventoryUI; }
+
 	//キー表示のUIを返す
 	//戻り値 ... キー表示のUI
 	std::shared_ptr<UIBase2> GetUIBase2() { return  m_spUIBase2; }

@@ -448,6 +448,9 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 	// 部屋ごとにタイル情報を管理するためリサイズ
 	m_roomInfoList.resize(roomID);
+
+	// 部屋ごとの壁。最後に床と一緒にチャンクへ登録する
+	std::vector<std::vector<std::shared_ptr<MapBase>>> roomWallList(roomID);
 	int rID = 0;
 	for (int y = 0; y < map.size(); y++)
 	{
@@ -629,6 +632,21 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				//松明の設置許可
 				bool torchFlg = true;
 
+				// 部屋の床の壁は部屋リストへ、それ以外(通路・坂)は今まで通りチャンクへ
+				auto pushWall = [&](int _cx, int _cy, const std::shared_ptr<MapBase>& _sp)
+					{
+						if (!_sp) { return; }
+						if (map[y][x].m_tileType == TileType::Room &&
+							rID >= 0 && rID < static_cast<int>(roomWallList.size()))
+						{
+							roomWallList[rID].push_back(_sp);
+						}
+						else
+						{
+							m_chunks[_cy][_cx].push_back(_sp);
+						}
+					};
+
 				for (const auto& dir : wallDirs)
 				{
 					int nx = x + dir.m_dx;
@@ -650,7 +668,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							wallPos.y += _tileSiz;
 
 
-							m_chunks[cy][cx].push_back(spWall);
+							pushWall(cx, cy, spWall);
 						}
 
 
@@ -667,7 +685,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							//一番下の段は階段にする
 							stairsPlaced = true;
 							std::shared_ptr<MapBase>spStairs = CreateWallOrStairs(wallPos, dir.m_rotY, true, _ret, rID, x, y, map, chunkNum);
-							m_chunks[cy][cx].push_back(spStairs);
+							pushWall(cx, cy, spStairs);
 
 							//その上を1本の壁にする(松明は付けない)
 							if (layerNum - 1 > 0)
@@ -675,7 +693,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 								Math::Vector3 upperPos = wallPos;
 								upperPos.y += _tileSiz;
 								std::shared_ptr<MapBase>spWall = CreateWallOrStairs(upperPos, dir.m_rotY, false, _ret, rID, x, y, map, chunkNum, nullptr, layerNum - 1);
-								m_chunks[cy][cx].push_back(spWall);
+								pushWall(cx, cy, spWall);
 							}
 						}
 						else
@@ -683,7 +701,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 							//一番下の段から一番上までを1本の壁にする
 							//(松明は一番下の段の高さに付き、付けたら torchFlg が false になってこのマスにはもう付けない)
 							std::shared_ptr<MapBase>spWall = CreateWallOrStairs(wallPos, dir.m_rotY, false, _ret, rID, x, y, map, chunkNum, &torchFlg, layerNum);
-							m_chunks[cy][cx].push_back(spWall);
+							pushWall(cx, cy, spWall);
 						}
 					}
 				}
@@ -719,9 +737,12 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	}
 
 
-	// 1つでもチャンクに同じ部屋の床が入っていたら、部屋の床全てをそのチャンクに入れる
-	for (const auto& room : m_roomInfoList)
+	
+	// 1つでもチャンクに同じ部屋の床が入っていたら、部屋の床と壁を全てそのチャンクに入れる
+	for (size_t i = 0; i < m_roomInfoList.size(); i++)
 	{
+		const auto& room = m_roomInfoList[i];
+
 		// この部屋の床がまたがっているチャンクを重複なしで集める
 		std::vector<Math::Vector2> roomChunks;
 		for (const auto& floor : room)
@@ -732,13 +753,17 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 			}
 		}
 
-		// 集めた各チャンクに、部屋の床を全部登録する
+		// 集めた各チャンクに、部屋の床と壁を全部登録する
 		for (const auto& chunk : roomChunks)
 		{
 			auto& dst = m_chunks[static_cast<int>(chunk.y)][static_cast<int>(chunk.x)];
 			for (const auto& floor : room)
 			{
 				dst.push_back(floor.m_spMap);
+			}
+			for (const auto& wall : roomWallList[i])
+			{
+				dst.push_back(wall);
 			}
 		}
 	}
@@ -923,7 +948,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 
 
 			Math::Vector3 pos = { xPos,0,zPos };
-
+			spMapA->SetModel(m_spFloorModel);
 			spMapA->Init();
 			spMapA->SetPos(pos);
 			spMapA->SetMapObjType(MapObjType::Ground);
@@ -997,7 +1022,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 				float yPos = _tileSiz * kHeightLevelMax;
 
 				Math::Vector3 pos = { xPos,yPos,zPos };
-
+				spMapA->SetModel(m_spFloorModel);
 				spMapA->Init();
 				spMapA->SetPos(pos);
 				spMapA->SetMapObjType(MapObjType::None);

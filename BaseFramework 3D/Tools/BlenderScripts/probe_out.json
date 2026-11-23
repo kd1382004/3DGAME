@@ -1,0 +1,3314 @@
+{
+ "version": "5.1.2",
+ "file": "C:\\GitHub\\3DGAME\\BaseFramework 3D\\Asset\\Blender\\Enemy\\Goblin\\goblin-FINAL.blend",
+ "scene_fps": 24,
+ "objects": [
+  [
+   "Armature",
+   "ARMATURE"
+  ],
+  [
+   "Belt",
+   "MESH"
+  ],
+  [
+   "Body",
+   "MESH"
+  ],
+  [
+   "Camera",
+   "CAMERA"
+  ],
+  [
+   "Cloth",
+   "MESH"
+  ],
+  [
+   "Ear",
+   "MESH"
+  ],
+  [
+   "Eyes",
+   "MESH"
+  ],
+  [
+   "Hemi",
+   "LIGHT"
+  ],
+  [
+   "Hemi.001",
+   "LIGHT"
+  ],
+  [
+   "Lamp",
+   "LIGHT"
+  ],
+  [
+   "Neck",
+   "MESH"
+  ],
+  [
+   "Plane.003",
+   "MESH"
+  ],
+  [
+   "Tooth",
+   "MESH"
+  ]
+ ],
+ "armatures": [
+  {
+   "name": "Armature",
+   "action": "Idle",
+   "slot": "OBLegacy Slot",
+   "nla": [],
+   "bones": [
+    {
+     "n": "master",
+     "p": null,
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "spine1",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "hip_L",
+     "p": "spine1",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "upperleg_L",
+     "p": "hip_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "lowerleg_L",
+     "p": "upperleg_L",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "IK",
+       "foot_L"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "hip_R",
+     "p": "spine1",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "upperleg_R",
+     "p": "hip_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "lowerleg_R",
+     "p": "upperleg_R",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "IK",
+       "foot_R"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "spine2",
+     "p": "spine1",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "spine3",
+     "p": "spine2",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "IK",
+       "IK-spine"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "spine4",
+     "p": "spine3",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "COPY_ROTATION",
+       "IK-spine"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "neck",
+     "p": "spine4",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "IK",
+       "IK-Head"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "head",
+     "p": "neck",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "COPY_ROTATION",
+       "IK-Head"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "shoulder_L",
+     "p": "spine4",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "upperarm_L",
+     "p": "shoulder_L",
+     "rot": "AXIS_ANGLE",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "forearm_L",
+     "p": "upperarm_L",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "IK",
+       "IK-Hand_L"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "hand_L",
+     "p": "forearm_L",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "COPY_ROTATION",
+       "IK-Hand_L"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "index_1_L",
+     "p": "hand_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "index_2_L",
+     "p": "index_1_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "index_3_L",
+     "p": "index_2_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "pinky_1_L",
+     "p": "hand_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "pinky_2_L",
+     "p": "pinky_1_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "pinky_3_L",
+     "p": "pinky_2_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "thumb_1_L",
+     "p": "hand_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "thumb_2_L",
+     "p": "thumb_1_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "thumb_3_L",
+     "p": "thumb_2_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "shoulder_R",
+     "p": "spine4",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "upperarm_R",
+     "p": "shoulder_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "forearm_R",
+     "p": "upperarm_R",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "IK",
+       "IK-Hand_R"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "hand_R",
+     "p": "forearm_R",
+     "rot": "QUATERNION",
+     "c": [
+      [
+       "COPY_ROTATION",
+       "IK-Hand_R"
+      ]
+     ],
+     "deform": true
+    },
+    {
+     "n": "index_1_R",
+     "p": "hand_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "index_2_R",
+     "p": "index_1_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "index_3_R",
+     "p": "index_2_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "pinky_1_R",
+     "p": "hand_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "pinky_2_R",
+     "p": "pinky_1_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "pinky_3_R",
+     "p": "pinky_2_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "thumb_1_R",
+     "p": "hand_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "thumb_2_R",
+     "p": "thumb_1_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "thumb_3_R",
+     "p": "thumb_2_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "Cloth1_L",
+     "p": "spine1",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "Cloth1_R",
+     "p": "spine1",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "Cloth1_L.001",
+     "p": "spine1",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "Cloth1_R.001",
+     "p": "spine1",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "ell_L",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "ell_R",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "leg_L",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "foot_L",
+     "p": "leg_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "toe_L",
+     "p": "foot_L",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "leg_R",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "foot_R",
+     "p": "leg_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "toe_R",
+     "p": "foot_R",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": true
+    },
+    {
+     "n": "knee_L",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "knee_R",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "IK-Hand_L",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "IK-Hand_R",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "IK-Head",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    },
+    {
+     "n": "IK-spine",
+     "p": "master",
+     "rot": "QUATERNION",
+     "c": [],
+     "deform": false
+    }
+   ]
+  }
+ ],
+ "actions": [
+  {
+   "name": "Attack.000",
+   "range": [
+    0.0,
+    25.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Attack.001",
+   "range": [
+    0.0,
+    16.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    [
+     "pose.bones[\"leg_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"leg_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"leg_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"leg_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"leg_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"leg_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"leg_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"leg_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"leg_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"leg_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"foot_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"foot_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"foot_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"foot_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"foot_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"foot_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"foot_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"foot_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"foot_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"foot_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"toe_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"toe_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"toe_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"toe_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"toe_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"toe_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"toe_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"toe_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"toe_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"toe_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"leg_R\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"leg_R\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"leg_R\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"leg_R\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"leg_R\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"leg_R\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"leg_R\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"leg_R\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"leg_R\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"leg_R\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"foot_R\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"foot_R\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"foot_R\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"foot_R\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"foot_R\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"foot_R\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"foot_R\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"foot_R\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"foot_R\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"foot_R\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"toe_R\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"toe_R\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"toe_R\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"toe_R\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"toe_R\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"toe_R\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"toe_R\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"toe_R\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"toe_R\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"toe_R\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"knee_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"knee_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"knee_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"knee_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"knee_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"knee_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"knee_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"knee_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"knee_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"knee_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"knee_R\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"knee_R\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"knee_R\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"knee_R\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"knee_R\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"knee_R\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"knee_R\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"knee_R\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"knee_R\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"knee_R\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Hand_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"spine1\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"spine1\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"spine1\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"spine1\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"spine1\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"spine1\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"spine1\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"spine1\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"spine1\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"spine1\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"hip_L\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hip_L\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_L\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_L\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hip_R\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperleg_R\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"lowerleg_R\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"ell_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"ell_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"ell_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"ell_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"ell_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"ell_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"ell_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"ell_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"ell_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"ell_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Hand_R\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"ell_R\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"ell_R\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"ell_R\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"ell_R\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"ell_R\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"ell_R\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"ell_R\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"ell_R\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"ell_R\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"ell_R\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Head\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Head\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Head\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Head\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Head\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Head\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Head\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"IK-Head\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Head\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"IK-Head\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"IK-spine\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-spine\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-spine\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-spine\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"IK-spine\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"IK-spine\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"IK-spine\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"IK-spine\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"IK-spine\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"IK-spine\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"spine2\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine2\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine3\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"spine4\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"shoulder_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].rotation_axis_angle",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].rotation_axis_angle",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].rotation_axis_angle",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].rotation_axis_angle",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_L\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_L\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"hand_L\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"index_1_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"index_1_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"index_1_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"index_1_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"index_1_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"index_1_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"index_1_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"index_1_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"index_1_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"index_1_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"index_2_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"index_2_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"index_2_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"index_2_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"index_2_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"index_2_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"index_2_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"index_2_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"index_2_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"index_2_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"index_3_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"index_3_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"index_3_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"index_3_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"index_3_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"index_3_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"index_3_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"index_3_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"index_3_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"index_3_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_1_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_2_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"pinky_3_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_1_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_2_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"thumb_3_L\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].location",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].location",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].location",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].rotation_quaternion",
+     0,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].rotation_quaternion",
+     1,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].rotation_quaternion",
+     2,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].rotation_quaternion",
+     3,
+     5
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].scale",
+     0,
+     2
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].scale",
+     1,
+     2
+    ],
+    [
+     "pose.bones[\"shoulder_R\"].scale",
+     2,
+     2
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"upperarm_R\"].scale",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].location",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].location",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].location",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].rotation_quaternion",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].rotation_quaternion",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].rotation_quaternion",
+     2,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].rotation_quaternion",
+     3,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].scale",
+     0,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].scale",
+     1,
+     1
+    ],
+    [
+     "pose.bones[\"forearm_R\"].scale",
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "name": "Attack.002",
+   "range": [
+    0.0,
+    16.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Die",
+   "range": [
+    0.0,
+    50.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Idle",
+   "range": [
+    0.0,
+    1468.0
+   ],
+   "users": 3,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 439,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "master",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Idle.000",
+   "range": [
+    0.0,
+    90.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Idle.001",
+   "range": [
+    0.0,
+    90.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Idle.002",
+   "range": [
+    0.0,
+    476.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Run",
+   "range": [
+    0.0,
+    32.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Stand",
+   "range": [
+    0.0,
+    0.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "TPose",
+   "range": [
+    0.0,
+    0.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 520,
+   "paths_sample": [
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  },
+  {
+   "name": "Walk",
+   "range": [
+    0.0,
+    40.0
+   ],
+   "users": 1,
+   "fake": true,
+   "slots": [
+    "OBLegacy Slot"
+   ],
+   "layers": 1,
+   "n_fc": 548,
+   "paths_sample": [
+    "Cloth1_L",
+    "Cloth1_L.001",
+    "Cloth1_R",
+    "Cloth1_R.001",
+    "IK-Hand_L",
+    "IK-Hand_R",
+    "IK-Head",
+    "IK-spine",
+    "ell_L",
+    "ell_R",
+    "foot_L",
+    "foot_R",
+    "forearm_L",
+    "forearm_R",
+    "hand_L",
+    "hand_R",
+    "head",
+    "hip_L",
+    "hip_R",
+    "index_1_L",
+    "index_1_R",
+    "index_2_L",
+    "index_2_R",
+    "index_3_L",
+    "index_3_R",
+    "knee_L",
+    "knee_R",
+    "leg_L",
+    "leg_R",
+    "lowerleg_L",
+    "lowerleg_R",
+    "neck",
+    "pinky_1_L",
+    "pinky_1_R",
+    "pinky_2_L",
+    "pinky_2_R",
+    "pinky_3_L",
+    "pinky_3_R",
+    "shoulder_L",
+    "shoulder_R",
+    "spine1",
+    "spine2",
+    "spine3",
+    "spine4",
+    "thumb_1_L",
+    "thumb_1_R",
+    "thumb_2_L",
+    "thumb_2_R",
+    "thumb_3_L",
+    "thumb_3_R",
+    "toe_L",
+    "toe_R",
+    "upperarm_L",
+    "upperarm_R",
+    "upperleg_L",
+    "upperleg_R"
+   ]
+  }
+ ]
+}

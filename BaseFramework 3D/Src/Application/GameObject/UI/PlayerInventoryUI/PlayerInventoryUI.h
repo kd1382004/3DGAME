@@ -40,6 +40,12 @@ public:
 	//2Dの描画
 	void DrawSprite()override;
 
+	//---- 取得 ----
+
+	//インベントリが開いているか
+	//戻り値 ... 開いていればtrue
+	bool GetPlayerInventoryUIFlg() const { return m_playerInventoryUIFlg; }
+
 	//---- 設定 ----
 
 	//ゲームシーンをセット

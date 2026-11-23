@@ -164,8 +164,14 @@ private:
 	//プレイヤーが倒されたか
 	bool m_playerDefeatFlg = false;
 
-	//各階層の情報(最初は全体の情報)
-	std::vector<DisplayFloorInfo>m_displayFloorInfo;
+	//全体の情報(到達階・倒した敵・開けた宝箱・プレイ時間)
+	DisplayFloorInfo m_displayFloorInfo;
+
+	//出発したときの持ち込み(Initで覚える)
+	CarryInInfo m_carryIn;
+
+	//プレイした日時(Initで覚える。time_tの値)
+	long long m_playDate = 0;
 
 	//音
 

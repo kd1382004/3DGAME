@@ -36,8 +36,8 @@ public:
 	void SetPath(std::string _path);
 
 	//各階の結果をセット
-	// _displayFloorInfo ... 各階の結果
-	void SetDisplayFloorInfo(std::vector<DisplayFloorInfo>_displayFloorInfo);
+	// _displayFloorInfo ... 全体の結果
+	void SetDisplayFloorInfo(const DisplayFloorInfo& _displayFloorInfo);
 
 
 	//持ち物の一覧をセット

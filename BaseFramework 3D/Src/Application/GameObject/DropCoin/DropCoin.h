@@ -30,6 +30,8 @@ public:
 	//エフェクトの描画
 	void DrawEffect()override;
 
+	void DrawBright()override;
+
 	//プレイヤーをセット
 	// _spPlayer ... プレイヤー
 	void SetPlayer(std::shared_ptr<PlayerBase> _spPlayer) { m_wpPlayer = _spPlayer; }

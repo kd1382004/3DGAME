@@ -65,9 +65,9 @@ void ResultDisplay_Score::PreDraw()
 
 void ResultDisplay_Score::DrawSprite()
 {
-	// 総スコア（0番目）だけを描画する（階層ごとのスコアは出さない）
-	if (m_displayFloorInfo.empty()) { return; }
-	const DisplayFloorInfo& overall = m_displayFloorInfo[0];
+	// 総スコアを描画する(結果がまだ入っていなければ何もしない)
+	if (m_displayFloorInfo.m_displayFloor <= 0) { return; }
+	const DisplayFloorInfo& overall = m_displayFloorInfo;
 
 	int floorNum = overall.m_displayFloor;
 	int enemykill = overall.m_enemyKillCount;
@@ -153,7 +153,7 @@ void ResultDisplay_Score::DrawSprite()
 
 }
 
-void ResultDisplay_Score::SetDisplayFloorInfo(std::vector<DisplayFloorInfo> _displayFloorInfo)
+void ResultDisplay_Score::SetDisplayFloorInfo(const DisplayFloorInfo& _displayFloorInfo)
 {
 	m_displayFloorInfo = _displayFloorInfo;
 }

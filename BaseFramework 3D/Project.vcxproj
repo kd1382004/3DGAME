@@ -274,6 +274,7 @@
     <ClInclude Include="..\Library\tinygltf\stb_image_write.h" />
     <ClInclude Include="..\Library\tinygltf\tiny_gltf.h" />
     <ClInclude Include="Src\Application\Editor\CharaStatusEditor\CharaStatusEditor.h" />
+    <ClInclude Include="Src\Application\Editor\PrepareLayoutEditor\PrepareLayoutEditor.h" />
     <ClInclude Include="Src\Application\Editor\ShopEditor\ShopEditor.h" />
     <ClInclude Include="Src\Application\Editor\TitleSceneEditor\TitleSceneEditor.h" />
     <ClInclude Include="Src\Application\GameObject\Accessory\AccessoryBase.h" />
@@ -285,6 +286,7 @@
     <ClInclude Include="Src\Application\GameObject\Button\TitleButton\TitleButton.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\CameraBase.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.h" />
+    <ClInclude Include="Src\Application\GameObject\Camera\PrepareCamera\PrepareCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.h" />
     <ClInclude Include="Src\Application\GameObject\Character\CharacterBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.h" />
@@ -321,6 +323,9 @@
     <ClInclude Include="Src\Application\GameObject\Potions\PotionsType.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.h" />
     <ClInclude Include="Src\Application\GameObject\Potions\PotionUseController.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampLayoutData\CampLayoutData.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampLight\CampLight.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampObject\CampObject.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.h" />
@@ -341,6 +346,7 @@
     <ClInclude Include="Src\Application\GameObject\UI\DrawTex\DrawTex.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HitDamage\HitDamage.h" />
     <ClInclude Include="Src\Application\GameObject\UI\HPBar\HPBar.h" />
+    <ClInclude Include="Src\Application\GameObject\UI\ItemBar\ItemBar.h" />
     <ClInclude Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.h" />
     <ClInclude Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.h" />
     <ClInclude Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.h" />
@@ -447,6 +453,7 @@
     <ClCompile Include="..\Library\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\Library\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Src\Application\Editor\CharaStatusEditor\CharaStatusEditor.cpp" />
+    <ClCompile Include="Src\Application\Editor\PrepareLayoutEditor\PrepareLayoutEditor.cpp" />
     <ClCompile Include="Src\Application\Editor\ShopEditor\ShopEditor.cpp" />
     <ClCompile Include="Src\Application\Editor\TitleSceneEditor\TitleSceneEditor.cpp" />
     <ClCompile Include="Src\Application\GameObject\Accessory\AccessoryBase.cpp" />
@@ -458,6 +465,7 @@
     <ClCompile Include="Src\Application\GameObject\Button\TitleButton\TitleButton.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\CameraBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\FPSCamera\FPSCamera.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Camera\PrepareCamera\PrepareCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Camera\TPSCamera\TPSCamera.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\CharacterBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Giant\Attack\AttackJumpSlam\AttackJumpSlam.cpp" />
@@ -493,6 +501,9 @@
     <ClCompile Include="Src\Application\GameObject\Potions\StaminaRegenBoostPotion\StaminaRegenBoostPotion.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\PotionTexInfo\PotionTexInfo.cpp" />
     <ClCompile Include="Src\Application\GameObject\Potions\PotionUseController.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampLayoutData\CampLayoutData.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampLight\CampLight.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampObject\CampObject.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\Torch\Torch.cpp" />
@@ -513,6 +524,7 @@
     <ClCompile Include="Src\Application\GameObject\UI\DrawTex\DrawTex.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HitDamage\HitDamage.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\HPBar\HPBar.cpp" />
+    <ClCompile Include="Src\Application\GameObject\UI\ItemBar\ItemBar.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\ItemGetUIController\ItemGetUIController.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\NextFloorGaugeUI\NextFloorGaugeUI.cpp" />
     <ClCompile Include="Src\Application\GameObject\UI\PlayerInventoryUI\PlayerInventoryUI.cpp" />

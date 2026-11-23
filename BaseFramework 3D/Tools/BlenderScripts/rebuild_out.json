@@ -1,0 +1,48 @@
+{
+ "baked": [
+  "Belt",
+  "Body",
+  "Cloth",
+  "Ear",
+  "Eyes",
+  "Neck",
+  "Tooth"
+ ],
+ "material": [
+  [
+   "プリンシプルBSDF",
+   "マテリアル出力",
+   "Surface"
+  ],
+  [
+   "ディフューズBSDF",
+   "マテリアル出力.001",
+   "Surface"
+  ],
+  [
+   "GOB_Base",
+   "プリンシプルBSDF",
+   "Base Color"
+  ],
+  [
+   "GOB_Normal",
+   "GOB_NormalMap",
+   "Color"
+  ],
+  [
+   "GOB_NormalMap",
+   "プリンシプルBSDF",
+   "Normal"
+  ]
+ ],
+ "scaled": [
+  "Armature",
+  "Belt",
+  "Body",
+  "Cloth",
+  "Eyes",
+  "Neck",
+  "Plane.003",
+  "Tooth"
+ ]
+}

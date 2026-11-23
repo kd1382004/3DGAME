@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include"../BaseScene/BaseScene.h"
+#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"
 
 class UIManager;
 class ShopDisplay;
@@ -10,9 +11,10 @@ class PrepareSceneDisplay;
 class ShopEditor;
 class CharaStatusEditor;
 class GameButton;
-
-
-// PlayerWeaponInfoはBaseScene.h → SceneManager.hで定義済み
+class CampObject;
+class PrepareCamera;
+class CampLight;
+class PrepareLayoutEditor;
 
 //////////////////////////////////////////////////////////////
 // 準備シーン
@@ -110,6 +112,12 @@ private:
 	//キャラの初期ステータスのエディタを開いているか
 	bool m_charaStatusEditorOpenFlg = false;
 
+	// 背景(キャンプ)のカメラ・ライトを調整するEditor(ImGui)
+	std::shared_ptr<PrepareLayoutEditor> m_spLayoutEditor;
+
+	//背景とカメラのエディタを開いているか
+	bool m_layoutEditorOpenFlg = false;
+
 	//---- その他の処理 ----
 
 	//シーンのイベント(毎フレーム)
@@ -123,4 +131,21 @@ private:
 
 	// 決定した装備をSceneManagerへ反映(Gameシーンへ持ち越す)
 	void ApplyEquip();
+
+
+	const std::string m_campLayoutFilePath = "Asset/Data/ObjeData/PrepareObjeData/CampLayout.json";
+	const std::string m_campLayoutTuneFilePath = "Asset/Data/ObjeData/PrepareObjeData/CampLayoutTune.json";
+	CampLayoutData m_campLayout;
+	std::shared_ptr<PrepareCamera> m_spPrepareCamera;
+	std::vector<std::shared_ptr<CampObject>> m_campObjects;
+	std::vector<std::shared_ptr<CampLight>> m_campLights;
+	std::vector<std::weak_ptr<KdEffekseerObject>> m_wpKdEffekseerObject;
+
+	// 準備画面(屋外・夕方)の霧と環境光
+	// ダンジョン用の値(霧 0.3 灰色・濃さ 0.02 / 環境光 0.5)のままだと暗く濁るので、準備画面だけ変える
+	// 次のシーンに移るときは SceneManager::ChangeScene がダンジョン用の値に戻すので、戻す処理は要らない
+	Math::Vector3 m_campFogColor   = { 0.32f, 0.36f, 0.48f };	// 夕方の青っぽい空気
+	float         m_campFogDensity = 0.012f;					// 奥の崖がうっすら霞むくらい
+	Math::Vector4 m_campAmbient    = { 0.6f, 0.62f, 0.75f, 0.5f };	// 少し青寄り。オレンジの光と対比させる
+
 };

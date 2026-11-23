@@ -1,4 +1,5 @@
 ﻿#include "GameScene.h"
+#include <ctime>
 //プレイヤー
 #include"../../GameObject/Character/Player/PlayerBase.h"
 #include"../../GameObject/Character/Player/PlayerBuffManager/PlayerBuffManager.h"
@@ -23,6 +24,7 @@
 #include"../../GameObject/UI/BuffUI/BuffUI.h"
 #include"../../GameObject/UI/HitDamage/HitDamage.h"
 #include"../../GameObject/UI/UI2/UIBase2.h"
+#include"../../GameObject/UI/ItemBar/ItemBar.h"
 
 //武器
 #include"../../GameObject/Weapon/Dagger/Dagger.h"
@@ -110,8 +112,7 @@ void GameScene::Init()
 	DebugInfo::Instance().SetSceneManagerImGUIFlg(false);
 	MouseInfo::Instance().SetMouseFreeFlg(false);
 
-	DisplayFloorInfo displayFloorInfo;
-	m_displayFloorInfo.push_back(displayFloorInfo);
+	m_displayFloorInfo = DisplayFloorInfo{};
 
 
 
@@ -143,6 +144,16 @@ void GameScene::Init()
 	m_spPlayer->SetPotionsInventoryList(inventoryData[0]);
 	m_spPlayer->SetWeaponsStrengtheningInventoryList(inventoryData[1]);
 	m_spPlayer->GetPlayerInventory()->SetMoney(LoadMoney());	// 所持金
+
+	//出発したときの持ち込みを覚えておく(冒険の記録で使う)
+	m_carryIn.m_weapon = SceneManager::Instance().GetPlayerWeaponInfo();
+	m_carryIn.m_potionNum = 0;
+	for (const auto& potion : inventoryData[0])
+	{
+		m_carryIn.m_potionNum += potion.m_num;
+	}
+	m_carryIn.m_money = m_spPlayer->GetPlayerInventory()->GetMoney();
+	m_playDate = static_cast<long long>(std::time(nullptr));
 
 	m_spCharacterStatus.push_back(m_spPlayer);
 
@@ -253,6 +264,15 @@ void GameScene::Init()
 	spBuffUI->SetPotionTexInfo(m_spUIManager->GetPotionTexInfo());
 	spBuffUI->SetPlayer(m_spPlayer);
 	m_spUIManager->AddUIObj(spBuffUI);
+
+	//アイテムバー(ホイールで選んでFで使う)
+	std::shared_ptr<ItemBar> spItemBar = std::make_shared<ItemBar>();
+	spItemBar->Init();
+	spItemBar->SetPlayer(m_spPlayer);
+	spItemBar->SetPotionUseController(m_spPotionUseController);
+	spItemBar->SetPotionTexInfo(m_spUIManager->GetPotionTexInfo());
+	spItemBar->SetPlayerInventoryUI(m_spUIManager->GetPlayerInventoryUI());
+	m_spUIManager->AddUIObj(spItemBar);
 
 	std::shared_ptr<HitDamage>spHitDamage = std::make_shared<HitDamage>();
 	spHitDamage->Init();
@@ -400,11 +420,16 @@ void GameScene::SetGameResult()
 {
 	GameResult gameResult;
 	gameResult.m_displayFloorInfo = m_displayFloorInfo;
+	gameResult.m_carryIn = m_carryIn;
+	gameResult.m_playDate = m_playDate;
 
 
 	if (m_spPlayer)
 	{
 		gameResult.m_playerDead = m_spPlayer->GetIsDead();
+
+		//手に入れたお金 = 今の所持金 - 出発したときの所持金
+		gameResult.m_getMoney = std::max(0L, m_spPlayer->GetPlayerInventory()->GetMoney() - m_carryIn.m_money);
 
 
 		bool saveFlg = !gameResult.m_playerDead;
@@ -441,14 +466,12 @@ void GameScene::SetGameResult()
 
 void GameScene::AddEnemyKill()
 {
-	m_displayFloorInfo[m_displayFloor].m_enemyKillCount++;
-	m_displayFloorInfo[0].m_enemyKillCount++;
+	m_displayFloorInfo.m_enemyKillCount++;
 }
 
 void GameScene::AddTreasureChestsNum()
 {
-	m_displayFloorInfo[m_displayFloor].m_treasureChestsNum++;
-	m_displayFloorInfo[0].m_treasureChestsNum++;
+	m_displayFloorInfo.m_treasureChestsNum++;
 }
 
 //マップ生成
@@ -477,11 +500,7 @@ void GameScene::GenerateMap()
 	}
 
 	m_displayFloor++;
-	DisplayFloorInfo displayFloorInfo;
-	displayFloorInfo.m_displayFloor = m_displayFloor;
-	m_displayFloorInfo.push_back(displayFloorInfo);
-
-	m_displayFloorInfo[0].m_displayFloor = m_displayFloor;
+	m_displayFloorInfo.m_displayFloor = m_displayFloor;
 
 	int mapSizeX = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorX) * std::pow(growth, m_mapGenerateDisplayFloor));
 	int mapSizeY = static_cast<int>((baseSize + m_mapGenerateDisplayFloor * m_mapLinearGrowthPerFloorY) * std::pow(growth, m_mapGenerateDisplayFloor));
@@ -718,6 +737,5 @@ void GameScene::Event()
 
 	float dt = DeltaTime::Instance().GetRealDeltaTime();
 
-	m_displayFloorInfo[m_displayFloor].m_playTimeSc += dt;
-	m_displayFloorInfo[0].m_playTimeSc += dt;
+	m_displayFloorInfo.m_playTimeSc += dt;
 }

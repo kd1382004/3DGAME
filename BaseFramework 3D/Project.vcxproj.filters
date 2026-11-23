@@ -94,6 +94,9 @@
     <Filter Include="Src\Application\Editor\CharaStatusEditor">
       <UniqueIdentifier>{d9091c93-2674-42e3-9d60-31204de112c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Editor\PrepareLayoutEditor">
+      <UniqueIdentifier>{6b2f4c1e-8a37-4d95-b0c2-3e7f91a5d4c8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\Editor\ShopEditor">
       <UniqueIdentifier>{afcd0a81-4fce-47dc-8f3e-b3673c68b159}</UniqueIdentifier>
     </Filter>
@@ -421,6 +424,24 @@
     <Filter Include="Src\Application\GameObject\DropCoin">
       <UniqueIdentifier>{92a0fefd-5ce8-455f-bfb9-3cb737d7968a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Camp">
+      <UniqueIdentifier>{81ed3e47-3b60-4414-8696-56dddca67235}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Camp\CampLayoutData">
+      <UniqueIdentifier>{882a27b9-e907-4fe7-b0ef-dab4366a16e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Camp\CampLight">
+      <UniqueIdentifier>{9ce30548-a861-4109-8404-fb907a3f4d59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Terrains\Camp\CampObject">
+      <UniqueIdentifier>{8a4b85ab-b12a-4ddd-89f8-498db27c7298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Camera\PrepareCamera">
+      <UniqueIdentifier>{9dba0724-3379-494e-8b5d-4e20397ba899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\UI\ItemBar">
+      <UniqueIdentifier>{061eb046-ee66-408e-997d-a5c32ee353f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -608,6 +629,9 @@
     </ClInclude>
     <ClInclude Include="Src\Application\Editor\CharaStatusEditor\CharaStatusEditor.h">
       <Filter>Src\Application\Editor\CharaStatusEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Editor\PrepareLayoutEditor\PrepareLayoutEditor.h">
+      <Filter>Src\Application\Editor\PrepareLayoutEditor</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application\Editor\ShopEditor\ShopEditor.h">
       <Filter>Src\Application\Editor\ShopEditor</Filter>
@@ -957,6 +981,21 @@
     <ClInclude Include="Src\Application\GameObject\DropCoin\DropCoin.h">
       <Filter>Src\Application\GameObject\DropCoin</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampLayoutData\CampLayoutData.h">
+      <Filter>Src\Application\GameObject\Terrains\Camp\CampLayoutData</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampObject\CampObject.h">
+      <Filter>Src\Application\GameObject\Terrains\Camp\CampObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampLight\CampLight.h">
+      <Filter>Src\Application\GameObject\Terrains\Camp\CampLight</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Camera\PrepareCamera\PrepareCamera.h">
+      <Filter>Src\Application\GameObject\Camera\PrepareCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\ItemBar\ItemBar.h">
+      <Filter>Src\Application\GameObject\UI\ItemBar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1114,6 +1153,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Editor\CharaStatusEditor\CharaStatusEditor.cpp">
       <Filter>Src\Application\Editor\CharaStatusEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Editor\PrepareLayoutEditor\PrepareLayoutEditor.cpp">
+      <Filter>Src\Application\Editor\PrepareLayoutEditor</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Editor\ShopEditor\ShopEditor.cpp">
       <Filter>Src\Application\Editor\ShopEditor</Filter>
@@ -1450,6 +1492,21 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\DropCoin\DropCoin.cpp">
       <Filter>Src\Application\GameObject\DropCoin</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampLayoutData\CampLayoutData.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Camp\CampLayoutData</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampObject\CampObject.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Camp\CampObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampLight\CampLight.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Camp\CampLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Camera\PrepareCamera\PrepareCamera.cpp">
+      <Filter>Src\Application\GameObject\Camera\PrepareCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\ItemBar\ItemBar.cpp">
+      <Filter>Src\Application\GameObject\UI\ItemBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

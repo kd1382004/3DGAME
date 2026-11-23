@@ -1,0 +1,648 @@
+{
+ "images": [
+  [
+   "glowmap",
+   "//gob-glowmap.png",
+   [
+    1024,
+    1024
+   ],
+   true,
+   "sRGB"
+  ],
+  [
+   "gobli-tex",
+   "//texture\\goblin-tex.png",
+   [
+    1024,
+    1024
+   ],
+   true,
+   "sRGB"
+  ],
+  [
+   "goblin-norm",
+   "//texture\\goblin-norm.png",
+   [
+    1024,
+    1024
+   ],
+   true,
+   "sRGB"
+  ],
+  [
+   "Render Result",
+   "",
+   [
+    0,
+    0
+   ],
+   false,
+   ""
+  ]
+ ],
+ "objects": [
+  {
+   "name": "Armature",
+   "type": "ARMATURE",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 1"
+   ]
+  },
+  {
+   "name": "Belt",
+   "type": "MESH",
+   "parent": null,
+   "scale": [
+    1.9897948503494263,
+    1.6148074865341187,
+    0.10012226551771164
+   ],
+   "loc": [
+    0.0,
+    0.6705749034881592,
+    5.68343448638916
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 5"
+   ],
+   "mats": [
+    "goblin"
+   ],
+   "mods": [
+    [
+     "ARMATURE",
+     "Armature"
+    ]
+   ],
+   "uv": [
+    "UVMap",
+    "UV"
+   ],
+   "verts": 64
+  },
+  {
+   "name": "Body",
+   "type": "MESH",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 2"
+   ],
+   "mats": [
+    "goblin"
+   ],
+   "mods": [
+    [
+     "ARMATURE",
+     "Armature"
+    ]
+   ],
+   "uv": [
+    "UVMap",
+    "UV"
+   ],
+   "verts": 1456
+  },
+  {
+   "name": "Camera",
+   "type": "CAMERA",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0000001192092896,
+    1.0000001192092896
+   ],
+   "loc": [
+    6.270112991333008,
+    -22.68204116821289,
+    18.774234771728516
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 12"
+   ]
+  },
+  {
+   "name": "Cloth",
+   "type": "MESH",
+   "parent": null,
+   "scale": [
+    0.8615562915802002,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    0.0,
+    -0.5774677991867065,
+    5.320100784301758
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 5"
+   ],
+   "mats": [
+    "goblin"
+   ],
+   "mods": [
+    [
+     "ARMATURE",
+     "Armature"
+    ]
+   ],
+   "uv": [
+    "UVMap",
+    "PROJ",
+    "UV"
+   ],
+   "verts": 100
+  },
+  {
+   "name": "Ear",
+   "type": "MESH",
+   "parent": "Armature",
+   "scale": [
+    0.20689362287521362,
+    0.20689362287521362,
+    0.20689362287521362
+   ],
+   "loc": [
+    -0.5489416718482971,
+    -0.7831112146377563,
+    6.428720474243164
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 4"
+   ],
+   "mats": [
+    "Gold"
+   ],
+   "mods": [
+    [
+     "ARMATURE",
+     "Armature"
+    ]
+   ],
+   "uv": [
+    "UVMap",
+    "UV"
+   ],
+   "verts": 48
+  },
+  {
+   "name": "Eyes",
+   "type": "MESH",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 3"
+   ],
+   "mats": [
+    "Eyes"
+   ],
+   "mods": [
+    [
+     "ARMATURE",
+     "Armature"
+    ]
+   ],
+   "uv": [
+    "UVMap",
+    "UV"
+   ],
+   "verts": 122
+  },
+  {
+   "name": "Hemi",
+   "type": "LIGHT",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    -1.3917407989501953,
+    -0.3930557370185852,
+    19.380416870117188
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 11"
+   ]
+  },
+  {
+   "name": "Hemi.001",
+   "type": "LIGHT",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    -1.3917407989501953,
+    0.2124471664428711,
+    -3.974212646484375
+   ],
+   "hide": false,
+   "hide_render": true,
+   "collections": [
+    "コレクション 11"
+   ]
+  },
+  {
+   "name": "Lamp",
+   "type": "LIGHT",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    2.5934348106384277,
+    -8.365409851074219,
+    14.687712669372559
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 11"
+   ]
+  },
+  {
+   "name": "Neck",
+   "type": "MESH",
+   "parent": null,
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loc": [
+    0.0,
+    0.0,
+    9.47551441192627
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 4"
+   ],
+   "mats": [
+    "goblin"
+   ],
+   "mods": [
+    [
+     "ARMATURE",
+     "Armature"
+    ]
+   ],
+   "uv": [
+    "UVMap",
+    "UV"
+   ],
+   "verts": 48
+  },
+  {
+   "name": "Plane.003",
+   "type": "MESH",
+   "parent": null,
+   "scale": [
+    16.718976974487305,
+    16.718976974487305,
+    16.718976974487305
+   ],
+   "loc": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 16"
+   ],
+   "mats": [],
+   "mods": [],
+   "uv": [],
+   "verts": 4
+  },
+  {
+   "name": "Tooth",
+   "type": "MESH",
+   "parent": null,
+   "scale": [
+    0.37402939796447754,
+    0.37402939796447754,
+    0.37402939796447754
+   ],
+   "loc": [
+    -0.7865989208221436,
+    0.013543548062443733,
+    9.489583969116211
+   ],
+   "hide": false,
+   "hide_render": false,
+   "collections": [
+    "コレクション 4"
+   ],
+   "mats": [
+    "goblin"
+   ],
+   "mods": [
+    [
+     "ARMATURE",
+     "Armature"
+    ]
+   ],
+   "uv": [
+    "UVMap",
+    "UV"
+   ],
+   "verts": 120
+  }
+ ],
+ "materials": {
+  "Eyes": {
+   "nodes": [
+    [
+     "フレーム",
+     "FRAME",
+     null
+    ],
+    [
+     "マテリアル出力",
+     "OUTPUT_MATERIAL",
+     null
+    ],
+    [
+     "プリンシプルBSDF",
+     "BSDF_PRINCIPLED",
+     null
+    ],
+    [
+     "マテリアル出力.001",
+     "OUTPUT_MATERIAL",
+     null
+    ],
+    [
+     "ディフューズBSDF",
+     "BSDF_DIFFUSE",
+     null
+    ]
+   ],
+   "links": [
+    [
+     "プリンシプルBSDF",
+     "BSDF",
+     "マテリアル出力",
+     "Surface"
+    ],
+    [
+     "ディフューズBSDF",
+     "BSDF",
+     "マテリアル出力.001",
+     "Surface"
+    ]
+   ],
+   "users": 1
+  },
+  "goblin": {
+   "nodes": [
+    [
+     "フレーム",
+     "FRAME",
+     null
+    ],
+    [
+     "マテリアル出力",
+     "OUTPUT_MATERIAL",
+     null
+    ],
+    [
+     "プリンシプルBSDF",
+     "BSDF_PRINCIPLED",
+     null
+    ],
+    [
+     "マテリアル出力.001",
+     "OUTPUT_MATERIAL",
+     null
+    ],
+    [
+     "ディフューズBSDF",
+     "BSDF_DIFFUSE",
+     null
+    ]
+   ],
+   "links": [
+    [
+     "プリンシプルBSDF",
+     "BSDF",
+     "マテリアル出力",
+     "Surface"
+    ],
+    [
+     "ディフューズBSDF",
+     "BSDF",
+     "マテリアル出力.001",
+     "Surface"
+    ]
+   ],
+   "users": 5
+  },
+  "Gold": {
+   "nodes": [
+    [
+     "フレーム",
+     "FRAME",
+     null
+    ],
+    [
+     "マテリアル出力",
+     "OUTPUT_MATERIAL",
+     null
+    ],
+    [
+     "プリンシプルBSDF",
+     "BSDF_PRINCIPLED",
+     null
+    ],
+    [
+     "マテリアル出力.001",
+     "OUTPUT_MATERIAL",
+     null
+    ],
+    [
+     "ディフューズBSDF",
+     "BSDF_DIFFUSE",
+     null
+    ]
+   ],
+   "links": [
+    [
+     "プリンシプルBSDF",
+     "BSDF",
+     "マテリアル出力",
+     "Surface"
+    ],
+    [
+     "ディフューズBSDF",
+     "BSDF",
+     "マテリアル出力.001",
+     "Surface"
+    ]
+   ],
+   "users": 2
+  }
+ },
+ "collections": [
+  [
+   "コレクション 1",
+   false,
+   [
+    "Armature"
+   ]
+  ],
+  [
+   "コレクション 11",
+   false,
+   [
+    "Hemi.001",
+    "Hemi",
+    "Lamp"
+   ]
+  ],
+  [
+   "コレクション 12",
+   false,
+   [
+    "Camera"
+   ]
+  ],
+  [
+   "コレクション 16",
+   true,
+   [
+    "Plane.003"
+   ]
+  ],
+  [
+   "コレクション 2",
+   false,
+   [
+    "Body"
+   ]
+  ],
+  [
+   "コレクション 3",
+   false,
+   [
+    "Eyes"
+   ]
+  ],
+  [
+   "コレクション 4",
+   false,
+   [
+    "Ear",
+    "Tooth",
+    "Neck"
+   ]
+  ],
+  [
+   "コレクション 5",
+   false,
+   [
+    "Belt",
+    "Cloth"
+   ]
+  ]
+ ],
+ "vl_excluded": [
+  [
+   "コレクション 1",
+   false,
+   false
+  ],
+  [
+   "コレクション 2",
+   false,
+   false
+  ],
+  [
+   "コレクション 3",
+   false,
+   false
+  ],
+  [
+   "コレクション 4",
+   false,
+   false
+  ],
+  [
+   "コレクション 5",
+   false,
+   false
+  ],
+  [
+   "コレクション 11",
+   false,
+   false
+  ],
+  [
+   "コレクション 12",
+   false,
+   false
+  ],
+  [
+   "コレクション 16",
+   false,
+   false
+  ]
+ ]
+}

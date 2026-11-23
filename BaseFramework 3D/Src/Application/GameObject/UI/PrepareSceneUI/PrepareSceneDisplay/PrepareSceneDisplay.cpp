@@ -13,18 +13,18 @@ void PrepareSceneDisplay::Init()
 	//メニューの並び(左端・上下中央を基準)
 
 	//左端のX座標(全ボタン共通)
-	const float menuLeft = -550.0f;
+	const float menuLeft = -600.0f;
 
 	//一番上(EXPLORE)のY座標
-	const float menuTopY = 162.0f;
+	const float menuTopY = 270.0f;
 
 	//ボタン同士の間隔
-	const float menuSpaceY = 110.0f;
+	const float menuSpaceY = 50.0f;
 
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
-		m_menuSiz[i].x = m_spMenuTex[i]->GetWidth();
-		m_menuSiz[i].y = m_spMenuTex[i]->GetHeight();
+		m_menuSiz[i].x = m_spMenuTex[i]->GetWidth() * 0.5;
+		m_menuSiz[i].y = m_spMenuTex[i]->GetHeight() * 0.5;
 
 		m_menuDrawSiz[i] = m_menuSiz[i] * m_menuScale;
 
@@ -35,7 +35,7 @@ void PrepareSceneDisplay::Init()
 	}
 
 	//画面タイトル
-	SetTextPos(InfoText::Title, -610.0f, 299.0f);
+	SetTextPos(InfoText::Title, -100.0f, 299.0f);
 
 	//パネルの左端X(3枚共通)
 	const float panelLeft = 285.0f;
@@ -129,7 +129,7 @@ void PrepareSceneDisplay::DrawSprite()
 		//選ばれているか、マウスが乗っていたら明るい画像
 		const bool isSelect = IsMenuSelected(static_cast<PrepareMenu>(i)) || m_mouseHitFlg[i];
 		KdTexture* pTex;
-		
+
 		if (isSelect)
 		{
 			pTex = m_spMenuTex[i].get();
@@ -138,7 +138,7 @@ void PrepareSceneDisplay::DrawSprite()
 		{
 			pTex = m_spNotMenuTex[i].get();
 		}
-		
+
 
 		//pivotを{0,0.5}にして左端基準で描画
 		KdShaderManager::Instance().m_spriteShader.DrawTex(
@@ -220,10 +220,10 @@ void PrepareSceneDisplay::Draw()
 	}
 
 	//前回の記録
-	if (m_gameRecord.m_hasLatest && !m_gameRecord.m_latest.m_displayFloorInfo.empty())
+	if (m_gameRecord.m_hasLatest && m_gameRecord.m_latest.m_displayFloorInfo.m_displayFloor > 0)
 	{
 		//[0]は全体の情報
-		int  floor = m_gameRecord.m_latest.m_displayFloorInfo[0].m_displayFloor;
+		int  floor = m_gameRecord.m_latest.m_displayFloorInfo.m_displayFloor;
 		bool isLost = m_gameRecord.m_latest.m_playerDead;
 
 		//「到達階」の右 〜 「階」の左
@@ -251,7 +251,7 @@ void PrepareSceneDisplay::LoadMenuTex()
 			}
 		}
 
-	
+
 
 		if (!m_spNotMenuTex[i])
 		{

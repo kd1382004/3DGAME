@@ -1,6 +1,16 @@
 ﻿#pragma once
 
-//各階層での情報
+
+
+//プレイヤーの武器情報
+enum PlayerWeaponInfo
+{
+	PlayerWeaponInfo_Dagger,
+	PlayerWeaponInfo_Sword,
+	PlayerWeaponInfoSize
+};
+
+//情報
 struct DisplayFloorInfo
 {
 	//階層
@@ -16,14 +26,37 @@ struct DisplayFloorInfo
 	float m_playTimeSc = 0;
 };
 
+
+//出発したときの持ち込み(EXPLOREの装備・所持金と同じ項目)
+struct CarryInInfo
+{
+	//武器
+	PlayerWeaponInfo m_weapon = PlayerWeaponInfo_Dagger;
+
+	//持っていたポーションの合計
+	int m_potionNum = 0;
+
+	//所持金
+	long m_money = 0;
+};
+
 //ゲームリザルト
 struct GameResult
 {
 	//最初の配列は、全体の情報
-	std::vector<DisplayFloorInfo>m_displayFloorInfo;
+	DisplayFloorInfo m_displayFloorInfo;
 
 	//プレイヤー死亡
 	bool m_playerDead = false;
+
+	//出発したときの持ち込み
+	CarryInInfo m_carryIn;
+
+	//ダンジョンで手に入れたお金
+	long m_getMoney = 0;
+
+	//プレイした日時
+	long long m_playDate = 0;
 };
 
 //プレイ記録(最新1件 + 最高階層ベスト3)
@@ -36,13 +69,6 @@ struct GameRecord
 };
 
 
-//プレイヤーの武器情報
-enum PlayerWeaponInfo
-{
-	PlayerWeaponInfo_Dagger,
-	PlayerWeaponInfo_Sword,
-	PlayerWeaponInfoSize
-};
 
 
 class BaseScene;

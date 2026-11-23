@@ -38,5 +38,5 @@ void PlayreLV::AddExp(int _gainedExp, PlayerBase* _player)
 
 void PlayreLV::CalcNextLevelExp(int _LV)
 {
-	m_nextLVExperiencePoints = 10 + _LV * _LV * 10;
+	m_nextLVExperiencePoints = 20 + _LV * 5 + _LV * _LV;
 }
