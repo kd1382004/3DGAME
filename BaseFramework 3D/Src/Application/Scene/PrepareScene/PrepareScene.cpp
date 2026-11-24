@@ -38,6 +38,25 @@
 #include"../../Info/MouseInfo/MouseInfo.h"													//マウス入力
 #include"../../Info/KeyInfo/KeyInfo.h"														//キー入力
 
+//---- 武器立ての武器 ----
+
+namespace
+{
+	//武器立ての置物の名前(Blenderでの名前の先頭)と、武器の種類の対応
+	//武器を増やしたら、ここに1行足す
+	struct RackWeaponName
+	{
+		const char*      m_prefix;	//置物の名前の先頭("RackSword.001" なら "RackSword")
+		PlayerWeaponInfo m_weapon;	//武器の種類
+	};
+
+	const RackWeaponName kRackWeaponNames[] =
+	{
+		{ "RackDagger", PlayerWeaponInfo_Dagger },
+		{ "RackSword",  PlayerWeaponInfo_Sword  },
+	};
+}
+
 //=============================================
 // コンストラクタ・デストラクタ
 //=============================================
@@ -244,6 +263,16 @@ void PrepareScene::Init()
 		m_campObjects.push_back(spObj);	// エディタ用に覚えておく
 
 
+		// 武器立ての武器なら、武器の種類ごとに覚えておく(表示を切り替えるため)
+		for (const auto& rack : kRackWeaponNames)
+		{
+			if (data.m_name.rfind(rack.m_prefix, 0) == 0)
+			{
+				m_wpRackWeapons[rack.m_weapon] = spObj;
+				break;
+			}
+		}
+
 		if (data.m_kind == "Player")
 		{
 			m_wpCampPlayer = spObj;
@@ -272,6 +301,9 @@ void PrepareScene::Init()
 	m_spLayoutEditor->SetTargets(shared_from_this(), m_spPrepareCamera, m_campLights, m_campObjects);
 	m_spLayoutEditor->SetDepartData(&m_campLayout.m_depart);
 	m_spLayoutEditor->SetEntranceEffect(m_wpEntranceEffect);
+
+	// 武器立ての武器を、持っている物・装備中の物に合わせる
+	UpdateRackWeapons();
 }
 
 //=============================================
@@ -404,6 +436,10 @@ void PrepareScene::UpdateDepart()
 void PrepareScene::Event()
 {
 	MouseInfo::Instance().SetMouseFreeFlg(true);
+
+	// 武器を買った・装備を変えたらすぐ反映されるように毎フレーム更新する
+	UpdateRackWeapons();
+
 	if (m_departState != DepartState::None) { UpdateDepart(); return; }
 	if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 	{
@@ -438,6 +474,24 @@ void PrepareScene::ShopEvent()
 void PrepareScene::EquipEvent()
 {
 
+}
+
+void PrepareScene::UpdateRackWeapons()
+{
+	if (!m_spShopDisplay) { return; }
+
+	const std::vector<bool> owned = m_spShopDisplay->GetOwnedWeapons();
+	const int equip = SceneManager::Instance().GetPlayerWeaponInfo();
+
+	for (int id = 0; id < PlayerWeaponInfoSize; id++)
+	{
+		std::shared_ptr<CampObject> spWeapon = m_wpRackWeapons[id].lock();
+		if (!spWeapon) { continue; }	// 武器立てに置いていない武器
+
+		// 持っていて、装備していない武器だけを出す
+		const bool isOwned = id < static_cast<int>(owned.size()) && owned[id];
+		spWeapon->SetDrawFlg(isOwned && id != equip);
+	}
 }
 
 void PrepareScene::ApplyEquip()

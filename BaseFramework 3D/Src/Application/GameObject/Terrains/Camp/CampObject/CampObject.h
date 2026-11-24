@@ -27,6 +27,10 @@ public:
 	// _data ... 置物のデータ
 	void SetData(const CampObjectData& _data);
 
+	//描くかをセット(武器立ての武器など、条件で隠したい物に使う)
+	// _flg ... 描くならtrue
+	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
+
 	//---- 取得 ----
 
 	// エディタから値を変えるときに使う
@@ -55,4 +59,7 @@ private:
 
 	//アニメーションを動かすもの
 	std::shared_ptr<KdAnimator> m_spAnimator;
+
+	//描くか(falseなら影も描かない)
+	bool m_drawFlg = true;
 };

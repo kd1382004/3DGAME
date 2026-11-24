@@ -25,6 +25,7 @@
 void EnemyManager::Init()
 {
 	SetEnemyListPlayer();
+	RegisterSpawnTable();
 }
 
 void EnemyManager::PreUpdate()
@@ -61,7 +62,7 @@ void EnemyManager::PreUpdate()
 			}
 		}
 	}
-	
+
 
 	if (m_spEnemyBoss)
 	{
@@ -195,21 +196,18 @@ void EnemyManager::SetVisionFlg(bool _flg)
 // その他の処理
 //=============================================
 
-void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
+void EnemyManager::SpawnEnemy(MapType _maptype, EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
-	std::shared_ptr<EnemyBase>spEnemyAmbush;
-	switch (_enemyType)
-	{
-	case RoomEnemy:
-		spEnemyAmbush = std::make_shared<Goblin>();
-		break;
-	case RoomStarsEnemy:
-		spEnemyAmbush = std::make_shared<Golem>();
-		break;
-	default:
-		break;
-	}
+	//このマップの登録を探す
+	auto mapIt = m_spawnTable.find(_maptype);
+	if (mapIt == m_spawnTable.end()) { return; }	//このマップには敵がいない
 
+	//この出方の敵を探す
+	auto enemyIt = mapIt->second.find(_enemyType);
+	if (enemyIt == mapIt->second.end()) { return; }	//この出方の敵は登録されていない
+
+	//敵を作る
+	std::shared_ptr<EnemyBase> spEnemyAmbush = enemyIt->second();
 
 	spEnemyAmbush->SetPlayer(m_wpPlayer.lock());
 	spEnemyAmbush->SetMapManager(m_wpMapManager.lock());
@@ -238,9 +236,17 @@ void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 
 }
 
-void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
+void EnemyManager::SpawnBoss(MapType _maptype, Math::Vector3 _spawnPos)
 {
-	std::shared_ptr<Giant>spBoss = std::make_shared<Giant>();
+	//このマップの登録を探す
+	auto mapIt = m_spawnTable.find(_maptype);
+	if (mapIt == m_spawnTable.end()) { return; }	//このマップには敵がいない
+
+	//この出方の敵を探す
+	auto enemyIt = mapIt->second.find(EnemyType::BossEnemy);
+	if (enemyIt == mapIt->second.end()) { return; }	//この出方の敵は登録されていない
+
+	std::shared_ptr<EnemyBase>spBoss = enemyIt->second();
 	spBoss->Init();
 	spBoss->SetPlayer(m_wpPlayer.lock());
 	spBoss->SetMapManager(m_wpMapManager.lock());
@@ -267,11 +273,7 @@ void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 
 	m_spEnemyBoss = spBoss;
 
-	if (m_spEnemyBoss)
-	{
-		m_enemyUpdateList.push_back(m_spEnemyBoss);
-	}
-
+	m_enemyUpdateList.push_back(m_spEnemyBoss);
 }
 
 //=============================================
@@ -284,4 +286,18 @@ void EnemyManager::SetEnemyListPlayer()
 	{
 		enemy->SetPlayer(m_wpPlayer.lock());
 	}
+}
+
+void EnemyManager::RegisterSpawnTable()
+{
+	//---- 地下迷宮 ----
+	RegisterEnemy<Goblin>(MapType_Dungeon, RoomEnemy);
+	RegisterEnemy<Golem>(MapType_Dungeon, RoomStarsEnemy);
+	RegisterEnemy<Giant>(MapType_Dungeon, BossEnemy);
+
+	//---- 工場 ----
+	//(まだ敵なし。追加するときはここに書く)
+	//RegisterEnemy<Goblin>(MapType_Factory, BossEnemy);
+	//RegisterEnemy<Golem>(MapType_Factory, RoomEnemy);
+	//RegisterEnemy<Giant>(MapType_Factory, RoomStarsEnemy);
 }

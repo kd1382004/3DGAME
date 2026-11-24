@@ -20,7 +20,7 @@
         {
             "id": 1,
             "name": "AttackBaseUPPotion",
-            "stock": 240
+            "stock": 252
         },
         {
             "id": 2,
@@ -57,7 +57,7 @@
         {
             "id": 1,
             "name": "Sword",
-            "stock": 1
+            "stock": 0
         }
     ]
 }

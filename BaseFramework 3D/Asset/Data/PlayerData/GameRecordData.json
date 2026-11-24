@@ -6,6 +6,20 @@
                 "PotionNum": 0,
                 "Weapon": 0
             },
+            "DisplayFloor": 10,
+            "EnemyKillCount": 5,
+            "GetMoney": 770,
+            "PlayDate": 1795496070,
+            "PlayTimeSc": 262.8667907714844,
+            "PlayerDead": true,
+            "TreasureChestsNum": 14
+        },
+        {
+            "CarryIn": {
+                "Money": 0,
+                "PotionNum": 0,
+                "Weapon": 0
+            },
             "DisplayFloor": 6,
             "EnemyKillCount": 52,
             "GetMoney": 7645,
@@ -27,20 +41,6 @@
             "PlayTimeSc": 24.02313232421875,
             "PlayerDead": false,
             "TreasureChestsNum": 3
-        },
-        {
-            "CarryIn": {
-                "Money": 80,
-                "PotionNum": 486,
-                "Weapon": 0
-            },
-            "DisplayFloor": 2,
-            "EnemyKillCount": 0,
-            "GetMoney": 0,
-            "PlayDate": 1795180281,
-            "PlayTimeSc": 3.160997152328491,
-            "PlayerDead": true,
-            "TreasureChestsNum": 0
         }
     ],
     "Latest": {
@@ -49,12 +49,12 @@
             "PotionNum": 0,
             "Weapon": 0
         },
-        "DisplayFloor": 2,
+        "DisplayFloor": 1,
         "EnemyKillCount": 0,
         "GetMoney": 0,
-        "PlayDate": 1795494016,
-        "PlayTimeSc": 55.280975341796875,
-        "PlayerDead": true,
-        "TreasureChestsNum": 2
+        "PlayDate": 1795496569,
+        "PlayTimeSc": 2.23799991607666,
+        "PlayerDead": false,
+        "TreasureChestsNum": 0
     }
 }

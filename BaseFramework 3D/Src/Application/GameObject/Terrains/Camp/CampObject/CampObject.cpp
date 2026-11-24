@@ -22,6 +22,7 @@ void CampObject::Update()
 
 void CampObject::DrawLit()
 {
+	if (!m_drawFlg) { return; }
 	if (!m_spModel) { return; }
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
 }
@@ -29,6 +30,7 @@ void CampObject::DrawLit()
 void CampObject::GenerateDepthMapFromLight()
 {
 	// 影を落とす(落としたくない物は描かない)
+	if (!m_drawFlg) { return; }
 	if (!m_spModel) { return; }
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
 }

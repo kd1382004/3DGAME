@@ -620,7 +620,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSize, int _roomNum, MapType _mapT
 			// 先頭から必要数だけスポーン
 			for (int n = 0; n < roomEnemyNum; n++)
 			{
-				spEnemyManager->SpawnEnemy(enemySpawnList[n].m_enemyType, enemySpawnList[n].m_pos);
+				spEnemyManager->SpawnEnemy(_mapType, enemySpawnList[n].m_enemyType, enemySpawnList[n].m_pos);
 				mapRoomList[enemySpawnList[n].m_roomID][enemySpawnList[n].m_floorNum].m_installation = true;
 			}
 		}
@@ -763,7 +763,7 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSize, MapType _type)
 	std::shared_ptr<EnemyManager> spEnemyManager = m_wpEnemyManager.lock();
 	if (spEnemyManager)
 	{
-		spEnemyManager->SpawnBoss(m_spMapGenerate->GetBossSpawnPos());
+		spEnemyManager->SpawnBoss(_type, m_spMapGenerate->GetBossSpawnPos());
 	}
 
 

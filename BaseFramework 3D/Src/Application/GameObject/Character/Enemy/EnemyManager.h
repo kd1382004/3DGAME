@@ -7,6 +7,7 @@ class UIManager;
 class GameScene;
 class HitDamage;
 
+enum  MapType;
 
 //出す敵の種類
 enum EnemyType
@@ -16,10 +17,13 @@ enum EnemyType
 
 	//階段部屋タイプの敵
 	RoomStarsEnemy,
+
+	//ボス
+	BossEnemy,
 };
 
 //敵の管理
-class EnemyManager:public KdGameObject, public std::enable_shared_from_this<EnemyManager>
+class EnemyManager :public KdGameObject, public std::enable_shared_from_this<EnemyManager>
 {
 public:
 
@@ -61,11 +65,11 @@ public:
 
 	//敵のリストを返す
 	//戻り値 ... 敵のリスト
-	std::list<std::shared_ptr<EnemyBase>>& GetEnemyList(){ return m_enemyList; }
+	std::list<std::shared_ptr<EnemyBase>>& GetEnemyList() { return m_enemyList; }
 
 	//更新する(プレイヤーの近くの)敵のリストを返す
 	//戻り値 ... 更新する敵のリスト
-	std::list<std::shared_ptr<EnemyBase>>& GetEnemyUpdateList(){ return m_enemyUpdateList; }
+	std::list<std::shared_ptr<EnemyBase>>& GetEnemyUpdateList() { return m_enemyUpdateList; }
 
 	//---- 設定 ----
 
@@ -108,16 +112,18 @@ public:
 	//---- その他の処理 ----
 
 	//敵を出す
+	// _maptype   ..マップのタイプ
 	// _enemyType ... 敵の種類
 	// _spawnPos ... 出す位置
-	void SpawnEnemy(EnemyType _enemyType,Math::Vector3 _spawnPos);
+	void SpawnEnemy(MapType _maptype, EnemyType _enemyType, Math::Vector3 _spawnPos);
 
 	//敵のリストを空にする
 	void EnemyListReset() { m_enemyList.clear(); }
 
 	//ボスを出す
+	// _maptype   ..マップのタイプ
 	// _spawnPos ... 出す位置
-	void SpawnBoss(Math::Vector3 _spawnPos);
+	void SpawnBoss(MapType _maptype,Math::Vector3 _spawnPos);
 
 protected:
 
@@ -157,4 +163,27 @@ protected:
 
 	//全部の敵にプレイヤーをセットする
 	void SetEnemyListPlayer();
+
+
+
+	//---- 出現テーブル ----
+
+	//敵を1体作る関数の型
+	using EnemyCreateFunc = std::function<std::shared_ptr<EnemyBase>()>;
+
+	//マップの種類ごとに出す敵を登録する(初期化で1回呼ぶ)
+	void RegisterSpawnTable();
+
+	//出現テーブルに敵を1種類登録する
+	// T          ... 作る敵のクラス(EnemyBaseを継承したもの)
+	// _mapType   ... どのマップで出すか
+	// _enemyType ... どの出方の敵か
+	template<class T>
+	void RegisterEnemy(MapType _mapType, EnemyType _enemyType)
+	{
+		m_spawnTable[_mapType][_enemyType] = []() { return std::make_shared<T>(); };
+	}
+
+	//マップの種類 → 敵の種類 → 作る関数 の表
+	std::map<MapType, std::map<EnemyType, EnemyCreateFunc>> m_spawnTable;
 };

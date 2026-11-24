@@ -76,6 +76,10 @@ public:
 	//出発の演出を進める(プレイヤーを入口へ歩かせて、暗転したらゲームシーンへ)
 	void UpdateDepart();
 
+	//武器立ての武器の表示を更新する
+	//持っている武器だけを出し、装備中の武器は(プレイヤーが持っているので)隠す
+	void UpdateRackWeapons();
+
 private:
 
 	//---- メンバ変数 ----
@@ -156,6 +160,9 @@ private:
 
 	//キャンプの置物
 	std::vector<std::shared_ptr<CampObject>> m_campObjects;
+
+	//武器立てに置いてある武器(武器の種類ごと。置いていない武器は空)
+	std::weak_ptr<CampObject> m_wpRackWeapons[PlayerWeaponInfoSize];
 
 	//キャンプのライト
 	std::vector<std::shared_ptr<CampLight>> m_campLights;
