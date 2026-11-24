@@ -18,9 +18,9 @@ struct Node;
 	//段の当たり判定の形
 enum class AttackHitShape
 {
-	Bone,		// m_hitNodes の骨に付ける(今までと同じ)
-	Circle,		// 地面に円で出す(範囲攻撃)
-	Box,		// 敵の前に箱で出す(ボスのパンチなど)
+	Bone,		// m_hitNodes の骨に付ける
+	Circle,		// 地面に円で出す
+	Box,		// 敵の前に箱で出す
 };
 
 //段の中での動き方
@@ -524,4 +524,7 @@ protected:
 
 	//アニメの前後の動きを打ち消す骨の名前(m_cancelRootMotion 用。空なら打ち消さない)
 	std::string m_rootMotionNodeName;
+
+	//前後の動きを打ち消し続ける残り時間(秒。攻撃が終わった後のクロスフェード用)
+	float m_rootMotionCancelTimer = 0.0f;
 };

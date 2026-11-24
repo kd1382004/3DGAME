@@ -1,6 +1,8 @@
 ﻿#include "PrepareScene.h"
 #include "../SceneManager.h"
 
+#include"../../Info/FadeDraw/FadeDraw.h"
+
 #include"../../GameObject/Camera/PrepareCamera/PrepareCamera.h"
 
 
@@ -57,14 +59,14 @@ void PrepareScene::ImGUI()
 		const char* tabName = (m_currentTab == PrepareTab::Shop) ? "Shop" : "Equip";
 		ImGui::Text(U8("現在のタブ : %s"), tabName);
 
-		if (ImGui::Button(U8("ショップ")))	{ ChangeTab(PrepareTab::Shop); }
+		if (ImGui::Button(U8("ショップ"))) { ChangeTab(PrepareTab::Shop); }
 		ImGui::SameLine();
-		if (ImGui::Button(U8("装備変更")))	{ ChangeTab(PrepareTab::Equip); }
+		if (ImGui::Button(U8("装備変更"))) { ChangeTab(PrepareTab::Equip); }
 
 		ImGui::Separator();
 
 		if (ImGui::Button(U8("武器をダガーに"))) { m_selectWeapon = PlayerWeaponInfo::PlayerWeaponInfo_Dagger; }
-		if (ImGui::Button(U8("武器を剣に")))	 { m_selectWeapon = PlayerWeaponInfo::PlayerWeaponInfo_Sword; }
+		if (ImGui::Button(U8("武器を剣に"))) { m_selectWeapon = PlayerWeaponInfo::PlayerWeaponInfo_Sword; }
 
 		ImGui::Separator();
 
@@ -124,7 +126,7 @@ void PrepareScene::Init()
 
 	// プレイ記録の読み込み(メニューとPlay履歴で使う)
 	const GameRecord gameRecord = LoadGameRecord();
-	
+
 	m_spPrepareSceneDisplay = std::make_shared<PrepareSceneDisplay>();
 	m_spPrepareSceneDisplay->SetPrepareScene(shared_from_this());
 	m_spPrepareSceneDisplay->SetGameRecord(gameRecord);
@@ -162,6 +164,7 @@ void PrepareScene::Init()
 	m_spGameButton->SetTexPath("Asset/Textures/Button/GameButton/DepartButton.png");
 	m_spGameButton->Init();
 	m_spGameButton->SetPos({ 445.0f, -305.0f, 0.0f });
+	m_spGameButton->SetOnPush([this]() { StartDepart(); });
 	m_objList.push_back(m_spGameButton);
 
 	ChangeTab(PrepareTab::None);
@@ -214,7 +217,7 @@ void PrepareScene::Init()
 		if (data.m_kind == "Campfire")
 		{
 			// 炎(焚き火の少し上)。ループ再生
-			auto ef=	KdEffekseerManager::GetInstance().Play("Campfire/Campfire.efkefc",
+			auto ef = KdEffekseerManager::GetInstance().Play("Campfire/Campfire.efkefc",
 				data.m_pos + Math::Vector3(0, 0, 0), 1.0f, 1.0f, true);
 
 			m_wpKdEffekseerObject.push_back(ef);
@@ -225,6 +228,13 @@ void PrepareScene::Init()
 		spObj->SetData(data);
 		m_objList.push_back(spObj);
 		m_campObjects.push_back(spObj);	// エディタ用に覚えておく
+
+
+		if (data.m_kind == "Player")
+		{
+			m_wpCampPlayer = spObj;
+			spObj->PlayAnime("Idle", true);
+		}
 	}
 
 
@@ -240,6 +250,7 @@ void PrepareScene::Init()
 	// 背景のカメラ・ライトを調整するEditor
 	m_spLayoutEditor = std::make_shared<PrepareLayoutEditor>(m_campLayoutTuneFilePath);
 	m_spLayoutEditor->SetTargets(shared_from_this(), m_spPrepareCamera, m_campLights, m_campObjects);
+	m_spLayoutEditor->SetDepartData(&m_campLayout.m_depart);
 }
 
 void PrepareScene::ChangeTab(PrepareTab _tab)
@@ -278,7 +289,7 @@ void PrepareScene::OnShopDataChanged()
 	if (m_spPrepareSceneDisplay)
 	{
 		m_spPrepareSceneDisplay->SetMoney(m_spShopDisplay->GetMoney());
-		 m_spPrepareSceneDisplay->SetPotionNum(m_spShopDisplay->GetPotionTotal());
+		m_spPrepareSceneDisplay->SetPotionNum(m_spShopDisplay->GetPotionTotal());
 	}
 
 	// 装備画面の武器の一覧を作り直す
@@ -288,10 +299,86 @@ void PrepareScene::OnShopDataChanged()
 	}
 }
 
+void PrepareScene::StartDepart()
+{
+	if (m_departState != DepartState::None) { return; }
+	m_departState = DepartState::Walk;
+	m_departTimer = 0;
+	m_departFadeTimer = 0;
+	ChangeTab(PrepareTab::None);
+	if (m_spGameButton) { m_spGameButton->SetActive(false); }
+	if (m_spPrepareSceneDisplay) { m_spPrepareSceneDisplay->SetActive(false); }
+
+
+	auto player = m_wpCampPlayer.lock();
+	if (player)
+	{
+		player->PlayAnime("Run", true);
+		m_departStartPos = player->WorkData().m_pos;
+		const CampDepartData& dep = m_campLayout.m_depart;
+		Math::Vector3 dir = dep.m_target - m_departStartPos;
+
+
+		dir.y = 0.0f;
+		if (dir.LengthSquared() > 0.0001f)
+		{
+			float yaw = DirectX::XMConvertToDegrees(atan2(dir.x, dir.z));
+			player->WorkData().m_rotDeg.y = yaw;
+			player->ApplyData();
+		}
+	}
+
+}
+
+void PrepareScene::UpdateDepart()
+{
+	const CampDepartData& dep = m_campLayout.m_depart;
+	auto player = m_wpCampPlayer.lock();
+
+	//---- 歩く(Walk でも Fade でも) ----
+	m_departTimer += DeltaTime::Instance().GetGameDeltaTime();
+
+	float t = 1.0f;
+	if (dep.m_walkTime > 0.0f) { t = m_departTimer / dep.m_walkTime; }
+	if (t > 1.0f) { t = 1.0f; }
+
+	if (player)
+	{
+		player->WorkData().m_pos = Math::Vector3::Lerp(m_departStartPos, dep.m_target, t);
+		player->ApplyData();
+	}
+
+	//---- 状態ごと ----
+	switch (m_departState)
+	{
+	case DepartState::Walk:
+		if (t >= dep.m_fadeStartRate)
+		{
+			FadeDraw::Instance().SetFadeType(FadeIn, dep.m_fadeTime);
+			m_departState = DepartState::Fade;
+
+			// FadeDraw はこのフレームから時間を進めるので、こちらも同じフレームから数える
+			m_departFadeTimer = DeltaTime::Instance().GetRealDeltaTime();
+		}
+		break;
+
+	case DepartState::Fade:
+		// FadeDraw と同じ Real の時間で数えて、真っ暗になったらゲームへ
+		m_departFadeTimer += DeltaTime::Instance().GetRealDeltaTime();
+		if (m_departFadeTimer >= dep.m_fadeTime)
+		{
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);
+		}
+		break;
+
+	default:
+		break;
+	}
+}
 void PrepareScene::Event()
 {
 	MouseInfo::Instance().SetMouseFreeFlg(true);
-
+	if (m_departState != DepartState::None) { UpdateDepart(); return; }
 	if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 	{
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
@@ -324,7 +411,7 @@ void PrepareScene::ShopEvent()
 
 void PrepareScene::EquipEvent()
 {
-	
+
 }
 
 void PrepareScene::ApplyEquip()

@@ -1,115 +1,134 @@
 {
-    "version": 1,
     "m_patterns": [
         {
-            "m_name": "LeftPunch",
             "m_comboFilePath": "Asset/Data/ObjeData/Combo/Giant/LeftPunch.json",
-            "m_minLV": 1,
-            "m_minDistance": 0.0,
-            "m_maxDistance": 8.0,
-            "m_weight": 4.0,
             "m_cooldown": 0.0,
-            "m_waitAfter": 3.0,
             "m_hitNodes": [
                 ""
             ],
+            "m_maxDistance": 8.0,
+            "m_minDistance": 0.0,
+            "m_minLV": 1,
+            "m_name": "LeftPunch",
             "m_stepExtras": [
                 {
-                    "m_moveType": "None",
                     "m_aimLockEnd": 0.3,
-                    "m_moveStart": 0.0,
-                    "m_moveEnd": 0.3,
-                    "m_cancelRootMotion": false,
-                    "m_hitShape": "Box",
-                    "m_hitRadius": 1.0,
-                    "m_hitBoxSize": [
-                        2.5,
-                        2.0,
-                        2.5
-                    ],
-                    "m_hitForward": 5.0,
-                    "m_warnStart": 0.0,
+                    "m_cancelRootMotion": true,
                     "m_events": [
                         {
+                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav",
                             "p": 0.5,
-                            "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "type": "Sound"
+                        },
+                        {
+                            "name": "EnemyAttack/Giant/Giant_Punch.efkefc",
+                            "p": 0.5,
+                            "type": "Effect"
                         },
                         {
                             "p": 0.5,
-                            "type": "Effect",
-                            "name": "EnemyAttack/Giant/Giant_Punch.efkefc"
-                        },
-                        {
-                            "p": 0.5,
-                            "type": "CameraShake",
                             "power": 0.4,
-                            "time": 0.35
+                            "time": 0.35,
+                            "type": "CameraShake"
                         }
                     ],
-                    "m_specialType": ""
+                    "m_hitBoxSize": [
+                        10.0,
+                        2.0,
+                        4.0
+                    ],
+                    "m_hitForward": 5.0,
+                    "m_hitRadius": 1.0,
+                    "m_hitShape": "Box",
+                    "m_moveEnd": 0.3,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
                 }
-            ]
+            ],
+            "m_waitAfter": 3.0,
+            "m_weight": 4.0
         },
         {
-            "m_name": "JumpSlam",
             "m_comboFilePath": "Asset/Data/ObjeData/Combo/Giant/JumpSlam.json",
-            "m_minLV": 1,
-            "m_minDistance": 0.0,
-            "m_maxDistance": 40.0,
-            "m_weight": 1.0,
             "m_cooldown": 0.0,
-            "m_waitAfter": 5.0,
             "m_hitNodes": [
-                ""
+                "",
+                "thumb_2_L"
             ],
+            "m_maxDistance": 40.0,
+            "m_minDistance": 0.0,
+            "m_minLV": 1,
+            "m_name": "JumpSlam",
             "m_stepExtras": [
                 {
-                    "m_moveType": "LeapToTarget",
                     "m_aimLockEnd": 0.3,
-                    "m_moveStart": 0.0,
-                    "m_moveEnd": 0.3,
                     "m_cancelRootMotion": true,
-                    "m_hitShape": "Circle",
-                    "m_hitRadius": 7.0,
+                    "m_events": [
+                        {
+                            "name": "Asset/Sound/SE/Enemy/Giant/CryingSound.wav",
+                            "p": 0.0,
+                            "type": "Sound"
+                        },
+                        {
+                            "name": "AttackJumpSlam/Start/JumpSlam_Start.efkefc",
+                            "p": 0.14,
+                            "type": "Effect"
+                        },
+                        {
+                            "name": "AttackJumpSlam/End/JumpSlam_End.efkefc",
+                            "p": 0.4,
+                            "type": "Effect"
+                        },
+                        {
+                            "name": "Asset/Sound/SE/Enemy/Giant/Don.wav",
+                            "p": 0.45,
+                            "type": "Sound"
+                        },
+                        {
+                            "p": 0.45,
+                            "power": 1.0,
+                            "time": 0.6,
+                            "type": "CameraShake"
+                        }
+                    ],
                     "m_hitBoxSize": [
                         1.0,
                         1.0,
                         1.0
                     ],
                     "m_hitForward": 0.0,
-                    "m_warnStart": 0.0,
-                    "m_events": [
-                        {
-                            "p": 0.0,
-                            "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/CryingSound.wav"
-                        },
-                        {
-                            "p": 0.14,
-                            "type": "Effect",
-                            "name": "AttackJumpSlam/Start/JumpSlam_Start.efkefc"
-                        },
-                        {
-                            "p": 0.4,
-                            "type": "Effect",
-                            "name": "AttackJumpSlam/End/JumpSlam_End.efkefc"
-                        },
-                        {
-                            "p": 0.45,
-                            "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Don.wav"
-                        },
-                        {
-                            "p": 0.45,
-                            "type": "CameraShake",
-                            "power": 1.0,
-                            "time": 0.6
-                        }
+                    "m_hitRadius": 7.0,
+                    "m_hitShape": "Circle",
+                    "m_moveEnd": 0.3,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "LeapToTarget",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
+                },
+                {
+                    "m_aimLockEnd": 0.0,
+                    "m_cancelRootMotion": true,
+                    "m_events": [],
+                    "m_hitBoxSize": [
+                        1.0,
+                        1.0,
+                        1.0
                     ],
-                    "m_specialType": ""
+                    "m_hitForward": 0.0,
+                    "m_hitRadius": 0.0,
+                    "m_hitShape": "Bone",
+                    "m_moveEnd": 0.0,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
                 }
-            ]
+            ],
+            "m_waitAfter": 5.0,
+            "m_weight": 1.0
         }
-    ]
+    ],
+    "version": 1
 }

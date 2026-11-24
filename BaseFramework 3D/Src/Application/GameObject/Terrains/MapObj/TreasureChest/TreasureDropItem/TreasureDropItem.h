@@ -105,6 +105,10 @@ private:
 	//-------- 吸い寄せ --------
 	float m_targetHeight = 1.0f;          // プレイヤーの足元ではなく胸あたりを狙う
 
+	Math::Vector3 m_attractStartPos;
+	float m_attractTimer = 0;
+	float m_attractTime = 0.5f;
+
 	//今の状態
 	DropState m_dropStateMode = DropState::Pop;
 

@@ -43,13 +43,20 @@ void GameButton::Update()
 		{
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true, true))
 			{
-				SceneManager::Instance().SetNextScene
-				(
-					SceneManager::SceneType::Game
-				);
+				if (m_onPush)
+				{
+					m_onPush();
+				}
+				else
+				{
+					SceneManager::Instance().SetNextScene
+					(
+						SceneManager::SceneType::Game
+					);
+				}
 			}
 
-		
+
 			AlphaFlashing();
 		}
 		else

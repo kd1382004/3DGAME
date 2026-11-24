@@ -112,39 +112,71 @@ void TreasureDropItem::FloatUpdate()
 	{
 		m_accel = 0.0f;
 		m_dropStateMode = DropState::Attract;
+		m_attractStartPos = m_pos;
 	}
 }
 
 void TreasureDropItem::AttractUpdate()
 {
 	std::shared_ptr<PlayerBase> spPlayer = m_wpPlayer.lock();
-	if (!spPlayer) { return; }
+	if (!spPlayer)
+	{
+		// プレイヤーがいなければ消すだけ
+		m_isExpired = true;
+		return;
+	}
 
-	const float dt = DeltaTime::Instance().GetGameDeltaTime();
+	float dt = DeltaTime::Instance().GetGameDeltaTime();
+	m_attractTimer += dt;
 
 	// 足元ではなく胸あたりを狙う
 	m_playerPos = spPlayer->GetPos();
 	m_playerPos.y += m_targetHeight;
 
-	Math::Vector3 toPlayer = m_playerPos - m_pos;
-	float dist = toPlayer.Length();
+	// 経過時間の割合（0～1）。距離に関係なく m_attractTime 秒で届く
+	float t = std::min(m_attractTimer / m_attractTime, 1.0f);
+	// 2乗して、最初はゆっくり・だんだん速く
+	t = t * t;
 
+	// スタート位置とプレイヤーの間のどこにいるかを割合で決める
+	m_pos = Math::Vector3::Lerp(m_attractStartPos, m_playerPos, t);
 
-	// このフレームで進む距離（だんだん速く、上限あり）
-	float speed = std::min(m_speed + m_accel, m_maxSpeed) * dt;
-
-	// 届く距離なら入手（行き過ぎ防止）
-	if (dist <= speed || dist < m_getRadius)
+	// 届いたら取得
+	if (t >= 1.0f || (m_playerPos - m_pos).Length() < m_getRadius)
 	{
 		m_pos = m_playerPos;
 		m_dropStateMode = DropState::Get;
-		return;
 	}
 
-	toPlayer.Normalize();
-	m_pos += toPlayer * speed;
 
-	m_accel += m_addAccel * dt;
+	//std::shared_ptr<PlayerBase> spPlayer = m_wpPlayer.lock();
+	//if (!spPlayer) { return; }
+
+	//const float dt = DeltaTime::Instance().GetGameDeltaTime();
+
+	//// 足元ではなく胸あたりを狙う
+	//m_playerPos = spPlayer->GetPos();
+	//m_playerPos.y += m_targetHeight;
+
+	//Math::Vector3 toPlayer = m_playerPos - m_pos;
+	//float dist = toPlayer.Length();
+
+
+	//// このフレームで進む距離（だんだん速く、上限あり）
+	//float speed = std::min(m_speed + m_accel, m_maxSpeed) * dt;
+
+	//// 届く距離なら入手（行き過ぎ防止）
+	//if (dist <= speed || dist < m_getRadius)
+	//{
+	//	m_pos = m_playerPos;
+	//	
+	//	return;
+	//}
+
+	//toPlayer.Normalize();
+	//m_pos += toPlayer * speed;
+
+	//m_accel += m_addAccel * dt;
 }
 
 void TreasureDropItem::GetItem()

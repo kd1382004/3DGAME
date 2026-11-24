@@ -15,7 +15,7 @@ class CampObject;
 class PrepareCamera;
 class CampLight;
 class PrepareLayoutEditor;
-
+enum class DepartState { None, Walk, Fade };
 //////////////////////////////////////////////////////////////
 // 準備シーン
 // Title → Prepare → Game
@@ -69,6 +69,8 @@ public:
 	// ShopDisplay が持っている今の値(お金・武器)を、ほかの画面に配る
 	void OnShopDataChanged();
 
+	void StartDepart();
+	void UpdateDepart();
 private:
 
 	//---- メンバ変数 ----
@@ -144,8 +146,15 @@ private:
 	// 準備画面(屋外・夕方)の霧と環境光
 	// ダンジョン用の値(霧 0.3 灰色・濃さ 0.02 / 環境光 0.5)のままだと暗く濁るので、準備画面だけ変える
 	// 次のシーンに移るときは SceneManager::ChangeScene がダンジョン用の値に戻すので、戻す処理は要らない
-	Math::Vector3 m_campFogColor   = { 0.32f, 0.36f, 0.48f };	// 夕方の青っぽい空気
+	Math::Vector3 m_campFogColor = { 0.32f, 0.36f, 0.48f };	// 夕方の青っぽい空気
 	float         m_campFogDensity = 0.012f;					// 奥の崖がうっすら霞むくらい
-	Math::Vector4 m_campAmbient    = { 0.6f, 0.62f, 0.75f, 0.5f };	// 少し青寄り。オレンジの光と対比させる
+	Math::Vector4 m_campAmbient = { 0.6f, 0.62f, 0.75f, 0.5f };	// 少し青寄り。オレンジの光と対比させる
 
+
+	std::weak_ptr<CampObject>m_wpCampPlayer;
+
+	DepartState m_departState = DepartState::None;
+	float m_departTimer = 0.0f;//歩き始めてからの秒数
+	float m_departFadeTimer = 0.0f;//暗転を始めてからの秒数
+	Math::Vector3 m_departStartPos;
 };

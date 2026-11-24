@@ -50,12 +50,24 @@ struct CampCameraData
 	float         m_fovY   = 40.0f;					// 縦の画角(度)
 };
 
+// 出発の演出(出発ボタン → プレイヤーが入口へ歩く → 暗転 → ゲーム)
+// CampLayoutTune.json の "Depart" に保存する
+struct CampDepartData
+{
+	Math::Vector3 m_target         = Math::Vector3::Zero;	// 歩いていく先(入口の少し奥)
+	float         m_walkTime       = 2.0f;					// そこまで何秒で歩くか
+	float         m_fadeStartRate  = 0.6f;					// 歩きの何割で暗転を始めるか(0〜1)
+	float         m_fadeTime       = 1.0f;					// 暗転にかける秒数
+	bool          m_hasTarget      = false;					// Tune に行き先が書いてあったか
+};
+
 // ファイル丸ごと
 struct CampLayoutData
 {
 	std::vector<CampObjectData>           m_objects;
 	std::vector<CampLightData>            m_lights;
 	std::map<std::string, CampCameraData> m_cameras;	// "Explore" "Equip" "Shop" "Records"
+	CampDepartData                        m_depart;		// 出発の演出
 };
 
 //---- 座標の変換(glTFの右手系 ⇔ ゲームの左手系) ----
@@ -91,6 +103,7 @@ CampLayoutData LoadCampLayout(const std::string& _filePath);
 
 // CampLayoutTune.json(エディタで調整した値)があれば上書きする
 // ファイルが無ければ何もしない
+// 出発の行き先が無いときは、Explore カメラの注視点(入口)をプレイヤーの高さにして仮で入れる
 // _layout   ... 上書きする配置データ
 // _filePath ... CampLayoutTune.json のパス
 void ApplyCampLayoutTune(CampLayoutData& _layout, const std::string& _filePath);

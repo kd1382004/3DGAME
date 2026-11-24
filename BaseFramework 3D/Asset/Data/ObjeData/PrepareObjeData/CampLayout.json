@@ -925,9 +925,9 @@
             "Kind": "Player",
             "Model": "Asset/Models/Character/Player/Rogue.gltf",
             "Pos": [
-                0.5,
-                0.7553,
-                -4.6889
+                0.177,
+                -0.005,
+                -6.424
             ],
             "Rot": [
                 0.0,

@@ -531,10 +531,21 @@ void EnemyBase::EnemyAnimeModeUpdate()
 
 	//m_cancelRootMotion の段は、アニメ自体の前後の動き(腰の骨の x・z)を打ち消す
 	//(Giant の AttackJumpSlamAnimeUpdate と同じ。上下の動きは残す)
-	if (m_attackFlg && !m_rootMotionNodeName.empty())
+	//攻撃が終わった後も、次のアニメへのクロスフェード中は前の攻撃の前後の動きが混ざるので、少しの間打ち消し続ける
+	//(これが無いと、ジャンプ攻撃の後に一瞬すごく前へ動いて見える)
+	if (!m_rootMotionNodeName.empty())
 	{
-		const AttackStepExtra* extra = GetNowStepExtra();
+		const AttackStepExtra* extra = m_attackFlg ? GetNowStepExtra() : nullptr;
 		if (extra && extra->m_cancelRootMotion)
+		{
+			m_rootMotionCancelTimer = 0.4f;		// クロスフェード(0.1〜0.2秒)より少し長く
+		}
+		else if (m_rootMotionCancelTimer > 0.0f)
+		{
+			m_rootMotionCancelTimer -= DeltaTime::Instance().GetGameDeltaTime();
+		}
+
+		if (m_rootMotionCancelTimer > 0.0f)
 		{
 			auto* rootNode = m_spCharaModel->FindWorkNode(m_rootMotionNodeName);
 			if (rootNode)

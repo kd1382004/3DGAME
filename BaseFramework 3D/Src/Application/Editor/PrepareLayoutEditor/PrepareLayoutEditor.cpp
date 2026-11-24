@@ -53,7 +53,7 @@ void PrepareLayoutEditor::Draw(bool* _open)
 	{
 		if (ImGui::BeginMenu(U8("ファイル")))
 		{
-			if (ImGui::MenuItem(U8("カメラとライトを保存")))
+			if (ImGui::MenuItem(U8("カメラ・ライト・出発を保存")))
 			{
 				SaveTune();
 			}
@@ -73,6 +73,7 @@ void PrepareLayoutEditor::Draw(bool* _open)
 		if (ImGui::BeginTabItem(U8("カメラ"))) { CameraImGui(); ImGui::EndTabItem(); }
 		if (ImGui::BeginTabItem(U8("ライト"))) { LightImGui();  ImGui::EndTabItem(); }
 		if (ImGui::BeginTabItem(U8("置物")))   { ObjectImGui(); ImGui::EndTabItem(); }
+		if (ImGui::BeginTabItem(U8("出発")))   { DepartImGui(); ImGui::EndTabItem(); }
 		ImGui::EndTabBar();
 	}
 
@@ -211,6 +212,97 @@ void PrepareLayoutEditor::ObjectImGui()
 	ImGui::EndChild();
 }
 
+std::shared_ptr<CampObject> PrepareLayoutEditor::FindCampPlayer() const
+{
+	for (const auto& wpObj : m_wpObjects)
+	{
+		auto spObj = wpObj.lock();
+		if (spObj && spObj->WorkData().m_kind == "Player") { return spObj; }
+	}
+	return nullptr;
+}
+
+void PrepareLayoutEditor::DepartImGui()
+{
+	if (!m_pDepart) { ImGui::Text(U8("出発のデータがありません")); return; }
+
+	CampDepartData& d = *m_pDepart;
+	auto spPlayer = FindCampPlayer();
+
+	ImGui::TextWrapped(U8("出発ボタンを押したら、プレイヤーが「行き先」まで歩き、途中から暗転してゲームへ移ります。行き先は入口の少し奥に置くと、入口に入っていくように見えます"));
+
+	if (!d.m_hasTarget)
+	{
+		ImGui::TextColored({ 1.0f, 0.8f, 0.3f, 1.0f }, U8("行き先はまだ仮の値です(Explore カメラの注視点)"));
+	}
+
+	ImGui::Separator();
+
+	bool changed = false;
+
+	if (ImGui::DragFloat3(U8("行き先"), &d.m_target.x, 0.02f))
+	{
+		d.m_hasTarget = true;
+		changed = true;
+	}
+
+	if (spPlayer)
+	{
+		// 今のプレイヤーの位置を行き先にする(置物タブでプレイヤーを動かして決めたいとき用)
+		if (ImGui::Button(U8("今のプレイヤーの位置を行き先にする")))
+		{
+			d.m_target    = m_departPreviewFlg ? d.m_target : spPlayer->WorkData().m_pos;
+			d.m_hasTarget = true;
+			changed = true;
+		}
+	}
+
+	changed |= ImGui::DragFloat(U8("歩く時間(秒)"),        &d.m_walkTime,      0.02f, 0.1f, 10.0f, "%.2f");
+	changed |= ImGui::SliderFloat(U8("暗転を始める割合"),  &d.m_fadeStartRate, 0.0f,  1.0f,        "%.2f");
+	changed |= ImGui::DragFloat(U8("暗転の時間(秒)"),      &d.m_fadeTime,      0.02f, 0.1f, 5.0f,  "%.2f");
+
+	if (changed) { m_dirty = true; }
+
+	ImGui::Separator();
+
+	if (!spPlayer)
+	{
+		ImGui::Text(U8("キャンプにプレイヤー(種類 Player)がいません"));
+		return;
+	}
+
+	// 目安の表示
+	const Math::Vector3 startPos = m_departPreviewFlg ? m_departPreviewOrgPos : spPlayer->WorkData().m_pos;
+	Math::Vector3 diff = d.m_target - startPos;
+	diff.y = 0.0f;
+	const float dist = diff.Length();
+
+	ImGui::Text(U8("歩く距離 : %.2f"), dist);
+	ImGui::Text(U8("歩く速さ : %.2f / 秒 (歩きアニメの足と合うように時間を合わせる)"), d.m_walkTime > 0.0f ? dist / d.m_walkTime : 0.0f);
+	ImGui::Text(U8("暗転が始まる : %.2f 秒後 / 暗くなり切る : %.2f 秒後"),
+		d.m_walkTime * d.m_fadeStartRate, d.m_walkTime * d.m_fadeStartRate + d.m_fadeTime);
+
+	if (d.m_walkTime * d.m_fadeStartRate + d.m_fadeTime > d.m_walkTime)
+	{
+		ImGui::TextColored({ 1.0f, 0.8f, 0.3f, 1.0f }, U8("暗くなり切る前に行き先に着きます(着いたら止まって見えます)"));
+	}
+
+	// プレイヤーを行き先に置いて、画面で位置を確かめる(保存はされない。外すと元の位置に戻る)
+	bool preview = m_departPreviewFlg;
+	if (ImGui::Checkbox(U8("プレイヤーを行き先に置いて見る"), &preview))
+	{
+		if (preview) { m_departPreviewOrgPos = spPlayer->WorkData().m_pos; }
+		else         { spPlayer->WorkData().m_pos = m_departPreviewOrgPos; spPlayer->ApplyData(); }
+		m_departPreviewFlg = preview;
+	}
+
+	if (m_departPreviewFlg)
+	{
+		spPlayer->WorkData().m_pos = d.m_target;
+		spPlayer->ApplyData();
+	}
+}
+
 bool PrepareLayoutEditor::SaveTune()
 {
 	nlohmann::json root;
@@ -238,6 +330,16 @@ bool PrepareLayoutEditor::SaveTune()
 			{ "Color",     Vec3ToJson(d.m_color) },
 			{ "Intensity", d.m_intensity },
 			{ "Radius",    d.m_radius } };
+	}
+
+	//---- 出発の演出(行き先はカメラと同じく glTF の座標に戻して保存) ----
+	if (m_pDepart)
+	{
+		root["Depart"] = {
+			{ "Target",        Vec3ToJson(ConvPos(m_pDepart->m_target)) },
+			{ "WalkTime",      m_pDepart->m_walkTime },
+			{ "FadeStartRate", m_pDepart->m_fadeStartRate },
+			{ "FadeTime",      m_pDepart->m_fadeTime } };
 	}
 
 	std::ofstream file(m_tuneFilePath);

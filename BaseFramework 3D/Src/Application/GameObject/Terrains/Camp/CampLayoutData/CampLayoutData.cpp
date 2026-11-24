@@ -96,13 +96,33 @@ CampLayoutData LoadCampLayout(const std::string& _filePath)
 	return result;
 }
 
+namespace
+{
+	// 出発の行き先が決まっていないときの仮の値
+	// Explore カメラは入口を映しているので、その注視点をプレイヤーの足の高さにして使う
+	void SetDefaultDepartTarget(CampLayoutData& _layout)
+	{
+		if (_layout.m_depart.m_hasTarget) { return; }
+
+		auto it = _layout.m_cameras.find("Explore");
+		if (it == _layout.m_cameras.end()) { return; }
+
+		Math::Vector3 target = it->second.m_target;
+		for (const auto& obj : _layout.m_objects)
+		{
+			if (obj.m_kind == "Player") { target.y = obj.m_pos.y; break; }
+		}
+		_layout.m_depart.m_target = target;
+	}
+}
+
 void ApplyCampLayoutTune(CampLayoutData& _layout, const std::string& _filePath)
 {
 	std::ifstream ifs(_filePath);
-	if (!ifs.is_open()) { return; }	// まだ調整していなければ何もしない
+	if (!ifs.is_open()) { SetDefaultDepartTarget(_layout); return; }	// まだ調整していなければ仮の値だけ
 
 	nlohmann::json data = nlohmann::json::parse(ifs, nullptr, false);
-	if (data.is_discarded()) { return; }
+	if (data.is_discarded()) { SetDefaultDepartTarget(_layout); return; }
 
 	//---- カメラを丸ごと差し替える ----
 	if (data.contains("Cameras"))
@@ -132,4 +152,22 @@ void ApplyCampLayoutTune(CampLayoutData& _layout, const std::string& _filePath)
 			d.m_radius    = light.value("Radius",    d.m_radius);
 		}
 	}
+
+	//---- 出発の演出 ----
+	if (data.contains("Depart"))
+	{
+		const auto& dep = data["Depart"];
+		CampDepartData& d = _layout.m_depart;
+
+		if (dep.contains("Target"))
+		{
+			d.m_target    = ConvPos(JsonToVec3(dep["Target"]));	// カメラと同じく glTF の座標で保存している
+			d.m_hasTarget = true;
+		}
+		d.m_walkTime      = dep.value("WalkTime",      d.m_walkTime);
+		d.m_fadeStartRate = dep.value("FadeStartRate", d.m_fadeStartRate);
+		d.m_fadeTime      = dep.value("FadeTime",      d.m_fadeTime);
+	}
+
+	SetDefaultDepartTarget(_layout);
 }

@@ -440,6 +440,9 @@ void GameScene::Init()
 	m_editors.push_back({ U8("キャラの初期ステータス"), false, [this](bool* _open) { m_spCharaStatusEditor->Draw(_open); } });
 	m_editors.push_back({ U8("敵の攻撃パターン"), false, [this](bool* _open) { m_spEnemyAttackPatternEditor->Draw(_open); } });
 
+
+
+	FadeDraw::Instance().SetFadeType(FadeOut, 1.0f);
 }
 
 void GameScene::SetGameResult()

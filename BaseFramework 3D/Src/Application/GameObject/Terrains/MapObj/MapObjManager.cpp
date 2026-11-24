@@ -152,7 +152,18 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 	for (auto& obj : m_mapObjList)
 	{
 		Math::Vector2 chunkNum = obj->GetChunkNum();
-		if (_spMapManager->GetChunksUpdate(chunkNum))
+
+		// 自分のチャンクか、追加のチャンク(部屋がまたがるチャンク)のどれかが範囲内か
+		bool inUpdate = _spMapManager->GetChunksUpdate(chunkNum);
+		bool inDraw   = _spMapManager->GetChunksDraw(chunkNum);
+		for (const auto& chunk : obj->GetChunkNumList())
+		{
+			if (inUpdate && inDraw) { break; }
+			if (!inUpdate && _spMapManager->GetChunksUpdate(chunk)) { inUpdate = true; }
+			if (!inDraw   && _spMapManager->GetChunksDraw(chunk))   { inDraw   = true; }
+		}
+
+		if (inUpdate)
 		{
 			m_mapObjUpdateList.push_back(obj);
 			obj->SetInChunk(true);
@@ -162,7 +173,7 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 			obj->SetInChunk(false);
 		}
 
-		if (_spMapManager->GetChunksDraw(chunkNum))
+		if (inDraw)
 		{
 			inDrawRangeSet.insert(obj);
 		}

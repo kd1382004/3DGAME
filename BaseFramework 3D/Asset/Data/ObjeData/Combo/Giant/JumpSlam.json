@@ -2,21 +2,38 @@
 	"charaModelPath": "Asset/Models/Character/Enemy/Boss/Giant/Giantblend.gltf",
 	"steps": [
 		{
-			"acceptStart": 9.9,
+			"acceptStart": 0.5,
 			"animeName": "Jump Slam",
-			"cancelPoint": 9.9,
+			"cancelPoint": 0.800000011920929,
 			"comboIndex": 0,
 			"damageRate": 1.5,
 			"evasionCancel": 0.5,
 			"hitEnd": 0.5,
-			"hitStart": 0.45,
-			"hitStopTime": 0.05,
+			"hitStart": 0.44999998807907104,
+			"hitStopTime": 0.05000000074505806,
 			"knockbackRate": 10.0,
 			"speed": 1.0,
 			"staminaCost": 0.0,
 			"stepForward": 0.0,
 			"trailEnd": 0.5,
-			"trailStart": 0.45
+			"trailStart": 0.44999998807907104
+		},
+		{
+			"acceptStart": 9.899999618530273,
+			"animeName": "idle",
+			"cancelPoint": 9.899999618530273,
+			"comboIndex": 1,
+			"damageRate": 0.0,
+			"evasionCancel": 0.6000000238418579,
+			"hitEnd": 9.9,
+			"hitStart": 9.9,
+			"hitStopTime": 0.0,
+			"knockbackRate": 0.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 9.9,
+			"trailStart": 9.9
 		}
 	],
 	"version": 1,

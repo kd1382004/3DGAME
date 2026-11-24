@@ -2,6 +2,7 @@
 
 class MapBase;
 class MapObjManager;
+class MapObjBase;
 class CameraBase;
 
 //////////////////////////////////////////////////////
@@ -405,6 +406,10 @@ private:
 	//部屋の一覧情報が入る
 	std::vector<std::vector<RoomI>> m_roomInfoList;
 
+	//部屋ごとの松明(添え字は部屋ID)
+	//部屋の壁と同じく、最後に部屋がまたがるチャンク全部を松明に教える
+	std::vector<std::vector<std::shared_ptr<MapObjBase>>> m_roomTorchList;
+
 	//交差点の一覧(本物の部屋の m_roomInfo とは分けて持つ)
 	std::vector<RoomInfo> m_dummyNodeList;
 
@@ -746,8 +751,8 @@ private:
 	// _pos ... 置く座標
 	// _spObj ... くっつける壁
 	// _chunk ... チャンク番号
-	//戻り値 ... 置けたらtrue
-	bool SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_spObj, Math::Vector2 _chunk);
+	//戻り値 ... 置いた松明(置けなかったら nullptr)
+	std::shared_ptr<MapObjBase> SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject>_spObj, Math::Vector2 _chunk);
 
 	//角なら設置
 	// _x ... マスのx

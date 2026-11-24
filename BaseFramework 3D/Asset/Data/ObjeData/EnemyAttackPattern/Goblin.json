@@ -27,9 +27,9 @@
                         },
                         {
                             "p": 0.679,
-                            "type": "CameraShake",
                             "power": 0.35,
-                            "time": 0.2
+                            "time": 0.2,
+                            "type": "CameraShake"
                         }
                     ],
                     "m_hitRadius": 1.0,
@@ -246,7 +246,7 @@
                 "thumb_2_L"
             ],
             "m_maxDistance": 9,
-            "m_minDistance": 4.5,
+            "m_minDistance": 1.5,
             "m_minLV": 4,
             "m_name": "LeapSlam",
             "m_stepExtras": [

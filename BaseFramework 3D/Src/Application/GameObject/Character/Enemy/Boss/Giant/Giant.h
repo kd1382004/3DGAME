@@ -3,9 +3,6 @@
 
 class GameScene;
 
-class AttackJumpSlam;
-class AttackLeftPunch;
-
 class Giant :public EnemyBase
 {
 public:
@@ -63,29 +60,6 @@ private:
 
 	//---- 型 ----
 
-	//攻撃モード
-	enum GiantAttackMode
-	{
-		//左パンチ
-		LeftPunchAttack,
-
-		//右パンチ
-		RightAttack,
-
-		//ジャンプ攻撃
-		JumpSlamAttack
-	};
-
-	//ジャンプ攻撃の状態
-	enum JumpSlamAttackMode
-	{
-		//ジャンプ攻撃中
-		JumpSlamAttackMode_JumpSlamAttack,
-
-		//アイドル中
-		JumpSlamAttackMode_Idle,
-	};
-
 	//アニメーション
 	struct GiantAnimeName
 	{
@@ -112,59 +86,6 @@ private:
 	//ゲームシーン
 	std::weak_ptr<GameScene> m_wpGameScene;
 
-	//今の攻撃の種類
-	GiantAttackMode m_giantAttackMode = LeftPunchAttack;
-
-	//攻撃中か
-	bool m_attackFlg = false;
-
-	//次の攻撃までの経過時間
-	float m_attackCoolTime = 0;
-
-	//攻撃の間隔(秒)
-	float m_attackCoolTimeMax = 3;
-
-	//左攻撃
-	std::weak_ptr<AttackLeftPunch> m_wpLeftAttack;
-
-	//あたり判定許可を出したか
-	bool m_isAttackleftHITFlg = false;
-
-	//はじめ
-	float m_leftAttackHitStart = 0.5f;
-
-	//左パンチの当たり判定を終わるタイミング(アニメーションの割合)
-	float m_leftAttackHitEnd = 0.6f;
-
-	//ジャンプ攻撃
-	std::weak_ptr<AttackJumpSlam>m_wpAttackJumpSlam;
-
-	//今のジャンプ攻撃の状態
-	JumpSlamAttackMode m_jumpSlamAttackMode = JumpSlamAttackMode_Idle;
-
-	//hitする時間
-
-	//あたり判定許可を出したか
-	bool m_isAttackJumpSlamHITFlg = false;
-
-	//はじめ
-	float m_jumpSlamHitStart = 0.45f;
-
-	//ジャンプ攻撃の当たり判定を終わるタイミング(アニメーションの割合)
-	float m_jumpSlamHitEnd = 0.5f;
-
-	//ジャンプ開始地点
-	Math::Vector3 m_jumpStartPos;
-
-	//Idle時間MAX
-	float m_attackJumpSlamIdleMax = 5;
-
-	//今の待機時間
-	float m_attackJumpSlamIdleNow = 0;
-
-	//ターゲット座標
-	Math::Vector3 m_attackJumpSlamTargetPos;
-
 	//アニメーション名
 	GiantAnimeName m_giantAnimeName;
 
@@ -188,12 +109,6 @@ private:
 	//着地(ドン)の3D音
 	std::shared_ptr<KdSoundInstance3D> m_spDon3DSE;
 
-	//ジャンプ攻撃の着地エフェクトを出したか
-	bool m_jumpSlam_EndEfkefcFlg = false;
-
-	//ジャンプ攻撃の開始エフェクトを出したか
-	bool m_jumpSlam_StartEfkefcFlg = false;
-
 	//---- 基本の処理 ----
 
 	//解放
@@ -206,30 +121,6 @@ private:
 	Math::Matrix GetBoneWorldMatrix(std::string _nodeName);
 
 	//---- その他の処理 ----
-
-	//攻撃の種類を決める
-	void AttackMode();
-
-	//攻撃の種類に合わせてアニメーションを変える
-	void ChangeAttackAnime();
-
-	//攻撃の更新
-	void AttackUpdate();
-
-	//左パンチの更新
-	void LeftAttackUpdate();
-
-	//ジャンプ攻撃中の更新
-	void JumpSlamAttackMode_JumpSlamAttackUpdate();
-
-	//ジャンプ攻撃のあとの待機中の更新
-	void JumpSlamAttackMode_IdleUpdate();
-
-	//ジャンプ攻撃の更新
-	void AttackJumpSlamUpdate();
-
-	//ジャンプ攻撃のアニメーションの更新
-	void AttackJumpSlamAnimeUpdate();
 
 	//今の状態に合わせてアニメーションを変える
 	void ChangeAnime();

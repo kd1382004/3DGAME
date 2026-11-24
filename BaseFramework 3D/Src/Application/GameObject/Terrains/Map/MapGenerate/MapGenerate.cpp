@@ -449,6 +449,10 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	// 部屋ごとにタイル情報を管理するためリサイズ
 	m_roomInfoList.resize(roomID);
 
+	// 部屋ごとの松明(壁を作るときに入る)
+	m_roomTorchList.clear();
+	m_roomTorchList.resize(roomID);
+
 	// 部屋ごとの壁。最後に床と一緒にチャンクへ登録する
 	std::vector<std::vector<std::shared_ptr<MapBase>>> roomWallList(roomID);
 	int rID = 0;
@@ -766,6 +770,15 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 				dst.push_back(wall);
 			}
 		}
+
+		// 部屋の松明も、壁と同じチャンク全部で更新・描画されるようにする
+		if (i < m_roomTorchList.size())
+		{
+			for (const auto& spTorch : m_roomTorchList[i])
+			{
+				if (spTorch) { spTorch->SetChunkNumList(roomChunks); }
+			}
+		}
 	}
 
 
@@ -861,6 +874,7 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	m_roomInfo.clear();
 	m_roomInfoList.clear();
 	m_roomInfoList.resize(1);
+	m_roomTorchList.clear();	// ボス部屋の壁はマスごとのチャンクなので、松明もそのまま
 	if ((int)_mapSiz.x % 2 == 0)
 	{
 		_mapSiz.x++;
@@ -2842,10 +2856,18 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 
 		}
 
-		bool placed = placeTorch && SetTorch(_rotYDegree, _pos, spWall, _chunkNum);
+		std::shared_ptr<MapObjBase> spTorch = placeTorch ? SetTorch(_rotYDegree, _pos, spWall, _chunkNum) : nullptr;
+		bool placed = (spTorch != nullptr);
 		if (placed)
 		{
 			_map[_y][_x].m_setTorchFlg = true;
+
+			// 部屋の壁の松明は部屋ごとに覚えておく(最後に部屋のチャンク全部を教える)
+			if (_map[_y][_x].m_tileType == TileType::Room &&
+				_roomID >= 0 && _roomID < static_cast<int>(m_roomTorchList.size()))
+			{
+				m_roomTorchList[_roomID].push_back(spTorch);
+			}
 		}
 
 		*_torchFlg = !placed;
@@ -2854,10 +2876,10 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 	}
 }
 
-bool MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _spObj, Math::Vector2 _chunk)
+std::shared_ptr<MapObjBase> MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_ptr<KdGameObject> _spObj, Math::Vector2 _chunk)
 {
 	std::shared_ptr<MapObjManager>spMapObjManager = m_wpMapObjManager.lock();
-	if (!spMapObjManager) { return false; }
+	if (!spMapObjManager) { return nullptr; }
 
 	//壁に松明を
 	Math::Vector3 pos = _pos;
@@ -2912,10 +2934,10 @@ bool MapGenerate::SetTorch(float _rotYDegree, Math::Vector3 _pos, std::shared_pt
 		spTorch->SetRotation(Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_rotYDegree)));
 		spTorch->SetCamera(m_wpCamera.lock());
 		spMapObjManager->AddMapObj(spTorch);
-		return true;
+		return spTorch;
 	}
 
-	return false;
+	return nullptr;
 }
 
 bool MapGenerate::IsCornerWall(int _x, int _y, const std::vector<std::vector<FloorInfo>>& _map)

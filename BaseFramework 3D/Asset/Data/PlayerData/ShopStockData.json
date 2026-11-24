@@ -3,12 +3,12 @@
         {
             "id": 0,
             "name": "WeaponStrengthening_Crystal1",
-            "stock": 11
+            "stock": 8
         },
         {
             "id": 1,
             "name": "WeaponStrengthening_Crystal2",
-            "stock": 6
+            "stock": 5
         }
     ],
     "potions": [

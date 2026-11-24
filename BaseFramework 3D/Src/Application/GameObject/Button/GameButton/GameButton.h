@@ -18,11 +18,13 @@ public:
 	// ボタンの画像を変える(Initより前に呼ぶ。呼ばなければ PlayButton.png)
 	// _path ... 画像のパス
 	void SetTexPath(const std::string& _path) { m_texPath = _path; }
-
+	void SetOnPush(std::function<void()> _func) { m_onPush = _func; }
 private:
 
 	//---- メンバ変数 ----
 
 	//ボタンの画像のパス
 	std::string m_texPath = "Asset/Textures/Button/GameButton/PlayButton.png";
+
+	std::function<void()> m_onPush;
 };

@@ -4,13 +4,15 @@ class PrepareScene;
 class PrepareCamera;
 class CampLight;
 class CampObject;
+struct CampDepartData;
 
 //////////////////////////////////////////////////////////////
 // 準備画面の背景(キャンプ)を調整する ImGui ウィンドウ
 //  ・カメラ(Explore / Equip / Shop / Records)の位置・注視点・画角
 //  ・ライトの色・明るさ・半径
 //  ・置物の位置・回転・拡大(確認用。保存はしない)
-// カメラとライトは CampLayoutTune.json に保存する
+//  ・出発の演出(行き先・歩く時間・暗転)
+// カメラとライトと出発は CampLayoutTune.json に保存する
 // (CampLayout.json は Blender から書き出し直すと上書きされるので分けている)
 //////////////////////////////////////////////////////////////
 class PrepareLayoutEditor
@@ -35,6 +37,10 @@ public:
 		const std::vector<std::shared_ptr<CampLight>>& _lights,
 		const std::vector<std::shared_ptr<CampObject>>& _objects);
 
+	//出発の演出のデータをセット(PrepareScene の m_campLayout.m_depart を渡す)
+	// _pDepart ... 出発のデータ(シーンが持っているもの。エディタより長く生きる)
+	void SetDepartData(CampDepartData* _pDepart) { m_pDepart = _pDepart; }
+
 	//---- 基本の処理 ----
 
 	// 毎フレーム ImGui のフレーム内で呼ぶ
@@ -43,7 +49,7 @@ public:
 
 	//---- その他の処理 ----
 
-	//カメラとライトを CampLayoutTune.json に保存する
+	//カメラとライトと出発を CampLayoutTune.json に保存する
 	//戻り値 ... 保存できたらtrue
 	bool SaveTune();
 
@@ -66,6 +72,15 @@ private:
 	//置物
 	std::vector<std::weak_ptr<CampObject>> m_wpObjects;
 
+	//出発の演出のデータ(PrepareScene が持っている)
+	CampDepartData* m_pDepart = nullptr;
+
+	//プレイヤーを行き先に置いて見ているか
+	bool m_departPreviewFlg = false;
+
+	//行き先に置く前のプレイヤーの位置(見るのをやめたら戻す)
+	Math::Vector3 m_departPreviewOrgPos = Math::Vector3::Zero;
+
 	//選んでいる置物の番号(-1 なら何も選んでいない)
 	int m_selectObject = -1;
 
@@ -85,4 +100,13 @@ private:
 
 	//置物の欄
 	void ObjectImGui();
+
+	//出発の欄
+	void DepartImGui();
+
+	//---- その他の処理 ----
+
+	//キャンプのプレイヤー(m_kind が "Player" の置物)を探す
+	//戻り値 ... 見つからなければ nullptr
+	std::shared_ptr<CampObject> FindCampPlayer() const;
 };
