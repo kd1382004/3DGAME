@@ -36,6 +36,9 @@
 #include"../../Info/DebugInfo/DebugInfo.h"							//デバッグ用の状態
 #include"../../Info/MouseInfo/MouseInfo.h"							//マウス入力
 
+//タイトルの BGM の音量の倍率(作ったときと毎フレームで同じ値を使う)
+namespace { constexpr float kTitleBGMVolRate = 0.5f; }
+
 //=============================================
 // コンストラクタ・デストラクタ
 //=============================================
@@ -204,7 +207,7 @@ void TitleScene::Init()
 		m_spTitleBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Titel/TitelBGM.wav", true);
 		if (m_spTitleBGM)
 		{
-			m_spTitleBGM->SetVolume(VOLInfo::Instance().GetBGMVol());
+			m_spTitleBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kTitleBGMVolRate);
 		}
 	}
 }
@@ -256,7 +259,7 @@ void TitleScene::Event()
 {
 	if (m_spTitleBGM)
 	{
-		m_spTitleBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.5);
+		m_spTitleBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kTitleBGMVolRate);
 	}
 
 	MouseInfo::Instance().SetMouseFreeFlg(true);

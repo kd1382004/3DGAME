@@ -379,6 +379,9 @@
     <Filter Include="Src\Application\GameObject\Button\TitleButton">
       <UniqueIdentifier>{cc5aa3eb-a506-40d7-997b-808ff6d8b37e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Info\SE">
+      <UniqueIdentifier>{048c2e5d-5041-428a-974b-19ef6104b41d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\Info\VOL">
       <UniqueIdentifier>{70af1110-0a6d-47e6-b19e-82db1003a745}</UniqueIdentifier>
     </Filter>
@@ -938,6 +941,9 @@
     </ClInclude>
     <ClInclude Include="Src\Application\Info\VOL\VOLInfo.h">
       <Filter>Src\Application\Info\VOL</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Info\SE\SEPlayer.h">
+      <Filter>Src\Application\Info\SE</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\ScrapBot\ScrapBot.h">
       <Filter>Src\Application\GameObject\Character\Enemy\ScrapBot</Filter>

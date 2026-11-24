@@ -401,6 +401,7 @@
     <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h" />
     <ClInclude Include="Src\Application\Info\NumDraw\NumDraw.h" />
     <ClInclude Include="Src\Application\Info\VOL\VOLInfo.h" />
+    <ClInclude Include="Src\Application\Info\SE\SEPlayer.h" />
     <ClInclude Include="Src\Application\main.h" />
     <ClInclude Include="Src\Application\Scene\BaseScene\BaseScene.h" />
     <ClInclude Include="Src\Application\Scene\GameScene\GameScene.h" />

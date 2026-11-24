@@ -14,6 +14,9 @@
 void ScrapBot::Init()
 {
 	EnemyAmbush::Init();
+
+	//体の光る溝・目などを光らせる
+	m_drawEmissive = { 1.0f, 1.0f, 1.0f };
 	m_wanderRadius = 20;
 	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/ScrapBot/Status/Status.json";
 	m_patternFilePath = "Asset/Data/ObjeData/EnemyAttackPattern/ScrapBot.json";
@@ -47,7 +50,7 @@ void ScrapBot::Init()
 
 		if (!m_spWalk3DSE)
 		{
-			m_spWalk3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/Walk.wav", m_pos, false);
+			m_spWalk3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Robot/ScrapBot/Walk.wav", m_pos, false);
 			if (m_spWalk3DSE)
 			{
 				m_spWalk3DSE->Stop();
@@ -57,7 +60,7 @@ void ScrapBot::Init()
 		if (!m_spDash3DSE)
 		{
 			// 走る音（ゴブリンの足音のピッチを上げて走る音にする）
-			m_spDash3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/Walk.wav", m_pos, false);
+			m_spDash3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Robot/ScrapBot/Run.wav", m_pos, false);
 			if (m_spDash3DSE)
 			{
 				m_spDash3DSE->Stop();
@@ -68,21 +71,11 @@ void ScrapBot::Init()
 		if (!m_spCrying3DSE)
 		{
 			// 攻撃時の叫び声SE
-			m_spCrying3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/CryingSound.wav", m_pos, false);
+			m_spCrying3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Robot/ScrapBot/Cry.wav", m_pos, false);
 			if (m_spCrying3DSE)
 			{
 				m_spCrying3DSE->Stop();
 				m_spCrying3DSE->SetCurveDistanceScaler(20.0f);
-			}
-		}
-		if (!m_spSlam3DSE)
-		{
-			// 叩きつけの音
-			m_spSlam3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/Slam.wav", m_pos, false);
-			if (m_spSlam3DSE)
-			{
-				m_spSlam3DSE->Stop();
-				m_spSlam3DSE->SetCurveDistanceScaler(20.0f);
 			}
 		}
 	}
@@ -184,11 +177,6 @@ void ScrapBot::Release()
 	{
 		m_spCrying3DSE->Stop();
 		m_spCrying3DSE = nullptr;
-	}
-	if (m_spSlam3DSE)
-	{
-		m_spSlam3DSE->Stop();
-		m_spSlam3DSE = nullptr;
 	}
 }
 

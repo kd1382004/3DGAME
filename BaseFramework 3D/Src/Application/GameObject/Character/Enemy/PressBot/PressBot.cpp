@@ -14,6 +14,9 @@
 void PressBot::Init()
 {
 	EnemyAmbush::Init();
+
+	//体の光る溝・目などを光らせる
+	m_drawEmissive = { 1.0f, 1.0f, 1.0f };
 	m_wanderRadius = 50;
 	m_charaDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Enemy/PressBot/Status/Status.json";
 	m_patternFilePath = "Asset/Data/ObjeData/EnemyAttackPattern/PressBot.json";
@@ -49,9 +52,8 @@ void PressBot::Init()
 					_spSE->SetCurveDistanceScaler(25.0f);
 				}
 			};
-		loadSE(m_spWalk3DSE, "Asset/Sound/SE/Enemy/Golem/Walk.wav");
-		loadSE(m_spCrying3DSE, "Asset/Sound/SE/Enemy/Golem/CryingSound.wav");
-		loadSE(m_spSmash3DSE, "Asset/Sound/SE/Enemy/Golem/Smash.wav");
+		loadSE(m_spWalk3DSE, "Asset/Sound/SE/Enemy/Robot/PressBot/Walk.wav");
+		loadSE(m_spCrying3DSE, "Asset/Sound/SE/Enemy/Robot/PressBot/Cry.wav");
 	}
 
 	m_playerChaseDir = 3;
@@ -132,7 +134,6 @@ void PressBot::Release()
 
 	if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); m_spWalk3DSE = nullptr; }
 	if (m_spCrying3DSE) { m_spCrying3DSE->Stop(); m_spCrying3DSE = nullptr; }
-	if (m_spSmash3DSE) { m_spSmash3DSE->Stop(); m_spSmash3DSE = nullptr; }
 }
 
 //=============================================

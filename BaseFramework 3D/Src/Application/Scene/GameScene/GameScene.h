@@ -184,6 +184,14 @@ private:
 	//ボスの階のBGM
 	std::shared_ptr<KdSoundInstance> m_spBossBGM;
 
+	//BGM の音量の倍率(設定の音量 × この値)
+	static constexpr float kGameBGMVolRate = 0.4f;	//通常の階
+	static constexpr float kBossBGMVolRate = 0.1f;	//ボスの階(わざと小さめ)
+
+	//工場マップの環境音(機械のうなり・遠くの金属音。ループ)
+	std::shared_ptr<KdSoundInstance> m_spFactoryAmbientSE;
+	static constexpr float kFactoryAmbientVolRate = 0.3f;
+
 	//武器用のImGUI
 	// メンバに持つ
 	std::shared_ptr<WeaponStrengtheningEditor> m_spWSEditor;

@@ -64,9 +64,20 @@
         "baseColorTexture": {
           "index": 1
         },
-        "metallicFactor": 0.6,
-        "roughnessFactor": 0.45
-      }
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "metallicRoughnessTexture": {
+          "index": 11
+        }
+      },
+      "emissiveTexture": {
+        "index": 12
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     },
     {
       "doubleSided": true,
@@ -75,9 +86,23 @@
         "baseColorTexture": {
           "index": 2
         },
-        "metallicFactor": 0.6,
-        "roughnessFactor": 0.45
-      }
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "metallicRoughnessTexture": {
+          "index": 14
+        }
+      },
+      "normalTexture": {
+        "index": 13
+      },
+      "emissiveTexture": {
+        "index": 15
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     },
     {
       "doubleSided": true,
@@ -86,9 +111,23 @@
         "baseColorTexture": {
           "index": 3
         },
-        "metallicFactor": 0.6,
-        "roughnessFactor": 0.45
-      }
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "metallicRoughnessTexture": {
+          "index": 14
+        }
+      },
+      "normalTexture": {
+        "index": 13
+      },
+      "emissiveTexture": {
+        "index": 15
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     },
     {
       "doubleSided": true,
@@ -97,9 +136,23 @@
         "baseColorTexture": {
           "index": 4
         },
-        "metallicFactor": 0.6,
-        "roughnessFactor": 0.45
-      }
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "metallicRoughnessTexture": {
+          "index": 14
+        }
+      },
+      "normalTexture": {
+        "index": 13
+      },
+      "emissiveTexture": {
+        "index": 15
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     },
     {
       "name": "stone_4",
@@ -115,7 +168,15 @@
           "index": 7
         },
         "roughnessFactor": 1.0
-      }
+      },
+      "emissiveTexture": {
+        "index": 16
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     },
     {
       "doubleSided": true,
@@ -124,9 +185,23 @@
         "baseColorTexture": {
           "index": 8
         },
-        "metallicFactor": 0.6,
-        "roughnessFactor": 0.45
-      }
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "metallicRoughnessTexture": {
+          "index": 14
+        }
+      },
+      "normalTexture": {
+        "index": 13
+      },
+      "emissiveTexture": {
+        "index": 15
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     },
     {
       "doubleSided": true,
@@ -135,9 +210,23 @@
         "baseColorTexture": {
           "index": 9
         },
-        "metallicFactor": 0.6,
-        "roughnessFactor": 0.45
-      }
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "metallicRoughnessTexture": {
+          "index": 14
+        }
+      },
+      "normalTexture": {
+        "index": 13
+      },
+      "emissiveTexture": {
+        "index": 15
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     },
     {
       "doubleSided": true,
@@ -146,9 +235,23 @@
         "baseColorTexture": {
           "index": 10
         },
-        "metallicFactor": 0.6,
-        "roughnessFactor": 0.45
-      }
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "metallicRoughnessTexture": {
+          "index": 14
+        }
+      },
+      "normalTexture": {
+        "index": 13
+      },
+      "emissiveTexture": {
+        "index": 15
+      },
+      "emissiveFactor": [
+        0.8,
+        0.8,
+        0.8
+      ]
     }
   ],
   "meshes": [
@@ -309,6 +412,30 @@
     {
       "sampler": 0,
       "source": 2
+    },
+    {
+      "source": 6,
+      "sampler": 0
+    },
+    {
+      "source": 7,
+      "sampler": 0
+    },
+    {
+      "source": 8,
+      "sampler": 0
+    },
+    {
+      "source": 9,
+      "sampler": 0
+    },
+    {
+      "source": 10,
+      "sampler": 0
+    },
+    {
+      "source": 11,
+      "sampler": 0
     }
   ],
   "images": [
@@ -341,6 +468,36 @@
       "mimeType": "image/png",
       "name": "stone_4_r",
       "uri": "stone_4_r.png"
+    },
+    {
+      "uri": "Ruin_floor_mr.png",
+      "name": "Ruin_floor_mr",
+      "mimeType": "image/png"
+    },
+    {
+      "uri": "Ruin_floor_e.png",
+      "name": "Ruin_floor_e",
+      "mimeType": "image/png"
+    },
+    {
+      "uri": "Ruin_wall_n.png",
+      "name": "Ruin_wall_n",
+      "mimeType": "image/png"
+    },
+    {
+      "uri": "Ruin_wall_mr.png",
+      "name": "Ruin_wall_mr",
+      "mimeType": "image/png"
+    },
+    {
+      "uri": "Ruin_wall_e.png",
+      "name": "Ruin_wall_e",
+      "mimeType": "image/png"
+    },
+    {
+      "uri": "Ruin_step_e.png",
+      "name": "Ruin_step_e",
+      "mimeType": "image/png"
     }
   ],
   "accessors": [

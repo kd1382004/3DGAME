@@ -74,16 +74,6 @@ void Goblin::Init()
 				m_spCrying3DSE->SetCurveDistanceScaler(20.0f);
 			}
 		}
-		if (!m_spSlam3DSE)
-		{
-			// 叩きつけの音
-			m_spSlam3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Goblin/Slam.wav", m_pos, false);
-			if (m_spSlam3DSE)
-			{
-				m_spSlam3DSE->Stop();
-				m_spSlam3DSE->SetCurveDistanceScaler(20.0f);
-			}
-		}
 	}
 	m_playerChaseDir = 2;
 	m_playerChaseResumeDir = 2.5f;
@@ -183,11 +173,6 @@ void Goblin::Release()
 	{
 		m_spCrying3DSE->Stop();
 		m_spCrying3DSE = nullptr;
-	}
-	if (m_spSlam3DSE)
-	{
-		m_spSlam3DSE->Stop();
-		m_spSlam3DSE = nullptr;
 	}
 }
 

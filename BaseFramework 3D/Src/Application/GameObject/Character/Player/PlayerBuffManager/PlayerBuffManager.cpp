@@ -7,6 +7,9 @@
 //---- ポーション ----
 #include"../../../Potions/PotionsType.h"		//ポーションの種類
 
+//---- 便利機能 ----
+#include"../../../../Info/SE/SEPlayer.h"		//効果音
+
 //=============================================
 // 基本の処理
 //=============================================
@@ -14,6 +17,8 @@
 void PlayerBuffManager::Update()
 {
 	float deltaTime = DeltaTime::Instance().GetGameDeltaTime();
+
+	bool buffEnded = false;
 
 	auto it = m_statusBuffList.begin();
 
@@ -25,11 +30,19 @@ void PlayerBuffManager::Update()
 		{
 			BuffFinish(*it);
 			it = m_statusBuffList.erase(it);
+
+			//時間切れでバフが切れた音(同じフレームで何個切れても1回だけ)
+			buffEnded = true;
 		}
 		else
 		{
 			it++;
 		}
+	}
+
+	if (buffEnded)
+	{
+		SEPlayer::Play2D("Asset/Sound/SE/Player/BuffEnd.wav", 0.7f);
 	}
 }
 

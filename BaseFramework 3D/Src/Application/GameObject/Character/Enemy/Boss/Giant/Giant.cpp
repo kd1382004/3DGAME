@@ -56,15 +56,6 @@ void Giant::Init()
 				m_spRun3DSE->SetCurveDistanceScaler(30.0f);
 			}
 		}
-		if (!m_spPunch3DSE)
-		{
-			m_spPunch3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Punch.wav", m_pos, false);
-			if (m_spPunch3DSE)
-			{
-				m_spPunch3DSE->Stop();
-				m_spPunch3DSE->SetCurveDistanceScaler(30.0f);
-			}
-		}
 		if (!m_spCrying3DSE)
 		{
 			m_spCrying3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/CryingSound.wav", m_pos, false);
@@ -72,15 +63,6 @@ void Giant::Init()
 			{
 				m_spCrying3DSE->Stop();
 				m_spCrying3DSE->SetCurveDistanceScaler(30.0f);
-			}
-		}
-		if (!m_spDon3DSE)
-		{
-			m_spDon3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Don.wav", m_pos, false);
-			if (m_spDon3DSE)
-			{
-				m_spDon3DSE->Stop();
-				m_spDon3DSE->SetCurveDistanceScaler(30.0f);
 			}
 		}
 	}
@@ -120,8 +102,9 @@ void Giant::Update()
 
 
 				spGameScene->WarpGateInit(nextPos, escapePos);
+				m_isExpired = true;
 			}
-			m_isExpired = true;
+		
 		}
 		return;
 	}
@@ -244,27 +227,13 @@ void Giant::Release()
 		m_spRun3DSE->Stop();
 		m_spRun3DSE = nullptr;
 	}
-	if (m_spPunch3DSE)
-	{
-		m_spPunch3DSE->Stop();
-		m_spPunch3DSE = nullptr;
-	}
 	if (m_spCrying3DSE)
 	{
 		m_spCrying3DSE->Stop();
 		m_spCrying3DSE = nullptr;
 	}
-	if (m_spDon3DSE)
-	{
-		m_spDon3DSE->Stop();
-		m_spDon3DSE = nullptr;
-	}
 
-	auto spGameScene = m_wpGameScene.lock();
-	if (spGameScene)
-	{
-		spGameScene->AddEnemyKill();
-	}
+	//倒した数は EnemyBase::SetDead で数えているので、ここでは数えない(2回数えないように)
 }
 
 //=============================================

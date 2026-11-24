@@ -52,6 +52,9 @@ private:
 	//全体の結果
 	DisplayFloorInfo m_displayFloorInfo;
 
+	//結果を出したときの音を鳴らしたか(1回だけ鳴らす)
+	bool m_scoreSEPlayed = false;
+
 	//「総合結果」の画像
 	std::shared_ptr<KdTexture>m_spOverallResultTex;
 

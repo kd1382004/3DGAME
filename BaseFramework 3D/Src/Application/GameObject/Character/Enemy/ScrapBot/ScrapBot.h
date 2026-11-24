@@ -65,7 +65,6 @@ private:
 
 	//鳴き声の3D音
 	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
-	std::shared_ptr<KdSoundInstance3D> m_spSlam3DSE;	// 叩きつけの音
 
 	//---- 基本の処理 ----
 

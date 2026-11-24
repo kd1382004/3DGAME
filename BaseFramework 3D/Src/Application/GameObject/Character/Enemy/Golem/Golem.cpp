@@ -69,7 +69,6 @@ void Golem::Init()
 			};
 		loadSE(m_spWalk3DSE, "Asset/Sound/SE/Enemy/Golem/Walk.wav");
 		loadSE(m_spCrying3DSE, "Asset/Sound/SE/Enemy/Golem/CryingSound.wav");
-		loadSE(m_spSmash3DSE, "Asset/Sound/SE/Enemy/Golem/Smash.wav");
 	}
 
 	m_playerChaseDir = 3;
@@ -150,7 +149,6 @@ void Golem::Release()
 
 	if (m_spWalk3DSE) { m_spWalk3DSE->Stop(); m_spWalk3DSE = nullptr; }
 	if (m_spCrying3DSE) { m_spCrying3DSE->Stop(); m_spCrying3DSE = nullptr; }
-	if (m_spSmash3DSE) { m_spSmash3DSE->Stop(); m_spSmash3DSE = nullptr; }
 }
 
 //=============================================

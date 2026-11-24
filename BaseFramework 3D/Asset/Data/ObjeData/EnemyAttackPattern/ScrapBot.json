@@ -108,7 +108,7 @@
                         {
                             "p": 0.476,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Goblin/Slam.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/ScrapBot/Slam.wav"
                         },
                         {
                             "p": 0.476,
@@ -262,7 +262,7 @@
                         {
                             "p": 0.483,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Goblin/Slam.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/ScrapBot/Slam.wav"
                         },
                         {
                             "p": 0.483,

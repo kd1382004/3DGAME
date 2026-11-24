@@ -14,7 +14,7 @@ public:
 	WarpGateBase() {};
 
 	//デストラクタ
-	~WarpGateBase()override {};
+	~WarpGateBase()override;
 
 	//---- 基本の処理 ----
 
@@ -87,6 +87,9 @@ protected:
 	// 操作案内UI用テクスチャ
 	std::shared_ptr<KdTexture> m_spGuideUITex;
 
+	//魔法陣のうなり音(ゲートの位置から聞こえる。ループ)
+	std::shared_ptr<KdSoundInstance3D> m_spHum3DSE;
+
 	//---- その他の処理 ----
 
 	//プレイヤーが乗ってるかどうか
@@ -94,6 +97,9 @@ protected:
 
 	//魔法陣のパーツを回転させる
 	void UpdateMagicCircleAnime();
+
+	//魔法陣のうなり音を鳴らし続ける
+	void UpdateHumSE();
 
 	//操作案内のUIを出す
 	// _key ... 案内するキー番号

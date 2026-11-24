@@ -18,7 +18,7 @@
                         {
                             "p": 0.413,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.413,
@@ -68,7 +68,7 @@
                         {
                             "p": 0.413,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.413,
@@ -119,7 +119,7 @@
                         {
                             "p": 0.0,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/CryingSound.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Cry.wav"
                         },
                         {
                             "p": 0.491,
@@ -129,7 +129,7 @@
                         {
                             "p": 0.491,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Don.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Slam.wav"
                         },
                         {
                             "p": 0.491,
@@ -193,7 +193,7 @@
                         {
                             "p": 0.413,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.413,
@@ -228,7 +228,7 @@
                         {
                             "p": 0.413,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.413,
@@ -278,7 +278,7 @@
                         {
                             "p": 0.0,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/CryingSound.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Cry.wav"
                         },
                         {
                             "p": 0.482,
@@ -288,7 +288,7 @@
                         {
                             "p": 0.482,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Don.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Slam.wav"
                         },
                         {
                             "p": 0.482,
@@ -338,7 +338,7 @@
                         {
                             "p": 0.478,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Don.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Slam.wav"
                         },
                         {
                             "p": 0.478,
@@ -383,17 +383,17 @@
                         {
                             "p": 0.0,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/CryingSound.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Cry.wav"
                         },
                         {
                             "p": 0.45,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.55,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.5,
@@ -440,7 +440,7 @@
                         {
                             "p": 0.413,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.413,
@@ -475,7 +475,7 @@
                         {
                             "p": 0.413,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Punch.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Punch.wav"
                         },
                         {
                             "p": 0.413,
@@ -510,7 +510,7 @@
                         {
                             "p": 0.0,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/CryingSound.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Cry.wav"
                         },
                         {
                             "p": 0.482,
@@ -520,7 +520,7 @@
                         {
                             "p": 0.482,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Giant/Don.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/Titan/Slam.wav"
                         },
                         {
                             "p": 0.482,

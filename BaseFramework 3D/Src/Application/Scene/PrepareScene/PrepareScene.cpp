@@ -37,6 +37,7 @@
 #include"../../Info/DebugInfo/DebugInfo.h"													//デバッグ用の状態
 #include"../../Info/MouseInfo/MouseInfo.h"													//マウス入力
 #include"../../Info/KeyInfo/KeyInfo.h"														//キー入力
+#include"../../Info/SE/SEPlayer.h"															//効果音
 
 //---- 武器立ての武器 ----
 
@@ -66,6 +67,11 @@ PrepareScene::~PrepareScene()
 	if (m_spPrepareBGM)
 	{
 		m_spPrepareBGM->Stop();
+	}
+
+	for (const auto& spSE : m_spCampfire3DSEList)
+	{
+		if (spSE) { spSE->Stop(); }
 	}
 
 	for (const auto& wpEf : m_wpKdEffekseerObject)
@@ -205,21 +211,14 @@ void PrepareScene::Init()
 	/////////////////////////////////////////
 	// 音
 	/////////////////////////////////////////
-	// TODO : 準備画面用のBGMを用意したら差し替える
-	//if (!m_spPrepareBGM)
-	//{
-	//	m_spPrepareBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Prepare/PrepareBGM.wav", true);
-	//	if (m_spPrepareBGM)
-	//	{
-	//		m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.5);
-	//	}
-	//}
-
-
-
-
-
-
+	if (!m_spPrepareBGM)
+	{
+		m_spPrepareBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Prepare/PrepareBGM.wav", true);
+		if (m_spPrepareBGM)
+		{
+			m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kPrepareBGMVolRate);
+		}
+	}
 
 	// 背景の配置を読む
 	m_campLayout = LoadCampLayout(m_campLayoutFilePath);
@@ -254,6 +253,10 @@ void PrepareScene::Init()
 				data.m_pos + Math::Vector3(0, 0, 0), 1.0f, 1.0f, true);
 
 			m_wpKdEffekseerObject.push_back(ef);
+
+			// パチパチ音(ループ)
+			auto spSE = SEPlayer::Play3D("Asset/Sound/SE/Prepare/Campfire.wav", data.m_pos, 1.0f, true);
+			if (spSE) { m_spCampfire3DSEList.push_back(spSE); }
 		}
 
 		auto spObj = std::make_shared<CampObject>();
@@ -362,6 +365,7 @@ void PrepareScene::StartDepart()
 	m_departState = DepartState::Walk;
 	m_departTimer = 0;
 	m_departFadeTimer = 0;
+	m_departStepTimer = 0;
 	ChangeTab(PrepareTab::None);
 	if (m_spGameButton) { m_spGameButton->SetActive(false); }
 	if (m_spPrepareSceneDisplay) { m_spPrepareSceneDisplay->SetActive(false); }
@@ -403,6 +407,17 @@ void PrepareScene::UpdateDepart()
 	{
 		player->WorkData().m_pos = Math::Vector3::Lerp(m_departStartPos, dep.m_target, t);
 		player->ApplyData();
+
+		//---- 足音(目的地に着くまで一定の間隔で) ----
+		if (t < 1.0f)
+		{
+			m_departStepTimer -= DeltaTime::Instance().GetGameDeltaTime();
+			if (m_departStepTimer <= 0.0f)
+			{
+				m_departStepTimer += kDepartStepInterval;
+				SEPlayer::Play2D("Asset/Sound/SE/Prepare/DepartStep.wav", 0.7f);
+			}
+		}
 	}
 
 	//---- 状態ごと ----
@@ -414,6 +429,9 @@ void PrepareScene::UpdateDepart()
 			FadeDraw::Instance().SetFadeType(FadeIn, dep.m_fadeTime);
 			m_departState = DepartState::Fade;
 
+			//入口に吸い込まれる音
+			SEPlayer::Play2D("Asset/Sound/SE/Prepare/DepartWhoosh.wav", 0.9f);
+
 			// FadeDraw はこのフレームから時間を進めるので、こちらも同じフレームから数える
 			m_departFadeTimer = DeltaTime::Instance().GetRealDeltaTime();
 		}
@@ -422,6 +440,18 @@ void PrepareScene::UpdateDepart()
 	case DepartState::Fade:
 		// FadeDraw と同じ Real の時間で数えて、真っ暗になったらゲームへ
 		m_departFadeTimer += DeltaTime::Instance().GetRealDeltaTime();
+
+		//暗転に合わせて BGM と焚き火の音を小さくしていく
+		{
+			float rate = 1.0f;
+			if (dep.m_fadeTime > 0.0f) { rate = 1.0f - m_departFadeTimer / dep.m_fadeTime; }
+			if (rate < 0.0f) { rate = 0.0f; }
+			if (m_spPrepareBGM) { m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kPrepareBGMVolRate * rate); }
+			for (const auto& spSE : m_spCampfire3DSEList)
+			{
+				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * rate); }
+			}
+		}
 		if (m_departFadeTimer >= dep.m_fadeTime)
 		{
 			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);

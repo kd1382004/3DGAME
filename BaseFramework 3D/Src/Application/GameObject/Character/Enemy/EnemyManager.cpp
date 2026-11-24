@@ -260,6 +260,7 @@ void EnemyManager::SpawnBoss(MapType _maptype, Math::Vector3 _spawnPos)
 	spBoss->SetEnemyManager(m_wpEnemyManager.lock());
 	spBoss->SetHitDamage(m_wpHitDamage.lock());
 
+
 	int floor = 1;
 	auto spGameScene = m_wpGameScene.lock();
 	if (spGameScene)

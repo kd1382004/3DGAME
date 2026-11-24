@@ -7,6 +7,7 @@
 //---- 便利機能 ----
 #include"../../../../Info/MouseInfo/MouseInfo.h"		//マウス入力
 #include"../../../../Info/KeyInfo/KeyInfo.h"			//キー入力
+#include"../../../../Info/SE/SEPlayer.h"				//効果音
 
 //=============================================
 // 基本の処理
@@ -56,6 +57,11 @@ void EquipDisplay::Update()
 
 			if (KeyInfo::Instance().GetValidKeyPush(VK_LBUTTON, true))
 			{
+				//今と違う武器を選んだときだけ装備の音を鳴らす
+				if (SceneManager::Instance().GetPlayerWeaponInfo() != static_cast<PlayerWeaponInfo>(weapon))
+				{
+					SEPlayer::Play2D("Asset/Sound/SE/UI/Equip.wav", 0.8f);
+				}
 				SceneManager::Instance().SetPlayerWeaponInfo(static_cast<PlayerWeaponInfo>(weapon));
 			}
 

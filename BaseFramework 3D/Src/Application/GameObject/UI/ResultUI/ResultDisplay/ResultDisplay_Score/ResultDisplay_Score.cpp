@@ -6,6 +6,7 @@
 
 //---- 便利機能 ----
 #include"../../../../../Info/NumDraw/NumDraw.h"		//数字の画像描画
+#include"../../../../../Info/SE/SEPlayer.h"			//効果音
 
 //=============================================
 // 基本の処理
@@ -67,7 +68,12 @@ void ResultDisplay_Score::Init()
 
 void ResultDisplay_Score::Update()
 {
-
+	//結果が入って画面に出たら、1回だけ「ジャーン」と鳴らす
+	if (!m_scoreSEPlayed && m_displayFloorInfo.m_displayFloor > 0)
+	{
+		m_scoreSEPlayed = true;
+		SEPlayer::Play2D("Asset/Sound/SE/UI/ResultScore.wav", 0.8f);
+	}
 }
 
 void ResultDisplay_Score::PreDraw()

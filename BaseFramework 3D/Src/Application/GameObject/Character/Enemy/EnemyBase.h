@@ -487,6 +487,8 @@ protected:
 
 	//この段で当たり判定を出したか
 	bool m_hitOn = false;
+	//この段の攻撃予告の音を鳴らしたか(段が変わったら戻す)
+	bool m_warnSEPlayed = false;
 
 	//この段で踏み込んだ距離(進め方4で使う)
 	float m_stepForwardDone = 0.0f;

@@ -164,7 +164,7 @@ void DropCoin::GetCoin()
 		spPlayer->GetPlayerInventory()->AddMoney(m_value);
 
 		// 拾った音
-		std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Item/Get.wav", false);
+		std::shared_ptr<KdSoundInstance> spSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Item/Coin.wav", false);
 		if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 	}
 

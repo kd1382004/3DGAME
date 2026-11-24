@@ -50,38 +50,20 @@ void Titan::Init()
 		//効果音は専用のものがまだないので、ジャイアントのものを仮で使う
 		if (!m_spRun3DSE)
 		{
-			m_spRun3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Walk.wav", m_pos, false);
+			m_spRun3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Robot/Titan/Walk.wav", m_pos, false);
 			if (m_spRun3DSE)
 			{
 				m_spRun3DSE->Stop();
 				m_spRun3DSE->SetCurveDistanceScaler(30.0f);
 			}
 		}
-		if (!m_spPunch3DSE)
-		{
-			m_spPunch3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Punch.wav", m_pos, false);
-			if (m_spPunch3DSE)
-			{
-				m_spPunch3DSE->Stop();
-				m_spPunch3DSE->SetCurveDistanceScaler(30.0f);
-			}
-		}
 		if (!m_spCrying3DSE)
 		{
-			m_spCrying3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/CryingSound.wav", m_pos, false);
+			m_spCrying3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Robot/Titan/Cry.wav", m_pos, false);
 			if (m_spCrying3DSE)
 			{
 				m_spCrying3DSE->Stop();
 				m_spCrying3DSE->SetCurveDistanceScaler(30.0f);
-			}
-		}
-		if (!m_spDon3DSE)
-		{
-			m_spDon3DSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Giant/Don.wav", m_pos, false);
-			if (m_spDon3DSE)
-			{
-				m_spDon3DSE->Stop();
-				m_spDon3DSE->SetCurveDistanceScaler(30.0f);
 			}
 		}
 	}
@@ -211,7 +193,8 @@ void Titan::DrawLit()
 		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(false);
 		UAEffectShaderManager::Instance().WriteCBBoxEffectEnable(false);
 
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld);
+		//体の光る溝・目などを光らせる(発光の倍率 1)
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld, kWhiteColor, { 1.0f, 1.0f, 1.0f });
 
 
 		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(true);
@@ -243,27 +226,13 @@ void Titan::Release()
 		m_spRun3DSE->Stop();
 		m_spRun3DSE = nullptr;
 	}
-	if (m_spPunch3DSE)
-	{
-		m_spPunch3DSE->Stop();
-		m_spPunch3DSE = nullptr;
-	}
 	if (m_spCrying3DSE)
 	{
 		m_spCrying3DSE->Stop();
 		m_spCrying3DSE = nullptr;
 	}
-	if (m_spDon3DSE)
-	{
-		m_spDon3DSE->Stop();
-		m_spDon3DSE = nullptr;
-	}
 
-	auto spGameScene = m_wpGameScene.lock();
-	if (spGameScene)
-	{
-		spGameScene->AddEnemyKill();
-	}
+	//倒した数は EnemyBase::SetDead で数えているので、ここでは数えない(2回数えないように)
 }
 
 //=============================================

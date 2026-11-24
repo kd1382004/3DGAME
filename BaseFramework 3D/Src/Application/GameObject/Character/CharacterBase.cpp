@@ -50,7 +50,7 @@ void CharacterBase::DrawLit()
 		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(false);
 		UAEffectShaderManager::Instance().WriteCBBoxEffectEnable(false);
 
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld);
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spCharaModel, m_mWorld, kWhiteColor, m_drawEmissive);
 
 		UAEffectShaderManager::Instance().WriteCBCircleEffectEnable(true);
 		UAEffectShaderManager::Instance().WriteCBBoxEffectEnable(true);

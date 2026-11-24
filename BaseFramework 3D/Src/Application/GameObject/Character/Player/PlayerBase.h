@@ -76,8 +76,8 @@ public:
 	//コンストラクタ
 	PlayerBase() {};
 
-	//デストラクタ
-	~PlayerBase() {};
+	//デストラクタ(ループしている音を止める)
+	~PlayerBase();
 
 	//---- 基本の処理 ----
 
@@ -434,6 +434,23 @@ protected:
 
 	//ジャンプの音
 	std::shared_ptr<KdSoundInstance> m_spJumpSE;
+
+	//HPが少ないときの心音(ループ)
+	std::shared_ptr<KdSoundInstance> m_spHeartbeatSE;
+
+	//空中にいる秒数(着地の音を鳴らすかの判定)
+	float m_airTime = 0.0f;
+	//この秒数より長く空中にいたら着地の音を鳴らす
+	static constexpr float kLandSEAirTime = 0.3f;
+
+	//前のフレームのスタミナ(使い切った瞬間を知るため)
+	float m_prevStamina = -1.0f;
+
+	//心音を鳴らし始める HP の割合
+	static constexpr float kHeartbeatHPRate = 0.25f;
+
+	//着地・スタミナ切れ・心音の更新
+	void UpdateStatusSE();
 
 	//回復のエフェクト
 	std::weak_ptr<KdEffekseerObject> m_wpHealEffect;

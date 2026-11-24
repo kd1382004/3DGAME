@@ -8,6 +8,7 @@
 //---- 便利機能 ----
 #include"../../../../Info/MouseInfo/MouseInfo.h"			//マウス入力
 #include"../../../../Info/KeyInfo/KeyInfo.h"				//キー入力
+#include"../../../../Info/SE/SEPlayer.h"					//効果音
 
 //=============================================
 // 基本の処理
@@ -910,8 +911,13 @@ void ShopDisplay::BuySellUpdate()
 	const Math::Vector2 sellPos = GetSellButtonPos();
 
 	bool success = false;
+	//どちらかのボタンを押したか(押したのに失敗したらエラー音)
+	bool pushed = false;
+	//売ったか(買った音と売った音を分ける)
+	bool sold = false;
 	if (m_clickFlg && MouseHit(buyPos, m_buttonW, m_buttonH))
 	{
+		pushed = true;
 		if (IsStackTab())
 		{
 			// 消耗品・素材のタブ → 選んでいる商品を、数量(m_count)の分だけ買う
@@ -931,13 +937,23 @@ void ShopDisplay::BuySellUpdate()
 	{
 		// 選んでいる商品を、数量(m_count)の分だけ売る
 		success = SellStackItem(m_selectIndex, m_count);
+		pushed = true;
+		sold = true;
 
 		m_clickFlg = false;
 	}
 
 	if (success)
 	{
+		//買った・売った音
+		SEPlayer::Play2D(sold ? "Asset/Sound/SE/Shop/Sell.wav" : "Asset/Sound/SE/Shop/Buy.wav", 0.8f);
+
 		if (auto spScene = m_wpPrepareScene.lock()) { spScene->OnShopDataChanged(); }
+	}
+	else if (pushed)
+	{
+		//お金が足りない・在庫が無いなどで失敗した
+		SEPlayer::Play2D("Asset/Sound/SE/Shop/Error.wav", 0.8f);
 	}
 }
 

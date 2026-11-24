@@ -275,6 +275,12 @@ void EnemyBase::SearchPlayer()
 			// 壁で遮られていない時だけ追跡開始
 			if (!isBlocked)
 			{
+				//見つけた瞬間だけ「気づいた」音
+				if (!m_playerChaseFlg && !m_isDead)
+				{
+					PlayMaterialSE("Asset/Sound/SE/Enemy/Notice/", 0.9f);
+				}
+
 				m_playerChaseFlg = true;
 
 				//アニメーション
@@ -402,6 +408,9 @@ void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math:
 		{
 			m_flinchValue = 0.0f;
 			EndPattern();	//待ち時間とクールタイムは普通に入る
+
+			//ひるんだ音
+			PlayMaterialSE("Asset/Sound/SE/Enemy/Flinch/", 1.0f);
 		}
 	}
 
@@ -1232,6 +1241,7 @@ void EnemyBase::StartStep(int _stepIndex)
 
 	m_nowStepIndex = _stepIndex;
 	m_hitOn = false;
+	m_warnSEPlayed = false;
 	m_stepForwardDone = 0.0f;
 
 	const ComboStep* step = GetNowStep();
@@ -1312,6 +1322,18 @@ void EnemyBase::UpdateStep()
 		const bool warn = (extra->m_hitShape != AttackHitShape::Bone) &&
 			progress >= extra->m_warnStart && progress <= step->m_hitEnd;
 		spAttack->SetWarnFlg(warn);
+
+		//予告が出た瞬間に「キラッ」と鳴らす(避けるタイミングを音でも分かるように)
+		if (warn && !m_warnSEPlayed)
+		{
+			m_warnSEPlayed = true;
+			std::shared_ptr<KdSoundInstance3D> spSE = KdAudioManager::Instance().Play3D("Asset/Sound/SE/Enemy/Warn.wav", m_pos, false);
+			if (spSE)
+			{
+				spSE->SetCurveDistanceScaler(20.0f);
+				spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.6f);
+			}
+		}
 
 		//当たり判定を出す
 		if (progress > step->m_hitStart && !m_hitOn)

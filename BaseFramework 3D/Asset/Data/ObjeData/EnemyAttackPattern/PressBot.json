@@ -23,7 +23,7 @@
                         {
                             "p": 0.488,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/PressBot/Smash.wav"
                         },
                         {
                             "p": 0.488,
@@ -191,7 +191,7 @@
                         {
                             "p": 0.476,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/PressBot/Smash.wav"
                         },
                         {
                             "p": 0.476,
@@ -241,7 +241,7 @@
                         {
                             "p": 0.482,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/PressBot/Smash.wav"
                         },
                         {
                             "p": 0.482,
@@ -310,7 +310,7 @@
                         {
                             "p": 0.488,
                             "type": "Sound",
-                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                            "name": "Asset/Sound/SE/Enemy/Robot/PressBot/Smash.wav"
                         },
                         {
                             "p": 0.488,

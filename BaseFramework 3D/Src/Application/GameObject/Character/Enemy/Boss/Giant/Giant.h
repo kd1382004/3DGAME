@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include"../../EnemyBase.h"
 
-class GameScene;
-
 //ボス(巨人)
 class Giant :public EnemyBase
 {
@@ -40,10 +38,6 @@ public:
 	void DrawLit()override;
 
 	//---- 設定 ----
-
-	//ゲームシーンセット
-	// _spGameScene ... ゲームシーン
-	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
 
 	//---- その他の処理 ----
 
@@ -84,8 +78,9 @@ private:
 
 	//---- メンバ変数 ----
 
-	//ゲームシーン
-	std::weak_ptr<GameScene> m_wpGameScene;
+	//ゲームシーンは EnemyBase の m_wpGameScene を使う
+	//(ここに同じ名前の変数を作ると、EnemyManager が EnemyBase::SetGameScene で入れた値が見えず、
+	// 倒してもワープゲートが出なくなる)
 
 	//アニメーション名
 	GiantAnimeName m_giantAnimeName;
@@ -101,14 +96,10 @@ private:
 	// 3DサウンドSE
 	std::shared_ptr<KdSoundInstance3D> m_spRun3DSE;
 
-	//パンチの3D音
-	std::shared_ptr<KdSoundInstance3D> m_spPunch3DSE;
 
 	//鳴き声の3D音
 	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
 
-	//着地(ドン)の3D音
-	std::shared_ptr<KdSoundInstance3D> m_spDon3DSE;
 
 	//---- 基本の処理 ----
 

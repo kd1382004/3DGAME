@@ -74,7 +74,9 @@ void MapBase::DrawLit()
 	KdShaderManager::Instance().m_StandardShader.SetDissolve(m_fader.GetDissolve(), &edgeRange, &edgeColor);
 
 	KdShaderManager::Instance().m_StandardShader.SetUVTiling(m_uvTiling);
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+	//発光は gltf の emissiveFactor × 発光テクスチャで決まる(工場マップの光る溝など)
+	//emissiveFactor が無いモデル(ダンジョン・城)は 0 なので光らない
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld, kWhiteColor, { 1.0f, 1.0f, 1.0f });
 
 	// 後片付け
 	KdShaderManager::Instance().m_StandardShader.SetUVTiling({ 1.0f, 1.0f });

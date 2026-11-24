@@ -55,6 +55,7 @@
 #include"../../Info/MouseInfo/MouseInfo.h"																			//マウス入力
 #include"../../Info/FadeDraw/FadeDraw.h"																			//画面フェードの描画
 #include"../../../Application/Info/DebugInfo/DebugInfo.h"															//デバッグ用の状態
+#include"../../Info/SE/SEPlayer.h"																			//効果音
 
 //---- 標準ライブラリ ----
 #include <ctime>																									//時刻
@@ -75,6 +76,10 @@ GameScene::~GameScene()
 		m_spGameBGM->Stop();
 	}
 
+	if (m_spFactoryAmbientSE)
+	{
+		m_spFactoryAmbientSE->Stop();
+	}
 }
 
 //=============================================
@@ -562,6 +567,27 @@ void GameScene::GenerateMap()
 	m_spEnemyManager->EnemyListReset();
 	m_spMapObjManager->ResetMapObj();
 
+	//工場マップだけ環境音を流す
+	if (m_mapType == MapType::MapType_Factory)
+	{
+		if (!m_spFactoryAmbientSE)
+		{
+			m_spFactoryAmbientSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Ambient/Factory.wav", true);
+		}
+		else if (!m_spFactoryAmbientSE->IsPlaying())
+		{
+			m_spFactoryAmbientSE->Play(true);
+		}
+		if (m_spFactoryAmbientSE)
+		{
+			m_spFactoryAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kFactoryAmbientVolRate);
+		}
+	}
+	else if (m_spFactoryAmbientSE)
+	{
+		m_spFactoryAmbientSE->Stop();
+	}
+
 	if (m_displayFloor % m_bossInterval != 0)
 	{
 		if (m_spBossBGM)
@@ -571,7 +597,7 @@ void GameScene::GenerateMap()
 
 		if (m_spGameBGM && !m_spGameBGM->IsPlaying())
 		{
-			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.4);
+			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kGameBGMVolRate);
 			m_spGameBGM->Play();
 		}
 
@@ -590,9 +616,14 @@ void GameScene::GenerateMap()
 
 		if (m_spBossBGM)
 		{
-			m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.1);
+			m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kBossBGMVolRate);
 			m_spBossBGM->Play();
 		}
+
+		//ボスの登場の音(工場はロボット、それ以外は巨人の雄たけび)
+		SEPlayer::Play2D(m_mapType == MapType::MapType_Factory
+			? "Asset/Sound/SE/Enemy/Boss/Appear_Metal.wav"
+			: "Asset/Sound/SE/Enemy/Boss/Appear_Flesh.wav", 0.9f);
 
 		if (m_spGameBGM)
 		{
@@ -651,6 +682,21 @@ void GameScene::PlayerDefeat()
 
 void GameScene::Event()
 {
+	//BGM の音量を毎フレーム設定に合わせる(ゲーム中に音量を変えてもすぐ反映される)
+	//倍率は鳴らし始めたときと同じ(通常 0.4・ボス 0.1)
+	if (m_spGameBGM && m_spGameBGM->IsPlaying())
+	{
+		m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kGameBGMVolRate);
+	}
+	if (m_spBossBGM && m_spBossBGM->IsPlaying())
+	{
+		m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kBossBGMVolRate);
+	}
+	if (m_spFactoryAmbientSE && m_spFactoryAmbientSE->IsPlaying())
+	{
+		m_spFactoryAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kFactoryAmbientVolRate);
+	}
+
 	if (m_playerDefeatFlg)
 	{
 		if (!FadeDraw::Instance().GetFadeFlg())

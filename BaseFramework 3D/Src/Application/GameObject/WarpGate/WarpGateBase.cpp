@@ -16,6 +16,17 @@
 
 //---- 便利機能 ----
 #include"../../Info/DeltaTime/DeltaTime.h"		//デルタタイム
+#include"../../Info/SE/SEPlayer.h"				//効果音
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
+
+WarpGateBase::~WarpGateBase()
+{
+	//ループしている音は止めないと消えたあとも鳴り続ける
+	if (m_spHum3DSE) { m_spHum3DSE->Stop(); }
+}
 
 //=============================================
 // 基本の処理
@@ -42,6 +53,7 @@ void WarpGateBase::Update()
 void WarpGateBase::PreDraw()
 {
 	UpdateMagicCircleAnime();
+	UpdateHumSE();
 }
 
 void WarpGateBase::DrawLit()
@@ -128,6 +140,27 @@ void WarpGateBase::UpdateMagicCircleAnime()
 			break;
 		}
 	}
+}
+
+void WarpGateBase::UpdateHumSE()
+{
+	//消える予定なら止める
+	if (m_isExpired)
+	{
+		if (m_spHum3DSE) { m_spHum3DSE->Stop(); }
+		return;
+	}
+
+	if (!m_spHum3DSE)
+	{
+		m_spHum3DSE = SEPlayer::Play3D("Asset/Sound/SE/WarpGate/Hum.wav", m_pos, 0.35f, true);
+		if (m_spHum3DSE) { m_spHum3DSE->SetCurveDistanceScaler(6.0f); }
+		return;
+	}
+
+	//位置と音量(設定の変更)を合わせる
+	m_spHum3DSE->SetPos(m_pos);
+	m_spHum3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.35f);
 }
 
 void WarpGateBase::ShowGuideUI(int _key)

@@ -92,6 +92,10 @@ private:
 
 	//音
 	std::shared_ptr<KdSoundInstance> m_spPrepareBGM;
+	//焚き火のパチパチ音(焚き火の位置から聞こえる)
+	std::vector<std::shared_ptr<KdSoundInstance3D>> m_spCampfire3DSEList;
+	//BGMの音量の倍率
+	static constexpr float kPrepareBGMVolRate = 0.5f;
 
 	//今開いているタブ
 	PrepareTab m_currentTab = PrepareTab::None;
@@ -191,6 +195,9 @@ private:
 	DepartState m_departState = DepartState::None;
 	float m_departTimer = 0.0f;//歩き始めてからの秒数
 	float m_departFadeTimer = 0.0f;//暗転を始めてからの秒数
+	float m_departStepTimer = 0.0f;//次の足音までの秒数
+	//足音の間隔(秒)。走るアニメーションに合わせる
+	static constexpr float kDepartStepInterval = 0.32f;
 	//歩き始めた位置
 	Math::Vector3 m_departStartPos;
 };

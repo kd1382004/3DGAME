@@ -37,6 +37,17 @@
 
 //---- 便利機能 ----
 #include"../../../Info/KeyInfo/KeyInfo.h"							//キー入力
+#include"../../../Info/SE/SEPlayer.h"								//効果音
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
+
+PlayerBase::~PlayerBase()
+{
+	//ループしている心音はここで止めないとシーンが変わっても鳴り続ける
+	if (m_spHeartbeatSE) { m_spHeartbeatSE->Stop(); }
+}
 
 //=============================================
 // 基本の処理
@@ -263,6 +274,9 @@ void PlayerBase::PostUpdate()
 
 	// スタミナ管理
 	StaminaManager();
+
+	// 着地・スタミナ切れ・心音
+	UpdateStatusSE();
 
 
 	if (m_isDetectedByEnemyNum == 0)
@@ -522,6 +536,8 @@ void PlayerBase::SetDead()
 	}
 
 	m_isDead = true;
+
+	if (m_spHeartbeatSE) { m_spHeartbeatSE->Stop(); }
 }
 
 void PlayerBase::SetLV(int _LV)
@@ -678,6 +694,7 @@ void PlayerBase::StopSound()
 	if (m_spRollSE) { m_spRollSE->Stop(); }
 	if (m_spJumpSE) { m_spJumpSE->Stop(); }
 	if (m_spDamageSE) { m_spDamageSE->Stop(); }
+	if (m_spHeartbeatSE) { m_spHeartbeatSE->Stop(); }
 
 	std::shared_ptr<WeaponBase> spWeapon = m_wpWeapon.lock();
 	if (spWeapon)
@@ -688,6 +705,59 @@ void PlayerBase::StopSound()
 	// チャージ中に開いた場合はチャージ状態も解除
 	m_chargeAttackFlg = false;
 	m_chargeAttackCount = 0;
+}
+
+void PlayerBase::UpdateStatusSE()
+{
+	//---- 着地 ----
+	// ある程度の時間 空中にいてから地面に着いたら鳴らす(段差の上り下りでは鳴らない)
+	if (!m_groundHit)
+	{
+		m_airTime += DeltaTime::Instance().GetGameDeltaTime();
+	}
+	else
+	{
+		if (m_airTime >= kLandSEAirTime && !m_isDead)
+		{
+			SEPlayer::Play2D("Asset/Sound/SE/Player/Land.wav", 0.8f);
+		}
+		m_airTime = 0.0f;
+	}
+
+	//---- スタミナ切れ ----
+	const float staminaNow = m_status.m_stamina.m_staminaNow;
+	if (m_prevStamina > 1.0f && staminaNow <= 1.0f && !m_isDead)
+	{
+		SEPlayer::Play2D("Asset/Sound/SE/Player/StaminaOut.wav", 0.8f);
+	}
+	m_prevStamina = staminaNow;
+
+	//---- HPが少ないときの心音 ----
+	const float maxHP = m_status.m_HP.m_maxHP;
+	const float nowHP = m_status.m_HP.m_nowHP;
+	const bool danger = !m_isDead && maxHP > 0.0f && nowHP > 0.0f && nowHP <= maxHP * kHeartbeatHPRate;
+	if (danger)
+	{
+		if (!m_spHeartbeatSE)
+		{
+			m_spHeartbeatSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Heartbeat.wav", true);
+		}
+		else if (!m_spHeartbeatSE->IsPlaying())
+		{
+			m_spHeartbeatSE->Play(true);
+		}
+
+		// HPが減るほど大きく(0.5 〜 1.0)
+		if (m_spHeartbeatSE)
+		{
+			float rate = 1.0f - (nowHP / (maxHP * kHeartbeatHPRate)) * 0.5f;
+			m_spHeartbeatSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * rate);
+		}
+	}
+	else if (m_spHeartbeatSE && m_spHeartbeatSE->IsPlaying())
+	{
+		m_spHeartbeatSE->Stop();
+	}
 }
 
 void PlayerBase::PlayAttackBoostEffect()

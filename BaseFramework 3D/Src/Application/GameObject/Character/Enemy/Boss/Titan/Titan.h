@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include"../../EnemyBase.h"
 
-class GameScene;
-
 //ボス(タイタン)。工場マップのジャイアント枠。巨大なロボット
 class Titan :public EnemyBase
 {
@@ -41,10 +39,6 @@ public:
 
 	//---- 設定 ----
 
-	//ゲームシーンセット
-	// _spGameScene ... ゲームシーン
-	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
-
 	//---- その他の処理 ----
 
 	//攻撃をくらった処理
@@ -80,8 +74,6 @@ private:
 
 	//---- メンバ変数 ----
 
-	//ゲームシーン
-	std::weak_ptr<GameScene> m_wpGameScene;
 
 	//アニメーション名
 	TitanAnimeName m_titanAnimeName;
@@ -89,14 +81,10 @@ private:
 	// 3DサウンドSE
 	std::shared_ptr<KdSoundInstance3D> m_spRun3DSE;
 
-	//パンチの3D音
-	std::shared_ptr<KdSoundInstance3D> m_spPunch3DSE;
 
 	//鳴き声の3D音
 	std::shared_ptr<KdSoundInstance3D> m_spCrying3DSE;
 
-	//着地(ドン)の3D音
-	std::shared_ptr<KdSoundInstance3D> m_spDon3DSE;
 
 	//---- 基本の処理 ----
 

@@ -15,7 +15,7 @@
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "stock": 197
+            "stock": 201
         },
         {
             "id": 1,
@@ -40,7 +40,7 @@
         {
             "id": 5,
             "name": "MapScroll",
-            "stock": 1
+            "stock": 5
         }
     ],
     "weapons": [
@@ -52,7 +52,7 @@
         {
             "id": 1,
             "name": "Sword",
-            "stock": 0
+            "stock": 1
         }
     ]
 }

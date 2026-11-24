@@ -339,6 +339,10 @@ protected:
 	//キャラのモデル
 	std::shared_ptr<KdModelWork> m_spCharaModel = nullptr;
 
+	//描画するときの発光の倍率(0 なら光らない)
+	//gltf の発光(emissiveFactor × 発光テクスチャ)にかかる。工場のロボットは 1 にする
+	Math::Vector3 m_drawEmissive = Math::Vector3::Zero;
+
 	//アニメーション
 	std::shared_ptr<KdAnimator>	m_spAnimator = nullptr;
 
