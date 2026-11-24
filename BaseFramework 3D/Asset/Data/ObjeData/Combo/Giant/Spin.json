@@ -1,0 +1,24 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Boss/Giant/Giantblend.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "Spin",
+			"cancelPoint": 9.9,
+			"comboIndex": 0,
+			"damageRate": 1.3,
+			"evasionCancel": 0.63,
+			"hitEnd": 0.63,
+			"hitStart": 0.375,
+			"hitStopTime": 0.05,
+			"knockbackRate": 5.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.63,
+			"trailStart": 0.375
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

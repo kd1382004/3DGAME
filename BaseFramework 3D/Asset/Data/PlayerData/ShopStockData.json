@@ -20,7 +20,7 @@
         {
             "id": 1,
             "name": "AttackBoostPotion",
-            "stock": 36
+            "stock": 53
         },
         {
             "id": 2,
@@ -52,7 +52,7 @@
         {
             "id": 1,
             "name": "Sword",
-            "stock": 1
+            "stock": 0
         }
     ]
 }

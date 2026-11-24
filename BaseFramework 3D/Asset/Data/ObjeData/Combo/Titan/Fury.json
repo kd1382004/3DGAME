@@ -1,0 +1,58 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Factory/Titan/Titan.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "LeftPunch",
+			"cancelPoint": 0.624,
+			"comboIndex": 0,
+			"damageRate": 1.0,
+			"evasionCancel": 0.524,
+			"hitEnd": 0.524,
+			"hitStart": 0.413,
+			"hitStopTime": 0.06,
+			"knockbackRate": 1.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.524,
+			"trailStart": 0.413
+		},
+		{
+			"acceptStart": 9.9,
+			"animeName": "RightPunch",
+			"cancelPoint": 0.624,
+			"comboIndex": 1,
+			"damageRate": 1.2,
+			"evasionCancel": 0.524,
+			"hitEnd": 0.524,
+			"hitStart": 0.413,
+			"hitStopTime": 0.06,
+			"knockbackRate": 1.5,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.524,
+			"trailStart": 0.413
+		},
+		{
+			"acceptStart": 9.9,
+			"animeName": "DoubleSlam",
+			"cancelPoint": 9.9,
+			"comboIndex": 2,
+			"damageRate": 1.8,
+			"evasionCancel": 0.519,
+			"hitEnd": 0.519,
+			"hitStart": 0.444,
+			"hitStopTime": 0.1,
+			"knockbackRate": 4.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.519,
+			"trailStart": 0.444
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

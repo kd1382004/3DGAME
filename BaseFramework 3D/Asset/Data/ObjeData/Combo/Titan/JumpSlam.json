@@ -1,0 +1,41 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Factory/Titan/Titan.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "JumpSlam",
+			"cancelPoint": 0.8,
+			"comboIndex": 0,
+			"damageRate": 1.5,
+			"evasionCancel": 0.538,
+			"hitEnd": 0.538,
+			"hitStart": 0.443,
+			"hitStopTime": 0.06,
+			"knockbackRate": 10.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.538,
+			"trailStart": 0.443
+		},
+		{
+			"acceptStart": 9.9,
+			"animeName": "Roar",
+			"cancelPoint": 9.9,
+			"comboIndex": 1,
+			"damageRate": 0.0,
+			"evasionCancel": 9.9,
+			"hitEnd": 9.9,
+			"hitStart": 9.9,
+			"hitStopTime": 0.0,
+			"knockbackRate": 0.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 9.9,
+			"trailStart": 9.9
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

@@ -1,0 +1,24 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Factory/PressBot/PressBot.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "SwipeR",
+			"cancelPoint": 9.9,
+			"comboIndex": 0,
+			"damageRate": 0.9,
+			"evasionCancel": 0.573,
+			"hitEnd": 0.573,
+			"hitStart": 0.463,
+			"hitStopTime": 0.08,
+			"knockbackRate": 1.5,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.573,
+			"trailStart": 0.463
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

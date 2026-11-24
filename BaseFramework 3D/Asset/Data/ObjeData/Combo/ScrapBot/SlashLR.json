@@ -1,0 +1,41 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Factory/ScrapBot/ScrapBot.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "SlashR",
+			"cancelPoint": 0.671,
+			"comboIndex": 0,
+			"damageRate": 0.7,
+			"evasionCancel": 0.571,
+			"hitEnd": 0.571,
+			"hitStart": 0.449,
+			"hitStopTime": 0.06,
+			"knockbackRate": 1.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.571,
+			"trailStart": 0.449
+		},
+		{
+			"acceptStart": 9.9,
+			"animeName": "SlashL",
+			"cancelPoint": 9.9,
+			"comboIndex": 1,
+			"damageRate": 0.8,
+			"evasionCancel": 0.571,
+			"hitEnd": 0.571,
+			"hitStart": 0.449,
+			"hitStopTime": 0.06,
+			"knockbackRate": 1.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.571,
+			"trailStart": 0.449
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

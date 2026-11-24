@@ -1,0 +1,24 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Factory/Titan/Titan.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "LeftPunch",
+			"cancelPoint": 9.9,
+			"comboIndex": 0,
+			"damageRate": 1.2,
+			"evasionCancel": 0.524,
+			"hitEnd": 0.524,
+			"hitStart": 0.413,
+			"hitStopTime": 0.06,
+			"knockbackRate": 1.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.524,
+			"trailStart": 0.413
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

@@ -9,6 +9,9 @@
 #include"Goblin/Enemy_Goblin.h"							//敵(ゴブリン)
 #include"Golem/Golem.h"									//敵(ゴーレム)
 #include"Boss/Giant/Giant.h"							//ボス(巨人)
+#include"ScrapBot/ScrapBot.h"						//敵(スクラップボット・工場)
+#include"PressBot/PressBot.h"						//敵(プレスボット・工場)
+#include"Boss/Titan/Titan.h"							//ボス(タイタン・工場)
 
 //---- マップ ----
 #include"../../Terrains/Map/MapManager.h"				//マップの管理・経路探索
@@ -296,8 +299,7 @@ void EnemyManager::RegisterSpawnTable()
 	RegisterEnemy<Giant>(MapType_Dungeon, BossEnemy);
 
 	//---- 工場 ----
-	//(まだ敵なし。追加するときはここに書く)
-	//RegisterEnemy<Goblin>(MapType_Factory, BossEnemy);
-	//RegisterEnemy<Golem>(MapType_Factory, RoomEnemy);
-	//RegisterEnemy<Giant>(MapType_Factory, RoomStarsEnemy);
+	RegisterEnemy<ScrapBot>(MapType_Factory, RoomEnemy);
+	RegisterEnemy<PressBot>(MapType_Factory, RoomStarsEnemy);
+	RegisterEnemy<Titan>(MapType_Factory, BossEnemy);
 }

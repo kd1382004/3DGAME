@@ -1,0 +1,24 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Factory/Titan/Titan.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "DoubleSlam",
+			"cancelPoint": 9.9,
+			"comboIndex": 0,
+			"damageRate": 1.8,
+			"evasionCancel": 0.519,
+			"hitEnd": 0.519,
+			"hitStart": 0.444,
+			"hitStopTime": 0.1,
+			"knockbackRate": 4.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.519,
+			"trailStart": 0.444
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

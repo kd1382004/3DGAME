@@ -1,0 +1,210 @@
+{
+ "ScrapBot": {
+  "height": 3.625,
+  "actions": {
+   "Idle": {
+    "frames": 48,
+    "sec": 1.6,
+    "hit": null
+   },
+   "Walk": {
+    "frames": 26,
+    "sec": 0.867,
+    "hit": null
+   },
+   "Run": {
+    "frames": 16,
+    "sec": 0.533,
+    "hit": null
+   },
+   "Die": {
+    "frames": 68,
+    "sec": 2.267,
+    "hit": null
+   },
+   "SlashR": {
+    "frames": 49,
+    "sec": 1.633,
+    "hit": [
+     0.449,
+     0.571
+    ]
+   },
+   "SlashL": {
+    "frames": 49,
+    "sec": 1.633,
+    "hit": [
+     0.449,
+     0.571
+    ]
+   },
+   "Slam": {
+    "frames": 61,
+    "sec": 2.033,
+    "hit": [
+     0.443,
+     0.508
+    ]
+   },
+   "Thrust": {
+    "frames": 39,
+    "sec": 1.3,
+    "hit": [
+     0.41,
+     0.538
+    ]
+   },
+   "Leap": {
+    "frames": 59,
+    "sec": 1.967,
+    "hit": [
+     0.441,
+     0.525
+    ]
+   }
+  }
+ },
+ "PressBot": {
+  "height": 5.5,
+  "actions": {
+   "idle": {
+    "frames": 70,
+    "sec": 2.333,
+    "hit": null
+   },
+   "walk": {
+    "frames": 44,
+    "sec": 1.467,
+    "hit": null
+   },
+   "run": {
+    "frames": 30,
+    "sec": 1.0,
+    "hit": null
+   },
+   "death": {
+    "frames": 96,
+    "sec": 3.2,
+    "hit": null
+   },
+   "smash": {
+    "frames": 108,
+    "sec": 3.6,
+    "hit": [
+     0.444,
+     0.519
+    ]
+   },
+   "SmashQuick": {
+    "frames": 78,
+    "sec": 2.6,
+    "hit": [
+     0.449,
+     0.526
+    ]
+   },
+   "SwipeR": {
+    "frames": 82,
+    "sec": 2.733,
+    "hit": [
+     0.463,
+     0.573
+    ]
+   },
+   "SwipeL": {
+    "frames": 82,
+    "sec": 2.733,
+    "hit": [
+     0.463,
+     0.573
+    ]
+   },
+   "Stomp": {
+    "frames": 82,
+    "sec": 2.733,
+    "hit": [
+     0.427,
+     0.524
+    ]
+   }
+  }
+ },
+ "Titan": {
+  "height": 8.370000000000001,
+  "actions": {
+   "idle": {
+    "frames": 90,
+    "sec": 3.0,
+    "hit": null
+   },
+   "Walk": {
+    "frames": 48,
+    "sec": 1.6,
+    "hit": null
+   },
+   "Run": {
+    "frames": 34,
+    "sec": 1.133,
+    "hit": null
+   },
+   "Death": {
+    "frames": 112,
+    "sec": 3.733,
+    "hit": null
+   },
+   "LeftPunch": {
+    "frames": 63,
+    "sec": 2.1,
+    "hit": [
+     0.413,
+     0.524
+    ]
+   },
+   "RightPunch": {
+    "frames": 63,
+    "sec": 2.1,
+    "hit": [
+     0.413,
+     0.524
+    ]
+   },
+   "DoubleSlam": {
+    "frames": 108,
+    "sec": 3.6,
+    "hit": [
+     0.444,
+     0.519
+    ]
+   },
+   "Stomp": {
+    "frames": 88,
+    "sec": 2.933,
+    "hit": [
+     0.432,
+     0.523
+    ]
+   },
+   "Spin": {
+    "frames": 84,
+    "sec": 2.8,
+    "hit": [
+     0.393,
+     0.595
+    ]
+   },
+   "JumpSlam": {
+    "frames": 106,
+    "sec": 3.533,
+    "hit": [
+     0.443,
+     0.538
+    ]
+   },
+   "Roar": {
+    "frames": 70,
+    "sec": 2.333,
+    "hit": null
+   }
+  }
+ }
+}

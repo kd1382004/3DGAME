@@ -90,11 +90,13 @@ struct AttackPattern
 // 攻撃が当たったときに出すヒットエフェクトの種類を決めるのに使う
 //   Flesh → Hit/Material/Flesh/Hit_Flesh.efkefc
 //   Stone → Hit/Material/Stone/Hit_Stone.efkefc
+//   Metal → Hit/Material/Metal/Hit_Metal.efkefc
 //////////////////////////////////////////////////////////////
 enum class EnemyMaterial
 {
 	Flesh,		// 肉・やわらかい体（スライム、獣など）… 血しぶき系
 	Stone,		// 石・かたい体（ゴーレム、石像など）… 火花・破片系
+	Metal,		// 金属の体（ロボット：スクラップボット、プレスボット、タイタン）… 金属の火花・ガキンという音
 
 	Num			// 種類の数（配列のサイズ・範囲チェック用。質感としては使わない）
 };

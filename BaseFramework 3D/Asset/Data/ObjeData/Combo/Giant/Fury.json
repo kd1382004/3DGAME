@@ -1,0 +1,58 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Boss/Giant/Giantblend.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "Left Punch",
+			"cancelPoint": 0.72,
+			"comboIndex": 0,
+			"damageRate": 1.2,
+			"evasionCancel": 0.6,
+			"hitEnd": 0.6,
+			"hitStart": 0.5,
+			"hitStopTime": 0.05,
+			"knockbackRate": 1.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.6,
+			"trailStart": 0.5
+		},
+		{
+			"acceptStart": 9.9,
+			"animeName": "Right Punch",
+			"cancelPoint": 0.5,
+			"comboIndex": 1,
+			"damageRate": 1.2,
+			"evasionCancel": 0.38,
+			"hitEnd": 0.38,
+			"hitStart": 0.2,
+			"hitStopTime": 0.05,
+			"knockbackRate": 1.5,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.38,
+			"trailStart": 0.2
+		},
+		{
+			"acceptStart": 9.9,
+			"animeName": "DoubleSlam",
+			"cancelPoint": 9.9,
+			"comboIndex": 2,
+			"damageRate": 1.8,
+			"evasionCancel": 0.56,
+			"hitEnd": 0.56,
+			"hitStart": 0.47,
+			"hitStopTime": 0.1,
+			"knockbackRate": 4.0,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.56,
+			"trailStart": 0.47
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

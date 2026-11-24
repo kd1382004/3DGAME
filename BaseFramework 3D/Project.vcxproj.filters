@@ -163,6 +163,15 @@
     <Filter Include="Src\Application\Info\DeltaTime">
       <UniqueIdentifier>{a4958f4c-0997-4863-8c14-abcd3e3f79d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\ScrapBot">
+      <UniqueIdentifier>{109ccc8e-addb-4efe-851a-8414ed9c1eeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\PressBot">
+      <UniqueIdentifier>{1a606716-4818-40fc-919d-81285fbc059b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Titan">
+      <UniqueIdentifier>{83a16a59-fec4-47a7-99b1-ed087184b44b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\GameObject\Character\Enemy\Goblin">
       <UniqueIdentifier>{ff82b1af-fba1-4a5d-9b3b-d718285bbb6f}</UniqueIdentifier>
     </Filter>
@@ -930,6 +939,15 @@
     <ClInclude Include="Src\Application\Info\VOL\VOLInfo.h">
       <Filter>Src\Application\Info\VOL</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\ScrapBot\ScrapBot.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\ScrapBot</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\PressBot\PressBot.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\PressBot</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Titan\Titan.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Titan</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Golem</Filter>
     </ClInclude>
@@ -1450,6 +1468,15 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Info\VOL\VOLInfo.cpp">
       <Filter>Src\Application\Info\VOL</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\ScrapBot\ScrapBot.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\ScrapBot</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\PressBot\PressBot.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\PressBot</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Titan\Titan.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\Titan</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Golem</Filter>

@@ -304,6 +304,9 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Golem\Attack\AttackBase.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Golem\Attack\SmashAttack\SmashAttack.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\ScrapBot\ScrapBot.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\PressBot\PressBot.h" />
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Titan\Titan.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerAccessory\PlayerAccessory.h" />
     <ClInclude Include="Src\Application\GameObject\Character\Player\PlayerBase.h" />
@@ -485,6 +488,9 @@
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Golem\Attack\AttackBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Golem\Attack\SmashAttack\SmashAttack.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\ScrapBot\ScrapBot.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\PressBot\PressBot.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Titan\Titan.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\Action\NextFloorAction\NextFloorAction.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerAccessory\PlayerAccessory.cpp" />
     <ClCompile Include="Src\Application\GameObject\Character\Player\PlayerBase.cpp" />

@@ -416,6 +416,9 @@ void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math:
 	case EnemyMaterial::Stone:
 		KdEffekseerManager::GetInstance().Play("Hit/Material/Stone/Hit_Stone.efkefc", effectPos, 3.0f, 1.0f, false);
 		break;
+	case EnemyMaterial::Metal:
+		KdEffekseerManager::GetInstance().Play("Hit/Material/Metal/Hit_Metal.efkefc", effectPos, 3.0f, 1.0f, false);
+		break;
 	case EnemyMaterial::Num:
 		break;
 	default:
@@ -808,12 +811,13 @@ void EnemyBase::ReturnSpawnPos()
 
 void EnemyBase::PlayMaterialSE(const std::string& _folder, float _volRate)
 {
-	// 質感ごとのファイル名（Flesh.wav / Stone.wav）
+	// 質感ごとのファイル名（Flesh.wav / Stone.wav / Metal.wav）
 	std::string file;
 	switch (m_material)
 	{
 	case EnemyMaterial::Flesh:	file = "Flesh.wav";	break;
 	case EnemyMaterial::Stone:	file = "Stone.wav";	break;
+	case EnemyMaterial::Metal:	file = "Metal.wav";	break;
 	default:					return;
 	}
 

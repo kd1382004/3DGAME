@@ -1,0 +1,24 @@
+{
+	"charaModelPath": "Asset/Models/Character/Enemy/Factory/PressBot/PressBot.gltf",
+	"steps": [
+		{
+			"acceptStart": 9.9,
+			"animeName": "SmashQuick",
+			"cancelPoint": 9.9,
+			"comboIndex": 0,
+			"damageRate": 1.2,
+			"evasionCancel": 0.526,
+			"hitEnd": 0.526,
+			"hitStart": 0.449,
+			"hitStopTime": 0.08,
+			"knockbackRate": 3.5,
+			"speed": 1.0,
+			"staminaCost": 0.0,
+			"stepForward": 0.0,
+			"trailEnd": 0.526,
+			"trailStart": 0.449
+		}
+	],
+	"version": 1,
+	"weaponModelPath": ""
+}

@@ -1,0 +1,342 @@
+{
+    "m_patterns": [
+        {
+            "m_comboFilePath": "Asset/Data/ObjeData/Combo/PressBot/Smash.json",
+            "m_cooldown": 0.0,
+            "m_hitNodes": [
+                ""
+            ],
+            "m_maxDistance": 5.5,
+            "m_minDistance": 0.0,
+            "m_minLV": 1,
+            "m_name": "Smash",
+            "m_stepExtras": [
+                {
+                    "m_aimLockEnd": 0.299,
+                    "m_cancelRootMotion": false,
+                    "m_events": [
+                        {
+                            "p": 0.488,
+                            "type": "Effect",
+                            "name": "EnemyAttack/Golem/Golem_Smash.efkefc"
+                        },
+                        {
+                            "p": 0.488,
+                            "type": "Sound",
+                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                        },
+                        {
+                            "p": 0.488,
+                            "type": "CameraShake",
+                            "power": 0.6,
+                            "time": 0.5
+                        }
+                    ],
+                    "m_hitBoxSize": [
+                        1.6,
+                        1.2,
+                        3.0
+                    ],
+                    "m_hitForward": 3.0,
+                    "m_hitRadius": 1.0,
+                    "m_hitShape": "Box",
+                    "m_moveEnd": 0.299,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.299
+                }
+            ],
+            "m_waitAfter": 0.0,
+            "m_weight": 3.0
+        },
+        {
+            "m_comboFilePath": "Asset/Data/ObjeData/Combo/PressBot/SwipeR.json",
+            "m_cooldown": 3.0,
+            "m_hitNodes": [
+                "hand.R"
+            ],
+            "m_maxDistance": 4.0,
+            "m_minDistance": 0.0,
+            "m_minLV": 1,
+            "m_name": "SwipeR",
+            "m_stepExtras": [
+                {
+                    "m_aimLockEnd": 0.313,
+                    "m_cancelRootMotion": false,
+                    "m_events": [],
+                    "m_hitBoxSize": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "m_hitForward": 0.0,
+                    "m_hitRadius": 1.3,
+                    "m_hitShape": "Bone",
+                    "m_moveEnd": 0.313,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
+                }
+            ],
+            "m_waitAfter": 2.5,
+            "m_weight": 2.0
+        },
+        {
+            "m_comboFilePath": "Asset/Data/ObjeData/Combo/PressBot/SwipeL.json",
+            "m_cooldown": 3.0,
+            "m_hitNodes": [
+                "hand.L"
+            ],
+            "m_maxDistance": 4.0,
+            "m_minDistance": 0.0,
+            "m_minLV": 1,
+            "m_name": "SwipeL",
+            "m_stepExtras": [
+                {
+                    "m_aimLockEnd": 0.313,
+                    "m_cancelRootMotion": false,
+                    "m_events": [],
+                    "m_hitBoxSize": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "m_hitForward": 0.0,
+                    "m_hitRadius": 1.3,
+                    "m_hitShape": "Bone",
+                    "m_moveEnd": 0.313,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
+                }
+            ],
+            "m_waitAfter": 2.5,
+            "m_weight": 2.0
+        },
+        {
+            "m_comboFilePath": "Asset/Data/ObjeData/Combo/PressBot/SwipeLR.json",
+            "m_cooldown": 8.0,
+            "m_hitNodes": [
+                "hand.R",
+                "hand.L"
+            ],
+            "m_maxDistance": 4.0,
+            "m_minDistance": 0.0,
+            "m_minLV": 3,
+            "m_name": "SwipeLR",
+            "m_stepExtras": [
+                {
+                    "m_aimLockEnd": 0.313,
+                    "m_cancelRootMotion": false,
+                    "m_events": [],
+                    "m_hitBoxSize": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "m_hitForward": 0.0,
+                    "m_hitRadius": 1.3,
+                    "m_hitShape": "Bone",
+                    "m_moveEnd": 0.313,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
+                },
+                {
+                    "m_aimLockEnd": 0.313,
+                    "m_cancelRootMotion": false,
+                    "m_events": [],
+                    "m_hitBoxSize": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "m_hitForward": 0.0,
+                    "m_hitRadius": 1.3,
+                    "m_hitShape": "Bone",
+                    "m_moveEnd": 0.313,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
+                }
+            ],
+            "m_waitAfter": 3.0,
+            "m_weight": 1.5
+        },
+        {
+            "m_comboFilePath": "Asset/Data/ObjeData/Combo/PressBot/Stomp.json",
+            "m_cooldown": 8.0,
+            "m_hitNodes": [
+                ""
+            ],
+            "m_maxDistance": 3.5,
+            "m_minDistance": 0.0,
+            "m_minLV": 3,
+            "m_name": "Stomp",
+            "m_stepExtras": [
+                {
+                    "m_aimLockEnd": 0.277,
+                    "m_cancelRootMotion": false,
+                    "m_events": [
+                        {
+                            "p": 0.476,
+                            "type": "Effect",
+                            "name": "EnemyAttack/Golem/Golem_Smash.efkefc"
+                        },
+                        {
+                            "p": 0.476,
+                            "type": "Sound",
+                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                        },
+                        {
+                            "p": 0.476,
+                            "type": "CameraShake",
+                            "power": 0.8,
+                            "time": 0.6
+                        }
+                    ],
+                    "m_hitBoxSize": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "m_hitForward": 0.6,
+                    "m_hitRadius": 3.0,
+                    "m_hitShape": "Circle",
+                    "m_moveEnd": 0.277,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.277
+                }
+            ],
+            "m_waitAfter": 3.0,
+            "m_weight": 1.5
+        },
+        {
+            "m_comboFilePath": "Asset/Data/ObjeData/Combo/PressBot/HeavySmash.json",
+            "m_cooldown": 10.0,
+            "m_hitNodes": [
+                ""
+            ],
+            "m_maxDistance": 5.5,
+            "m_minDistance": 0.0,
+            "m_minLV": 4,
+            "m_name": "HeavySmash",
+            "m_stepExtras": [
+                {
+                    "m_aimLockEnd": 0.294,
+                    "m_cancelRootMotion": false,
+                    "m_events": [
+                        {
+                            "p": 0.482,
+                            "type": "Effect",
+                            "name": "EnemyAttack/Golem/Golem_Smash.efkefc"
+                        },
+                        {
+                            "p": 0.482,
+                            "type": "Sound",
+                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                        },
+                        {
+                            "p": 0.482,
+                            "type": "CameraShake",
+                            "power": 0.9,
+                            "time": 0.6
+                        }
+                    ],
+                    "m_hitBoxSize": [
+                        1.6,
+                        1.2,
+                        3.0
+                    ],
+                    "m_hitForward": 3.0,
+                    "m_hitRadius": 1.0,
+                    "m_hitShape": "Box",
+                    "m_moveEnd": 0.294,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.294
+                }
+            ],
+            "m_waitAfter": 4.0,
+            "m_weight": 1.0
+        },
+        {
+            "m_comboFilePath": "Asset/Data/ObjeData/Combo/PressBot/SwipeSmash.json",
+            "m_cooldown": 12.0,
+            "m_hitNodes": [
+                "hand.R",
+                ""
+            ],
+            "m_maxDistance": 4.5,
+            "m_minDistance": 0.0,
+            "m_minLV": 5,
+            "m_name": "SwipeSmash",
+            "m_stepExtras": [
+                {
+                    "m_aimLockEnd": 0.313,
+                    "m_cancelRootMotion": false,
+                    "m_events": [],
+                    "m_hitBoxSize": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "m_hitForward": 0.0,
+                    "m_hitRadius": 1.3,
+                    "m_hitShape": "Bone",
+                    "m_moveEnd": 0.313,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.0
+                },
+                {
+                    "m_aimLockEnd": 0.299,
+                    "m_cancelRootMotion": false,
+                    "m_events": [
+                        {
+                            "p": 0.488,
+                            "type": "Effect",
+                            "name": "EnemyAttack/Golem/Golem_Smash.efkefc"
+                        },
+                        {
+                            "p": 0.488,
+                            "type": "Sound",
+                            "name": "Asset/Sound/SE/Enemy/Golem/Smash.wav"
+                        },
+                        {
+                            "p": 0.488,
+                            "type": "CameraShake",
+                            "power": 0.65,
+                            "time": 0.5
+                        }
+                    ],
+                    "m_hitBoxSize": [
+                        1.6,
+                        1.2,
+                        1.4
+                    ],
+                    "m_hitForward": 3.0,
+                    "m_hitRadius": 1.0,
+                    "m_hitShape": "Box",
+                    "m_moveEnd": 0.299,
+                    "m_moveStart": 0.0,
+                    "m_moveType": "None",
+                    "m_specialType": "",
+                    "m_warnStart": 0.299
+                }
+            ],
+            "m_waitAfter": 4.0,
+            "m_weight": 1.0
+        }
+    ],
+    "version": 1
+}
