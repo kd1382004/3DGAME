@@ -24,7 +24,7 @@ public:
 
 	//---- その他の処理 ----
 
-	//ポーションを使う(番号で効果を分ける)
+	//ポーションを使う(番号で効果を分ける。中の表で呼ぶ関数を決める)
 	// _potionsID ... 使うポーションの番号
 	void PotionUse(int _potionsID);
 
@@ -40,17 +40,11 @@ private:
 	//HP関係
 	void UseInstantHeal();
 
-	//攻撃力関係
-	void UseBaseAttackUPPotion();
-
 	//攻撃力を一時的に上げるポーションを使う
 	void UseAttackBoostPotion();
 
 	//スタミナ関係
 	void UseInstantStaminaHeal();
-
-	//スタミナ回復速度の基礎を上げるポーションを使う
-	void UseStaminaRegenBaseUPPotion();
 
 	//スタミナ回復速度を一時的に上げるポーションを使う
 	void UseStaminaRegenBoostPotion();

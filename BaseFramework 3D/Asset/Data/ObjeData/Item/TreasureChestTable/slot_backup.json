@@ -1,0 +1,118 @@
+{
+	"tables": {
+		"slot0": {
+			"dropMax": 2,
+			"dropMin": 1,
+			"items": [
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 15.38
+				},
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 23.08
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 30.77
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 30.77
+				}
+			]
+		},
+		"slot1": {
+			"dropMax": 3,
+			"dropMin": 1,
+			"items": [
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 14.11
+				},
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 16.68
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 22.22
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 22.22
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBoostPotion",
+					"type": 0,
+					"weight": 14.82
+				},
+				{
+					"id": 1,
+					"name": "WeaponStrengthening_Crystal2",
+					"type": 1,
+					"weight": 3.27
+				}
+			]
+		},
+		"slot2": {
+			"dropMax": 5,
+			"dropMin": 3,
+			"items": [
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 17.36
+				},
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 14.77
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 19.68
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 19.68
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBoostPotion",
+					"type": 0,
+					"weight": 13.12
+				},
+				{
+					"id": 1,
+					"name": "WeaponStrengthening_Crystal2",
+					"type": 1,
+					"weight": 8.99
+				}
+			]
+		}
+	}
+}

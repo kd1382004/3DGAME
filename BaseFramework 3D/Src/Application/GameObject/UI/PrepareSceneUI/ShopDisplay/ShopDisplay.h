@@ -279,18 +279,6 @@ private:
 	//持ち物のデータのパス
 	const std::string m_inventoryPath = "Asset/Data/PlayerData/PlayerInventoryData.json";
 
-	//ポーションの画像フォルダ名(PotionsTypeの順)
-	const std::string m_potionName[PotionsTypeMax] =
-	{
-		"InstantHealPotion",
-		"AttackBaseUPPotion",
-		"AttackBoostPotion",
-		"InstantStaminaHealPotion",
-		"StaminaMaxUPPotion",
-		"StaminaRegenBaseUPPotion",
-		"StaminaRegenBoostPotion",
-	};
-
 	//武器の画像フォルダ名(PlayerWeaponInfoの順)
 	const std::string m_weaponName[PlayerWeaponInfoSize] =
 	{

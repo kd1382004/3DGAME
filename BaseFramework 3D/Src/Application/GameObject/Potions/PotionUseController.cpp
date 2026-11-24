@@ -6,10 +6,8 @@
 
 //---- ポーション ----
 #include"InstantHealPotion/InstantHealPotion.h"						//体力回復ポーション
-#include"AttackBaseUPPotion/AttackBaseUPPotion.h"					//基礎攻撃力アップポーション
 #include"AttackBoostPotion/AttackBoostPotion.h"						//攻撃力一時アップポーション
 #include"InstantStaminaHealPotion/InstantStaminaHealPotion.h"		//スタミナ回復ポーション
-#include"StaminaRegenBaseUPPotion/StaminaRegenBaseUPPotion.h"		//基礎スタミナ回復量アップポーション
 #include"StaminaRegenBoostPotion/StaminaRegenBoostPotion.h"			//スタミナ回復量一時アップポーション
 #include"StaminaMaxUPPotion/StaminaMaxUPPotion.h"					//最大スタミナアップポーション
 
@@ -18,40 +16,30 @@
 
 void PotionUseController::PotionUse(int _potionsID)
 {
-	PotionsType potionsType = (PotionsType)_potionsID;
-
-	switch (potionsType)
+	//ポーションの種類 → 使ったときの処理 の表
+	//効果のあるポーションを増やしたら、ここに1行足す(載っていない種類は何も起きない)
+	struct UseFunc
 	{
-	case PotionsType_InstantHeal:
-		UseInstantHeal();
-		break;
+		PotionsType m_type;							// 種類
+		void (PotionUseController::* m_func)();		// 使ったときに呼ぶ関数
+	};
 
-	case PotionsType_AttackBaseUP:
-		UseBaseAttackUPPotion();
-		break;
+	static const UseFunc kUseFuncs[] =
+	{
+		{ PotionsType_InstantHeal,        &PotionUseController::UseInstantHeal             },
+		{ PotionsType_AttackBoostPotion,  &PotionUseController::UseAttackBoostPotion       },
+		{ PotionsType_InstantStaminaHeal, &PotionUseController::UseInstantStaminaHeal      },
+		{ PotionsType_StaminaRegenBoost,  &PotionUseController::UseStaminaRegenBoostPotion },
+		{ PotionsType_StaminaMaxUP,       &PotionUseController::UseStaminaMaxUPPotion      },
+	};
 
-	case PotionsType_AttackBoostPotion:
-		UseAttackBoostPotion();
-		break;
-
-	case PotionsType_InstantStaminaHeal:
-		UseInstantStaminaHeal();
-		break;
-
-	case PotionsType_StaminaRegenBaseUP:
-		UseStaminaRegenBaseUPPotion();
-		break;
-
-	case PotionsType_StaminaRegenBoost:
-		UseStaminaRegenBoostPotion();
-		break;
-
-	case PotionsType_StaminaMaxUP:
-		UseStaminaMaxUPPotion();
-		break;
-
-	default:
-		break;
+	for (const UseFunc& use : kUseFuncs)
+	{
+		if (use.m_type == _potionsID)
+		{
+			(this->*use.m_func)();
+			return;
+		}
 	}
 }
 
@@ -62,15 +50,6 @@ void PotionUseController::UseInstantHeal()
 	spInstantHealPotion->UseInstantHeal();
 
 	PlayPotionSE("Asset/Sound/SE/Potion/Heal.wav");
-}
-
-void PotionUseController::UseBaseAttackUPPotion()
-{
-	std::shared_ptr<AttackBaseUPPotion>spAttackBaseUPtPotion = std::make_shared<AttackBaseUPPotion>();
-	spAttackBaseUPtPotion->SetPlayer(m_wpPlayerBase.lock());
-	spAttackBaseUPtPotion->UseAttackBaseUPPotion();
-
-	PlayPotionSE("Asset/Sound/SE/Potion/Power.wav");
 }
 
 void PotionUseController::UseAttackBoostPotion()
@@ -87,15 +66,6 @@ void PotionUseController::UseInstantStaminaHeal()
 	std::shared_ptr<InstantStaminaHealPotion>spPotion = std::make_shared<InstantStaminaHealPotion>();
 	spPotion->SetPlayer(m_wpPlayerBase.lock());
 	spPotion->UseInstantStaminaHeal();
-
-	PlayStaminaEffect();
-}
-
-void PotionUseController::UseStaminaRegenBaseUPPotion()
-{
-	std::shared_ptr<StaminaRegenBaseUPPotion>spPotion = std::make_shared<StaminaRegenBaseUPPotion>();
-	spPotion->SetPlayer(m_wpPlayerBase.lock());
-	spPotion->UseStaminaRegenBaseUPPotion();
 
 	PlayStaminaEffect();
 }

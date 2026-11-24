@@ -6,123 +6,333 @@
 			"items": [
 				{
 					"id": 0,
-					"name": "WeaponStrengthening_Crystal1",
-					"type": 1,
-					"weight": 15.38
-				},
-				{
-					"id": 0,
 					"name": "InstantHealPotion",
 					"type": 0,
-					"weight": 23.08
+					"weight": 35.0
 				},
 				{
 					"id": 2,
-					"name": "AttackBoostPotion",
-					"type": 0,
-					"weight": 30.77
-				},
-				{
-					"id": 3,
 					"name": "InstantStaminaHealPotion",
 					"type": 0,
-					"weight": 30.77
+					"weight": 30.0
+				},
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 20.0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 15.0
 				}
 			]
 		},
 		"slot1": {
-			"dropMax": 3,
+			"dropMax": 2,
 			"dropMin": 1,
 			"items": [
 				{
 					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 35.0
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 30.0
+				},
+				{
+					"id": 0,
 					"name": "WeaponStrengthening_Crystal1",
 					"type": 1,
-					"weight": 14.11
+					"weight": 20.0
 				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 15.0
+				}
+			]
+		},
+		"slot2": {
+			"dropMax": 2,
+			"dropMin": 1,
+			"items": [
 				{
 					"id": 0,
 					"name": "InstantHealPotion",
 					"type": 0,
-					"weight": 16.68
+					"weight": 30.0
 				},
 				{
 					"id": 2,
-					"name": "AttackBoostPotion",
-					"type": 0,
-					"weight": 22.22
-				},
-				{
-					"id": 3,
 					"name": "InstantStaminaHealPotion",
 					"type": 0,
-					"weight": 22.22
+					"weight": 25.0
+				},
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 22.0
 				},
 				{
 					"id": 1,
-					"name": "AttackBaseUPPotion",
+					"name": "AttackBoostPotion",
 					"type": 0,
-					"weight": 6.69
+					"weight": 15.0
 				},
 				{
-					"id": 6,
+					"id": 4,
 					"name": "StaminaRegenBoostPotion",
 					"type": 0,
-					"weight": 14.82
+					"weight": 8.0
+				}
+			]
+		},
+		"slot4": {
+			"dropMax": 3,
+			"dropMin": 2,
+			"items": [
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 24.0
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 20.0
+				},
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 20.0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 14.0
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBoostPotion",
+					"type": 0,
+					"weight": 12.0
 				},
 				{
 					"id": 1,
 					"name": "WeaponStrengthening_Crystal2",
 					"type": 1,
-					"weight": 3.27
+					"weight": 7.0
+				},
+				{
+					"id": 3,
+					"name": "StaminaMaxUPPotion",
+					"type": 0,
+					"weight": 3.0
 				}
 			]
 		},
-		"slot2": {
+		"slot5": {
+			"dropMax": 3,
+			"dropMin": 2,
+			"items": [
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 22.0
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 18.0
+				},
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 18.0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 15.0
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBoostPotion",
+					"type": 0,
+					"weight": 13.0
+				},
+				{
+					"id": 1,
+					"name": "WeaponStrengthening_Crystal2",
+					"type": 1,
+					"weight": 10.0
+				},
+				{
+					"id": 3,
+					"name": "StaminaMaxUPPotion",
+					"type": 0,
+					"weight": 4.0
+				}
+			]
+		},
+		"slot7": {
+			"dropMax": 4,
+			"dropMin": 2,
+			"items": [
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 18.0
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 15.0
+				},
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 14.0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 16.0
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBoostPotion",
+					"type": 0,
+					"weight": 14.0
+				},
+				{
+					"id": 1,
+					"name": "WeaponStrengthening_Crystal2",
+					"type": 1,
+					"weight": 17.0
+				},
+				{
+					"id": 3,
+					"name": "StaminaMaxUPPotion",
+					"type": 0,
+					"weight": 6.0
+				}
+			]
+		},
+		"slot8": {
+			"dropMax": 4,
+			"dropMin": 3,
+			"items": [
+				{
+					"id": 0,
+					"name": "InstantHealPotion",
+					"type": 0,
+					"weight": 17.0
+				},
+				{
+					"id": 2,
+					"name": "InstantStaminaHealPotion",
+					"type": 0,
+					"weight": 14.0
+				},
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 12.0
+				},
+				{
+					"id": 1,
+					"name": "AttackBoostPotion",
+					"type": 0,
+					"weight": 16.0
+				},
+				{
+					"id": 4,
+					"name": "StaminaRegenBoostPotion",
+					"type": 0,
+					"weight": 14.0
+				},
+				{
+					"id": 1,
+					"name": "WeaponStrengthening_Crystal2",
+					"type": 1,
+					"weight": 20.0
+				},
+				{
+					"id": 3,
+					"name": "StaminaMaxUPPotion",
+					"type": 0,
+					"weight": 7.0
+				}
+			]
+		},
+		"slot10": {
 			"dropMax": 5,
 			"dropMin": 3,
 			"items": [
 				{
 					"id": 0,
-					"name": "WeaponStrengthening_Crystal1",
-					"type": 1,
-					"weight": 17.36
-				},
-				{
-					"id": 0,
 					"name": "InstantHealPotion",
 					"type": 0,
-					"weight": 14.77
+					"weight": 15.0
 				},
 				{
 					"id": 2,
-					"name": "AttackBoostPotion",
-					"type": 0,
-					"weight": 19.68
-				},
-				{
-					"id": 3,
 					"name": "InstantStaminaHealPotion",
 					"type": 0,
-					"weight": 19.68
+					"weight": 12.0
+				},
+				{
+					"id": 0,
+					"name": "WeaponStrengthening_Crystal1",
+					"type": 1,
+					"weight": 8.0
 				},
 				{
 					"id": 1,
-					"name": "AttackBaseUPPotion",
+					"name": "AttackBoostPotion",
 					"type": 0,
-					"weight": 6.4
+					"weight": 17.0
 				},
 				{
-					"id": 6,
+					"id": 4,
 					"name": "StaminaRegenBoostPotion",
 					"type": 0,
-					"weight": 13.12
+					"weight": 15.0
 				},
 				{
 					"id": 1,
 					"name": "WeaponStrengthening_Crystal2",
 					"type": 1,
-					"weight": 8.99
+					"weight": 25.0
+				},
+				{
+					"id": 3,
+					"name": "StaminaMaxUPPotion",
+					"type": 0,
+					"weight": 8.0
 				}
 			]
 		}

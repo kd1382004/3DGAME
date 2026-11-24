@@ -19,31 +19,21 @@
         },
         {
             "id": 1,
-            "name": "AttackBaseUPPotion",
-            "stock": 252
-        },
-        {
-            "id": 2,
             "name": "AttackBoostPotion",
             "stock": 36
         },
         {
-            "id": 3,
+            "id": 2,
             "name": "InstantStaminaHealPotion",
             "stock": 37
         },
         {
-            "id": 4,
+            "id": 3,
             "name": "StaminaMaxUPPotion",
             "stock": 1
         },
         {
-            "id": 5,
-            "name": "StaminaRegenBaseUPPotion",
-            "stock": 1
-        },
-        {
-            "id": 6,
+            "id": 4,
             "name": "StaminaRegenBoostPotion",
             "stock": 23
         }
@@ -57,7 +47,7 @@
         {
             "id": 1,
             "name": "Sword",
-            "stock": 0
+            "stock": 1
         }
     ]
 }

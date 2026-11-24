@@ -24,43 +24,29 @@
             "startStock": 5
         },
         {
-            "buyPrice": 300,
-            "id": 1,
-            "name": "AttackBaseUPPotion",
-            "sellPrice": 90,
-            "startStock": 1
-        },
-        {
             "buyPrice": 100,
-            "id": 2,
+            "id": 1,
             "name": "AttackBoostPotion",
             "sellPrice": 30,
             "startStock": 3
         },
         {
             "buyPrice": 40,
-            "id": 3,
+            "id": 2,
             "name": "InstantStaminaHealPotion",
             "sellPrice": 12,
             "startStock": 5
         },
         {
             "buyPrice": 300,
-            "id": 4,
+            "id": 3,
             "name": "StaminaMaxUPPotion",
             "sellPrice": 90,
             "startStock": 1
         },
         {
-            "buyPrice": 300,
-            "id": 5,
-            "name": "StaminaRegenBaseUPPotion",
-            "sellPrice": 90,
-            "startStock": 1
-        },
-        {
             "buyPrice": 80,
-            "id": 6,
+            "id": 4,
             "name": "StaminaRegenBoostPotion",
             "sellPrice": 24,
             "startStock": 3

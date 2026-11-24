@@ -64,27 +64,10 @@ void PlayerBuffManager::AddStatusBuff(StatusBuff _statusBuff)
 		spPlayer->AddStaminaRegenBuff(_statusBuff.m_buffStaminaRegen);
 		m_statusBuffList.push_back(_statusBuff);
 
-		switch (_statusBuff.m_ID)
+		// 攻撃力アップ中は体にエフェクトを出す
+		if (_statusBuff.m_ID == PotionsType_AttackBoostPotion)
 		{
-		case PotionsType_InstantHeal:
-			break;
-		case PotionsType_AttackBaseUP:
-			break;
-		case PotionsType_AttackBoostPotion:
 			spPlayer->PlayAttackBoostEffect();
-			break;
-		case PotionsType_InstantStaminaHeal:
-			break;
-		case PotionsType_StaminaRegenBaseUP:
-			break;
-		case PotionsType_StaminaRegenBoost:
-			break;
-		case PotionsType_StaminaMaxUP:
-			break;
-		case PotionsTypeMax:
-			break;
-		default:
-			break;
 		}
 	}
 
@@ -105,27 +88,10 @@ void PlayerBuffManager::BuffFinish(const StatusBuff& _statusBuff)
 		spPlayer->AddStaminaRegenBuff(-_statusBuff.m_buffStaminaRegen);
 
 
-		switch (_statusBuff.m_ID)
+		// 攻撃力アップが切れたらエフェクトを消す
+		if (_statusBuff.m_ID == PotionsType_AttackBoostPotion)
 		{
-		case PotionsType_InstantHeal:
-			break;
-		case PotionsType_AttackBaseUP:
-			break;
-		case PotionsType_AttackBoostPotion:
 			spPlayer->StopAttackBoostEffect();
-			break;
-		case PotionsType_InstantStaminaHeal:
-			break;
-		case PotionsType_StaminaRegenBaseUP:
-			break;
-		case PotionsType_StaminaRegenBoost:
-			break;
-		case PotionsType_StaminaMaxUP:
-			break;
-		case PotionsTypeMax:
-			break;
-		default:
-			break;
 		}
 	}
 }

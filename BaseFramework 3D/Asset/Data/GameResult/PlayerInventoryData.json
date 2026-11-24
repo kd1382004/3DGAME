@@ -1,5 +1,5 @@
 {
-    "money": 0,
+    "money": 80,
     "potions": [
         {
             "id": 0,
@@ -8,31 +8,21 @@
         },
         {
             "id": 1,
-            "name": "AttackBaseUPPotion",
-            "num": 93
-        },
-        {
-            "id": 2,
             "name": "AttackBoostPotion",
             "num": 93
         },
         {
-            "id": 3,
+            "id": 2,
             "name": "InstantStaminaHealPotion",
             "num": 93
         },
         {
-            "id": 4,
+            "id": 3,
             "name": "StaminaMaxUPPotion",
             "num": 93
         },
         {
-            "id": 5,
-            "name": "StaminaRegenBaseUPPotion",
-            "num": 93
-        },
-        {
-            "id": 6,
+            "id": 4,
             "name": "StaminaRegenBoostPotion",
             "num": 93
         }

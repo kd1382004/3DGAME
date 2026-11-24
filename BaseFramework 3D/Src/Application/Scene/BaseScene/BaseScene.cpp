@@ -4,6 +4,9 @@
 //---- シーン ----
 #include"../SceneManager.h"															//シーンの管理
 
+//---- ポーション ----
+#include"../../GameObject/Potions/PotionsType.h"										//ポーションの種類
+
 //---- プレイヤー ----
 #include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
@@ -358,9 +361,13 @@ std::vector<Inventory> BaseScene::ReadInventoryList(const nlohmann::json& _data,
 	for (const nlohmann::json& itemData : _data[_key])
 	{
 		Inventory item;
-		item.m_ID = itemData.value("id", 0);
+		item.m_ID = GetJsonItemID(itemData, _key);	// ポーションは名前で探す
 		item.m_num = itemData.value("num", 0);
 		item.m_name = itemData.value("name", std::string{});
+
+		// 消したポーションなど、今の表に無いものは読み飛ばす
+		if (item.m_ID < 0) { continue; }
+
 		list.push_back(item);
 	}
 
@@ -692,10 +699,11 @@ void BaseScene::RestockShop()
 				if (item.value("stock", 0) > 0) { continue; }
 
 				// マスターから、同じidの最初の在庫数を探す
-				const int id = item.value("id", -1);
+				const int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
+				if (id < 0) { continue; }
 				for (const auto& masterItem : master[_key])
 				{
-					if (masterItem.value("id", -1) == id)
+					if (GetJsonItemID(masterItem, _key) == id)
 					{
 						item["stock"] = masterItem.value("startStock", 0);
 						break;

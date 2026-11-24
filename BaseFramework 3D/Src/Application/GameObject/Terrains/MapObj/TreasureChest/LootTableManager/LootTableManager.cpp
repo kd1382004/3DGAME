@@ -1,6 +1,9 @@
 ﻿//---- 自分のヘッダー ----
 #include "LootTableManager.h"		//宝箱のドロップテーブル管理
 
+//---- ポーション ----
+#include"../../../../Potions/PotionsType.h"	//ポーションの種類
+
 //=============================================
 // 取得
 //=============================================
@@ -91,6 +94,13 @@ void LootTableManager::Load(const std::string& _path)
 				item.m_type = itemData.value("type", -1);
 				item.m_id = itemData.value("id", 0);
 				item.m_name = itemData.value("name", std::string{});
+
+				// ポーションは名前で番号を探す(消したポーションは出さない)
+				if (item.m_type == ItemType::Potion)
+				{
+					item.m_id = GetJsonPotionID(itemData);
+					if (item.m_id < 0) { continue; }
+				}
 				item.m_weight = (std::max)(0.0f, itemData.value("weight", 0.0f));
 
 				if (item.m_type < 0 || item.m_weight <= 0.0f) { continue; } // 出ないものは入れない
@@ -129,6 +139,13 @@ void LootTableManager::LoadOldFormat(const nlohmann::json& _j)
 				item.m_type = itemData.value("type", -1);
 				item.m_id = itemData.value("id", 0);
 				item.m_name = itemData.value("name", std::string{});
+
+				// ポーションは名前で番号を探す(消したポーションは出さない)
+				if (item.m_type == ItemType::Potion)
+				{
+					item.m_id = GetJsonPotionID(itemData);
+					if (item.m_id < 0) { continue; }
+				}
 
 				auto it = rankWeights.find(itemData.value("rank", std::string{}));
 				item.m_weight = (it != rankWeights.end()) ? it->second : 0.0f;

@@ -592,7 +592,7 @@ void ShopDisplay::LoadTex()
 	// ポーション(アイコン・名前・説明)
 	for (int i = 0; i < PotionsTypeMax; i++)
 	{
-		const std::string dir = item + "Potion/" + m_potionName[i] + "/";
+		const std::string dir = item + "Potion/" + GetPotionSTName(i) + "/";
 		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Icon)], dir + "Icon.png");
 		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Name)], dir + "SelectNameBase.png");
 		LoadOneTex(m_spPotionTex[i][static_cast<int>(ItemTex::Explanation)], dir + "SelectExplanationBase.png");
@@ -664,7 +664,7 @@ void ShopDisplay::ReadPrice(const nlohmann::json& _master, const char* _key, Sho
 
 	for (const auto& item : _master[_key])
 	{
-		int id = item.value("id", -1);
+		int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
 		if (id < 0 || id >= _num) { continue; }
 		_items[id].m_buyPrice = item.value("buyPrice", 0);
 		_items[id].m_sellPrice = item.value("sellPrice", 0);
@@ -677,7 +677,7 @@ void ShopDisplay::ReadStock(const nlohmann::json& _stock, const char* _key, Shop
 
 	for (const auto& item : _stock[_key])
 	{
-		int id = item.value("id", -1);
+		int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
 		if (id < 0 || id >= _num) { continue; }
 		_items[id].m_stock = item.value("stock", 0);
 	}
@@ -694,7 +694,7 @@ void ShopDisplay::ReadHave(const nlohmann::json& _inventory, const char* _key, i
 
 	for (const auto& item : _inventory[_key])
 	{
-		int id = item.value("id", -1);
+		int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
 		if (id < 0 || id >= _num) { continue; }
 		_have[id] = item.value("num", 0);
 	}
@@ -702,11 +702,22 @@ void ShopDisplay::ReadHave(const nlohmann::json& _inventory, const char* _key, i
 
 void ShopDisplay::WriteStock(nlohmann::json& _data, const char* _key, const ShopItem* _items, int _num)
 {
+	// ポーションは表(kPotionDefs)から作り直す(増やした・消したポーションも正しく保存される)
+	if (std::string(_key) == "potions")
+	{
+		_data[_key] = nlohmann::json::array();
+		for (int id = 0; id < _num; id++)
+		{
+			_data[_key].push_back({ {"id", id}, {"name", GetPotionSTName(id)}, {"stock", _items[id].m_stock} });
+		}
+		return;
+	}
+
 	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
 
 	for (auto& item : _data[_key])
 	{
-		int id = item.value("id", -1);
+		int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
 		if (id < 0 || id >= _num) { continue; }
 		item["stock"] = _items[id].m_stock;
 	}
@@ -714,11 +725,22 @@ void ShopDisplay::WriteStock(nlohmann::json& _data, const char* _key, const Shop
 
 void ShopDisplay::WriteHave(nlohmann::json& _data, const char* _key, const int* _have, int _num)
 {
+	// ポーションは表(kPotionDefs)から作り直す(増やした・消したポーションも正しく保存される)
+	if (std::string(_key) == "potions")
+	{
+		_data[_key] = nlohmann::json::array();
+		for (int id = 0; id < _num; id++)
+		{
+			_data[_key].push_back({ {"id", id}, {"name", GetPotionSTName(id)}, {"num", _have[id]} });
+		}
+		return;
+	}
+
 	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
 
 	for (auto& item : _data[_key])
 	{
-		int id = item.value("id", -1);
+		int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
 		if (id < 0 || id >= _num) { continue; }
 		item["num"] = _have[id];
 	}
@@ -730,7 +752,7 @@ void ShopDisplay::WriteOwned(nlohmann::json& _data, const char* _key, const bool
 
 	for (auto& item : _data[_key])
 	{
-		int id = item.value("id", -1);
+		int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
 		if (id < 0 || id >= _num) { continue; }
 		item["owned"] = _owned[id];
 	}

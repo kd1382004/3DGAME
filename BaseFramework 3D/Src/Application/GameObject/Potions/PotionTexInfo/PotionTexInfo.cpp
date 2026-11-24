@@ -4,6 +4,9 @@
 //---- シーン ----
 #include"../../../Scene/SceneManager.h"		//シーンの管理
 
+//---- ポーション ----
+#include"../PotionsType.h"						//ポーションの種類
+
 //=============================================
 // 取得
 //=============================================
@@ -130,25 +133,15 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemExplanation
 void PotionTexInfo::Load()
 {
 	{
+		// ポーションの一覧は表(kPotionDefs)から作る
 		std::vector<Texs> inventoryList;
-
-		std::ifstream ifs("Asset/Data/ObjeData/Item/Potions/PotionsName.json");
-		nlohmann::json jsonData = nlohmann::json::parse(ifs, nullptr, false);
-
-		for (auto& item : jsonData["inventory"])
+		for (int id = 0; id < PotionsTypeMax; id++)
 		{
 			Texs inv;
-			inv.m_ID = item["id"].get<int>();
-			inv.m_name = item["name"].get<std::string>();
+			inv.m_ID = id;
+			inv.m_name = GetPotionSTName(id);
 			inventoryList.push_back(inv);
 		}
-
-		// ID順にソート
-		std::sort(inventoryList.begin(), inventoryList.end(),
-			[](const Texs& _a, const Texs& _b)
-			{
-				return _a.m_ID < _b.m_ID;
-			});
 
 		m_potionTexs = inventoryList;
 
