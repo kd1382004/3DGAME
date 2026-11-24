@@ -36,6 +36,11 @@
             "id": 4,
             "name": "StaminaRegenBoostPotion",
             "stock": 23
+        },
+        {
+            "id": 5,
+            "name": "MapScroll",
+            "stock": 1
         }
     ],
     "weapons": [

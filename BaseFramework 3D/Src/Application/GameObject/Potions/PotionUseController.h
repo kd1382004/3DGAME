@@ -52,6 +52,9 @@ private:
 	//最大スタミナを上げるポーションを使う
 	void UseStaminaMaxUPPotion();
 
+	//地図の巻物を使う(今いる階のミニマップを全部表示する)
+	void UseMapScroll();
+
 	//スタミナ系ポーションを使ったときのエフェクト
 	void PlayStaminaEffect();
 

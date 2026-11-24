@@ -50,6 +50,13 @@
             "name": "StaminaRegenBoostPotion",
             "sellPrice": 24,
             "startStock": 3
+        },
+        {
+            "buyPrice": 800,
+            "id": 5,
+            "name": "MapScroll",
+            "sellPrice": 240,
+            "startStock": 1
         }
     ],
     "weapons": [

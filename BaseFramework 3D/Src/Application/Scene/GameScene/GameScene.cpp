@@ -556,7 +556,7 @@ void GameScene::GenerateMap()
 	}
 
 	//まだできてないから固定
-	m_mapType = MapType::MapType_Factory;
+	m_mapType = MapType::MapType_Dungeon;
 
 
 	m_spEnemyManager->EnemyListReset();

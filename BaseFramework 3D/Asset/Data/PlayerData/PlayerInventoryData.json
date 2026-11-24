@@ -25,6 +25,11 @@
             "id": 4,
             "name": "StaminaRegenBoostPotion",
             "num": 0
+        },
+        {
+            "id": 5,
+            "name": "MapScroll",
+            "num": 0
         }
     ],
     "weaponStrengtheningMaterials": [

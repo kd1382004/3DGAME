@@ -31,6 +31,9 @@ enum PotionsType
 	// スタミナ回復量アップ（時間制限）
 	PotionsType_StaminaRegenBoost,
 
+	// 地図の巻物（その階のミニマップを全部表示）
+	PotionsType_MapScroll,
+
 
 	//ポーション種類数
 	PotionsTypeMax
@@ -51,6 +54,7 @@ inline constexpr PotionDef kPotionDefs[] =
 	{ PotionsType_InstantStaminaHeal, "InstantStaminaHealPotion" },
 	{ PotionsType_StaminaMaxUP,       "StaminaMaxUPPotion"       },
 	{ PotionsType_StaminaRegenBoost,  "StaminaRegenBoostPotion"  },
+	{ PotionsType_MapScroll,          "MapScroll"                },
 };
 
 //enum と表の数がずれていたらコンパイルエラーにする(追加し忘れ防止)

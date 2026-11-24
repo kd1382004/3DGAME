@@ -154,6 +154,10 @@ public:
 	// _spGameScene ... ゲームシーン
 	void SetGameScene(const std::shared_ptr<GameScene>& _spGameScene);
 
+	//ゲームシーンを取得(地図の巻物でミニマップを開くときなどに使う)
+	//戻り値 ... ゲームシーン(無ければnullptr)
+	std::shared_ptr<GameScene> GetGameScene() const { return m_wpGameScene.lock(); }
+
 	//次の階に行ける場所にいるかをセット
 	// _flg ... 次の階に行ける場所にいるか
 	void SetNextFloorActionFlg(bool _flg) { m_nextFloorActionFlg = _flg; }

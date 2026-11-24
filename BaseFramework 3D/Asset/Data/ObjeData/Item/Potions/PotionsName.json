@@ -19,6 +19,10 @@
 		{
 			"id": 4,
 			"name": "StaminaRegenBoostPotion"
+		},
+		{
+			"id": 5,
+			"name": "MapScroll"
 		}
 	]
 }

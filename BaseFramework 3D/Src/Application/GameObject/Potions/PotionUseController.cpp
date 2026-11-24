@@ -4,6 +4,12 @@
 //---- プレイヤー ----
 #include"../Character/Player/PlayerBase.h"							//プレイヤー
 
+//---- シーン ----
+#include"../../Scene/GameScene/GameScene.h"							//ゲームシーン
+
+//---- UI ----
+#include"../UI/UIManager.h"											//UIの管理
+
 //---- ポーション ----
 #include"InstantHealPotion/InstantHealPotion.h"						//体力回復ポーション
 #include"AttackBoostPotion/AttackBoostPotion.h"						//攻撃力一時アップポーション
@@ -31,6 +37,7 @@ void PotionUseController::PotionUse(int _potionsID)
 		{ PotionsType_InstantStaminaHeal, &PotionUseController::UseInstantStaminaHeal      },
 		{ PotionsType_StaminaRegenBoost,  &PotionUseController::UseStaminaRegenBoostPotion },
 		{ PotionsType_StaminaMaxUP,       &PotionUseController::UseStaminaMaxUPPotion      },
+		{ PotionsType_MapScroll,          &PotionUseController::UseMapScroll               },
 	};
 
 	for (const UseFunc& use : kUseFuncs)
@@ -86,6 +93,23 @@ void PotionUseController::UseStaminaMaxUPPotion()
 	spPotion->UseStaminaMaxUPPotion();
 
 	PlayStaminaEffect();
+}
+
+void PotionUseController::UseMapScroll()
+{
+	std::shared_ptr<PlayerBase> spPlayer = m_wpPlayerBase.lock();
+	if (!spPlayer) { return; }
+
+	std::shared_ptr<GameScene> spGameScene = spPlayer->GetGameScene();
+	if (!spGameScene) { return; }
+
+	std::shared_ptr<UIManager> spUIManager = spGameScene->GetUIManager();
+	if (!spUIManager) { return; }
+
+	// 今いる階のミニマップを全部表示する(次の階ではまた最初から)
+	spUIManager->SetMinimapRevealAll(true);
+
+	PlayPotionSE("Asset/Sound/SE/UI/PageTurn.wav");
 }
 
 void PotionUseController::PlayStaminaEffect()
