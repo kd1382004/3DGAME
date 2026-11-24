@@ -1,7 +1,16 @@
-﻿#include "Golem.h"
-#include"../../../Camera/CameraBase.h"
+﻿//---- 自分のヘッダー ----
+#include "Golem.h"								//敵(ゴーレム)
 
-#include"../../../../Scene/SceneManager.h"
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"		//シーンの管理
+
+//---- カメラ ----
+#include"../../../Camera/CameraBase.h"			//カメラの基底クラス
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void Golem::Init()
 {
 	EnemyAmbush::Init();
@@ -143,6 +152,10 @@ void Golem::Release()
 	if (m_spCrying3DSE) { m_spCrying3DSE->Stop(); m_spCrying3DSE = nullptr; }
 	if (m_spSmash3DSE) { m_spSmash3DSE->Stop(); m_spSmash3DSE = nullptr; }
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void Golem::UpdateFootstepSE()
 {

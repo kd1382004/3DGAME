@@ -1,29 +1,32 @@
-﻿#include "PlayerInventoryUI.h"
-#include"../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "PlayerInventoryUI.h"											//インベントリ画面
 
+//---- シーン ----
+#include"../../../Scene/SceneManager.h"									//シーンの管理
+#include"../../../Scene/GameScene/GameScene.h"							//ゲームシーン
 
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"							//プレイヤー
+#include"../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
-#include"../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../Info/VOL/VOLInfo.h"
-#include"../../../Scene/GameScene/GameScene.h"
-#include"../../../Info/MouseInfo/MouseInfo.h"
+//---- 武器 ----
+#include"../../Weapon/WeaponBase.h"										//武器の基底クラス
 
-#include"../../Potions/PotionsType.h"
-#include"../../Potions/PotionUseController.h"
+//---- ポーション ----
+#include"../../Potions/PotionsType.h"									//ポーションの種類
+#include"../../Potions/PotionUseController.h"							//ポーションの使用処理
+#include"../../Potions/PotionTexInfo/PotionTexInfo.h"					//アイテムの名前・画像情報
 
+//---- UI ----
+#include"PotionInventory/PotionInventoryUI.h"							//インベントリ画面(ポーションタブ)
+#include"WeponInventory/WeponInventoryUI.h"								//インベントリ画面(武器強化タブ)
+#include"PlayerStatus/PlayerStatusInventoryUI.h"						//インベントリ画面(ステータスタブ)
 
-#include"../../Character/Player/PlayerBase.h"
-#include"../../Character/Player/PlayerInventory/PlayerInventory.h"
-
-#include"../../Potions/PotionTexInfo/PotionTexInfo.h"
-
-#include"../../../Info/NumDraw/NumDraw.h"
-
-#include"../../Weapon/WeaponBase.h"
-
-#include"PotionInventory/PotionInventoryUI.h"
-#include"WeponInventory/WeponInventoryUI.h"
-#include"PlayerStatus/PlayerStatusInventoryUI.h"
+//---- 便利機能 ----
+#include"../../../Info/KeyInfo/KeyInfo.h"								//キー入力
+#include"../../../Info/VOL/VOLInfo.h"									//音量設定
+#include"../../../Info/MouseInfo/MouseInfo.h"							//マウス入力
+#include"../../../Info/NumDraw/NumDraw.h"								//数字の画像描画
 
 namespace
 {
@@ -31,11 +34,15 @@ namespace
 	const Math::Vector2 kCoinPos     = { 138.0f, 225.0f };	// 金貨のアイコンの中心(左端122)
 	const Math::Vector2 kMoneyNumPos = { 246.0f, 225.0f };	// 数字の右端
 	const Math::Vector2 kGoldPos     = { 268.0f, 227.0f };	// 「G」の中心
-	constexpr float kMoneyNumSiz = 2.0f;					// 数字の大きさ(14 × 2 = 28)
+	constexpr float kMoneyNumSize = 2.0f;					// 数字の大きさ(14 × 2 = 28)
 
 	// 数字が超えてはいけない大きさ(金貨の右端158 〜 数字の右端246 の間に収める)
-	const Math::Vector2 kMoneyNumMaxSiz = { 86.0f, 28.0f };
+	const Math::Vector2 kMoneyNumMaxSize = { 86.0f, 28.0f };
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void PlayerInventoryUI::Init()
 {
@@ -68,7 +75,7 @@ void PlayerInventoryUI::Init()
 	{
 		m_spInventoryTypeTex = std::make_shared<KdTexture>();
 		m_spInventoryTypeTex->Load("Asset/Textures/GameUI/Item/PlayerInventory/inventoryType/inventoryType.png");
-		m_inventoryTypeSiz = { (float)m_spInventoryTypeTex->GetWidth(),(float)m_spInventoryTypeTex->GetHeight() / 3 };
+		m_inventoryTypeSize = { (float)m_spInventoryTypeTex->GetWidth(),(float)m_spInventoryTypeTex->GetHeight() / 3 };
 		m_inventoryType2DPos.x = m_back1Tex2DPos.x - m_spBack1Tex->GetWidth() / 2;
 		m_inventoryType2DPos.y = m_back1Tex2DPos.y + 150;
 
@@ -81,7 +88,7 @@ void PlayerInventoryUI::Init()
 		m_spNotSelect->Load("Asset/Textures/GameUI/Item/PlayerInventory/BagBackTex2.png");
 		m_spBack2Tex = m_spNotSelect;
 		m_back2Tex2DPos = m_back1Tex2DPos + Math::Vector2{ (float)m_spBack1Tex->GetWidth() / 2,0 } + Math::Vector2{ (float)m_spBack2Tex->GetWidth(),0 };
-		m_back2Tex2DSiz = { (float)m_spBack2Tex->GetWidth() , (float)m_spBack2Tex->GetHeight() };
+		m_back2Tex2DSize = { (float)m_spBack2Tex->GetWidth() , (float)m_spBack2Tex->GetHeight() };
 	}
 
 
@@ -129,7 +136,7 @@ void PlayerInventoryUI::Init()
 
 
 	Math::Vector2 basePos = { -420, 225 };
-	for (int i = 0; i < InventoryTypeSiz; i++)
+	for (int i = 0; i < InventoryTypeSize; i++)
 	{
 		if (m_inventoryTypeChange[i].m_spIconTex)
 		{
@@ -160,7 +167,7 @@ void PlayerInventoryUI::Init()
 
 		float w = m_inventoryTypeChange[i].m_spIconTex->GetWidth();
 		float h = m_inventoryTypeChange[i].m_spIconTex->GetHeight();
-		m_inventoryTypeChange[i].m_iconTexSiz = { w,h };
+		m_inventoryTypeChange[i].m_iconTexSize = { w,h };
 
 
 		m_inventoryTypeChange[i].m_2DPos = basePos;
@@ -274,13 +281,13 @@ void PlayerInventoryUI::DrawSprite()
 	if (m_spInventoryTypeTex)
 	{
 		Math::Vector2 pivot = { 0,0.5 };
-		Math::Rectangle rec = { 0,(long)(m_inventoryTypeSiz.y * m_nowInventoryType),(long)(m_inventoryTypeSiz.x),(long)(m_inventoryTypeSiz.y) };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spInventoryTypeTex, m_inventoryType2DPos.x, m_inventoryType2DPos.y, m_inventoryTypeSiz.x, m_inventoryTypeSiz.y, &rec, nullptr, pivot);
+		Math::Rectangle rec = { 0,(long)(m_inventoryTypeSize.y * m_nowInventoryType),(long)(m_inventoryTypeSize.x),(long)(m_inventoryTypeSize.y) };
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spInventoryTypeTex, m_inventoryType2DPos.x, m_inventoryType2DPos.y, m_inventoryTypeSize.x, m_inventoryTypeSize.y, &rec, nullptr, pivot);
 	}
 
 	if (m_spBack2Tex && m_nowInventoryType != PlayerInventoryUI::PlayerStatus)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spBack2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y, m_back2Tex2DSiz.x, m_back2Tex2DSiz.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spBack2Tex, m_back2Tex2DPos.x, m_back2Tex2DPos.y, m_back2Tex2DSize.x, m_back2Tex2DSize.y);
 
 		Math::Vector2 pos = m_back2Tex2DPos;
 		pos.y += 147;	// 右の枠の上の暗い帯（数字の枠）の真ん中
@@ -349,7 +356,7 @@ void PlayerInventoryUI::DrawSprite()
 	//////////////////////////////////////////////////
 
 
-	for (int i = 0; i < InventoryTypeSiz; i++)
+	for (int i = 0; i < InventoryTypeSize; i++)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_inventoryTypeChange[i].m_spIconTex, m_inventoryTypeChange[i].m_2DPos.x, m_inventoryTypeChange[i].m_2DPos.y);
 
@@ -395,7 +402,7 @@ void PlayerInventoryUI::DrawMoney()
 
 	// 数字(右揃え・3桁区切り)
 	// 桁が多くて金貨にかぶるときは、横を縮めて収める
-	NumDraw::GetInstance().Draw(money, RAligned, kMoneyNumPos, kWhiteColor, kMoneyNumSiz, true, -1, kMoneyNumMaxSiz);
+	NumDraw::GetInstance().Draw(money, RAligned, kMoneyNumPos, kWhiteColor, kMoneyNumSize, true, -1, kMoneyNumMaxSize);
 
 	// 「G」
 	if (m_spGoldTex)
@@ -403,6 +410,10 @@ void PlayerInventoryUI::DrawMoney()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spGoldTex, (int)kGoldPos.x, (int)kGoldPos.y);
 	}
 }
+
+//=============================================
+// 取得
+//=============================================
 
 InventoryTabBase* PlayerInventoryUI::GetTab(InventoryType _type)
 {
@@ -414,6 +425,10 @@ InventoryTabBase* PlayerInventoryUI::GetTab(InventoryType _type)
 	default:									return nullptr;
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void PlayerInventoryUI::PlayerInventoryOpen()
 {
@@ -484,10 +499,10 @@ void PlayerInventoryUI::InventoryTypeChangeUpdate()
 
 	for (auto& icon : m_inventoryTypeChange)
 	{
-		float left = icon.m_2DPos.x - icon.m_iconTexSiz.x / 2;
-		float right = icon.m_2DPos.x + icon.m_iconTexSiz.x / 2;
-		float top = icon.m_2DPos.y + icon.m_iconTexSiz.y / 2;
-		float bot = icon.m_2DPos.y - icon.m_iconTexSiz.y / 2;
+		float left = icon.m_2DPos.x - icon.m_iconTexSize.x / 2;
+		float right = icon.m_2DPos.x + icon.m_iconTexSize.x / 2;
+		float top = icon.m_2DPos.y + icon.m_iconTexSize.y / 2;
+		float bot = icon.m_2DPos.y - icon.m_iconTexSize.y / 2;
 
 
 		if (mousePos.x >= left && mousePos.x <= right &&

@@ -1,9 +1,20 @@
-﻿#include "ResultDisplay_PotionInventory.h"
-#include"../../../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"
-#include"../../../../Potions/PotionTexInfo/PotionTexInfo.h"
-#include"../../../../../Info/NumDraw/NumDraw.h"
+﻿//---- 自分のヘッダー ----
+#include "ResultDisplay_PotionInventory.h"										//リザルト画面(ポーション)
+
+//---- プレイヤー ----
+#include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
+
+//---- ポーション ----
+#include"../../../../Potions/PotionTexInfo/PotionTexInfo.h"						//アイテムの名前・画像情報
+
+//---- 便利機能 ----
+#include"../../../../../Info/MouseInfo/MouseInfo.h"								//マウス入力
+#include"../../../../../Info/KeyInfo/KeyInfo.h"									//キー入力
+#include"../../../../../Info/NumDraw/NumDraw.h"									//数字の画像描画
+
+//=============================================
+// 
+//=============================================
 
 void ResultDisplay_PotionInventory::Init()
 {
@@ -51,15 +62,15 @@ void ResultDisplay_PotionInventory::Init()
 	const float back2Width = m_spPotionBack2Tex ? (float)m_spPotionBack2Tex->GetWidth() : 360.0f;
 	const float panelInnerRight = m_potionBack2TexPos.x + back2Width / 2 - 26.0f;	// 鋲の内側の右端
 
-	m_scrollTrackSiz.x = m_spScrollTrackTex ? (float)m_spScrollTrackTex->GetWidth() : 16.0f;
-	m_scrollTrackSiz.y = gridTop - gridBottom;
+	m_scrollTrackSize.x = m_spScrollTrackTex ? (float)m_spScrollTrackTex->GetWidth() : 16.0f;
+	m_scrollTrackSize.y = gridTop - gridBottom;
 
 	// マスの右端と、鋲の内側の右端の真ん中に置く
 	m_scrollTrackPos.x = (gridRight + panelInnerRight) / 2;
 	m_scrollTrackPos.y = (gridTop + gridBottom) / 2;
 
 	//---------- つまみ ----------
-	m_scrollThumbSiz.x = m_spScrollThumbTopTex ? (float)m_spScrollThumbTopTex->GetWidth() : m_scrollTrackSiz.x;
+	m_scrollThumbSize.x = m_spScrollThumbTopTex ? (float)m_spScrollThumbTopTex->GetWidth() : m_scrollTrackSize.x;
 	m_scrollThumbCapH = m_spScrollThumbTopTex ? (float)m_spScrollThumbTopTex->GetHeight() : 6.0f;
 
 	// 一番短くても「上の端＋3本線＋下の端」が入る長さ
@@ -68,7 +79,7 @@ void ResultDisplay_PotionInventory::Init()
 
 	// 最初は溝の内側いっぱい（ScrollBarCalcThumb で毎フレーム決め直す）
 	m_scrollThumbPos = m_scrollTrackPos;
-	m_scrollThumbSiz.y = m_scrollTrackSiz.y - m_scrollTrackInset * 2;
+	m_scrollThumbSize.y = m_scrollTrackSize.y - m_scrollTrackInset * 2;
 }
 
 void ResultDisplay_PotionInventory::Update()
@@ -258,6 +269,10 @@ void ResultDisplay_PotionInventory::UpdateIconPos()
 	}
 }
 
+//=============================================
+// スクロールバー
+//=============================================
+
 void ResultDisplay_PotionInventory::ScrollBarDraw()
 {
 	// ドット絵がにじまないよう、ポイントフィルタで描く（NumDraw と同じ）
@@ -266,7 +281,7 @@ void ResultDisplay_PotionInventory::ScrollBarDraw()
 	//溝
 	if (m_spScrollTrackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spScrollTrackTex, m_scrollTrackPos.x, m_scrollTrackPos.y, m_scrollTrackSiz.x, m_scrollTrackSiz.y);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spScrollTrackTex, m_scrollTrackPos.x, m_scrollTrackPos.y, m_scrollTrackSize.x, m_scrollTrackSize.y);
 	}
 
 	// マウスが乗っているときは明るい画像を使う
@@ -276,26 +291,26 @@ void ResultDisplay_PotionInventory::ScrollBarDraw()
 	const std::shared_ptr<KdTexture>& spGripTex = m_scrollThumbHoverFlg ? m_spScrollThumbGripHoverTex : m_spScrollThumbGripTex;
 
 	// つまみの上端・下端の y（y は上がプラス）
-	const float thumbTop = m_scrollThumbPos.y + m_scrollThumbSiz.y / 2;
-	const float thumbBottom = m_scrollThumbPos.y - m_scrollThumbSiz.y / 2;
+	const float thumbTop = m_scrollThumbPos.y + m_scrollThumbSize.y / 2;
+	const float thumbBottom = m_scrollThumbPos.y - m_scrollThumbSize.y / 2;
 
 	//つまみ(上の端)
 	if (spTopTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(spTopTex, m_scrollThumbPos.x, thumbTop - m_scrollThumbCapH / 2, m_scrollThumbSiz.x, m_scrollThumbCapH);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spTopTex, m_scrollThumbPos.x, thumbTop - m_scrollThumbCapH / 2, m_scrollThumbSize.x, m_scrollThumbCapH);
 	}
 
 	//つまみ(真ん中) … 上の端と下端を除いた長さに伸ばす
-	const float midH = m_scrollThumbSiz.y - m_scrollThumbCapH * 2;
+	const float midH = m_scrollThumbSize.y - m_scrollThumbCapH * 2;
 	if (spMidTex && midH > 0.0f)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(spMidTex, m_scrollThumbPos.x, m_scrollThumbPos.y, m_scrollThumbSiz.x, midH);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spMidTex, m_scrollThumbPos.x, m_scrollThumbPos.y, m_scrollThumbSize.x, midH);
 	}
 
 	//つまみ(下の端)
 	if (spBottomTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(spBottomTex, m_scrollThumbPos.x, thumbBottom + m_scrollThumbCapH / 2, m_scrollThumbSiz.x, m_scrollThumbCapH);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(spBottomTex, m_scrollThumbPos.x, thumbBottom + m_scrollThumbCapH / 2, m_scrollThumbSize.x, m_scrollThumbCapH);
 	}
 
 	//つまみ(中央の3本線) … 画像そのままの大きさで真ん中に
@@ -329,16 +344,16 @@ void ResultDisplay_PotionInventory::ScrollBarUpdate()
 	POINT mousePos = MouseInfo::Instance().m_windowPos;
 
 	// つまみの四角
-	float thumbLeft = m_scrollThumbPos.x - m_scrollThumbSiz.x / 2;
-	float thumbRight = m_scrollThumbPos.x + m_scrollThumbSiz.x / 2;
-	float thumbTop = m_scrollThumbPos.y + m_scrollThumbSiz.y / 2;
-	float thumbBot = m_scrollThumbPos.y - m_scrollThumbSiz.y / 2;
+	float thumbLeft = m_scrollThumbPos.x - m_scrollThumbSize.x / 2;
+	float thumbRight = m_scrollThumbPos.x + m_scrollThumbSize.x / 2;
+	float thumbTop = m_scrollThumbPos.y + m_scrollThumbSize.y / 2;
+	float thumbBot = m_scrollThumbPos.y - m_scrollThumbSize.y / 2;
 
 	// 溝の四角
-	float trackLeft = m_scrollTrackPos.x - m_scrollTrackSiz.x / 2;
-	float trackRight = m_scrollTrackPos.x + m_scrollTrackSiz.x / 2;
-	float trackTop = m_scrollTrackPos.y + m_scrollTrackSiz.y / 2 - m_scrollTrackInset;
-	float trackBot = m_scrollTrackPos.y - m_scrollTrackSiz.y / 2 + m_scrollTrackInset;
+	float trackLeft = m_scrollTrackPos.x - m_scrollTrackSize.x / 2;
+	float trackRight = m_scrollTrackPos.x + m_scrollTrackSize.x / 2;
+	float trackTop = m_scrollTrackPos.y + m_scrollTrackSize.y / 2 - m_scrollTrackInset;
+	float trackBot = m_scrollTrackPos.y - m_scrollTrackSize.y / 2 + m_scrollTrackInset;
 
 	// マウスがつまみ・溝の上にあるか
 	bool isOnThumb = (mousePos.x >= thumbLeft && mousePos.x <= thumbRight &&
@@ -373,8 +388,8 @@ void ResultDisplay_PotionInventory::ScrollBarUpdate()
 			MouseInfo::Instance().SetMouseType(MouseInfo::MouseType::MouseType_HIT);
 
 			// つまみの中心が動ける範囲（つまみが溝からはみ出さないように、長さの半分だけ内側）
-			float thumbMoveTop = trackTop - m_scrollThumbSiz.y / 2;
-			float thumbMoveBot = trackBot + m_scrollThumbSiz.y / 2;
+			float thumbMoveTop = trackTop - m_scrollThumbSize.y / 2;
+			float thumbMoveBot = trackBot + m_scrollThumbSize.y / 2;
 
 			// つまみの中心が来てほしいy（つかんだ位置のずれを引く）
 			float wantY = (float)mousePos.y - m_scrollDragOffsetY;
@@ -444,28 +459,28 @@ void ResultDisplay_PotionInventory::ScrollBarCalcThumb()
 
 	// 横の位置と幅は溝に合わせる
 	m_scrollThumbPos.x = m_scrollTrackPos.x;
-	m_scrollThumbSiz.x = m_scrollTrackSiz.x;
+	m_scrollThumbSize.x = m_scrollTrackSize.x;
 
 	// スクロールの必要がなければ、つまみは溝いっぱい
 	if (maxRow == 0)
 	{
-		m_scrollThumbSiz.y = m_scrollTrackSiz.y - m_scrollTrackInset * 2;
+		m_scrollThumbSize.y = m_scrollTrackSize.y - m_scrollTrackInset * 2;
 		m_scrollThumbPos.y = m_scrollTrackPos.y;
 		return;
 	}
 
 	//---------- つまみの長さ ----------
 	// 溝の高さ × 見えている段数 ÷ 全部の段数（短すぎるとつかめないので下限あり）
-	float innerH = m_scrollTrackSiz.y - m_scrollTrackInset * 2;
+	float innerH = m_scrollTrackSize.y - m_scrollTrackInset * 2;
 	float thumbH = innerH * (float)m_slotRows / (float)totalRows;
-	m_scrollThumbSiz.y = std::clamp(thumbH, m_scrollThumbMinH, innerH);
+	m_scrollThumbSize.y = std::clamp(thumbH, m_scrollThumbMinH, innerH);
 
 	//---------- つまみの位置 ----------
-	float trackTop = m_scrollTrackPos.y + m_scrollTrackSiz.y / 2 - m_scrollTrackInset;
-	float trackBot = m_scrollTrackPos.y - m_scrollTrackSiz.y / 2 + m_scrollTrackInset;
+	float trackTop = m_scrollTrackPos.y + m_scrollTrackSize.y / 2 - m_scrollTrackInset;
+	float trackBot = m_scrollTrackPos.y - m_scrollTrackSize.y / 2 + m_scrollTrackInset;
 
-	float thumbMoveTop = trackTop - m_scrollThumbSiz.y / 2;
-	float thumbMoveBot = trackBot + m_scrollThumbSiz.y / 2;
+	float thumbMoveTop = trackTop - m_scrollThumbSize.y / 2;
+	float thumbMoveBot = trackBot + m_scrollThumbSize.y / 2;
 
 	// 今の段が、一番上(0)〜一番下(maxRow)のどこか → 0〜1 の割合
 	float ratio = (float)m_scrollRow / (float)maxRow;
@@ -473,6 +488,10 @@ void ResultDisplay_PotionInventory::ScrollBarCalcThumb()
 	// 割合の位置につまみを置く（0 = 一番上、1 = 一番下）
 	m_scrollThumbPos.y = thumbMoveTop - (thumbMoveTop - thumbMoveBot) * ratio;
 }
+
+//=============================================
+// スクロールの状態
+//=============================================
 
 bool ResultDisplay_PotionInventory::IsInSlotView(float _y) const
 {

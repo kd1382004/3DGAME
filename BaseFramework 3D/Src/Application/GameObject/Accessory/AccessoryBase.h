@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//アクセサリーの基底クラス
 class AccessoryBase:public KdGameObject
 {
 public:

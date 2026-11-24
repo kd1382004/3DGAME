@@ -1,10 +1,18 @@
-﻿#include "WarpGateManager.h"
-#include"WarpGateBase.h"
+﻿//---- 自分のヘッダー ----
+#include "WarpGateManager.h"				//ワープゲートの管理
 
-#include"../../Scene/SceneManager.h"
+//---- シーン ----
+#include"../../Scene/SceneManager.h"		//シーンの管理
 
-#include"EscapeGate/EscapeGate.h"
-#include"NextStageGate/NextStageGate.h"
+//---- ワープゲート ----
+#include"WarpGateBase.h"					//ワープゲートの基底クラス
+#include"EscapeGate/EscapeGate.h"			//脱出ゲート
+#include"NextStageGate/NextStageGate.h"		//次のステージへのゲート
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void WarpGateManager::Init()
 {
 
@@ -37,6 +45,7 @@ void WarpGateManager::Update()
 		warp->Update();
 	}
 }
+
 void WarpGateManager::PreDraw()
 {
 	for (auto warp : m_warpGateList)
@@ -44,6 +53,7 @@ void WarpGateManager::PreDraw()
 		warp->PreDraw();
 	}
 }
+
 void WarpGateManager::DrawLit()
 {
 	for (auto warp : m_warpGateList)
@@ -51,6 +61,10 @@ void WarpGateManager::DrawLit()
 		warp->DrawLit();
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void WarpGateManager::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEscapeGatePos)
 {
@@ -82,4 +96,3 @@ void WarpGateManager::WarpGateReset()
 		obj->SetIsExpired(true);
 	}
 }
-

@@ -3,6 +3,7 @@
 
 #include"../../../../../Scene/SceneManager.h" 
 
+//リザルト画面(スコア)
 class ResultDisplay_Score: public ResultDisplayBase
 {
 public:

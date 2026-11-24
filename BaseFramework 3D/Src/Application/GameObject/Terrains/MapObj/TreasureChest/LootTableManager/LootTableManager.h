@@ -12,7 +12,7 @@ enum ItemType
 struct LootItem
 {
 	int m_type = -1;		// ItemType（-1 = 何も出ない）
-	int m_id = 0;
+	int m_id = 0;			// アイテムの番号(種類の中での番号)
 	//アイテムの名前
 	std::string m_name;
 	float m_weight = 0.0f; // 出やすさ（テーブル内の合計に対する割合が出現率になる）
@@ -23,7 +23,7 @@ struct LootTable
 {
 	int m_dropMin = 1;	// 1回開けたときに出る個数の最小
 	int m_dropMax = 1;	// 1回開けたときに出る個数の最大
-	std::vector<LootItem> m_items;
+	std::vector<LootItem> m_items;	// 出る可能性のあるアイテムの一覧
 	//重みの合計
 	float m_totalWeight = 0.0f;
 };

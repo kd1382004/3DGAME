@@ -1,6 +1,9 @@
-﻿#include "VOLUI.h"
-#include"../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../Info/KeyInfo/KeyInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "VOLUI.h"									//音量設定画面
+
+//---- 便利機能 ----
+#include"../../../Info/MouseInfo/MouseInfo.h"		//マウス入力
+#include"../../../Info/KeyInfo/KeyInfo.h"			//キー入力
 
 void VOLUI::Init()
 {
@@ -11,16 +14,16 @@ void VOLUI::Init()
 	{
 		m_spVolTex = std::make_shared<KdTexture>();
 		m_spVolTex->Load("Asset/Textures/GameUI/VOL/VOLIcon.png");
-		m_volSiz.x = m_spVolTex->GetWidth();
-		m_volSiz.y = m_spVolTex->GetHeight();
+		m_volSize.x = m_spVolTex->GetWidth();
+		m_volSize.y = m_spVolTex->GetHeight();
 	}
 
 	if (!m_spVolBackTex)
 	{
 		m_spVolBackTex = std::make_shared<KdTexture>();
 		m_spVolBackTex->Load("Asset/Textures/GameUI/VOL/VOLBack.png");
-		m_volBackSiz.x = m_spVolBackTex->GetWidth();
-		m_volBackSiz.y = m_spVolBackTex->GetHeight();
+		m_volBackSize.x = m_spVolBackTex->GetWidth();
+		m_volBackSize.y = m_spVolBackTex->GetHeight();
 	}
 
 
@@ -29,7 +32,7 @@ void VOLUI::Init()
 	{
 		m_spVolThumbTex = std::make_shared<KdTexture>();
 		m_spVolThumbTex->Load("Asset/Textures/GameUI/VOL/VOLThumb.png");
-		m_volThumbSiz = { (float)m_spVolThumbTex->GetWidth(),(float)m_spVolThumbTex->GetHeight() };
+		m_volThumbSize = { (float)m_spVolThumbTex->GetWidth(),(float)m_spVolThumbTex->GetHeight() };
 	}
 	if (!m_spVolThumbHoverTex)
 	{
@@ -38,7 +41,7 @@ void VOLUI::Init()
 	}
 	m_volDragIndex = -1;
 
-	for (int i = 0;i < kVolInfoSiz;i++)
+	for (int i = 0;i < kVolInfoSize;i++)
 	{
 		m_volInfo[i].m_spVolTex = std::make_shared<KdTexture>();
 		m_volInfo[i].m_spVolValTex = std::make_shared<KdTexture>();
@@ -65,11 +68,11 @@ void VOLUI::Init()
 
 
 
-		m_volInfo[i].m_volSiz.x = m_volInfo[i].m_spVolTex->GetWidth();
-		m_volInfo[i].m_volSiz.y = m_volInfo[i].m_spVolTex->GetHeight();
+		m_volInfo[i].m_volSize.x = m_volInfo[i].m_spVolTex->GetWidth();
+		m_volInfo[i].m_volSize.y = m_volInfo[i].m_spVolTex->GetHeight();
 
-		m_volInfo[i].m_volValSiz.x = m_volInfo[i].m_spVolValTex->GetWidth();
-		m_volInfo[i].m_volValSiz.y = m_volInfo[i].m_spVolValTex->GetHeight();
+		m_volInfo[i].m_volValSize.x = m_volInfo[i].m_spVolValTex->GetWidth();
+		m_volInfo[i].m_volValSize.y = m_volInfo[i].m_spVolValTex->GetHeight();
 
 
 	}
@@ -80,10 +83,10 @@ void VOLUI::Update()
 	POINT mouse = MouseInfo::Instance().m_windowPos;
 
 	{
-		float left = m_volPos.x - m_volSiz.x / 2;
-		float right = m_volPos.x + m_volSiz.x / 2;
-		float top = m_volPos.y + m_volSiz.y/2;
-		float bot = m_volPos.y - m_volSiz.y / 2;
+		float left = m_volPos.x - m_volSize.x / 2;
+		float right = m_volPos.x + m_volSize.x / 2;
+		float top = m_volPos.y + m_volSize.y/2;
+		float bot = m_volPos.y - m_volSize.y / 2;
 
 		if (left <= mouse.x && right >= mouse.x &&
 			top >= mouse.y && bot <= mouse.y)
@@ -105,9 +108,9 @@ void VOLUI::Update()
 	// 枠の外をクリックしたら閉じる（ドラッグ中は閉じない）
 	if (m_volDragIndex < 0)
 	{
-		float left = m_volBackPos.x - m_volBackSiz.x / 2;
-		float right = m_volBackPos.x + m_volBackSiz.x / 2;
-		float top = m_volBackPos.y + m_volBackSiz.y;
+		float left = m_volBackPos.x - m_volBackSize.x / 2;
+		float right = m_volBackPos.x + m_volBackSize.x / 2;
+		float top = m_volBackPos.y + m_volBackSize.y;
 		float bot = m_volBackPos.y;
 
 		bool isOnBack = (left <= mouse.x && right >= mouse.x &&
@@ -124,7 +127,7 @@ void VOLUI::Update()
 	VolThumbUpdate();
 
 	// 音量を反映
-	for (int i = 0;i < kVolInfoSiz;i++)
+	for (int i = 0;i < kVolInfoSize;i++)
 	{
 		switch (i)
 		{
@@ -159,7 +162,7 @@ void VOLUI::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spVolBackTex, m_volBackPos.x, m_volBackPos.y, nullptr, nullptr, { 0.5,0 });
 	}
 
-	for (int i = 0;i < kVolInfoSiz;i++)
+	for (int i = 0;i < kVolInfoSize;i++)
 	{
 		if (!m_volInfo[i].m_spVolTex) { continue; }
 		if (!m_volInfo[i].m_spVolValTex) { continue; }
@@ -170,8 +173,8 @@ void VOLUI::DrawSprite()
 
 		// 緑のゲージ：画像を縦につぶさず、下から音量の分だけ切り取って描く（目盛りがつぶれないように）
 		{
-			const long texW = (long)m_volInfo[i].m_volValSiz.x;
-			const long texH = (long)m_volInfo[i].m_volValSiz.y;
+			const long texW = (long)m_volInfo[i].m_volValSize.x;
+			const long texH = (long)m_volInfo[i].m_volValSize.y;
 			const long cutH = (long)(texH * m_volInfo[i].m_vol);		// 見せる高さ（下から）
 
 			if (cutH > 0)
@@ -188,7 +191,7 @@ void VOLUI::DrawSprite()
 		if (spThumbTex)
 		{
 			KdShaderManager::Instance().m_spriteShader.Begin(false);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(spThumbTex, m_volInfo[i].m_volValPos.x, VolToThumbY(i), m_volThumbSiz.x, m_volThumbSiz.y);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(spThumbTex, m_volInfo[i].m_volValPos.x, VolToThumbY(i), m_volThumbSize.x, m_volThumbSize.y);
 			KdShaderManager::Instance().m_spriteShader.End();
 		}
 	}
@@ -199,23 +202,23 @@ void VOLUI::SetVolPos(Math::Vector2 _pos)
 	m_volPos = _pos;
 
 	m_volBackPos = _pos;
-	m_volBackPos.y += m_volSiz.y / 2;
+	m_volBackPos.y += m_volSize.y / 2;
 
 
 	Math::Vector2 volInfobasePos = m_volBackPos;
-	volInfobasePos.y += m_volSiz.y + 20;
-	volInfobasePos.x -= (m_volBackSiz.x / kVolInfoSiz);
+	volInfobasePos.y += m_volSize.y + 20;
+	volInfobasePos.x -= (m_volBackSize.x / kVolInfoSize);
 
 
-	float siz = m_volBackSiz.x / 3;
-	for (int i = 0;i < kVolInfoSiz;i++)
+	float size = m_volBackSize.x / 3;
+	for (int i = 0;i < kVolInfoSize;i++)
 	{
 		m_volInfo[i].m_volPos = volInfobasePos;
 		m_volInfo[i].m_volValPos = m_volInfo[i].m_volPos;
-		m_volInfo[i].m_volValPos.y += m_volInfo[i].m_volSiz.y / 2;
+		m_volInfo[i].m_volValPos.y += m_volInfo[i].m_volSize.y / 2;
 
 
-		volInfobasePos.x += siz;
+		volInfobasePos.x += size;
 	}
 }
 
@@ -223,7 +226,7 @@ float VOLUI::VolToThumbY(int _index) const
 {
 	const VolInfo& info = m_volInfo[_index];
 	const float bot = info.m_volValPos.y + m_volBarInset;
-	const float top = info.m_volValPos.y + info.m_volValSiz.y - m_volBarInset;
+	const float top = info.m_volValPos.y + info.m_volValSize.y - m_volBarInset;
 	return bot + (top - bot) * info.m_vol;
 }
 
@@ -231,7 +234,7 @@ float VOLUI::ThumbYToVol(int _index, float _y) const
 {
 	const VolInfo& info = m_volInfo[_index];
 	const float bot = info.m_volValPos.y + m_volBarInset;
-	const float top = info.m_volValPos.y + info.m_volValSiz.y - m_volBarInset;
+	const float top = info.m_volValPos.y + info.m_volValSize.y - m_volBarInset;
 	if (top - bot <= 0.0f) { return 0.0f; }
 	return std::clamp((_y - bot) / (top - bot), 0.0f, 1.0f);
 }
@@ -258,21 +261,21 @@ void VOLUI::VolThumbUpdate()
 		}
 	}
 
-	for (int i = 0;i < kVolInfoSiz;i++)
+	for (int i = 0;i < kVolInfoSize;i++)
 	{
 		VolInfo& info = m_volInfo[i];
 
 		// つまみの四角
 		const float thumbY = VolToThumbY(i);
-		float thumbLeft = info.m_volValPos.x - m_volThumbSiz.x / 2;
-		float thumbRight = info.m_volValPos.x + m_volThumbSiz.x / 2;
-		float thumbTop = thumbY + m_volThumbSiz.y / 2;
-		float thumbBot = thumbY - m_volThumbSiz.y / 2;
+		float thumbLeft = info.m_volValPos.x - m_volThumbSize.x / 2;
+		float thumbRight = info.m_volValPos.x + m_volThumbSize.x / 2;
+		float thumbTop = thumbY + m_volThumbSize.y / 2;
+		float thumbBot = thumbY - m_volThumbSize.y / 2;
 
 		// バーの四角（バーは下が基準 { 0.5,0 }）
-		float barLeft = info.m_volValPos.x - info.m_volValSiz.x / 2;
-		float barRight = info.m_volValPos.x + info.m_volValSiz.x / 2;
-		float barTop = info.m_volValPos.y + info.m_volValSiz.y;
+		float barLeft = info.m_volValPos.x - info.m_volValSize.x / 2;
+		float barRight = info.m_volValPos.x + info.m_volValSize.x / 2;
+		float barTop = info.m_volValPos.y + info.m_volValSize.y;
 		float barBot = info.m_volValPos.y;
 
 		bool isOnThumb = (mouse.x >= thumbLeft && mouse.x <= thumbRight &&

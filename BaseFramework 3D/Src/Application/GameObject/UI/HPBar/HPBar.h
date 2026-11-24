@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../UIBase.h"
 
+//HPバー
 class HPBar :public UIBase
 {
 public:
@@ -44,15 +45,19 @@ public:
 	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
 
 	//大きさの倍率をセット
-	// _siz ... 倍率
-	void SetSiz(float _siz) { m_siz = _siz; }
+	// _size ... 倍率
+	void SetSize(float _size) { m_size = _size; }
 
 	//表示するレベルをセット
 	// _LV ... レベル
 	void SetLV(int _LV);
 
+	//最大HPをセット(目盛りの数を決める)
+	// _maxHP ... 最大HP
 	void SetMaxHP(float _maxHP) { m_maxHP = _maxHP; }
 
+	//目盛りを描くかをセット
+	// _flg ... 描くならtrue
 	void SetDrawMemoryFlg(bool _flg) { m_drawMemoryFlg = _flg; }
 
 	//---- その他の処理 ----
@@ -61,10 +66,10 @@ public:
 	// _pos ... 画面上の座標(バーの中心)
 	void Set2DPos(const Math::Vector2& _pos) {
 		m_2DPos = _pos;
-		m_HPBarBackTex2DPos = { m_2DPos.x - m_HPBarBackTexLength.x / 2.0f * m_siz ,m_2DPos.y };
-		m_HPBarTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_siz ,m_2DPos.y };
-		m_HPBarDelayTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_siz ,m_2DPos.y };
-		m_HPBarIconFrameTex2DPos = { m_HPBarBackTex2DPos.x - m_HPBarIconFrameTexLength.x / 2.0f * m_siz ,m_2DPos.y };
+		m_HPBarBackTex2DPos = { m_2DPos.x - m_HPBarBackTexLength.x / 2.0f * m_size ,m_2DPos.y };
+		m_HPBarTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_size ,m_2DPos.y };
+		m_HPBarDelayTex2DPos = { m_2DPos.x - m_HPBarTexLength.x / 2.0f * m_size ,m_2DPos.y };
+		m_HPBarIconFrameTex2DPos = { m_HPBarBackTex2DPos.x - m_HPBarIconFrameTexLength.x / 2.0f * m_size ,m_2DPos.y };
 	}
 
 	//消すときの処理(今は何もしない)
@@ -78,7 +83,7 @@ private:
 	bool m_drawFlg = false;
 
 	//サイズ
-	float m_siz = 1.0f;
+	float m_size = 1.0f;
 
 	//HPバー背景
 	std::shared_ptr<KdTexture>m_spHPBarBackTex = nullptr;
@@ -155,7 +160,9 @@ private:
 	//1目盛りあたりのHP
 	const float m_hpPerScale = 100.0f;
 
+	//最大HP(目盛りの数を決める)
 	float m_maxHP = 0;
 
+	//目盛りを描くか
 	bool m_drawMemoryFlg = false;
 };

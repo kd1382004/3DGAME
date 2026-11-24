@@ -1,7 +1,12 @@
-﻿#include "HitDamage.h"
+﻿//---- 自分のヘッダー ----
+#include "HitDamage.h"							//ダメージ数字の表示
 
-#include"../../../Info/NumDraw/NumDraw.h"
-#include"../../Camera/CameraBase.h"
+//---- カメラ ----
+#include"../../Camera/CameraBase.h"				//カメラの基底クラス
+
+//---- 便利機能 ----
+#include"../../../Info/NumDraw/NumDraw.h"		//数字の画像描画
+
 void HitDamage::Init()
 {
 

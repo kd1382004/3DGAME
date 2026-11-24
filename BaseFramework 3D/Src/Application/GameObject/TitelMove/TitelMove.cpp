@@ -1,12 +1,24 @@
-﻿#include "TitelMove.h"
-#include "../../GameObject/Terrains/Map/MapManager.h"
+﻿//---- 自分のヘッダー ----
+#include "TitelMove.h"										//タイトル画面で歩き回るキャラ
 
-#include"../Camera/CameraBase.h"
+//---- カメラ ----
+#include"../Camera/CameraBase.h"							//カメラの基底クラス
+
+//---- マップ ----
+#include "../../GameObject/Terrains/Map/MapManager.h"		//マップの管理・経路探索
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 TitelMove::TitelMove()
 {
 
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void TitelMove::Update()
 {

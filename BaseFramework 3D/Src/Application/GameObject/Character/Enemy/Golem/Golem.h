@@ -4,6 +4,7 @@
 
 class AttackBase;
 
+//敵(ゴーレム)
 class Golem :public EnemyAmbush
 {
 public:

@@ -47,6 +47,7 @@ enum ItemType
 	WeaponsStrengthening
 };
 
+//アイテム入手の表示
 class ItemGetUIController :public UIBase
 {
 public:

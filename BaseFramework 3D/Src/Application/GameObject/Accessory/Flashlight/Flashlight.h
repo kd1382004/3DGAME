@@ -18,6 +18,7 @@ struct FlashlightConfig
 	bool m_stableLightDir = true; // ライトの向きはプレイヤーの正面に固定するか
 };
 
+//懐中電灯
 class Flashlight :public AccessoryBase
 {
 public:

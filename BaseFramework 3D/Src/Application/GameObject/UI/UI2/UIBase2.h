@@ -10,6 +10,7 @@ enum DrawKeyPos
 	DrawKeyPos_Bot,
 };
 
+//キー表示付きUIの基底クラス
 class UIBase2 :public UIBase
 {
 public:

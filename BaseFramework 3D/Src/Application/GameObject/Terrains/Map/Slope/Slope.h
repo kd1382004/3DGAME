@@ -2,6 +2,7 @@
 
 #include"../MapBase.h"
 
+//坂
 class Slope :public MapBase
 {
 public:

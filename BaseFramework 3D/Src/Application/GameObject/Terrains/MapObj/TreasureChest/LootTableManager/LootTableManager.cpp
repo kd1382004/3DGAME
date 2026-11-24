@@ -1,4 +1,9 @@
-﻿#include "LootTableManager.h"
+﻿//---- 自分のヘッダー ----
+#include "LootTableManager.h"		//宝箱のドロップテーブル管理
+
+//=============================================
+// 取得
+//=============================================
 
 std::shared_ptr<LootTableManager> LootTableManager::GetShared()
 {
@@ -38,6 +43,10 @@ int LootTableManager::GetRandomDropNum(const std::string& _tableName) const
 
 	return KdRandom::GetInt(it->second.m_dropMin, it->second.m_dropMax);
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void LootTableManager::Load(const std::string& _path)
 {

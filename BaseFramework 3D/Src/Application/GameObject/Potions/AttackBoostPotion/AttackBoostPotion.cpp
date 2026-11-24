@@ -1,6 +1,10 @@
-﻿#include "AttackBoostPotion.h"
-#include"../../Character/Player/PlayerBase.h"
-#include"../../Character/Player/PlayerBuffManager/PlayerBuffManager.h"
+﻿//---- 自分のヘッダー ----
+#include "AttackBoostPotion.h"												//攻撃力一時アップポーション
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"								//プレイヤー
+#include"../../Character/Player/PlayerBuffManager/PlayerBuffManager.h"		//プレイヤーのバフ管理
+
 
 void AttackBoostPotion::UseAttackBoostPotion(int _ID)
 {

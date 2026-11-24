@@ -6,6 +6,7 @@ class PrepareScene;
 
 enum PrepareMenu;
 
+//準備シーンの画面管理
 class PrepareSceneDisplay :public UIBase
 {
 public:
@@ -126,10 +127,10 @@ private:
 	Math::Vector2 m_menuPos[static_cast<int>(PrepareMenu::MenuSize)];
 
 	//メニューボタンの大きさ(画像)
-	Math::Vector2 m_menuSiz[static_cast<int>(PrepareMenu::MenuSize)];
+	Math::Vector2 m_menuSize[static_cast<int>(PrepareMenu::MenuSize)];
 
 	//メニューボタンの描く大きさ
-	Math::Vector2 m_menuDrawSiz[static_cast<int>(PrepareMenu::MenuSize)];
+	Math::Vector2 m_menuDrawSize[static_cast<int>(PrepareMenu::MenuSize)];
 
 	//マウスが乗っているか
 	bool m_mouseHitFlg[static_cast<int>(PrepareMenu::MenuSize)];
@@ -206,7 +207,7 @@ private:
 	Math::Vector2 m_weaponIconPos = { 440.0f, 146.0f };
 
 	//武器アイコンの大きさ
-	float m_weaponIconSiz = 40.0f;
+	float m_weaponIconSize = 40.0f;
 
 	//所持金
 	long m_money = 0;
@@ -221,7 +222,7 @@ private:
 	const float m_mouseHitScale = 1.1f;
 
 	//数字の大きさ(元画像9×14px → 18×28px)
-	const float m_numSiz = 2.0f;
+	const float m_numSize = 2.0f;
 
 	//数字と単位のすき間
 	const float m_numGap = 4.0f;

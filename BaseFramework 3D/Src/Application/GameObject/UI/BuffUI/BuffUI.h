@@ -4,6 +4,7 @@
 class PotionTexInfo;
 class PlayerBase;
 
+//バフの表示
 class BuffUI :public UIBase
 {
 public:
@@ -62,7 +63,7 @@ private:
 	std::weak_ptr<PlayerBase>m_wpPlayer;
 
 	//アイコンの大きさ
-	Math::Vector2 m_iconSiz;
+	Math::Vector2 m_iconSize;
 
 	//表示するバフの一覧
 	std::list<BuffUIInfo> m_potionBuffUIInfoList;

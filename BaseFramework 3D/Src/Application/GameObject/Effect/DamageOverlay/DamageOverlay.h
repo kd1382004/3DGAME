@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include"../EffectBase.h"
+//被ダメージ時の画面演出
 class DamageOverlay:public EffectBase
 {
 public:

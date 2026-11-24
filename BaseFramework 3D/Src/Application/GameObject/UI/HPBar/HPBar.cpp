@@ -1,6 +1,12 @@
-﻿#include "HPBar.h"
+﻿//---- 自分のヘッダー ----
+#include "HPBar.h"								//HPバー
 
-#include"../../../Info/NumDraw/NumDraw.h"
+//---- 便利機能 ----
+#include"../../../Info/NumDraw/NumDraw.h"		//数字の画像描画
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void HPBar::Init()
 {
@@ -38,7 +44,7 @@ void HPBar::Init()
 		m_HPBarIconFrameTexRect = { 0,0,(long)m_HPBarIconFrameTexLength.x,(long)m_HPBarIconFrameTexLength.y };
 	}
 
-	m_siz = 1;
+	m_size = 1;
 	m_HPBarTexPercent = std::clamp(m_HPBarTexPercent, 0.0f, 1.0f);
 }
 
@@ -57,7 +63,7 @@ void HPBar::PreDraw()
 	m_HPBarTexRect = { 0, 0, static_cast<long>(m_HPBarTexLength.x * m_HPBarTexPercent), static_cast<long>(m_HPBarTexLength.y) };
 
 	//遅延バーの座標補正
-	float hpBarDelayOffset = m_HPBarTexLength.x * m_siz * m_HPBarTexPercent;
+	float hpBarDelayOffset = m_HPBarTexLength.x * m_size * m_HPBarTexPercent;
 	m_HPBarDelayTex2DPos = { m_HPBarTex2DPos.x + hpBarDelayOffset, m_HPBarTex2DPos.y };
 }
 
@@ -70,7 +76,7 @@ void HPBar::DrawSprite()
 	//HPバー背景
 	if (m_spHPBarBackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarBackTex, m_HPBarBackTex2DPos.x, m_HPBarBackTex2DPos.y, m_HPBarBackTexLength.x * m_siz, m_HPBarBackTexLength.y * m_siz, &m_HPBarBackTexRect, &kWhiteColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarBackTex, m_HPBarBackTex2DPos.x, m_HPBarBackTex2DPos.y, m_HPBarBackTexLength.x * m_size, m_HPBarBackTexLength.y * m_size, &m_HPBarBackTexRect, &kWhiteColor, pivot);
 	}
 
 	
@@ -78,14 +84,14 @@ void HPBar::DrawSprite()
 	//HPバー本体
 	if (m_spHPBarTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarTex, m_HPBarTex2DPos.x, m_HPBarTex2DPos.y, m_HPBarTexLength.x * m_siz * m_HPBarTexPercent, m_HPBarTexLength.y * m_siz, &m_HPBarTexRect, &m_HPBarTexColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarTex, m_HPBarTex2DPos.x, m_HPBarTex2DPos.y, m_HPBarTexLength.x * m_size * m_HPBarTexPercent, m_HPBarTexLength.y * m_size, &m_HPBarTexRect, &m_HPBarTexColor, pivot);
 	}
 
 
 	//HPバー遅延分
 	if (m_spHPBarTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarTex, m_HPBarDelayTex2DPos.x, m_HPBarDelayTex2DPos.y, m_HPBarTexLength.x * m_siz * m_HPBarDelayTexPercent * m_HPBarTexProgress, m_HPBarTexLength.y * m_siz, &m_HPBarDelayTexRect, &m_HPBarDelayTexColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarTex, m_HPBarDelayTex2DPos.x, m_HPBarDelayTex2DPos.y, m_HPBarTexLength.x * m_size * m_HPBarDelayTexPercent * m_HPBarTexProgress, m_HPBarTexLength.y * m_size, &m_HPBarDelayTexRect, &m_HPBarDelayTexColor, pivot);
 	}
 
 	//Hpバーメモリ
@@ -93,11 +99,11 @@ void HPBar::DrawSprite()
 	{
 		//バー本体の左端と横幅(画面上)
 		const float barLeft = m_HPBarTex2DPos.x;
-		const float barWidth = m_HPBarTexLength.x * m_siz;
+		const float barWidth = m_HPBarTexLength.x * m_size;
 
 		//目盛りの大きさ(画像の大きさ × 拡大率)
-		const int memoryW = static_cast<int>(m_spHPMemoryTex->GetWidth() * m_siz);
-		const int memoryH = static_cast<int>(m_spHPMemoryTex->GetHeight() * m_siz);
+		const int memoryW = static_cast<int>(m_spHPMemoryTex->GetWidth() * m_size);
+		const int memoryH = static_cast<int>(m_spHPMemoryTex->GetHeight() * m_size);
 
 		for (float hp = m_hpPerScale; hp < m_maxHP; hp += m_hpPerScale)
 		{
@@ -126,12 +132,16 @@ void HPBar::DrawSprite()
 	if (m_spHPBarIconFrameTex)
 	{
 		pivot = { 0.5f, 0.5f };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarIconFrameTex, m_HPBarIconFrameTex2DPos.x, m_HPBarIconFrameTex2DPos.y, m_HPBarIconFrameTexLength.x * m_siz, m_HPBarIconFrameTexLength.y * m_siz, &m_HPBarIconFrameTexRect, &kWhiteColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spHPBarIconFrameTex, m_HPBarIconFrameTex2DPos.x, m_HPBarIconFrameTex2DPos.y, m_HPBarIconFrameTexLength.x * m_size, m_HPBarIconFrameTexLength.y * m_size, &m_HPBarIconFrameTexRect, &kWhiteColor, pivot);
 
 		// アイコンの枠の内側(8割)に収める
-		NumDraw::GetInstance().Draw(m_LV, CAligned, m_HPBarIconFrameTex2DPos, kWhiteColor, m_siz, false, -1, { m_HPBarIconFrameTexLength.x * m_siz * 0.8f, m_HPBarIconFrameTexLength.y * m_siz * 0.8f });
+		NumDraw::GetInstance().Draw(m_LV, CAligned, m_HPBarIconFrameTex2DPos, kWhiteColor, m_size, false, -1, { m_HPBarIconFrameTexLength.x * m_size * 0.8f, m_HPBarIconFrameTexLength.y * m_size * 0.8f });
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void HPBar::SetHPBarTexPercent(float _percent)
 {
@@ -142,7 +152,7 @@ void HPBar::SetHPBarTexPercent(float _percent)
 	m_HPBarTexPercent = percent;
 
 	//遅延分を計算
-	float hpBarDelayOffset = m_HPBarTexLength.x * m_siz * m_HPBarTexPercent;
+	float hpBarDelayOffset = m_HPBarTexLength.x * m_size * m_HPBarTexPercent;
 
 	// 遅延バーの描画位置
 	m_HPBarDelayTex2DPos.x = m_HPBarTex2DPos.x + hpBarDelayOffset;
@@ -171,6 +181,10 @@ void HPBar::SetLV(int _LV)
 {
 	m_LV = _LV;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void HPBar::Delete()
 {

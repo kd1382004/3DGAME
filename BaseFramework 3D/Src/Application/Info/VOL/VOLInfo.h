@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//音量設定
 class VOLInfo
 {
 public:

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//デバッグ用の状態
 class DebugInfo
 {
 public:

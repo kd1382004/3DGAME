@@ -53,7 +53,7 @@ private:
 	nlohmann::json m_data;
 	bool           m_dirty = false;		// 未保存の変更があるか
 	bool           m_savedFlg = false;	// 保存した直後か
-	std::string    m_message;
+	std::string    m_message;			// 画面に出すメッセージ(保存の結果など)
 
 	// 売値を買値の何%にするか(「売値を一括で決める」用)
 	int m_sellRate = 50;

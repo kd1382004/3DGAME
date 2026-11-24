@@ -1,6 +1,13 @@
-﻿#include "TreasureChestManager.h"
-#include"TreasureChest.h"
-#include"LootTableManager/LootTableManager.h"
+﻿//---- 自分のヘッダー ----
+#include "TreasureChestManager.h"					//宝箱の管理
+
+//---- マップオブジェクト ----
+#include"TreasureChest.h"							//宝箱
+#include"LootTableManager/LootTableManager.h"		//宝箱のドロップテーブル管理
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void TreasureChestManager::Init()
 {
@@ -68,6 +75,10 @@ void TreasureChestManager::PreDraw()
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void TreasureChestManager::GenerateTreasureChest(std::list<Math::Vector3> _treasureChestPosList)
 {
 
@@ -104,7 +115,7 @@ void TreasureChestManager::TreasureChestHit(const std::shared_ptr<KdGameObject>&
 		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
 		if (distSq <= hitCheckDistSq)
 		{
-			_spObj->RegistHitObject(mapObj);
+			_spObj->RegisterHitObject(mapObj);
 		}
 	}
 }

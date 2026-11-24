@@ -1,6 +1,10 @@
-#include "StaminaRegenBoostPotion.h"
-#include"../../Character/Player/PlayerBase.h"
-#include"../../Character/Player/PlayerBuffManager/PlayerBuffManager.h"
+//---- 自分のヘッダー ----
+#include "StaminaRegenBoostPotion.h"										//スタミナ回復量一時アップポーション
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"								//プレイヤー
+#include"../../Character/Player/PlayerBuffManager/PlayerBuffManager.h"		//プレイヤーのバフ管理
+
 
 void StaminaRegenBoostPotion::UseStaminaRegenBoostPotion(int _ID)
 {

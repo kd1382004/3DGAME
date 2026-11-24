@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../ButtonBase.h"
 
+//タイトルシーンへ戻るボタン
 class TitleButton :public ButtonBase
 {
 public:

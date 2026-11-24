@@ -1,12 +1,21 @@
-﻿#include "BaseScene.h"
-#include"../../Info/FadeDraw/FadeDraw.h"
+﻿//---- 自分のヘッダー ----
+#include "BaseScene.h"																//シーンの基底クラス
 
+//---- シーン ----
+#include"../SceneManager.h"															//シーンの管理
 
-#include"../SceneManager.h"
+//---- プレイヤー ----
+#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
+//---- 武器 ----
+#include"../../GameObject/Weapon/WeaponBase.h"										//武器の基底クラス
 
-#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"
-#include"../../GameObject/Weapon/WeaponBase.h"
+//---- 便利機能 ----
+#include"../../Info/FadeDraw/FadeDraw.h"											//画面フェードの描画
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void BaseScene::PreUpdate()
 {
@@ -222,6 +231,10 @@ void BaseScene::Init()
 	// 各シーンで必要な内容を実装(オーバーライド)する
 }
 
+//=============================================
+// 取得
+//=============================================
+
 std::string BaseScene::GetWeaponKey(int _weaponType)
 {
 	switch (_weaponType)
@@ -231,6 +244,10 @@ std::string BaseScene::GetWeaponKey(int _weaponType)
 	default:                      return "";
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void BaseScene::Event()
 {
@@ -474,11 +491,11 @@ void BaseScene::SaveWeaponStrengtheningData(bool _isSave, std::string _filePath,
 		}
 
 		// falseのときや保存データがないときは、初期値で全項目を作る
-		infoList.resize(WeaponsStrengtheningSiz);
+		infoList.resize(WeaponsStrengtheningSize);
 
 		// 強化項目ごとのループ
 		nlohmann::json weaponData = nlohmann::json::object();
-		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+		for (int i = 0; i < WeaponsStrengtheningSize; ++i)
 		{
 			WeaponsStrengtheningInfo item = infoList[i];
 
@@ -528,7 +545,7 @@ std::vector<WeaponsStrengtheningInfo> BaseScene::ReadWeaponStrengtheningList(con
 
 	const nlohmann::json& weaponData = _data[_key];
 
-	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+	for (int i = 0; i < WeaponsStrengtheningSize; ++i)
 	{
 		WeaponsStrengtheningInfo item;
 		item.m_myNodeID = i; // MyNodeID がないデータは種類の番号にしておく
@@ -648,6 +665,59 @@ GameRecord BaseScene::LoadGameRecord()
 	return record;
 }
 
+void BaseScene::RestockShop()
+{
+	//---------- 2つのJSONを読む ----------
+	auto readJson = [](const std::string& _path) -> nlohmann::json
+		{
+			std::ifstream file(_path);
+			if (!file) { return nlohmann::json::object(); }
+			nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+			if (data.is_discarded()) { return nlohmann::json::object(); }
+			return data;
+		};
+
+	const nlohmann::json master = readJson(m_shopMasterFilePath);	// 値段・最初の在庫数
+	nlohmann::json       stock = readJson(m_shopStockFilePath);	// 今の在庫
+
+	//---------- 配列1つ分を再入荷する ----------
+	// _key … "potions" / "materials" / "weapons"
+	auto restock = [&](const char* _key)
+		{
+			if (!master.contains(_key) || !stock.contains(_key)) { return; }
+
+			for (auto& item : stock[_key])
+			{
+				// 在庫が残っている商品はそのまま
+				if (item.value("stock", 0) > 0) { continue; }
+
+				// マスターから、同じidの最初の在庫数を探す
+				const int id = item.value("id", -1);
+				for (const auto& masterItem : master[_key])
+				{
+					if (masterItem.value("id", -1) == id)
+					{
+						item["stock"] = masterItem.value("startStock", 0);
+						break;
+					}
+				}
+			}
+		};
+
+	restock("potions");
+	restock("materials");
+	restock("weapons");
+
+	//---------- 保存 ----------
+	std::ofstream file(m_shopStockFilePath);
+	if (!file) { return; }
+	file << stock.dump(4);
+}
+
+//=============================================
+// 取得
+//=============================================
+
 bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
 {
 	const DisplayFloorInfo& a = _a.m_displayFloorInfo;
@@ -660,6 +730,10 @@ bool BaseScene::IsBetterResult(const GameResult& _a, const GameResult& _b)
 	// ③ それも同じなら、時間が短いほうが上
 	return a.m_playTimeSc < b.m_playTimeSc;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 nlohmann::json BaseScene::GameResultToJson(const GameResult& _result)
 {
@@ -718,53 +792,4 @@ GameResult BaseScene::JsonToGameResult(const nlohmann::json& _data)
 	}
 
 	return result;
-}
-
-void BaseScene::RestockShop()
-{
-	//---------- 2つのJSONを読む ----------
-	auto readJson = [](const std::string& _path) -> nlohmann::json
-		{
-			std::ifstream file(_path);
-			if (!file) { return nlohmann::json::object(); }
-			nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-			if (data.is_discarded()) { return nlohmann::json::object(); }
-			return data;
-		};
-
-	const nlohmann::json master = readJson(m_shopMasterFilePath);	// 値段・最初の在庫数
-	nlohmann::json       stock = readJson(m_shopStockFilePath);	// 今の在庫
-
-	//---------- 配列1つ分を再入荷する ----------
-	// _key … "potions" / "materials" / "weapons"
-	auto restock = [&](const char* _key)
-		{
-			if (!master.contains(_key) || !stock.contains(_key)) { return; }
-
-			for (auto& item : stock[_key])
-			{
-				// 在庫が残っている商品はそのまま
-				if (item.value("stock", 0) > 0) { continue; }
-
-				// マスターから、同じidの最初の在庫数を探す
-				const int id = item.value("id", -1);
-				for (const auto& masterItem : master[_key])
-				{
-					if (masterItem.value("id", -1) == id)
-					{
-						item["stock"] = masterItem.value("startStock", 0);
-						break;
-					}
-				}
-			}
-		};
-
-	restock("potions");
-	restock("materials");
-	restock("weapons");
-
-	//---------- 保存 ----------
-	std::ofstream file(m_shopStockFilePath);
-	if (!file) { return; }
-	file << stock.dump(4);
 }

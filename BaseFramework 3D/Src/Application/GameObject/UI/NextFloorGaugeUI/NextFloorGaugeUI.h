@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../UIBase.h"
 
+//次の階へ進むゲージ
 class NextFloorGaugeUI :public UIBase
 {
 public:
@@ -35,7 +36,7 @@ private:
 	//---- メンバ変数 ----
 
 	//サイズ
-	Math::Vector2 m_siz;
+	Math::Vector2 m_size;
 
 	//ゲージの画像
 	std::shared_ptr<KdTexture> m_spGaugeTexture = nullptr;
@@ -47,7 +48,7 @@ private:
 	bool m_drawFlg = false;
 
 	//キー表示の大きさ
-	Math::Vector2 m_actionKeySiz;
+	Math::Vector2 m_actionKeySize;
 
 	//表示するキー
 	int m_actionKey = 'E';

@@ -1,12 +1,17 @@
-﻿#include "ButtonBase.h"
+﻿//---- 自分のヘッダー ----
+#include "ButtonBase.h"							//ボタンの基底クラス
 
-#include"../../Info/MouseInfo/MouseInfo.h"
+//---- 便利機能 ----
+#include"../../Info/MouseInfo/MouseInfo.h"		//マウス入力
+#include"../../Info/DebugInfo/DebugInfo.h"		//デバッグ用の状態
 
-#include"../../Info/DebugInfo/DebugInfo.h"
+//=============================================
+// 基本の処理
+//=============================================
 
 void ButtonBase::Init()
 {
-	m_gameObjectClass = KdGameObject::GameObjectClass::GameObjectClass_Botton;
+	m_gameObjectClass = KdGameObject::GameObjectClass::GameObjectClass_Button;
 	m_choseFlg = false;
 }
 
@@ -56,11 +61,19 @@ void ButtonBase::DrawSprite()
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTex, m_pos.x, m_pos.y, m_diameter.x * m_scale, m_diameter.y * m_scale, nullptr, &color);
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void ButtonBase::SetPos(const Math::Vector3& _pos)
 {
 	m_pos.x = _pos.x;
 	m_pos.y = _pos.y;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void ButtonBase::KeyChosen(bool _choseFlg)
 {
@@ -75,6 +88,10 @@ void ButtonBase::KeyChosen(bool _choseFlg)
 
 	m_choseFlg = _choseFlg;
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ButtonBase::ImGUI()
 {
@@ -137,6 +154,10 @@ void ButtonBase::ImGUI()
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void ButtonBase::AlphaFlashing()
 {
 	m_alpha += m_alphaAdd;
@@ -178,7 +199,7 @@ void ButtonBase::MouseChosen()
 
 }
 
-void ButtonBase::DataLodo()
+void ButtonBase::DataLoad()
 {
 
 	std::ifstream ifs(m_filePath);

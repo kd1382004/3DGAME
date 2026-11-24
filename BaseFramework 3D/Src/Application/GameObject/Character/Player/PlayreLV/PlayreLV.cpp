@@ -1,8 +1,19 @@
-﻿#include "PlayreLV.h"
-#include"../PlayerBase.h"
-#include"../../../../Info/VOL/VOLInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "PlayreLV.h"							//プレイヤーのレベル
 
-#include"../../../UI/HPBar/HPBar.h"
+//---- プレイヤー ----
+#include"../PlayerBase.h"						//プレイヤー
+
+//---- UI ----
+#include"../../../UI/HPBar/HPBar.h"				//HPバー
+
+//---- 便利機能 ----
+#include"../../../../Info/VOL/VOLInfo.h"		//音量設定
+
+//=============================================
+// 設定
+//=============================================
+
 void PlayreLV::AddExp(int _gainedExp, PlayerBase* _player)
 {
 
@@ -35,6 +46,10 @@ void PlayreLV::AddExp(int _gainedExp, PlayerBase* _player)
 		}
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void PlayreLV::CalcNextLevelExp(int _LV)
 {

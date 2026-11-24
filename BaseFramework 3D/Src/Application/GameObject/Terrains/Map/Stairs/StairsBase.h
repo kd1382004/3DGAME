@@ -3,6 +3,7 @@
 
 
 
+//階段
 class StairsBase :public MapBase
 {
 public:

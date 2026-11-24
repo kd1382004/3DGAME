@@ -42,7 +42,7 @@ private:
 	//読み込んだjson
 	nlohmann::json m_data;
 	bool           m_dirty = false; // 未保存の変更があるか
-	std::string    m_message;
+	std::string    m_message;			// 画面に出すメッセージ(保存の結果など)
 
 	//---- 基本の処理 ----
 

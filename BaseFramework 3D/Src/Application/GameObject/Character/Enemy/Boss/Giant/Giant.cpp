@@ -1,12 +1,20 @@
-﻿#include "Giant.h"
+﻿//---- 自分のヘッダー ----
+#include "Giant.h"											//ボス(巨人)
 
-#include"../../../../UI/HPBar/HPBar.h"
-#include"../../../../UI/AttackGage/AttackGage.h"
+//---- シーン ----
+#include"../../../../../Scene/SceneManager.h"				//シーンの管理
+#include"../../../../../Scene/GameScene/GameScene.h"		//ゲームシーン
 
-#include"../../../../../Scene/SceneManager.h"
-#include"../../../../../Scene/GameScene/GameScene.h"
+//---- マップ ----
+#include"../../../../Terrains/Map/MapManager.h"				//マップの管理・経路探索
 
-#include"../../../../Terrains/Map/MapManager.h"
+//---- UI ----
+#include"../../../../UI/HPBar/HPBar.h"						//HPバー
+#include"../../../../UI/AttackGage/AttackGage.h"			//攻撃(溜め)ゲージ
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void Giant::Init()
 {
@@ -171,7 +179,7 @@ void Giant::PreDraw()
 	{
 		Math::Vector2 pos = { 0,300 };
 		spHPBar->Set2DPos(pos);
-		spHPBar->SetSiz(3);
+		spHPBar->SetSize(3);
 		spHPBar->SetDrawFlg(true);
 	}
 
@@ -181,7 +189,7 @@ void Giant::PreDraw()
 	{
 		Math::Vector2 pos = { 0,250 };
 		spAttackGauge->Set2DPos(pos);
-		spAttackGauge->SetSiz(3);
+		spAttackGauge->SetSize(3);
 		spAttackGauge->SetDrawFlg(true);
 	}
 }
@@ -214,10 +222,18 @@ void Giant::DrawLit()
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void Giant::OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos)
 {
 	CharacterBase::OnAttackHit(_damage, _knockbackDistance, _knockbackDir, _hitStunTime, _isCritical, _ignoreRate, _hitPos);
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void Giant::Release()
 {
@@ -251,6 +267,10 @@ void Giant::Release()
 	}
 }
 
+//=============================================
+// 取得
+//=============================================
+
 Math::Matrix Giant::GetBoneWorldMatrix(std::string _nodeName)
 {
 
@@ -265,6 +285,10 @@ Math::Matrix Giant::GetBoneWorldMatrix(std::string _nodeName)
 
 	return handWorld;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void Giant::ChangeAnime()
 {
@@ -316,5 +340,3 @@ void Giant::UpdateFootstepSE()
 		}
 	}
 }
-
-

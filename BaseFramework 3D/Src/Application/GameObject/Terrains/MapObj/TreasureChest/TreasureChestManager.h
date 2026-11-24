@@ -10,6 +10,7 @@ class UIManager;
 class UIMap_TreasureChest;
 class LootTableManager;
 
+//宝箱の管理
 class TreasureChestManager :public KdGameObject
 {
 public:

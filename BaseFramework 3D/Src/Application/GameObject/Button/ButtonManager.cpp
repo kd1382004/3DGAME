@@ -1,8 +1,19 @@
-﻿#include "ButtonManager.h"
-#include"ButtonBase.h"
-#include"../../Info/KeyInfo/KeyInfo.h"
-#include "../../Object/Button/GameButton/GameButton.h"
-#include "../../Object/Button/TitleButton/TitleButton.h"
+﻿//---- 自分のヘッダー ----
+#include "ButtonManager.h"										//ボタンの管理
+
+//---- ボタン ----
+#include"ButtonBase.h"											//ボタンの基底クラス
+
+//---- 便利機能 ----
+#include"../../Info/KeyInfo/KeyInfo.h"							//キー入力
+
+//---- その他 ----
+#include "../../Object/Button/GameButton/GameButton.h"		//ゲームシーンへ進むボタン(※このパスのフォルダーは見当たらない。追加のインクルードディレクトリ経由?)
+#include "../../Object/Button/TitleButton/TitleButton.h"		//タイトルシーンへ戻るボタン(※同上)
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ButtonManager::Update()
 {
@@ -65,10 +76,18 @@ void ButtonManager::DrawSprite()
 
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void ButtonManager::SetPos(const Math::Vector3& _pos)
 {
 
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void ButtonManager::InitTitle()
 {
@@ -112,6 +131,10 @@ void ButtonManager::InitResult()
 
 	Init();
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ButtonManager::Init()
 {

@@ -15,6 +15,7 @@ class CampObject;
 class PrepareCamera;
 class CampLight;
 class PrepareLayoutEditor;
+//出発演出の状態(None:していない / Walk:入口へ歩いている / Fade:暗転中)
 enum class DepartState { None, Walk, Fade };
 //////////////////////////////////////////////////////////////
 // 準備シーン
@@ -69,8 +70,12 @@ public:
 	// ShopDisplay が持っている今の値(お金・武器)を、ほかの画面に配る
 	void OnShopDataChanged();
 
+	//出発の演出を始める(出発ボタンを押したときに呼ぶ)
 	void StartDepart();
+
+	//出発の演出を進める(プレイヤーを入口へ歩かせて、暗転したらゲームシーンへ)
 	void UpdateDepart();
+
 private:
 
 	//---- メンバ変数 ----
@@ -135,12 +140,27 @@ private:
 	void ApplyEquip();
 
 
+	//---- キャンプ(背景)関係のメンバ変数 ----
+
+	//Blenderから書き出したキャンプの配置データのパス
 	const std::string m_campLayoutFilePath = "Asset/Data/ObjeData/PrepareObjeData/CampLayout.json";
+
+	//エディタで調整した値(カメラ・ライト・出発演出)のパス
 	const std::string m_campLayoutTuneFilePath = "Asset/Data/ObjeData/PrepareObjeData/CampLayoutTune.json";
+
+	//キャンプの配置データ
 	CampLayoutData m_campLayout;
+
+	//準備シーン用カメラ
 	std::shared_ptr<PrepareCamera> m_spPrepareCamera;
+
+	//キャンプの置物
 	std::vector<std::shared_ptr<CampObject>> m_campObjects;
+
+	//キャンプのライト
 	std::vector<std::shared_ptr<CampLight>> m_campLights;
+
+	//キャンプで出しているエフェクト(焚き火など)
 	std::vector<std::weak_ptr<KdEffekseerObject>> m_wpKdEffekseerObject;
 
 	// 準備画面(屋外・夕方)の霧と環境光
@@ -151,10 +171,16 @@ private:
 	Math::Vector4 m_campAmbient = { 0.6f, 0.62f, 0.75f, 0.5f };	// 少し青寄り。オレンジの光と対比させる
 
 
+	//キャンプに立っているプレイヤーの置物(出発の演出で歩かせる)
 	std::weak_ptr<CampObject>m_wpCampPlayer;
+
+	//---- 出発演出のメンバ変数 ----
+
+	//出発演出の状態
 
 	DepartState m_departState = DepartState::None;
 	float m_departTimer = 0.0f;//歩き始めてからの秒数
 	float m_departFadeTimer = 0.0f;//暗転を始めてからの秒数
+	//歩き始めた位置
 	Math::Vector3 m_departStartPos;
 };

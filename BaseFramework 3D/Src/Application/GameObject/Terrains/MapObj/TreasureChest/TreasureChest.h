@@ -9,6 +9,7 @@ class UIMap_TreasureChest;
 class LootTableManager;
 class UIBase2;
 
+//宝箱
 class TreasureChest:public MapObjBase
 {
 public:
@@ -117,7 +118,7 @@ private:
 	std::shared_ptr<KdTexture>m_spUiTex;
 
 	//オープン可能範囲
-	float m_openSiz = 3;
+	float m_openSize = 3;
 
 	//音
 	std::shared_ptr<KdSoundInstance3D> m_spTreasureChestSE;

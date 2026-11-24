@@ -1,6 +1,16 @@
-﻿#include "EnemyAmbush.h"
-#include"../../../Terrains/Map/MapManager.h"
-#include"../../Player/PlayerBase.h"
+﻿//---- 自分のヘッダー ----
+#include "EnemyAmbush.h"							//敵の待ち伏せ出現
+
+//---- プレイヤー ----
+#include"../../Player/PlayerBase.h"					//プレイヤー
+
+//---- マップ ----
+#include"../../../Terrains/Map/MapManager.h"		//マップの管理・経路探索
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void EnemyAmbush::Init()
 {
 	m_wanderRadius = 15;
@@ -78,6 +88,10 @@ void EnemyAmbush::Update()
 	}
 
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void EnemyAmbush::Wander()
 {
@@ -201,5 +215,3 @@ void EnemyAmbush::Wander()
 		}
 	}
 }
-
-

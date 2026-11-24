@@ -1,5 +1,5 @@
-﻿#include "FloorBase.h"
-
+﻿//---- 自分のヘッダー ----
+#include "FloorBase.h"		//床
 
 void FloorBase::Init()
 {

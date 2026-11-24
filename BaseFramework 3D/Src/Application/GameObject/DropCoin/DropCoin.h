@@ -11,6 +11,7 @@ enum class DropCoinState
 	Get,      // 取得（所持金に加算して消える）
 };
 
+//敵が落とすコイン
 class DropCoin :public KdGameObject
 {
 public:
@@ -30,6 +31,7 @@ public:
 	//エフェクトの描画
 	void DrawEffect()override;
 
+	//光る部分の描画
 	void DrawBright()override;
 
 	//プレイヤーをセット

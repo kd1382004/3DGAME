@@ -1,4 +1,6 @@
-﻿#include "CampLayoutData.h"
+﻿//---- 自分のヘッダー ----
+#include "CampLayoutData.h"		//キャンプの配置データ
+
 
 namespace
 {

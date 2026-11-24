@@ -9,6 +9,7 @@ enum GroundType
 };
 
 
+//床
 class FloorBase :public MapBase
 {
 public:

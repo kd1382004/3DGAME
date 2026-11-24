@@ -4,6 +4,7 @@ class WarpGateBase;
 class PlayerBase;
 class GameScene;
 
+//ワープゲートの管理
 class WarpGateManager:public KdGameObject
 {
 public:

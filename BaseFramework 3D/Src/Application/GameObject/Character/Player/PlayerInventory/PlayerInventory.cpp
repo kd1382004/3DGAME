@@ -1,8 +1,15 @@
-﻿#include "PlayerInventory.h"
-#include"../../../Potions/PotionsType.h"
+﻿//---- 自分のヘッダー ----
+#include "PlayerInventory.h"										//プレイヤーの所持品
 
+//---- ポーション ----
+#include"../../../Potions/PotionsType.h"							//ポーションの種類
 
-#include"../../../UI/ItemGetUIController/ItemGetUIController.h"
+//---- UI ----
+#include"../../../UI/ItemGetUIController/ItemGetUIController.h"		//アイテム入手の表示
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void PlayerInventory::Init()
 {
@@ -58,6 +65,10 @@ void PlayerInventory::Init()
 	}
 }
 
+//=============================================
+// 取得
+//=============================================
+
 int PlayerInventory::GetPotionsInventoryNum(int _potionsType)
 {
 	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return 0; }
@@ -69,6 +80,10 @@ int PlayerInventory::GetWeaponsStrengtheningInventoryNum(int _weaponsStrengtheni
 	if (_weaponsStrengtheningType < 0 || _weaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return 0; }
 	return m_weaponsStrengtheningInventory[_weaponsStrengtheningType].m_num;
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void PlayerInventory::AddPotionsInventory(int _potionsType)
 {
@@ -119,6 +134,10 @@ void PlayerInventory::SetWeaponsStrengtheningInventoryList(const std::vector<Inv
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void PlayerInventory::UsePotionsInventory(int _potionsType)
 {
 	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return; }
@@ -130,4 +149,3 @@ void PlayerInventory::UseWeaponsStrengtheningInventory(int _weaponsStrengthening
 	if (_weaponsStrengtheningType < 0 || _weaponsStrengtheningType >= m_weaponsStrengtheningInventory.size()) { return; }
 	m_weaponsStrengtheningInventory[_weaponsStrengtheningType].m_num -= _num;
 }
-

@@ -1,13 +1,26 @@
-﻿#include "ItemBar.h"
-#include"../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../Info/DeltaTime/DeltaTime.h"
-#include"../../../Info/NumDraw/NumDraw.h"
-#include"../../Character/Player/PlayerBase.h"
-#include"../../Character/Player/PlayerInventory/PlayerInventory.h"
-#include"../../Potions/PotionUseController.h"
-#include"../../Potions/PotionTexInfo/PotionTexInfo.h"
-#include"../PlayerInventoryUI/PlayerInventoryUI.h"
+﻿//---- 自分のヘッダー ----
+#include "ItemBar.h"													//アイテムバー
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"							//プレイヤー
+#include"../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
+
+//---- ポーション ----
+#include"../../Potions/PotionUseController.h"							//ポーションの使用処理
+#include"../../Potions/PotionTexInfo/PotionTexInfo.h"					//アイテムの名前・画像情報
+
+//---- UI ----
+#include"../PlayerInventoryUI/PlayerInventoryUI.h"						//インベントリ画面
+
+//---- 便利機能 ----
+#include"../../../Info/KeyInfo/KeyInfo.h"								//キー入力
+#include"../../../Info/MouseInfo/MouseInfo.h"							//マウス入力
+#include"../../../Info/DeltaTime/DeltaTime.h"							//デルタタイム
+#include"../../../Info/NumDraw/NumDraw.h"								//数字の画像描画
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ItemBar::Init()
 {
@@ -132,10 +145,10 @@ void ItemBar::DrawSprite()
 	{
 		const int count = spPlayer->GetPlayerInventory()->GetPotionsInventoryNum(m_selectID);
 		// 数字の大きさはアイコンに合わせる(元の数字は1文字9×14。アイコン32なら1倍)
-		const float numSiz = std::max(1.0f, std::round(m_selectSize / 32.0f));
+		const float numSize = std::max(1.0f, std::round(m_selectSize / 32.0f));
 		NumDraw::GetInstance().Draw(count, RAligned,
 			{ m_2DPos.x + m_selectSize * 0.65f, m_2DPos.y - m_selectSize * 0.45f },
-			kWhiteColor, numSiz);
+			kWhiteColor, numSize);
 	}
 
 	// 名前(バーの上)
@@ -157,6 +170,10 @@ void ItemBar::DrawSprite()
 		}
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void ItemBar::MakeItemList()
 {

@@ -1,11 +1,24 @@
-﻿#include"MouseInfo.h"
-#include"../../main.h"
-#include"../KeyInfo/KeyInfo.h"
+﻿//---- 自分のヘッダー ----
+#include"MouseInfo.h"				//マウス入力
+
+//---- アプリケーション ----
+#include"../../main.h"				//アプリケーション本体(ウィンドウ・FPS管理)
+
+//---- 便利機能 ----
+#include"../KeyInfo/KeyInfo.h"		//キー入力
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 MouseInfo::~MouseInfo()
 {
 
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void MouseInfo::Update()
 {
@@ -103,6 +116,10 @@ void MouseInfo::DrawSprite()
 
 }
 
+//=============================================
+// 取得
+//=============================================
+
 POINT MouseInfo::GetWindowMousePos()
 {
 
@@ -118,6 +135,10 @@ int MouseInfo::GetMouseWheelValue() const
 {
 	return Application::Instance().GetMouseWheelValue();
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void MouseInfo::SetMouseType(MouseType _type)
 {
@@ -151,6 +172,10 @@ void MouseInfo::SetMousePosFixMousePos()
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void MouseInfo::SEMouseClickPlay()
 {
 	if (m_spClickSE)
@@ -159,6 +184,10 @@ void MouseInfo::SEMouseClickPlay()
 		m_spClickSE->Play();
 	}
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void MouseInfo::Init()
 {

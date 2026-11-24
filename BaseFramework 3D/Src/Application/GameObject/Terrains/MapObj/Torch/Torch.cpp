@@ -1,6 +1,12 @@
-﻿#include "Torch.h"
+﻿//---- 自分のヘッダー ----
+#include "Torch.h"							//松明
 
-#include"../../../Camera/CameraBase.h"
+//---- カメラ ----
+#include"../../../Camera/CameraBase.h"		//カメラの基底クラス
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void Torch::Init()
 {
@@ -148,6 +154,10 @@ void Torch::GenerateDepthMapFromLight()
 	DrawModelWithFade(*m_spTorchModel, false);
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void Torch::SetPos(const Math::Vector3& _pos)
 {
 	m_pos = _pos;
@@ -157,13 +167,17 @@ void Torch::SetPos(const Math::Vector3& _pos)
 void Torch::SetRotation(Math::Matrix _rMat)
 {
 	Math::Vector3 pos = GetPos();
-	Math::Vector3 siz = GetScale();
+	Math::Vector3 size = GetScale();
 
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(pos);
-	Math::Matrix sMat = Math::Matrix::CreateScale(siz);
+	Math::Matrix sMat = Math::Matrix::CreateScale(size);
 
 	m_mWorld = sMat * _rMat * tMat;
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void Torch::Release()
 {
@@ -174,6 +188,10 @@ void Torch::Release()
 		m_spFireSE->Stop();
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void Torch::SetSoundUpdate(bool _flg)
 {

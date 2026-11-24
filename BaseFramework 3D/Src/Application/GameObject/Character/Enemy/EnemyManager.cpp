@@ -1,17 +1,26 @@
-﻿#include "EnemyManager.h"
-#include"EnemyBase.h"
+﻿//---- 自分のヘッダー ----
+#include "EnemyManager.h"								//敵の管理
 
-#include"Goblin/Enemy_Goblin.h"
-#include"Golem/Golem.h"
+//---- シーン ----
+#include"../../../Scene/GameScene/GameScene.h"			//ゲームシーン
 
-#include"Boss/Giant/Giant.h"
+//---- 敵 ----
+#include"EnemyBase.h"									//敵の基底クラス
+#include"Goblin/Enemy_Goblin.h"							//敵(ゴブリン)
+#include"Golem/Golem.h"									//敵(ゴーレム)
+#include"Boss/Giant/Giant.h"							//ボス(巨人)
 
-#include"../../Terrains/Map/MapManager.h"
+//---- マップ ----
+#include"../../Terrains/Map/MapManager.h"				//マップの管理・経路探索
 
-#include"../../UI/UIManager.h"
-#include"../../UI/UIMap/UIMapManager.h"
-#include"../../UI/UIMap/UIMap_Enemy/UIMap_Enemy.h"
-#include"../../../Scene/GameScene/GameScene.h"
+//---- UI ----
+#include"../../UI/UIManager.h"							//UIの管理
+#include"../../UI/UIMap/UIMapManager.h"					//ミニマップの管理
+#include"../../UI/UIMap/UIMap_Enemy/UIMap_Enemy.h"		//ミニマップの敵アイコン
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void EnemyManager::Init()
 {
@@ -140,6 +149,10 @@ void EnemyManager::DrawDebug()
 	}
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void EnemyManager::SetPlayer(std::shared_ptr<PlayerBase> _spPlayer)
 {
 	m_wpPlayer = _spPlayer;
@@ -177,6 +190,10 @@ void EnemyManager::SetVisionFlg(bool _flg)
 		enemy->SetVisionFlg(_flg);
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void EnemyManager::SpawnEnemy(EnemyType _enemyType, Math::Vector3 _spawnPos)
 {
@@ -256,6 +273,10 @@ void EnemyManager::SpawnBoss(Math::Vector3 _spawnPos)
 	}
 
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void EnemyManager::SetEnemyListPlayer()
 {

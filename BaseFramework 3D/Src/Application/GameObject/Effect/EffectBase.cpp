@@ -1,4 +1,5 @@
-﻿#include "EffectBase.h"
+﻿//---- 自分のヘッダー ----
+#include "EffectBase.h"		//エフェクトの基底クラス
 
 void EffectBase::Init()
 {

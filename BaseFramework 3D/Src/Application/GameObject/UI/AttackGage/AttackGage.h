@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../UIBase.h"
 
+//攻撃(溜め)ゲージ
 class AttackGage :public UIBase
 {
 public:
@@ -38,8 +39,8 @@ public:
 	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
 
 	//大きさの倍率をセット
-	// _siz ... 倍率
-	void SetSiz(float _siz) { m_siz = _siz; }
+	// _size ... 倍率
+	void SetSize(float _size) { m_size = _size; }
 
 	//---- その他の処理 ----
 
@@ -47,8 +48,8 @@ public:
 	// _pos ... 画面上の座標(バーの中心)
 	void Set2DPos(const Math::Vector2& _pos) {
 		m_2DPos = _pos;
-		m_attackGaugeBackTex2DPos = { m_2DPos.x - m_attackGaugeBackTexLength.x / 2.0f * m_siz ,m_2DPos.y };
-		m_attackGaugeTex2DPos = { m_2DPos.x - m_attackGaugeTexLength.x / 2.0f * m_siz ,m_2DPos.y };
+		m_attackGaugeBackTex2DPos = { m_2DPos.x - m_attackGaugeBackTexLength.x / 2.0f * m_size ,m_2DPos.y };
+		m_attackGaugeTex2DPos = { m_2DPos.x - m_attackGaugeTexLength.x / 2.0f * m_size ,m_2DPos.y };
 	}
 
 	//消すときの処理(今は何もしない)
@@ -62,7 +63,7 @@ private:
 	bool m_drawFlg = false;
 
 	//大きさの倍率
-	float m_siz = 1;
+	float m_size = 1;
 
 	//攻撃ゲージ
 	std::shared_ptr<KdTexture>m_spAttackGaugeBackTex = nullptr;

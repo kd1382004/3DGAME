@@ -1,8 +1,15 @@
-﻿#include "MapObjManager.h"
+﻿//---- 自分のヘッダー ----
+#include "MapObjManager.h"			//マップオブジェクトの管理
 
-#include"MapObjBase.h"
+//---- マップ ----
+#include"../Map/MapManager.h"		//マップの管理・経路探索
 
-#include"../Map/MapManager.h"
+//---- マップオブジェクト ----
+#include"MapObjBase.h"				//マップオブジェクトの基底クラス
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void MapObjManager::Init()
 {}
@@ -132,6 +139,10 @@ void MapObjManager::DrawDebug()
 	}
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void MapObjManager::AddMapObj(std::shared_ptr<MapObjBase> _spObj)
 {
 	
@@ -212,6 +223,9 @@ void MapObjManager::SetMapObjUpdateList(std::shared_ptr<MapManager> _spMapManage
 	m_mapObjDrawList = std::move(newDrawList);
 }
 
+//=============================================
+// その他の処理
+//=============================================
 
 void MapObjManager::ObjSetCamera(std::shared_ptr<CameraBase> _spCameraBase)
 {
@@ -234,7 +248,7 @@ void MapObjManager::MapObjHit(const std::shared_ptr<KdGameObject>& _spObj)
 		float distSq = Math::Vector3::DistanceSquared(mapObj->GetPos(), objPos);
 		if (distSq <= hitCheckDistSq)
 		{
-			_spObj->RegistHitObject(mapObj);
+			_spObj->RegisterHitObject(mapObj);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 
 class ButtonBase;
 
+//ボタンの管理
 class ButtonManager :public KdGameObject
 {
 public:

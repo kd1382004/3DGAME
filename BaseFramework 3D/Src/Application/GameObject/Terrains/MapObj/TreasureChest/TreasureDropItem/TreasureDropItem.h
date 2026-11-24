@@ -12,6 +12,7 @@ enum class DropState
 	Get,      // 取得（UI に通知して消える）
 };
 
+//宝箱から出るアイテム
 class TreasureDropItem :public KdGameObject
 {
 public:
@@ -105,9 +106,9 @@ private:
 	//-------- 吸い寄せ --------
 	float m_targetHeight = 1.0f;          // プレイヤーの足元ではなく胸あたりを狙う
 
-	Math::Vector3 m_attractStartPos;
-	float m_attractTimer = 0;
-	float m_attractTime = 0.5f;
+	Math::Vector3 m_attractStartPos;      // 吸い寄せを始めた位置
+	float m_attractTimer = 0;             // 吸い寄せを始めてからの秒数
+	float m_attractTime = 0.5f;           // 何秒でプレイヤーに届くか
 
 	//今の状態
 	DropState m_dropStateMode = DropState::Pop;

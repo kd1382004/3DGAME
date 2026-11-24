@@ -18,6 +18,7 @@ enum EnemyType
 	RoomStarsEnemy,
 };
 
+//敵の管理
 class EnemyManager:public KdGameObject, public std::enable_shared_from_this<EnemyManager>
 {
 public:

@@ -4,6 +4,7 @@
 class MapManager;
 
 struct Node; // ノード構造体の前方宣言を追加
+//タイトル画面で歩き回るキャラ
 class TitelMove :public CharacterBase
 {
 public:
@@ -92,7 +93,7 @@ private:
 	//目標地点
 	Math::Vector3 m_nextPos;
 	Math::Vector3 m_moveVec = Math::Vector3::Zero; // 進行方向ベクトル
-	float m_speed = 10.0f;
+	float m_speed = 10.0f; // 移動速度
 	float m_nodeNearDistance = 1.0f; // ノード到達判定の半径
 
 	// ノード経路情報

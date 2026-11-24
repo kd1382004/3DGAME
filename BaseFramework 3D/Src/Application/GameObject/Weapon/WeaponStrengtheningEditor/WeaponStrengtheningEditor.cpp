@@ -1,12 +1,25 @@
-﻿#include"WeaponStrengtheningEditor.h"
-#include"../WeaponBase.h" // kStrengtheningKeys / WeaponsStrengtheningSiz
-#include<map>
+﻿//---- 自分のヘッダー ----
+#include"WeaponStrengtheningEditor.h"		//武器強化データ編集エディター
+
+//---- 武器 ----
+#include"../WeaponBase.h"					//武器の基底クラス kStrengtheningKeys / WeaponsStrengtheningSiz
+
+//---- 標準ライブラリ ----
+#include<map>								//連想配列(std::map)
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 WeaponStrengtheningEditor::WeaponStrengtheningEditor(const std::string& _filePath)
 	: m_filePath(_filePath)
 {
 	Load();
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void WeaponStrengtheningEditor::Draw(bool* _open)
 {
@@ -60,6 +73,10 @@ void WeaponStrengtheningEditor::Draw(bool* _open)
 	ImGui::End();
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 bool WeaponStrengtheningEditor::Load()
 {
 	std::ifstream file(m_filePath);
@@ -108,6 +125,10 @@ bool WeaponStrengtheningEditor::Save()
 	return true;
 }
 
+//=============================================
+// 基本の処理
+//=============================================
+
 void WeaponStrengtheningEditor::DrawWeapon(nlohmann::json& _weapon)
 {
 	constexpr ImGuiTableFlags flags =
@@ -126,7 +147,7 @@ void WeaponStrengtheningEditor::DrawWeapon(nlohmann::json& _weapon)
 	ImGui::TableHeadersRow();
 
 	// nlohmann::json はキーをアルファベット順に並べるので、ゲームと同じ kStrengtheningKeys の順で回す
-	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+	for (int i = 0; i < WeaponsStrengtheningSize; ++i)
 	{
 		const char* itemKey = kStrengtheningKeys[i];
 		if (!_weapon.contains(itemKey) || !_weapon[itemKey].is_object()) { continue; }
@@ -186,6 +207,10 @@ void WeaponStrengtheningEditor::DrawPreview(const nlohmann::json& _item)
 	ImGui::TextUnformatted(text.c_str());
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void WeaponStrengtheningEditor::EditInt(nlohmann::json& _obj, const char* _key, int _min, int _max)
 {
 	int v = _obj.value(_key, 0);
@@ -216,7 +241,7 @@ std::vector<std::string> WeaponStrengtheningEditor::Validate(const nlohmann::jso
 	std::map<int, std::string> idToKey; // MyNodeID → キー名
 	std::map<int, int>         idToPre; // MyNodeID → PreconditionNodeID
 
-	for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+	for (int i = 0; i < WeaponsStrengtheningSize; ++i)
 	{
 		const char* key = kStrengtheningKeys[i];
 		if (!_weapon.contains(key) || !_weapon[key].is_object())
@@ -254,7 +279,7 @@ std::vector<std::string> WeaponStrengtheningEditor::Validate(const nlohmann::jso
 		// 前提をたどって、ノード数を超えても根元(-1)に着かなければ循環
 		int cur = id;
 		int step = 0;
-		while (cur >= 0 && step <= WeaponsStrengtheningSiz)
+		while (cur >= 0 && step <= WeaponsStrengtheningSize)
 		{
 			auto p = idToPre.find(cur);
 			if (p == idToPre.end() || p->second == cur) { cur = -1; break; }

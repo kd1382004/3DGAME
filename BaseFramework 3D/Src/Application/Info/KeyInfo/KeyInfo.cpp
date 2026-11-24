@@ -1,7 +1,14 @@
-﻿#include "KeyInfo.h"
-#include"../MouseInfo/MouseInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "KeyInfo.h"					//キー入力
 
-void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, float _alpha, Math::Vector2 _pivot)
+//---- 便利機能 ----
+#include"../MouseInfo/MouseInfo.h"		//マウス入力
+
+//=============================================
+// 基本の処理
+//=============================================
+
+void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _size, float _alpha, Math::Vector2 _pivot)
 {
 	if (!m_spKeyTexture) { return; }
 	Math::Color color = { 1,1,1,_alpha };
@@ -11,7 +18,7 @@ void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, floa
 
 	if (_key >= 'A' && _key <= 'Z')
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture, _2DPos.x, _2DPos.y, _size.x, _size.y, &srcRect, &color, _pivot);
 		return;
 	}
 
@@ -34,10 +41,14 @@ void KeyInfo::Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, floa
 	case VK_END:
 	case VK_HOME:
 	case VK_PAUSE:
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture2, _2DPos.x, _2DPos.y, _siz.x, _siz.y, &srcRect, &color, _pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spKeyTexture2, _2DPos.x, _2DPos.y, _size.x, _size.y, &srcRect, &color, _pivot);
 		return;
 	}
 }
+
+//=============================================
+// 取得
+//=============================================
 
 bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
 {
@@ -90,6 +101,57 @@ bool KeyInfo::GetValidKeyPush(int _key, bool _useFlg, bool _flg)
 	return  flg;
 }
 
+bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
+{
+	bool flg = false;
+
+	if (!_key->m_validFlg)
+	{
+		return flg;
+	}
+
+	//Keyが押されてるかどうか
+	if (_key->m_pushFlg)
+	{
+		//そのKeyが使われたことがあるかどうか気にするか
+		if (_useFlg)
+		{
+			//使用されたかどうかの反転を入れる
+			flg = !_key->m_useFlg;
+		}
+		else
+		{
+			//気にしないならtrue
+			flg = true;
+		}
+
+	}
+
+	//もし使われたなら
+	if (flg)
+	{
+		_key->m_useFlg = true;
+
+		if (_useFlg && _flg)
+		{
+			if (_key->m_pushS > kPushMax)
+			{
+				_key->m_useFlg = false;
+				_key->m_pushS = 0;
+			}
+		}
+
+	}
+
+
+
+	return flg;
+}
+
+//=============================================
+// 設定
+//=============================================
+
 void KeyInfo::SetKeyValid(int _key)
 {
 	if (_key >= 'A' && _key <= 'Z')//アルファベット
@@ -132,6 +194,10 @@ void KeyInfo::SetKeyValid(int _key)
 		m_keyTAB.m_validFlg = true;
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void KeyInfo::KeyvalidReset()
 {
@@ -279,6 +345,10 @@ void KeyInfo::UpdateKey()
 	}
 }
 
+//=============================================
+// 基本の処理
+//=============================================
+
 void KeyInfo::Init()
 {
 	if (!m_spKeyTexture)
@@ -287,8 +357,8 @@ void KeyInfo::Init()
 		m_spKeyTexture->Load("Asset/Textures/Key/Keyboard Letters and Symbols.png");
 
 
-		m_keyTexSiz.x = m_spKeyTexture->GetWidth() / kAlphabetNum;
-		m_keyTexSiz.y = m_spKeyTexture->GetHeight();
+		m_keyTexSize.x = m_spKeyTexture->GetWidth() / kAlphabetNum;
+		m_keyTexSize.y = m_spKeyTexture->GetHeight();
 	}
 
 	if (!m_spKeyTexture2)
@@ -296,58 +366,15 @@ void KeyInfo::Init()
 		m_spKeyTexture2 = std::make_shared<KdTexture>();
 		m_spKeyTexture2->Load("Asset/Textures/Key/Keyboard Extras.png");
 
-		m_keyTex2Siz.x = m_spKeyTexture2->GetWidth() / 4;
-		m_keyTex2Siz.y = m_spKeyTexture2->GetHeight() / 4;
+		m_keyTex2Size.x = m_spKeyTexture2->GetWidth() / 4;
+		m_keyTex2Size.y = m_spKeyTexture2->GetHeight() / 4;
 
 	}
 }
 
-bool KeyInfo::GetValidKeyPush(Key* _key, bool _useFlg, bool _flg)
-{
-	bool flg = false;
-
-	if (!_key->m_validFlg)
-	{
-		return flg;
-	}
-
-	//Keyが押されてるかどうか
-	if (_key->m_pushFlg)
-	{
-		//そのKeyが使われたことがあるかどうか気にするか
-		if (_useFlg)
-		{
-			//使用されたかどうかの反転を入れる
-			flg = !_key->m_useFlg;
-		}
-		else
-		{
-			//気にしないならtrue
-			flg = true;
-		}
-
-	}
-
-	//もし使われたなら
-	if (flg)
-	{
-		_key->m_useFlg = true;
-
-		if (_useFlg && _flg)
-		{
-			if (_key->m_pushS > kPushMax)
-			{
-				_key->m_useFlg = false;
-				_key->m_pushS = 0;
-			}
-		}
-
-	}
-
-
-
-	return flg;
-}
+//=============================================
+// 取得
+//=============================================
 
 Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
 {
@@ -359,76 +386,76 @@ Math::Rectangle KeyInfo::GetKeySrcRect(int _key)
 	{
 		int num = _key - 'A';
 		srcRect = {
-			(long)m_keyTexSiz.x * num,
+			(long)m_keyTexSize.x * num,
 			0,
-			(long)m_keyTexSiz.x,
-			(long)m_keyTexSiz.y
+			(long)m_keyTexSize.x,
+			(long)m_keyTexSize.y
 		};
 	}
 
 	switch (_key)
 	{
 	case VK_TAB:
-		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 0, (long)m_keyTex2Size.y * 0, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_ESCAPE:
-		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 1, (long)m_keyTex2Size.y * 0, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_SNAPSHOT:
-		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 2, (long)m_keyTex2Size.y * 0, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_BACK:
-		srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 0, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 3, (long)m_keyTex2Size.y * 0, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_SHIFT:
-		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 0, (long)m_keyTex2Size.y * 1, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_PRIOR:
-		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 1, (long)m_keyTex2Size.y * 1, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 	
 	case VK_NEXT:
-		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 2, (long)m_keyTex2Size.y * 1, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 	
 	case VK_RETURN:
-		srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 1, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 3, (long)m_keyTex2Size.y * 1, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_CONTROL:
-		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 0, (long)m_keyTex2Size.y * 2, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_MENU:
-		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 1, (long)m_keyTex2Size.y * 2, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_SPACE:
-		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 2, (long)m_keyTex2Size.y * 2, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
-	case VK_INSERT:   srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 2, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+	case VK_INSERT:   srcRect = { (long)m_keyTex2Size.x * 3, (long)m_keyTex2Size.y * 2, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_DELETE:
-		srcRect = { (long)m_keyTex2Siz.x * 0, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 0, (long)m_keyTex2Size.y * 3, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_END:
-		srcRect = { (long)m_keyTex2Siz.x * 1, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 1, (long)m_keyTex2Size.y * 3, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_HOME:
-		srcRect = { (long)m_keyTex2Siz.x * 2, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 2, (long)m_keyTex2Size.y * 3, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 
 	case VK_PAUSE:
-		srcRect = { (long)m_keyTex2Siz.x * 3, (long)m_keyTex2Siz.y * 3, (long)m_keyTex2Siz.x, (long)m_keyTex2Siz.y };
+		srcRect = { (long)m_keyTex2Size.x * 3, (long)m_keyTex2Size.y * 3, (long)m_keyTex2Size.x, (long)m_keyTex2Size.y };
 		break;
 	}
 

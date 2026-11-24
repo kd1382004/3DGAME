@@ -1,10 +1,16 @@
-﻿#include "TreasureDropItem.h"
-#include"../../../../../Info/VOL/VOLInfo.h"
-#include"../../../../Character/Player/PlayerBase.h"
-#include"../LootTableManager/LootTableManager.h"
-#include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"
+﻿//---- 自分のヘッダー ----
+#include "TreasureDropItem.h"													//宝箱から出るアイテム
 
-#include"../../../../../Info/DeltaTime/DeltaTime.h"
+//---- プレイヤー ----
+#include"../../../../Character/Player/PlayerBase.h"								//プレイヤー
+#include"../../../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
+
+//---- マップオブジェクト ----
+#include"../LootTableManager/LootTableManager.h"								//宝箱のドロップテーブル管理
+
+//---- 便利機能 ----
+#include"../../../../../Info/VOL/VOLInfo.h"										//音量設定
+#include"../../../../../Info/DeltaTime/DeltaTime.h"								//デルタタイム
 
 void TreasureDropItem::Init()
 {

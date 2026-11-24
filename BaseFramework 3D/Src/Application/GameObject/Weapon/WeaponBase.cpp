@@ -1,12 +1,22 @@
-﻿#include "WeaponBase.h"
+﻿//---- 自分のヘッダー ----
+#include "WeaponBase.h"							//武器の基底クラス
 
-#include"../Character/CharacterBase.h"
-#include"../Character/Player/PlayerBase.h"
+//---- シーン ----
+#include"../../Scene/SceneManager.h"			//シーンの管理
 
-#include"../../Scene/SceneManager.h"
+//---- キャラクター ----
+#include"../Character/CharacterBase.h"			//キャラクターの基底クラス
 
-#include"ComboStep/ComboStepSaveLoad.h"
-#include"ComboStep/ComboStepValidator.h"
+//---- プレイヤー ----
+#include"../Character/Player/PlayerBase.h"		//プレイヤー
+
+//---- 武器 ----
+#include"ComboStep/ComboStepSaveLoad.h"			//コンボの保存・読み込み
+#include"ComboStep/ComboStepValidator.h"		//コンボデータのチェック
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void WeaponBase::Init()
 {
@@ -52,11 +62,19 @@ void WeaponBase::DrawBright()
 	}
 }
 
+//=============================================
+// 取得
+//=============================================
+
 float WeaponBase::GetAttack()
 {
 	//武器倍率 × 強化倍率(1段階ごとに +20%)
 	return m_baseWeaponStatus.m_attackPower * (1.0f + m_weaponsStrengtheningInfo[WeaponsStrengthening_Attack].m_lv * 0.2f);
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void WeaponBase::SetAttackFlg(bool _flg)
 {
@@ -79,6 +97,10 @@ void WeaponBase::AddObjList(std::shared_ptr<MapBase> _spObj)
 {
 	m_objList.push_back(_spObj);
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void WeaponBase::CreateWeaponHitCollider()
 {

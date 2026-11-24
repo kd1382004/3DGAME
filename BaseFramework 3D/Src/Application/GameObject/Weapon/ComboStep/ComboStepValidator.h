@@ -9,6 +9,7 @@ struct ComboStepIssue
 	std::string m_message;           // 画面に出す説明
 };
 
+//コンボデータのチェック
 class ComboStepValidator
 {
 public:

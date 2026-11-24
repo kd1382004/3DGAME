@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include"EffectBase.h"
+//エフェクトの管理
 class EffectManager :public KdGameObject
 {
 public:

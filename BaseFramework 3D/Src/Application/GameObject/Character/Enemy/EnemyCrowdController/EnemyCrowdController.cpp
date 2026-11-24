@@ -1,6 +1,13 @@
-﻿#include "EnemyCrowdController.h"
-#include"../EnemyBase.h"
-#include"../EnemyManager.h"
+﻿//---- 自分のヘッダー ----
+#include "EnemyCrowdController.h"		//敵同士の押し合い・群れ制御
+
+//---- 敵 ----
+#include"../EnemyBase.h"				//敵の基底クラス
+#include"../EnemyManager.h"				//敵の管理
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void EnemyCrowdController::Update(EnemyBase* _enemy, float _dt)
 {
@@ -18,6 +25,10 @@ void EnemyCrowdController::Update(EnemyBase* _enemy, float _dt)
 
 	_enemy->SetMoveVec(desired);
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 Math::Vector3 EnemyCrowdController::CalcSeparation(EnemyBase* _enemy)
 {
@@ -106,4 +117,3 @@ Math::Vector3 EnemyCrowdController::CalcToPlayer(EnemyBase* _enemy)
 
 	return toPlayer;
 }
-

@@ -9,6 +9,7 @@ class PotionUseController;
 class PotionTexInfo;
 class UIBase2;
 
+//UIの管理
 class UIManager :public KdGameObject
 {
 public:
@@ -117,7 +118,7 @@ private:
 	std::list<std::shared_ptr<UIBase>> m_spUIList;
 
 	//前のフレームのUIの数(増えたら並べ替える)
-	int m_uiListOldSiz = 0;
+	int m_uiListOldSize = 0;
 
 	//宝箱用テクスチャ
 	std::shared_ptr<KdTexture>m_spTreasureChestUiTex;

@@ -1,36 +1,46 @@
-﻿#include "PrepareScene.h"
-#include "../SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "PrepareScene.h"																	//準備シーン
 
-#include"../../Info/FadeDraw/FadeDraw.h"
+//---- シーン ----
+#include "../SceneManager.h"																//シーンの管理
 
-#include"../../GameObject/Camera/PrepareCamera/PrepareCamera.h"
+//---- カメラ ----
+#include"../../GameObject/Camera/PrepareCamera/PrepareCamera.h"								//準備シーン用カメラ
 
+//---- キャンプ ----
+#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"					//キャンプの配置データ
+#include"../../GameObject/Terrains/Camp/CampLight/CampLight.h"								//キャンプのライト
+#include"../../GameObject/Terrains/Camp/CampObject/CampObject.h"							//キャンプの置物
 
-#include"../../Info/DebugInfo/DebugInfo.h"
-#include"../../Info/MouseInfo/MouseInfo.h"
-#include"../../Info/KeyInfo/KeyInfo.h"
+//---- マップオブジェクト ----
+#include"../../GameObject/Terrains/MapObj/Torch/Torch.h"									//松明
 
-#include"../../GameObject/UI/UIManager.h"
-#include"../../GameObject/UI/PrepareSceneUI/PrepareSceneDisplay/PrepareSceneDisplay.h"
+//---- UI ----
+#include"../../GameObject/UI/UIManager.h"													//UIの管理
+#include"../../GameObject/UI/PrepareSceneUI/PrepareSceneDisplay/PrepareSceneDisplay.h"		//準備シーンの画面管理
+#include"../../GameObject/UI/PrepareSceneUI/PrepareSceneDisplay/PrepareSceneDisplay.h"		//準備シーンの画面管理
+#include"../../GameObject/UI/PrepareSceneUI/EquipDisplay/EquipDisplay.h"					//準備シーンの装備画面
+#include"../../GameObject/UI/PrepareSceneUI/ShopDisplay/ShopDisplay.h"						//準備シーンのショップ画面
+#include"../../GameObject/UI/PrepareSceneUI/RecordsDisplay/RecordsDisplay.h"				//準備シーンの記録画面
 
-#include"../../GameObject/Button/GameButton/GameButton.h"
-#include"../../GameObject/Button/TitleButton/TitleButton.h"
+//---- ボタン ----
+#include"../../GameObject/Button/GameButton/GameButton.h"									//ゲームシーンへ進むボタン
+#include"../../GameObject/Button/TitleButton/TitleButton.h"									//タイトルシーンへ戻るボタン
 
-#include"../../GameObject/UI/PrepareSceneUI/PrepareSceneDisplay/PrepareSceneDisplay.h"
-#include"../../GameObject/UI/PrepareSceneUI/EquipDisplay/EquipDisplay.h"
-#include"../../GameObject/UI/PrepareSceneUI/ShopDisplay/ShopDisplay.h"
-#include"../../GameObject/UI/PrepareSceneUI/RecordsDisplay/RecordsDisplay.h"
+//---- エディター ----
+#include"../../Editor/ShopEditor/ShopEditor.h"												//ショップの品ぞろえ編集エディター
+#include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"								//キャラステータス編集エディター
+#include"../../Editor/PrepareLayoutEditor/PrepareLayoutEditor.h"							//準備シーンの配置編集エディター
 
-#include"../../Editor/ShopEditor/ShopEditor.h"
-#include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"
-#include"../../Editor/PrepareLayoutEditor/PrepareLayoutEditor.h"
+//---- 便利機能 ----
+#include"../../Info/FadeDraw/FadeDraw.h"													//画面フェードの描画
+#include"../../Info/DebugInfo/DebugInfo.h"													//デバッグ用の状態
+#include"../../Info/MouseInfo/MouseInfo.h"													//マウス入力
+#include"../../Info/KeyInfo/KeyInfo.h"														//キー入力
 
-
-#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"
-#include"../../GameObject/Terrains/Camp/CampLight/CampLight.h"
-#include"../../GameObject/Terrains/Camp/CampObject/CampObject.h"
-
-#include"../../GameObject/Terrains/MapObj/Torch/Torch.h"
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 PrepareScene::~PrepareScene()
 {
@@ -51,6 +61,10 @@ PrepareScene::~PrepareScene()
 	}
 
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void PrepareScene::ImGUI()
 {
@@ -253,6 +267,10 @@ void PrepareScene::Init()
 	m_spLayoutEditor->SetDepartData(&m_campLayout.m_depart);
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void PrepareScene::ChangeTab(PrepareTab _tab)
 {
 	m_currentTab = _tab;
@@ -375,6 +393,7 @@ void PrepareScene::UpdateDepart()
 		break;
 	}
 }
+
 void PrepareScene::Event()
 {
 	MouseInfo::Instance().SetMouseFreeFlg(true);

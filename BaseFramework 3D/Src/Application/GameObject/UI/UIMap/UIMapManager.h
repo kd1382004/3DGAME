@@ -6,6 +6,7 @@ class UIMap_Map;
 class UIMap_Player;
 class UIMap_EnemyManage;
 class UIMap_TreasureChest;
+//ミニマップの管理
 class UIMapManager:public UIBase
 {
 public:
@@ -53,8 +54,8 @@ public:
 	void SetBase3DPos(Math::Vector3 _base3DPos);
 
 	//1タイルの大きさをセット(子のUIにも渡す)
-	// _siz ... 1タイルの大きさ
-	void SetTileSiz(float _siz);
+	// _size ... 1タイルの大きさ
+	void SetTileSize(float _size);
 
 	//宝箱のアイコンを追加
 	// _spTreasureChest ... 宝箱のアイコン
@@ -93,5 +94,5 @@ private:
 	Math::Vector3 m_base3DPos;
 
 	//1タイルの大きさ
-	float m_tileSiz = 10.0f;
+	float m_tileSize = 10.0f;
 };

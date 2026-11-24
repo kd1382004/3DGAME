@@ -1,11 +1,22 @@
-﻿#include "RecordsDisplay.h"
-#include"../../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Info/NumDraw/NumDraw.h"
-#include"../../../../Scene/SceneManager.h"
-#include <ctime>
-#include <cstdlib>
-#include <string>
+﻿//---- 自分のヘッダー ----
+#include "RecordsDisplay.h"								//準備シーンの記録画面
+
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"				//シーンの管理
+
+//---- 便利機能 ----
+#include"../../../../Info/MouseInfo/MouseInfo.h"		//マウス入力
+#include"../../../../Info/KeyInfo/KeyInfo.h"			//キー入力
+#include"../../../../Info/NumDraw/NumDraw.h"			//数字の画像描画
+
+//---- 標準ライブラリ ----
+#include <ctime>										//時刻
+#include <cstdlib>										//乱数・数値変換など
+#include <string>										//文字列
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void RecordsDisplay::Init()
 {
@@ -62,11 +73,19 @@ void RecordsDisplay::DrawSprite()
 	DrawDetail();
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void RecordsDisplay::SetGameRecord(const GameRecord& _gameRecord)
 {
 	m_gameRecord = _gameRecord;
 	ResetSelect();
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool RecordsDisplay::MouseHit(Math::Vector2 _pos, float _w, float _h)
 {
@@ -188,7 +207,7 @@ float RecordsDisplay::GetNumW(long _num, int _digit, bool _separator) const
 	if (_separator) { glyphs += (len - 1) / 3; }
 
 	// 元画像は1文字9px
-	return 9.0f * m_numSiz * glyphs;
+	return 9.0f * m_numSize * glyphs;
 }
 
 void RecordsDisplay::DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, const Math::Vector2& _pivot)
@@ -216,15 +235,15 @@ float RecordsDisplay::DrawTexL(const std::shared_ptr<KdTexture>& _spTex, float _
 
 float RecordsDisplay::DrawNumL(long _num, float _x, float _y, const Math::Color& _color, int _digit)
 {
-	NumDraw::GetInstance().Draw(_num, LAligned, { _x, _y }, _color, m_numSiz, false, _digit);
+	NumDraw::GetInstance().Draw(_num, LAligned, { _x, _y }, _color, m_numSize, false, _digit);
 	return _x + GetNumW(_num, _digit);
 }
 
 float RecordsDisplay::DrawNumSymbol(RecordsTex _tex, float _x, float _y)
 {
 	// 数字1文字と同じ大きさ(9×14pxを拡大)
-	const float w = 9.0f * m_numSiz;
-	const float h = 14.0f * m_numSiz;
+	const float w = 9.0f * m_numSize;
+	const float h = 14.0f * m_numSize;
 
 	// ドット絵がにじまないよう、ポイントフィルタで描く(NumDrawと同じ)
 	KdShaderManager::Instance().m_spriteShader.Begin(false);
@@ -244,7 +263,7 @@ void RecordsDisplay::DrawNumUnitR(long _num, const std::shared_ptr<KdTexture>& _
 		numRight -= GetTexW(_spUnit) + m_numGap;
 	}
 
-	NumDraw::GetInstance().Draw(_num, RAligned, { numRight, _y }, m_numColor, m_numSiz, _separator);
+	NumDraw::GetInstance().Draw(_num, RAligned, { numRight, _y }, m_numColor, m_numSize, _separator);
 }
 
 void RecordsDisplay::DrawTimeR(float _timeSc, float _right, float _y)
@@ -253,13 +272,13 @@ void RecordsDisplay::DrawTimeR(float _timeSc, float _right, float _y)
 	const int sc = timeSc % 60;		// 秒
 	const int mine = timeSc / 60;	// 分(1時間を超えても分で数える)
 
-	const float numW = 9.0f * m_numSiz;
+	const float numW = 9.0f * m_numSize;
 
 	// 右から 秒(2桁) → 「:」 → 分(2桁以上)
-	NumDraw::GetInstance().Draw(sc, RAligned, { _right, _y }, m_numColor, m_numSiz, false, 2);
+	NumDraw::GetInstance().Draw(sc, RAligned, { _right, _y }, m_numColor, m_numSize, false, 2);
 	const float colonLeft = _right - numW * 2.0f - numW;
 	DrawNumSymbol(RecordsTex::NumColon, colonLeft, _y);
-	NumDraw::GetInstance().Draw(mine, RAligned, { colonLeft, _y }, m_numColor, m_numSiz, false, 2);
+	NumDraw::GetInstance().Draw(mine, RAligned, { colonLeft, _y }, m_numColor, m_numSize, false, 2);
 }
 
 void RecordsDisplay::DrawDateL(long long _playDate, float _x, float _y)
@@ -337,7 +356,7 @@ void RecordsDisplay::DrawCard(int _index)
 	const int weapon = pResult->m_carryIn.m_weapon;
 	if (weapon >= 0 && weapon < PlayerWeaponInfoSize)
 	{
-		DrawTexSize(m_spWeaponIconTex[weapon], { left + m_cardPad, line2Y }, m_cardIconSiz, m_cardIconSiz, m_pivotLeft);
+		DrawTexSize(m_spWeaponIconTex[weapon], { left + m_cardPad, line2Y }, m_cardIconSize, m_cardIconSize, m_pivotLeft);
 	}
 
 	//撃破(文字は左詰め・数字は右詰め)
@@ -435,7 +454,7 @@ void RecordsDisplay::DrawDetail()
 		const auto& spName = m_spWeaponNameTex[weapon];
 		DrawTex(spName, { numRight, y }, m_pivotRight);
 		const float iconRight = numRight - GetTexW(spName) - 8.0f;
-		DrawTexSize(m_spWeaponIconTex[weapon], { iconRight, y }, m_detailIconSiz, m_detailIconSiz, m_pivotRight);
+		DrawTexSize(m_spWeaponIconTex[weapon], { iconRight, y }, m_detailIconSize, m_detailIconSize, m_pivotRight);
 	}
 	y -= rowSpace;
 

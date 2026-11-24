@@ -1,4 +1,5 @@
-﻿#include "SkillGage.h"
+﻿//---- 自分のヘッダー ----
+#include "SkillGage.h"		//スキルゲージ
 
 void SkillGage::Init()
 {
@@ -10,8 +11,8 @@ void SkillGage::Init()
 		m_spGaugeTexture = std::make_shared<KdTexture>();
 		m_spGaugeTexture->Load("Asset/Textures/GameUI/SkillGage/FrameTexture.png");
 
-		m_siz.x = m_spGaugeTexture->GetInfo().Width;
-		m_siz.y = m_spGaugeTexture->GetInfo().Height;
+		m_size.x = m_spGaugeTexture->GetInfo().Width;
+		m_size.y = m_spGaugeTexture->GetInfo().Height;
 
 		m_gaugePercent = 0.5;
 	}
@@ -32,7 +33,7 @@ void SkillGage::DrawSprite()
 	KdShaderManager::Instance().m_spriteShader.DrawTex(
 		m_spFrameTexture,
 		m_2DPos.x, m_2DPos.y,
-		m_siz.x, m_siz.y,
+		m_size.x, m_size.y,
 		nullptr,
 		&color,
 		pivot
@@ -49,7 +50,7 @@ void SkillGage::DrawSprite()
 	KdShaderManager::Instance().m_spriteShader.DrawTex(
 		m_spGaugeTexture,
 		m_2DPos.x, m_2DPos.y,   // 白枠の底に合わせる
-		m_siz.x, m_siz.y * m_gaugePercent,
+		m_size.x, m_size.y * m_gaugePercent,
 		&srcRect,
 		&color,
 		pivot

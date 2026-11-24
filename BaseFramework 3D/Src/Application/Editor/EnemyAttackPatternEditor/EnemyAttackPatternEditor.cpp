@@ -1,5 +1,8 @@
-﻿#include "EnemyAttackPatternEditor.h"
-#include "../../GameObject/Weapon/ComboStep/ComboStepSaveLoad.h"
+﻿//---- 自分のヘッダー ----
+#include "EnemyAttackPatternEditor.h"									//敵の攻撃パターン編集エディター
+
+//---- 武器 ----
+#include "../../GameObject/Weapon/ComboStep/ComboStepSaveLoad.h"		//コンボの保存・読み込み
 
 namespace
 {
@@ -101,6 +104,10 @@ namespace
 	}
 }
 
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
+
 EnemyAttackPatternEditor::EnemyAttackPatternEditor()
 {
 	RefreshEnemyList();
@@ -112,6 +119,10 @@ EnemyAttackPatternEditor::EnemyAttackPatternEditor()
 		Load();
 	}
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void EnemyAttackPatternEditor::Draw(bool* _open)
 {
@@ -162,6 +173,10 @@ void EnemyAttackPatternEditor::Draw(bool* _open)
 
 	ImGui::End();
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool EnemyAttackPatternEditor::Load()
 {
@@ -220,6 +235,10 @@ bool EnemyAttackPatternEditor::Save()
 	m_message = U8("保存しました");
 	return true;
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void EnemyAttackPatternEditor::DrawFileBar()
 {
@@ -638,6 +657,10 @@ void EnemyAttackPatternEditor::DrawDistanceTest()
 	ImGui::TextUnformatted(text.c_str());
 }
 
+//=============================================
+// 取得
+//=============================================
+
 nlohmann::json& EnemyAttackPatternEditor::GetPatterns()
 {
 	if (!m_data.is_object()) { m_data = nlohmann::json::object(); }
@@ -671,6 +694,10 @@ const std::vector<EnemyAttackPatternEditor::StepInfo>& EnemyAttackPatternEditor:
 	}
 	return steps;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void EnemyAttackPatternEditor::RefreshEnemyList()
 {

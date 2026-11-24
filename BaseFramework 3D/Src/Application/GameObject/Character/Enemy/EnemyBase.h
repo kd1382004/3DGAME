@@ -99,6 +99,7 @@ enum class EnemyMaterial
 	Num			// 種類の数（配列のサイズ・範囲チェック用。質感としては使わない）
 };
 
+//敵の基底クラス
 class EnemyBase :public CharacterBase, public std::enable_shared_from_this<EnemyBase>
 {
 public:
@@ -305,9 +306,11 @@ protected:
 
 	//ゲームシーン
 	std::weak_ptr<GameScene>m_wpGameScene;
+
+	//敵同士の押し合い・群れの制御
 	std::shared_ptr<EnemyCrowdController> m_spCrowdController;
 
-	//適用アッタックゲージ
+	//この敵の攻撃ゲージ
 	std::weak_ptr<AttackGage>m_wpAttackGauge;
 
 	//攻撃ゲージの溜まり具合(0〜1)
@@ -319,7 +322,7 @@ protected:
 	//体の質感（ヒットエフェクトの種類を決める）
 	EnemyMaterial m_material = EnemyMaterial::Flesh;
 
-
+	//倒したときに落とすコインの基本の額(LV1の額。LVが上がると増える)
 	int m_coin = 100;
 
 private:

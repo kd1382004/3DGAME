@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../CameraBase.h"
 
+//一人称カメラ
 class FPSCamera : public CameraBase
 {
 public:

@@ -69,7 +69,7 @@ private:
 	Math::Vector2 m_categoryPos[ItemCategory_Num];
 
 	// ボタンの大きさ（画像から。全部同じ大きさ 96×34）
-	Math::Vector2 m_categorySiz;
+	Math::Vector2 m_categorySize;
 
 	// ボタンとボタンのすき間（ピクセル）
 	const float m_categorySpacing = 8.0f;
@@ -91,9 +91,9 @@ private:
 	std::shared_ptr<KdTexture> m_spScrollTrackTex;
 
 	// つまみ（上の端・真ん中・下の端・中央の3本線）
-	std::shared_ptr<KdTexture> m_spScrollThumbTopTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbTopTex;		// 上の端
 	std::shared_ptr<KdTexture> m_spScrollThumbMidTex;		// 縦に伸ばして使う
-	std::shared_ptr<KdTexture> m_spScrollThumbBottomTex;
+	std::shared_ptr<KdTexture> m_spScrollThumbBottomTex;	// 下の端
 	//つまみの中央の3本線の画像
 	std::shared_ptr<KdTexture> m_spScrollThumbGripTex;
 
@@ -110,11 +110,11 @@ private:
 
 	// 溝（レール）
 	Math::Vector2 m_scrollTrackPos;		// 溝の中心座標（マスの右側から計算）
-	Math::Vector2 m_scrollTrackSiz;		// 溝の横幅・縦の長さ（横幅は画像、縦はマスの段数に合わせる）
+	Math::Vector2 m_scrollTrackSize;		// 溝の横幅・縦の長さ（横幅は画像、縦はマスの段数に合わせる）
 
 	// つまみ（上の端・真ん中・下の端）
 	Math::Vector2 m_scrollThumbPos;		// つまみの中心座標（スクロールに合わせて y が動く）
-	Math::Vector2 m_scrollThumbSiz;		// つまみの横幅・縦の長さ（横幅は画像、縦はアイテム数で変わる）
+	Math::Vector2 m_scrollThumbSize;		// つまみの横幅・縦の長さ（横幅は画像、縦はアイテム数で変わる）
 
 	float m_scrollThumbCapH = 0.0f;		// つまみの上の端・下の端の画像の高さ（画像から）
 	float m_scrollThumbMinH = 0.0f;		// つまみの縦の長さの最小（上の端＋3本線＋下の端が入る長さ）

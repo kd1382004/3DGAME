@@ -1,7 +1,19 @@
-﻿#include "Sword_FinalSlash.h"
-#include"../../../../Info/DeltaTime/DeltaTime.h"
-#include"../../../Character/CharacterBase.h"
-#include"../../../Camera/CameraBase.h"
+﻿//---- 自分のヘッダー ----
+#include "Sword_FinalSlash.h"							//剣の必殺技
+
+//---- カメラ ----
+#include"../../../Camera/CameraBase.h"					//カメラの基底クラス
+
+//---- キャラクター ----
+#include"../../../Character/CharacterBase.h"			//キャラクターの基底クラス
+
+//---- 便利機能 ----
+#include"../../../../Info/DeltaTime/DeltaTime.h"		//デルタタイム
+
+//=============================================
+// 
+//=============================================
+
 void Sword_FinalSlash::Init()
 {
 	m_state = State::Charge;
@@ -256,6 +268,109 @@ void Sword_FinalSlash::DrawBright()
 	}
 }
 
+void Sword_FinalSlash::SetSlashStatus(const DirectX::BoundingOrientedBox& _obb, float _damage, float _knockback, const Math::Vector3& _dir, float _defenseIgnore, float _chargeTime)
+{
+	m_obb = _obb;					// 斬撃の跡の判定（ワールド）
+	m_damage = _damage;				// 弾けたときのダメージ
+	m_knockback = _knockback;		// ノックバックの強さ
+	m_dir = _dir;					// ノックバックの向き
+	m_defenseIgnore = _defenseIgnore;	// 防御無視の割合
+	m_chargeTime = _chargeTime;		// 弾けるまでの溜めの時間
+
+	// 出した瞬間から溜めを始める
+	m_state = State::Charge;
+	m_timer = 0.0f;
+	RandomizeBolts();
+
+	// 溜めの音
+	m_spChargeSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Charge.wav", false);
+	if (m_spChargeSE)
+	{
+		m_spChargeSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.7f);
+	}
+
+}
+
+void Sword_FinalSlash::Burst()
+{
+	// 溜めの音を止めて、弾ける音
+	if (m_spChargeSE)
+	{
+		m_spChargeSE->Stop();
+		m_spChargeSE = nullptr;
+	}
+	std::shared_ptr<KdSoundInstance> spBurstSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Burst.wav", false);
+	if (spBurstSE)
+	{
+		spBurstSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+	}
+
+	// 斬撃の跡の箱
+	KdCollider::BoxInfo box(KdCollider::TypeDamage, m_obb);
+
+
+	bool hitFlg = false;
+	for (auto& wpChara : m_attackHitCharacterList)
+	{
+		// もう消えた敵は飛ばす
+		std::shared_ptr<CharacterBase> spChara = wpChara.lock();
+		if (!spChara) { continue; }
+
+		// もう死んでいる敵は飛ばす
+		if (spChara->GetIsDead()) { continue; }
+
+		// 箱と当たっているか
+		std::list<KdCollider::CollisionResult> results;
+		if (!spChara->Intersects(box, &results)) { continue; }
+		hitFlg = true;
+		// 当たったときの処理
+		spChara->OnAttackHit(
+			m_damage,
+			m_knockback,   // コンボの段のノックバック倍率
+			m_dir,
+			0,
+			false,
+			m_defenseIgnore,
+			results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
+		);
+	}
+
+	if (hitFlg)
+	{
+		DeltaTime::Instance().HitStop(0.06);
+	}
+
+	// 弾けた瞬間に画面を大きく揺らす（当たらなくても揺らす）
+	if (std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock())
+	{
+		spCamera->Shake(0.6f, 1);
+	}
+
+}
+
+//=============================================
+// 1本だけのときの値（配列に置き換えたら消す）
+//=============================================
+
+void Sword_FinalSlash::RandomizeBolts()
+{
+	for (int i = 0; i < kBoltNum; i++)
+	{
+		// 今と違う絵の番号にする
+		m_boltIndices[i] = (m_boltIndices[i] + KdRandom::GetInt(1, kBoltTexNum - 1)) % kBoltTexNum;
+
+		// 基本の角度からのずれ（基本の角度は描くときに足す）
+		m_boltRollDegs[i] = KdRandom::GetFloat(-10.0f, 10.0f);
+
+		// 半分の確率で左右反転
+		m_boltFlipFlgs[i] = (KdRandom::GetInt(0, 1) == 1);
+	}
+}
+
+//=============================================
+// その他の処理
+//=============================================
+
 Sword_FinalSlash::DrawParam Sword_FinalSlash::CalcDrawParam() const
 {
 	DrawParam param;
@@ -379,99 +494,4 @@ std::array<Math::Matrix, 2> Sword_FinalSlash::MakeCrossMats(float _widthRate, fl
 	mats[0] = scale * roll * rot * trans;
 	mats[1] = scale * roll * cross * rot * trans;
 	return mats;
-}
-
-void Sword_FinalSlash::SetSlashStatus(const DirectX::BoundingOrientedBox& _obb, float _damage, float _knockback, const Math::Vector3& _dir, float _defenseIgnore, float _chargeTime)
-{
-	m_obb = _obb;					// 斬撃の跡の判定（ワールド）
-	m_damage = _damage;				// 弾けたときのダメージ
-	m_knockback = _knockback;		// ノックバックの強さ
-	m_dir = _dir;					// ノックバックの向き
-	m_defenseIgnore = _defenseIgnore;	// 防御無視の割合
-	m_chargeTime = _chargeTime;		// 弾けるまでの溜めの時間
-
-	// 出した瞬間から溜めを始める
-	m_state = State::Charge;
-	m_timer = 0.0f;
-	RandomizeBolts();
-
-	// 溜めの音
-	m_spChargeSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Charge.wav", false);
-	if (m_spChargeSE)
-	{
-		m_spChargeSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.7f);
-	}
-
-}
-
-void Sword_FinalSlash::Burst()
-{
-	// 溜めの音を止めて、弾ける音
-	if (m_spChargeSE)
-	{
-		m_spChargeSE->Stop();
-		m_spChargeSE = nullptr;
-	}
-	std::shared_ptr<KdSoundInstance> spBurstSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Wepon/Sword/FinalSlash/Burst.wav", false);
-	if (spBurstSE)
-	{
-		spBurstSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
-	}
-
-	// 斬撃の跡の箱
-	KdCollider::BoxInfo box(KdCollider::TypeDamage, m_obb);
-
-
-	bool hitFlg = false;
-	for (auto& wpChara : m_attackHitCharacterList)
-	{
-		// もう消えた敵は飛ばす
-		std::shared_ptr<CharacterBase> spChara = wpChara.lock();
-		if (!spChara) { continue; }
-
-		// もう死んでいる敵は飛ばす
-		if (spChara->GetIsDead()) { continue; }
-
-		// 箱と当たっているか
-		std::list<KdCollider::CollisionResult> results;
-		if (!spChara->Intersects(box, &results)) { continue; }
-		hitFlg = true;
-		// 当たったときの処理
-		spChara->OnAttackHit(
-			m_damage,
-			m_knockback,   // コンボの段のノックバック倍率
-			m_dir,
-			0,
-			false,
-			m_defenseIgnore,
-			results.empty() ? nullptr : &results.front().m_hitPos	// 当たった位置
-		);
-	}
-
-	if (hitFlg)
-	{
-		DeltaTime::Instance().HitStop(0.06);
-	}
-
-	// 弾けた瞬間に画面を大きく揺らす（当たらなくても揺らす）
-	if (std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock())
-	{
-		spCamera->Shake(0.6f, 1);
-	}
-
-}
-
-void Sword_FinalSlash::RandomizeBolts()
-{
-	for (int i = 0; i < kBoltNum; i++)
-	{
-		// 今と違う絵の番号にする
-		m_boltIndices[i] = (m_boltIndices[i] + KdRandom::GetInt(1, kBoltTexNum - 1)) % kBoltTexNum;
-
-		// 基本の角度からのずれ（基本の角度は描くときに足す）
-		m_boltRollDegs[i] = KdRandom::GetFloat(-10.0f, 10.0f);
-
-		// 半分の確率で左右反転
-		m_boltFlipFlgs[i] = (KdRandom::GetInt(0, 1) == 1);
-	}
 }

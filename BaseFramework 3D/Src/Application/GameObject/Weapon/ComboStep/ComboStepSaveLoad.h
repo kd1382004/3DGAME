@@ -6,9 +6,10 @@ struct ComboFileData
 {
 	std::string            m_charaModelPath;   // プレビュー用のキャラモデル（エディター専用）
 	std::string            m_weaponModelPath;   // プレビュー用の武器モデル（エディター専用）
-	std::vector<ComboStep> m_steps;
+	std::vector<ComboStep> m_steps;   // コンボの段の一覧
 };
 
+//コンボの保存・読み込み
 class ComboStepSaveLoad
 {
 public:

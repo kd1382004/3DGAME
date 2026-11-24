@@ -2,6 +2,7 @@
 
 #include"../MapObjBase.h"
 
+//松明
 class Torch :public MapObjBase
 {
 public:

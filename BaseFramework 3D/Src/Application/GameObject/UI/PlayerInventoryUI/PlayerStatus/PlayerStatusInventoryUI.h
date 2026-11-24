@@ -50,7 +50,7 @@ private:
 		Math::Vector2 m_iconPos;
 	};
 
-	//ステータス画面の項目の番号(PlayerStatusInfoSiz は項目の数)
+	//ステータス画面の項目の番号(PlayerStatusInfoSize は項目の数)
 	enum PlayerStatusInfoID
 	{
 		PlayerStatusInfo_HP,
@@ -58,7 +58,7 @@ private:
 		PlayerStatusInfo_AttackPower,
 		PlayerStatusInfo_DefensePower,
 		PlayerStatusInfo_Speed,
-		PlayerStatusInfoSiz
+		PlayerStatusInfoSize
 	};
 
 	//---- メンバ変数 ----
@@ -75,7 +75,7 @@ private:
 	float m_statusCamRotateSpeed = 45.0f;  // 回転速度 (度/秒: 45度なら約8秒で1周)
 
 	//ステータスの表示情報
-	PlayerStatusInfo m_playerStatusInfo[PlayerStatusInfoSiz];
+	PlayerStatusInfo m_playerStatusInfo[PlayerStatusInfoSize];
 
 	//ステータスの背景の画像
 	std::shared_ptr<KdTexture>m_spPlayerStatusInfoBackTex;

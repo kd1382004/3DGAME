@@ -1,6 +1,15 @@
-﻿#include "PlayerBuffManager.h"
-#include"../PlayerBase.h"
-#include"../../../Potions/PotionsType.h"
+﻿//---- 自分のヘッダー ----
+#include "PlayerBuffManager.h"					//プレイヤーのバフ管理
+
+//---- プレイヤー ----
+#include"../PlayerBase.h"						//プレイヤー
+
+//---- ポーション ----
+#include"../../../Potions/PotionsType.h"		//ポーションの種類
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void PlayerBuffManager::Update()
 {
@@ -23,6 +32,10 @@ void PlayerBuffManager::Update()
 		}
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void PlayerBuffManager::AddStatusBuff(StatusBuff _statusBuff)
 {
@@ -76,6 +89,10 @@ void PlayerBuffManager::AddStatusBuff(StatusBuff _statusBuff)
 	}
 
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void PlayerBuffManager::BuffFinish(const StatusBuff& _statusBuff)
 {

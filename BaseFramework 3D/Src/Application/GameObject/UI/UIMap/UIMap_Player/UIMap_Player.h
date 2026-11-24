@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//ミニマップのプレイヤーアイコン
 class UIMap_Player
 {
 public:
@@ -50,32 +51,32 @@ public:
 	void SetBasePos(Math::Vector2 _basePos) { m_basePos= _basePos; }
 
 	//1タイルの大きさをセット
-	// _siz ... 1タイルの大きさ
-	void SetTileSiz(float _siz) { m_tileSiz = _siz; }
+	// _size ... 1タイルの大きさ
+	void SetTileSize(float _size) { m_tileSize = _size; }
 
 	//向きをセット
 	// _angle ... 角度(度)
 	void SetAngle(float _angle) { m_angle = _angle; }
 
 	//ミニマップの1マスの画像の大きさをセット
-	// _siz ... 画像の大きさ
-	void SetMapTexSiz(Math::Vector2 _siz) { m_mapTexSiz = _siz; }
+	// _size ... 画像の大きさ
+	void SetMapTexSize(Math::Vector2 _size) { m_mapTexSize = _size; }
 
 private:
 
 	//---- メンバ変数 ----
 
 	//ミニマップの1マスの画像の大きさ
-	Math::Vector2 m_mapTexSiz = { };
+	Math::Vector2 m_mapTexSize = { };
 
 	//大きさの倍率
-	float m_siz = 1.0f;
+	float m_size = 1.0f;
 
 	//向き
 	float m_angle = 0.0f;
 
 	//1タイルの大きさ
-	float m_tileSiz = 10.0f;
+	float m_tileSize = 10.0f;
 
 	//ミニマップの基準位置(画面)
 	Math::Vector2 m_basePos;

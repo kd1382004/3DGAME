@@ -1,6 +1,7 @@
 ﻿#pragma once
 class PlayerBase;
 
+//体力回復ポーション
 class InstantHealPotion
 {
 public:

@@ -22,7 +22,7 @@ struct StatusHP
 };
 
 //攻撃力のステータス
-struct StatusAttck
+struct StatusAttack
 {
 	//基礎攻撃力
 	float m_baseAttackPower = 0;
@@ -103,7 +103,7 @@ struct Status
 	StatusHP m_HP;
 
 	// 攻撃力
-	StatusAttck m_attack;
+	StatusAttack m_attack;
 
 	//防御力
 	StatusDefense m_defense;
@@ -119,6 +119,7 @@ struct Status
 	int m_LV = 1;
 };
 
+//キャラクターの基底クラス
 class CharacterBase : public KdGameObject
 {
 public:
@@ -368,7 +369,7 @@ protected:
 	Math::Vector3 m_prevPos;
 
 	//サイズ
-	float m_siz = 1.0f;
+	float m_size = 1.0f;
 
 	//移動方向
 	Math::Vector3 m_moveVec;

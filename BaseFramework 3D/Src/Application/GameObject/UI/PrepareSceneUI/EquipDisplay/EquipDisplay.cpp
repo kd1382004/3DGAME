@@ -1,7 +1,16 @@
-﻿#include "EquipDisplay.h"
-#include"../../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "EquipDisplay.h"								//準備シーンの装備画面
+
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"				//シーンの管理
+
+//---- 便利機能 ----
+#include"../../../../Info/MouseInfo/MouseInfo.h"		//マウス入力
+#include"../../../../Info/KeyInfo/KeyInfo.h"			//キー入力
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void EquipDisplay::Init()
 {
@@ -67,6 +76,10 @@ void EquipDisplay::DrawSprite()
 	DrawDetail();
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void EquipDisplay::SetOwnedWeapons(const std::vector<bool>& _owned)
 {
 	m_ownedList.clear();
@@ -89,6 +102,10 @@ void EquipDisplay::SetOwnedWeapons(const std::vector<bool>& _owned)
 
 	m_scrollIndex = 0;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool EquipDisplay::MouseHit(Math::Vector2 _pos, float _w, float _h)
 {

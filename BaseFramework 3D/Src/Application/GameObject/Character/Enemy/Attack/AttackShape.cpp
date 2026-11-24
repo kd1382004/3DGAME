@@ -1,5 +1,12 @@
-﻿#include "AttackShape.h"
-#include"../../Player/PlayerBase.h"
+﻿//---- 自分のヘッダー ----
+#include "AttackShape.h"				//敵の攻撃判定の形
+
+//---- プレイヤー ----
+#include"../../Player/PlayerBase.h"		//プレイヤー
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void AttackShape::Update()
 {
@@ -55,6 +62,10 @@ void AttackShape::Update()
 		spPlayer->OnAttackHit(m_attackPower, m_knockbackDistance, m_knockbackDir, m_hitStunTime, false, 0);
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void AttackShape::DrawWarn()
 {

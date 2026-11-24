@@ -1,6 +1,7 @@
 #pragma once
 class PlayerBase;
 
+//スタミナ回復量一時アップポーション
 class StaminaRegenBoostPotion
 {
 public:

@@ -1,8 +1,21 @@
-﻿#include "ResultDisplay_PlayerStatus.h"
-#include"../../../../../Info/NumDraw/NumDraw.h"
-#include"../../../../../Scene/SceneManager.h"
-#include"../../../../Character/Player/PlayerBase.h"
-#include"../../../../Weapon/WeaponBase.h"
+﻿//---- 自分のヘッダー ----
+#include "ResultDisplay_PlayerStatus.h"					//リザルト画面(ステータス)
+
+//---- シーン ----
+#include"../../../../../Scene/SceneManager.h"			//シーンの管理
+
+//---- プレイヤー ----
+#include"../../../../Character/Player/PlayerBase.h"		//プレイヤー
+
+//---- 武器 ----
+#include"../../../../Weapon/WeaponBase.h"				//武器の基底クラス
+
+//---- 便利機能 ----
+#include"../../../../../Info/NumDraw/NumDraw.h"			//数字の画像描画
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ResultDisplay_PlayerStatus::Init()
 {
@@ -10,7 +23,7 @@ void ResultDisplay_PlayerStatus::Init()
 	Math::Vector2 nameBasePos = { iconBasePos.x + 70,iconBasePos.y };
 	Math::Vector2 numBasePos = { nameBasePos.x + 370, iconBasePos.y };
 
-	for (int i = 0; i < PlayerStatusInfoSiz; i++)
+	for (int i = 0; i < PlayerStatusInfoSize; i++)
 	{
 		m_playerStatusInfo[i].m_num = 0;
 		m_playerStatusInfo[i].m_numPos = numBasePos;
@@ -174,20 +187,20 @@ void ResultDisplay_PlayerStatus::DrawSprite()
 
 	if (!m_spRtTargetPack) { return; }
 
-	float scal = 0.25;
-	Math::Vector2 siz = { 1280 * scal ,720 * scal };
+	float scale = 0.25;
+	Math::Vector2 size = { 1280 * scale ,720 * scale };
 
 	Math::Vector2 pos = { -250,0 };
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, siz.x, siz.y);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, size.x, size.y);
 
 	//ステータス描画
 	Math::Vector2 pivot = { 0,0.5 };
-	for (int i = 0; i < PlayerStatusInfoSiz; i++)
+	for (int i = 0; i < PlayerStatusInfoSize; i++)
 	{
 		Math::Color color;
 		Math::Vector2 backPos = m_playerStatusInfo[i].m_namePos;
-		Math::Vector2 backSiz = { 400,60 };
+		Math::Vector2 backSize = { 400,60 };
 		Math::Vector2 pivot = { 0,0.5 };
 		if (i % 2 == 0)
 		{
@@ -198,7 +211,7 @@ void ResultDisplay_PlayerStatus::DrawSprite()
 			color = { 0.5,0.5,0.5,0.3f };
 		}
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayerStatusInfoBackTex, backPos.x, backPos.y, backSiz.x, backSiz.y, nullptr, &color, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayerStatusInfoBackTex, backPos.x, backPos.y, backSize.x, backSize.y, nullptr, &color, pivot);
 
 
 
@@ -214,6 +227,11 @@ void ResultDisplay_PlayerStatus::DrawSprite()
 		}
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
+
 void ResultDisplay_PlayerStatus::SetPlayerStatusGameResultFilePath(std::string _path)
 {
 	m_spResultPlayer = std::make_shared<PlayerBase>();
@@ -230,13 +248,17 @@ void ResultDisplay_PlayerStatus::SetSpWeaponBase(std::shared_ptr<WeaponBase> _sp
 	RefreshStatusNum();
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void ResultDisplay_PlayerStatus::RefreshStatusNum()
 {
 	//PlayerInventoryUI::PlayerStatusPreDraw と同じ計算
 	if (!m_spResultPlayer) { return; }
 	if (!m_spWeapon) { return; }
 
-	for (int i = 0; i < PlayerStatusInfoSiz; i++)
+	for (int i = 0; i < PlayerStatusInfoSize; i++)
 	{
 		int num = 0;
 

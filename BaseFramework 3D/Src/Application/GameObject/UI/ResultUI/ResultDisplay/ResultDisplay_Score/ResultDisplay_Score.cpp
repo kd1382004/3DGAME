@@ -1,6 +1,16 @@
-﻿#include "ResultDisplay_Score.h"
-#include"../../../../../Info/NumDraw/NumDraw.h"
-#include"../../../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "ResultDisplay_Score.h"					//リザルト画面(スコア)
+
+//---- シーン ----
+#include"../../../../../Scene/SceneManager.h"		//シーンの管理
+
+//---- 便利機能 ----
+#include"../../../../../Info/NumDraw/NumDraw.h"		//数字の画像描画
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void ResultDisplay_Score::Init()
 {
 	if (!m_spBackTex)
@@ -85,26 +95,26 @@ void ResultDisplay_Score::DrawSprite()
 	Math::Vector2 pivot = { 0,0.5 };
 
 	// 数字が超えてはいけない大きさ(項目の文字「最高階層」などの右端 〜 数字の右端)
-	const Math::Vector2 kScoreNumMaxSiz = { 330.0f, 0.0f };
+	const Math::Vector2 kScoreNumMaxSize = { 330.0f, 0.0f };
 
 	if (m_spDisplayFloorTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spDisplayFloorTex, m_base2DPos.x, m_base2DPos.y, nullptr, nullptr, pivot);
-		NumDraw::GetInstance().Draw(floorNum, Aligned::RAligned, m_baseNumPos, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
+		NumDraw::GetInstance().Draw(floorNum, Aligned::RAligned, m_baseNumPos, kWhiteColor, 4, true, -1, kScoreNumMaxSize);
 		num++;
 	}
 
 	if (m_spEnemyKillTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spEnemyKillTex, m_base2DPos.x, m_base2DPos.y - num * 100, nullptr, nullptr, pivot);
-		NumDraw::GetInstance().Draw(enemykill, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
+		NumDraw::GetInstance().Draw(enemykill, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSize);
 		num++;
 	}
 
 	if (m_spTreasureChestsNumTex)
 	{
 		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTreasureChestsNumTex, m_base2DPos.x, m_base2DPos.y - num * 100, nullptr, nullptr, pivot);
-		NumDraw::GetInstance().Draw(treasureChestsNum, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSiz);
+		NumDraw::GetInstance().Draw(treasureChestsNum, Aligned::RAligned, { m_baseNumPos.x,m_baseNumPos.y - num * 100 }, kWhiteColor, 4, true, -1, kScoreNumMaxSize);
 		num++;
 	}
 
@@ -152,6 +162,10 @@ void ResultDisplay_Score::DrawSprite()
 	}
 
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void ResultDisplay_Score::SetDisplayFloorInfo(const DisplayFloorInfo& _displayFloorInfo)
 {

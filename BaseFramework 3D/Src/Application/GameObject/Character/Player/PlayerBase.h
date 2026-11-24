@@ -66,6 +66,7 @@ struct ActionKeyConfig
 
 struct Inventory;
 
+//プレイヤー
 class PlayerBase :public CharacterBase
 {
 public:
@@ -419,9 +420,9 @@ protected:
 	bool m_isGameSceneOut = false;
 
 	//砂のエフェクトのファイル
-	std::string m_sunaNum = "Suna/Suna.efkefc";
+	std::string m_sunaEffectPath = "Suna/Suna.efkefc";
 
-	//音
+	//ダメージを受けた音
 	std::shared_ptr<KdSoundInstance> m_spDamageSE;
 
 	//回避の音
@@ -430,7 +431,7 @@ protected:
 	//ジャンプの音
 	std::shared_ptr<KdSoundInstance> m_spJumpSE;
 
-	//Effect
+	//回復のエフェクト
 	std::weak_ptr<KdEffekseerObject> m_wpHealEffect;
 
 	//攻撃力アップのエフェクト
@@ -451,15 +452,15 @@ protected:
 	//今の武器のコンボ
 	std::vector<ComboStep> m_attackCombo;
 
-	// コンボファイルのフォルダー（持ち主ごと）と、今使っているファイルのパス
+	// コンボファイルのフォルダー（持ち主ごと）
 	std::string m_comboFolder = "Asset/Data/ObjeData/Combo/Player/";
 
-	//コンボのファイルのパス
+	//今使っているコンボファイルのパス
 	std::string m_comboFilePath;
 	int   m_comboStep = -1;        // -1 = コンボしていない
-	bool  m_comboReserved = false;
+	bool  m_comboReserved = false;	// 次の段の攻撃入力を受け付け済みか
 	float m_stepForwardDone = 0.0f;   // この段で踏み込んだ距離（m）
-	float m_animeSpeedRate = 1.0f;
+	float m_animeSpeedRate = 1.0f;	// アニメーションの再生速度の倍率(今の段の速さ)
 
 	//---- その他の処理 ----
 

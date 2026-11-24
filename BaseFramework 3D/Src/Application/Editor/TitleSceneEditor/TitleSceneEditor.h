@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//タイトルシーンの配置編集エディター
 class  TitleSceneEditor
 {
 public:

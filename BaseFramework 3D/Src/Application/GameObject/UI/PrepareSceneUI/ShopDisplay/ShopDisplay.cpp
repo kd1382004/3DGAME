@@ -1,8 +1,17 @@
-﻿#include "ShopDisplay.h"
-#include"../../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Scene/SceneManager.h"
-#include"../../../../Scene/PrepareScene/PrepareScene.h"
+﻿//---- 自分のヘッダー ----
+#include "ShopDisplay.h"									//準備シーンのショップ画面
+
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"					//シーンの管理
+#include"../../../../Scene/PrepareScene/PrepareScene.h"		//準備シーン
+
+//---- 便利機能 ----
+#include"../../../../Info/MouseInfo/MouseInfo.h"			//マウス入力
+#include"../../../../Info/KeyInfo/KeyInfo.h"				//キー入力
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ShopDisplay::Init()
 {
@@ -101,12 +110,12 @@ void ShopDisplay::Update()
 	if (IsStackTab() && m_selectIndex < GetListNum())
 	{
 		const float rowY = GetInfoRowY(1);
-		if (m_clickFlg && MouseHit({ m_countMinusX, rowY }, m_smallButtonSiz, m_smallButtonSiz))
+		if (m_clickFlg && MouseHit({ m_countMinusX, rowY }, m_smallButtonSize, m_smallButtonSize))
 		{
 			m_count--;
 			m_clickFlg = false;
 		}
-		if (m_clickFlg && MouseHit({ m_countPlusX, rowY }, m_smallButtonSiz, m_smallButtonSiz))
+		if (m_clickFlg && MouseHit({ m_countPlusX, rowY }, m_smallButtonSize, m_smallButtonSize))
 		{
 			m_count++;
 			m_clickFlg = false;
@@ -133,6 +142,10 @@ void ShopDisplay::DrawSprite()
 
 	KdShaderManager::Instance().m_spriteShader.End();
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void ShopDisplay::LoadShopData()
 {
@@ -174,6 +187,10 @@ void ShopDisplay::LoadShopData()
 	m_money = inventory.value("money", 0L);
 }
 
+//=============================================
+// 描画
+//=============================================
+
 void ShopDisplay::DrawTex(const std::shared_ptr<KdTexture>& _spTex, const Math::Vector2& _pos, float _scale, const Math::Vector2& _pivot)
 {
 	if (!_spTex) { return; }
@@ -191,9 +208,9 @@ void ShopDisplay::DrawTexSize(const std::shared_ptr<KdTexture>& _spTex, const Ma
 		nullptr, &kWhiteColor, _pivot);
 }
 
-void ShopDisplay::DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _siz, bool _separator, float _maxW)
+void ShopDisplay::DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _size, bool _separator, float _maxW)
 {
-	NumDraw::GetInstance().Draw(_num, _aligned, _pos, Math::Color(1, 1, 1, 1), _siz, _separator, -1, { _maxW, 0.0f });
+	NumDraw::GetInstance().Draw(_num, _aligned, _pos, Math::Color(1, 1, 1, 1), _size, _separator, -1, { _maxW, 0.0f });
 
 	// NumDrawの中で Begin/End しているので、続けて描けるよう開き直す
 	KdShaderManager::Instance().m_spriteShader.Begin(false);
@@ -226,8 +243,8 @@ void ShopDisplay::DrawButton(ShopButton _button, const Math::Vector2& _pos, bool
 	//＋・－ボタンは小さい
 	if (_button == ShopButton::Plus || _button == ShopButton::Minus)
 	{
-		w = m_smallButtonSiz;
-		h = m_smallButtonSiz;
+		w = m_smallButtonSize;
+		h = m_smallButtonSize;
 	}
 
 	ButtonState state = ButtonState::Disable;
@@ -440,6 +457,10 @@ void ShopDisplay::DrawInventory()
 	ScrollDraw(m_haveScroll, ShopTex::InventoryTrack);
 }
 
+//=============================================
+// 取得
+//=============================================
+
 int ShopDisplay::GetListNum() const
 {
 	switch (m_tab)
@@ -480,12 +501,12 @@ std::vector<ShopDisplay::HaveItem> ShopDisplay::GetHaveList() const
 	return list;
 }
 
-float ShopDisplay::GetNumWidth(long _num, float _siz, bool _separator, float _maxW) const
+float ShopDisplay::GetNumWidth(long _num, float _size, bool _separator, float _maxW) const
 {
 	// 桁数(3桁区切りのカンマも1文字分)
 	const int digits = static_cast<int>(std::to_string(std::abs(_num)).size());
 	const int commas = _separator ? (digits - 1) / 3 : 0;
-	const float w = (digits + commas) * m_numGlyphW * _siz;
+	const float w = (digits + commas) * m_numGlyphW * _size;
 
 	// 超えてはいけない横幅があれば、その幅に縮む
 	return (_maxW > 0.0f && w > _maxW) ? _maxW : w;
@@ -506,6 +527,10 @@ const std::shared_ptr<KdTexture>& ShopDisplay::GetStackTex(int _index, ItemTex _
 	return (m_tab == ShopTab::Material) ? m_spMaterialTex[_index][static_cast<int>(_tex)]
 		: m_spPotionTex[_index][static_cast<int>(_tex)];
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool ShopDisplay::MouseHit(const Math::Vector2& _pos, float _w, float _h) const
 {
@@ -599,6 +624,115 @@ void ShopDisplay::LoadOneTex(std::shared_ptr<KdTexture>& _spTex, const std::stri
 	if (!_spTex->Load(_path))
 	{
 		KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayの画像が読み込めません : %s\n"), _path.c_str());
+	}
+}
+
+nlohmann::json ShopDisplay::ReadJson(const std::string& _path, bool _isLog)
+{
+	std::ifstream file(_path);
+	if (!file)
+	{
+		if (_isLog)
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayのファイルが見つかりません : %s\n"), _path.c_str());
+		}
+		return nlohmann::json::object();
+	}
+
+	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+	if (data.is_discarded()) { return nlohmann::json::object(); }
+
+	return data;
+}
+
+void ShopDisplay::WriteJson(const std::string& _path, const nlohmann::json& _data)
+{
+	std::ofstream file(_path);
+	if (!file)
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayの保存に失敗しました : %s\n"), _path.c_str());
+		return;
+	}
+
+	//4 … 字下げの幅(今のファイルと同じ見た目)
+	file << _data.dump(4);
+}
+
+void ShopDisplay::ReadPrice(const nlohmann::json& _master, const char* _key, ShopItem* _items, int _num)
+{
+	if (!_master.contains(_key)) { return; }
+
+	for (const auto& item : _master[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		_items[id].m_buyPrice = item.value("buyPrice", 0);
+		_items[id].m_sellPrice = item.value("sellPrice", 0);
+	}
+}
+
+void ShopDisplay::ReadStock(const nlohmann::json& _stock, const char* _key, ShopItem* _items, int _num)
+{
+	if (!_stock.contains(_key)) { return; }
+
+	for (const auto& item : _stock[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		_items[id].m_stock = item.value("stock", 0);
+	}
+}
+
+void ShopDisplay::ReadHave(const nlohmann::json& _inventory, const char* _key, int* _have, int _num)
+{
+	for (int i = 0; i < _num; i++)
+	{
+		_have[i] = 0;
+	}
+
+	if (!_inventory.contains(_key)) { return; }
+
+	for (const auto& item : _inventory[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		_have[id] = item.value("num", 0);
+	}
+}
+
+void ShopDisplay::WriteStock(nlohmann::json& _data, const char* _key, const ShopItem* _items, int _num)
+{
+	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
+
+	for (auto& item : _data[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		item["stock"] = _items[id].m_stock;
+	}
+}
+
+void ShopDisplay::WriteHave(nlohmann::json& _data, const char* _key, const int* _have, int _num)
+{
+	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
+
+	for (auto& item : _data[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		item["num"] = _have[id];
+	}
+}
+
+void ShopDisplay::WriteOwned(nlohmann::json& _data, const char* _key, const bool* _owned, int _num)
+{
+	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
+
+	for (auto& item : _data[_key])
+	{
+		int id = item.value("id", -1);
+		if (id < 0 || id >= _num) { continue; }
+		item["owned"] = _owned[id];
 	}
 }
 
@@ -954,113 +1088,4 @@ void ShopDisplay::SaveShopData()
 	WriteOwned(inventory, "weapons", m_weaponOwned, PlayerWeaponInfoSize);
 	inventory["money"] = m_money;
 	WriteJson(m_inventoryPath, inventory);
-}
-
-nlohmann::json ShopDisplay::ReadJson(const std::string& _path, bool _isLog)
-{
-	std::ifstream file(_path);
-	if (!file)
-	{
-		if (_isLog)
-		{
-			KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayのファイルが見つかりません : %s\n"), _path.c_str());
-		}
-		return nlohmann::json::object();
-	}
-
-	nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
-	if (data.is_discarded()) { return nlohmann::json::object(); }
-
-	return data;
-}
-
-void ShopDisplay::WriteJson(const std::string& _path, const nlohmann::json& _data)
-{
-	std::ofstream file(_path);
-	if (!file)
-	{
-		KdDebugGUI::Instance().AddLog(U8("[Error] ShopDisplayの保存に失敗しました : %s\n"), _path.c_str());
-		return;
-	}
-
-	//4 … 字下げの幅(今のファイルと同じ見た目)
-	file << _data.dump(4);
-}
-
-void ShopDisplay::ReadPrice(const nlohmann::json& _master, const char* _key, ShopItem* _items, int _num)
-{
-	if (!_master.contains(_key)) { return; }
-
-	for (const auto& item : _master[_key])
-	{
-		int id = item.value("id", -1);
-		if (id < 0 || id >= _num) { continue; }
-		_items[id].m_buyPrice = item.value("buyPrice", 0);
-		_items[id].m_sellPrice = item.value("sellPrice", 0);
-	}
-}
-
-void ShopDisplay::ReadStock(const nlohmann::json& _stock, const char* _key, ShopItem* _items, int _num)
-{
-	if (!_stock.contains(_key)) { return; }
-
-	for (const auto& item : _stock[_key])
-	{
-		int id = item.value("id", -1);
-		if (id < 0 || id >= _num) { continue; }
-		_items[id].m_stock = item.value("stock", 0);
-	}
-}
-
-void ShopDisplay::ReadHave(const nlohmann::json& _inventory, const char* _key, int* _have, int _num)
-{
-	for (int i = 0; i < _num; i++)
-	{
-		_have[i] = 0;
-	}
-
-	if (!_inventory.contains(_key)) { return; }
-
-	for (const auto& item : _inventory[_key])
-	{
-		int id = item.value("id", -1);
-		if (id < 0 || id >= _num) { continue; }
-		_have[id] = item.value("num", 0);
-	}
-}
-
-void ShopDisplay::WriteStock(nlohmann::json& _data, const char* _key, const ShopItem* _items, int _num)
-{
-	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
-
-	for (auto& item : _data[_key])
-	{
-		int id = item.value("id", -1);
-		if (id < 0 || id >= _num) { continue; }
-		item["stock"] = _items[id].m_stock;
-	}
-}
-
-void ShopDisplay::WriteHave(nlohmann::json& _data, const char* _key, const int* _have, int _num)
-{
-	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
-
-	for (auto& item : _data[_key])
-	{
-		int id = item.value("id", -1);
-		if (id < 0 || id >= _num) { continue; }
-		item["num"] = _have[id];
-	}
-}
-
-void ShopDisplay::WriteOwned(nlohmann::json& _data, const char* _key, const bool* _owned, int _num)
-{
-	if (!_data.contains(_key) || !_data[_key].is_array()) { return; }
-
-	for (auto& item : _data[_key])
-	{
-		int id = item.value("id", -1);
-		if (id < 0 || id >= _num) { continue; }
-		item["owned"] = _owned[id];
-	}
 }

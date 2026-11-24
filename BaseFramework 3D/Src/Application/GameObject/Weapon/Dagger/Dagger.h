@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../WeaponBase.h"
 
+//短剣
 class Dagger :public WeaponBase
 {
 public:
@@ -68,7 +69,7 @@ private:
 	//前フレームの根元の位置(ワールド)
 	Math::Vector3 m_prevBasePos = Math::Vector3::Zero;
 	Math::Matrix  m_prevWeaponParentMat = Math::Matrix::Identity; // 追加：前フレーム行列
-	bool m_isFirstFrame = true;
+	bool m_isFirstFrame = true; // 前フレームの位置がまだ無いか(最初のフレームは掃引しない)
 
 	//溜め段階0のエフェクト
 	std::weak_ptr<KdEffekseerObject> m_wpChargeLV0Effect;

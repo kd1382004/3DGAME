@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include"../UIBase.h"
+//スキルゲージ
 class SkillGage :public UIBase
 {
 public:
@@ -35,7 +36,7 @@ private:
 	//---- メンバ変数 ----
 
 	//サイズ
-	Math::Vector2 m_siz;
+	Math::Vector2 m_size;
 
 	//ゲージの画像
 	std::shared_ptr<KdTexture> m_spGaugeTexture = nullptr;

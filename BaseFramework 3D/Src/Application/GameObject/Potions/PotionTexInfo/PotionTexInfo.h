@@ -16,6 +16,7 @@ struct Texs
 };
 
 
+//アイテムの名前・画像情報
 class PotionTexInfo
 {
 public:

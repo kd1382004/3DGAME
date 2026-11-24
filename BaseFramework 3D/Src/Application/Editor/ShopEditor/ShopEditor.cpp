@@ -1,4 +1,5 @@
-﻿#include "ShopEditor.h"
+﻿//---- 自分のヘッダー ----
+#include "ShopEditor.h"		//ショップの品ぞろえ編集エディター
 
 namespace
 {
@@ -8,16 +9,24 @@ namespace
 	//ショップの商品の種類の数(消耗品・素材・武器)
 	constexpr int kCategoryNum = 3;
 
-	constexpr float kIconSiz = 40.0f;	// 表に出すアイコンの大きさ
+	constexpr float kIconSize = 40.0f;	// 表に出すアイコンの大きさ
 	constexpr float kNameW   = 150.0f;	// 名前画像の幅(元は200×53)
 	constexpr float kNameH   = 40.0f;
 }
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 ShopEditor::ShopEditor(const std::string& _filePath)
 	: m_filePath(_filePath)
 {
 	Load();
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ShopEditor::Draw(bool* _open)
 {
@@ -95,6 +104,10 @@ void ShopEditor::Draw(bool* _open)
 	ImGui::End();
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 bool ShopEditor::Load()
 {
 	std::ifstream file(m_filePath);
@@ -140,6 +153,10 @@ bool ShopEditor::Save()
 	return true;
 }
 
+//=============================================
+// 基本の処理
+//=============================================
+
 void ShopEditor::DrawCategory(const Category& _category)
 {
 	constexpr ImGuiTableFlags flags =
@@ -169,11 +186,11 @@ void ShopEditor::DrawCategory(const Category& _category)
 		std::shared_ptr<KdTexture> spIcon = GetTex(GetIconPath(_category.m_key, name));
 		if (spIcon && spIcon->WorkSRView())
 		{
-			ImGui::Image((ImTextureID)spIcon->WorkSRView(), ImVec2(kIconSiz, kIconSiz));
+			ImGui::Image((ImTextureID)spIcon->WorkSRView(), ImVec2(kIconSize, kIconSize));
 		}
 		else
 		{
-			ImGui::Dummy(ImVec2(kIconSiz, kIconSiz));
+			ImGui::Dummy(ImVec2(kIconSize, kIconSize));
 		}
 
 		// ---- 名前(ゲーム内の名前画像 + JSONの名前) ----
@@ -242,6 +259,10 @@ void ShopEditor::DrawCategory(const Category& _category)
 	ImGui::EndTable();
 }
 
+//=============================================
+// 取得
+//=============================================
+
 std::string ShopEditor::GetIconPath(const std::string& _key, const std::string& _name) const
 {
 	const std::string item = "Asset/Textures/GameUI/Item/";
@@ -274,6 +295,10 @@ std::shared_ptr<KdTexture> ShopEditor::GetTex(const std::string& _path)
 	m_texCache[_path] = spTex;
 	return spTex;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 std::vector<std::string> ShopEditor::Validate() const
 {

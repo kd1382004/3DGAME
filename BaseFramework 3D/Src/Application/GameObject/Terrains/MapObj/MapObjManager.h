@@ -5,6 +5,7 @@ class CameraBase;
 class MapManager;
 class GameScene;
 
+//マップオブジェクトの管理
 class MapObjManager :public KdGameObject
 {
 public:

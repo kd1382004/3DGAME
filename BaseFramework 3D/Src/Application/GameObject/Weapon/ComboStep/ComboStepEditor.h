@@ -3,6 +3,7 @@
 #include"ComboStepValidator.h"
 #include"ComboPreviewObject.h"
 
+//コンボ編集エディター
 class ComboStepEditor
 {
 public:
@@ -84,9 +85,9 @@ private:
 	// コンボファイルを置く一番上のフォルダー（この下に 持ち主/武器.json）
 	const std::string kComboRoot = "Asset/Data/ObjeData/Combo";
 	std::vector<std::string> m_fileList;          // kComboRoot からの相対パス（"Player/Sword.json"）
-	int  m_fileListSelected = -1;
+	int  m_fileListSelected = -1;                 // ファイル一覧で選んでいる番号(-1 = なし)
 	bool m_requestOpenPopup = false;              // 次のフレームでポップアップを開く
-	bool m_requestSaveAsPopup = false;
+	bool m_requestSaveAsPopup = false;            // 次のフレームで名前を付けて保存のポップアップを開く
 
 	//次のフレームで新規作成のポップアップを開く
 	bool m_requestNewPopup = false;
@@ -98,7 +99,7 @@ private:
 	std::vector<ComboStep> m_stableSteps;     // 何も操作していないときの m_steps（ドラッグ前の状態）
 	bool m_editChanged = false;               // 操作中に値が変わったか
 	std::string m_pendingSavePath;            // エラー確認のあとに保存するパス
-	bool m_requestSaveErrorPopup = false;
+	bool m_requestSaveErrorPopup = false;     // 次のフレームで保存前のエラー確認ポップアップを開く
 
 	//次のフレームで閉じる確認のポップアップを開く
 	bool m_requestClosePopup = false;

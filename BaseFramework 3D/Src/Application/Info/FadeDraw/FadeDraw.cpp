@@ -1,4 +1,5 @@
-﻿#include "FadeDraw.h"
+﻿//---- 自分のヘッダー ----
+#include "FadeDraw.h"		//画面フェードの描画
 
 void FadeDraw::Update()
 {

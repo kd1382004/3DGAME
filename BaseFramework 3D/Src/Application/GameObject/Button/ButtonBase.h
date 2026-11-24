@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 
+//ボタンの基底クラス
 class ButtonBase :public KdGameObject
 {
 public:
@@ -95,5 +96,5 @@ protected:
 	void MouseChosen();
 
 	//ファイルから位置・大きさを読み込む
-	void DataLodo()override;
+	void DataLoad()override;
 };

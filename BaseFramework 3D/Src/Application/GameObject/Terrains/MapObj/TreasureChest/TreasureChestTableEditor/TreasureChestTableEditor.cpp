@@ -1,7 +1,16 @@
-﻿#include"TreasureChestTableEditor.h"
-#include"../LootTableManager/LootTableManager.h"
-#include<set>
-#include<cstdio>
+﻿//---- 自分のヘッダー ----
+#include"TreasureChestTableEditor.h"					//宝箱のドロップテーブル編集エディター
+
+//---- マップオブジェクト ----
+#include"../LootTableManager/LootTableManager.h"		//宝箱のドロップテーブル管理
+
+//---- 標準ライブラリ ----
+#include<set>											//集合(std::set)
+#include<cstdio>										//printf系の入出力
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 TreasureChestTableEditor::TreasureChestTableEditor(const std::string& _filePath)
 	: m_filePath(_filePath)
@@ -9,6 +18,10 @@ TreasureChestTableEditor::TreasureChestTableEditor(const std::string& _filePath)
 	LoadMasters();
 	Load();
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void TreasureChestTableEditor::Draw(bool* _open)
 {
@@ -62,6 +75,10 @@ void TreasureChestTableEditor::Draw(bool* _open)
 
 	ImGui::End();
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool TreasureChestTableEditor::Load()
 {
@@ -139,6 +156,10 @@ bool TreasureChestTableEditor::Save()
 	m_message = U8("保存しました（ゲームに反映済み）");
 	return true;
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void TreasureChestTableEditor::DrawTableList()
 {
@@ -375,10 +396,10 @@ bool TreasureChestTableEditor::DrawItemRow(nlohmann::json& _item, int _index, fl
 
 	// ---- 種類 ----
 	ImGui::TableNextColumn();
-	const char* typeNames[ItemTypeSiz] = { U8("ポーション"), U8("強化素材") };
-	int selectType = (type >= 0 && type < ItemTypeSiz) ? type : 0;
+	const char* typeNames[ItemTypeSize] = { U8("ポーション"), U8("強化素材") };
+	int selectType = (type >= 0 && type < ItemTypeSize) ? type : 0;
 	ImGui::SetNextItemWidth(110.0f);
-	if (ImGui::Combo("##type", &selectType, typeNames, ItemTypeSiz) && selectType != type)
+	if (ImGui::Combo("##type", &selectType, typeNames, ItemTypeSize) && selectType != type)
 	{
 		// 種類を変えたら、その種類の先頭のアイテムにする
 		const std::vector<MasterItem>& master = GetMaster(selectType);
@@ -440,11 +461,19 @@ bool TreasureChestTableEditor::DrawItemRow(nlohmann::json& _item, int _index, fl
 	return remove;
 }
 
+//=============================================
+// 取得
+//=============================================
+
 const std::vector<TreasureChestTableEditor::MasterItem>& TreasureChestTableEditor::GetMaster(int _type) const
 {
 	if (_type == ItemType_Material) { return m_materials; }
 	return m_potions;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void TreasureChestTableEditor::LoadMasters()
 {
@@ -474,7 +503,7 @@ std::vector<TreasureChestTableEditor::MasterItem> TreasureChestTableEditor::Load
 
 std::string TreasureChestTableEditor::FindItemName(int _type, int _id) const
 {
-	if (_type < 0 || _type >= ItemTypeSiz) { return {}; }
+	if (_type < 0 || _type >= ItemTypeSize) { return {}; }
 
 	for (const MasterItem& item : GetMaster(_type))
 	{
@@ -517,7 +546,7 @@ std::vector<std::string> TreasureChestTableEditor::Validate(const std::string& _
 		const int id = item.value("id", -1);
 		const float weight = item.value("weight", 0.0f);
 
-		if (type < 0 || type >= ItemTypeSiz)
+		if (type < 0 || type >= ItemTypeSize)
 		{
 			errors.push_back(U8("種類が不正です: type ") + std::to_string(type));
 			continue;
@@ -574,7 +603,7 @@ nlohmann::json TreasureChestTableEditor::MakeDefaultTable() const
 	table["items"] = nlohmann::json::array();
 
 	// 全アイテムを同じ重みで入れておく
-	for (int type = 0; type < ItemTypeSiz; ++type)
+	for (int type = 0; type < ItemTypeSize; ++type)
 	{
 		for (const MasterItem& master : GetMaster(type))
 		{

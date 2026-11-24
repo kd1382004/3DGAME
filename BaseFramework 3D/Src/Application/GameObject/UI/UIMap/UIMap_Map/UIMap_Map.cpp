@@ -1,5 +1,12 @@
-﻿#include "UIMap_Map.h"
-#include"../../../Terrains/Map/MapGenerate/MapGenerate.h"
+﻿//---- 自分のヘッダー ----
+#include "UIMap_Map.h"											//ミニマップの地形
+
+//---- マップ ----
+#include"../../../Terrains/Map/MapGenerate/MapGenerate.h"		//ダンジョンのマップ生成
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void UIMap_Map::Init()
 {
@@ -8,8 +15,8 @@ void UIMap_Map::Init()
 		m_spMapTex = std::make_shared<KdTexture>();
 		m_spMapTex->Load("Asset/Textures/GameUI/Map/Map.png");
 
-		m_mapTexSiz.x = m_spMapTex->GetWidth();
-		m_mapTexSiz.y = m_spMapTex->GetHeight();
+		m_mapTexSize.x = m_spMapTex->GetWidth();
+		m_mapTexSize.y = m_spMapTex->GetHeight();
 
 		m_basePos = {};
 	}
@@ -36,8 +43,8 @@ void UIMap_Map::DrawSprite()
 	if (!m_stairsMiniMapInfo.m_drawFlg) { return; }
 	if (!m_isStairsMine) { return; }
 
-	float drawX = m_basePos.x + m_stairsMiniMapInfo.m_pos.x * m_siz;
-	float drawY = m_basePos.y + m_stairsMiniMapInfo.m_pos.y * m_siz;
+	float drawX = m_basePos.x + m_stairsMiniMapInfo.m_pos.x * m_size;
+	float drawY = m_basePos.y + m_stairsMiniMapInfo.m_pos.y * m_size;
 
 	// 階段は目立つように画像そのままの大きさで描く（マスより大きい 11×11）
 	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spMapStairsTex, drawX, drawY, m_spMapStairsTex->GetWidth(), m_spMapStairsTex->GetHeight());
@@ -56,13 +63,17 @@ void UIMap_Map::PreDraw()
 	}
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void UIMap_Map::AddPosList(Math::Vector3 _3DPos, float _worldTileSize, int _roomNum)
 {
 	float tileX = _3DPos.x / _worldTileSize;
 	float tileY = _3DPos.z / _worldTileSize;
 
-	float px = tileX * m_mapTexSiz.x + m_mapTexSiz.x * 0.5f;
-	float py = tileY * m_mapTexSiz.y + m_mapTexSiz.y * 0.5f;
+	float px = tileX * m_mapTexSize.x + m_mapTexSize.x * 0.5f;
+	float py = tileY * m_mapTexSize.y + m_mapTexSize.y * 0.5f;
 
 	MiniMapInfo info;
 	info.m_pos = { px, py };
@@ -80,8 +91,8 @@ void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize, int _ro
 	float tileX = _3DPos.x / _worldTileSize;
 	float tileY = _3DPos.z / _worldTileSize;
 
-	float px = tileX * m_mapTexSiz.x + m_mapTexSiz.x * 0.5f;
-	float py = tileY * m_mapTexSiz.y + m_mapTexSiz.y * 0.5f;
+	float px = tileX * m_mapTexSize.x + m_mapTexSize.x * 0.5f;
+	float py = tileY * m_mapTexSize.y + m_mapTexSize.y * 0.5f;
 
 	MiniMapInfo info;
 	info.m_pos = { px, py };
@@ -107,6 +118,10 @@ void UIMap_Map::SetMinimapRevealAll(bool _enable)
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void UIMap_Map::PosListReset()
 {
 	m_posList.clear();
@@ -119,10 +134,10 @@ void UIMap_Map::PosListReset()
 void UIMap_Map::DiscoverTile()
 {
 	// プレイヤーがミニマップ上のどのタイルにいるか
-	int px = (int)((m_miniMapPlayerPos.x - m_basePos.x - m_mapTexSiz.x * 0.5f) / (m_mapTexSiz.x * m_siz));
-	int py = (int)((m_miniMapPlayerPos.y - m_basePos.y - m_mapTexSiz.y * 0.5f) / (m_mapTexSiz.y * m_siz));
+	int px = (int)((m_miniMapPlayerPos.x - m_basePos.x - m_mapTexSize.x * 0.5f) / (m_mapTexSize.x * m_size));
+	int py = (int)((m_miniMapPlayerPos.y - m_basePos.y - m_mapTexSize.y * 0.5f) / (m_mapTexSize.y * m_size));
 
-	float discoverRadius = m_discoverTileNum * m_mapTexSiz.x;
+	float discoverRadius = m_discoverTileNum * m_mapTexSize.x;
 	int r = m_discoverTileNum + 1;
 	std::unordered_set<int> revealedRooms;
 
@@ -137,7 +152,7 @@ void UIMap_Map::DiscoverTile()
 			MiniMapInfo* info = it->second;
 			if (info->m_drawFlg) { continue; }
 
-			Math::Vector2 pos = { m_basePos.x + info->m_pos.x * m_siz, m_basePos.y + info->m_pos.y * m_siz };
+			Math::Vector2 pos = { m_basePos.x + info->m_pos.x * m_size, m_basePos.y + info->m_pos.y * m_size };
 			if ((pos - m_miniMapPlayerPos).Length() < discoverRadius)
 			{
 				info->m_drawFlg = true;
@@ -174,8 +189,8 @@ void UIMap_Map::BakeTiles()
 	for (const auto& info : m_posList)
 	{
 		if (!info.m_drawFlg) { continue; }
-		sprite.DrawTex(m_spMapTex, m_basePos.x + info.m_pos.x * m_siz, m_basePos.y + info.m_pos.y * m_siz,
-			m_mapTexSiz.x, m_mapTexSiz.y);
+		sprite.DrawTex(m_spMapTex, m_basePos.x + info.m_pos.x * m_size, m_basePos.y + info.m_pos.y * m_size,
+			m_mapTexSize.x, m_mapTexSize.y);
 	}
 	sprite.End();
 

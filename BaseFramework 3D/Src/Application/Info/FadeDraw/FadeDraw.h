@@ -9,6 +9,7 @@ enum FadeType
 	NoFade,
 };
 
+//画面フェードの描画
 class FadeDraw
 {
 public:

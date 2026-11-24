@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../UIBase.h"
 
+//画像を1枚描くUI
 class DrawTex :public UIBase
 {
 public:

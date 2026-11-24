@@ -9,6 +9,7 @@ class TitelMove;
 class MapObjManager;
 class EnemyManager;
 
+//タイトルシーン
 class TitleScene : public BaseScene
 {
 public:
@@ -63,7 +64,7 @@ private:
 	//---- 設定 ----
 
 	//タイトル画面のオブジェクトを読み込んで並べる
-	void SetObjeList();
+	void SetObjectList();
 
 	//---- その他の処理 ----
 

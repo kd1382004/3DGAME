@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../WarpGateBase.h"
 
+//脱出ゲート
 class EscapeGate:public WarpGateBase
 {
 public:

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../EnemyBase.h"
 
+//敵の待ち伏せ出現
 class EnemyAmbush :public EnemyBase
 {
 public:

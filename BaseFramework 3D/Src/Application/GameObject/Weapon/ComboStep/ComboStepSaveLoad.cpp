@@ -1,4 +1,5 @@
-﻿#include "ComboStepSaveLoad.h"
+﻿//---- 自分のヘッダー ----
+#include "ComboStepSaveLoad.h"		//コンボの保存・読み込み
 
 bool ComboStepSaveLoad::Load(const std::string& _path, ComboFileData& _outData)
 {

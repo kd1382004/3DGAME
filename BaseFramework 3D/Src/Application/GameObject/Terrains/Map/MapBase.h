@@ -47,6 +47,7 @@ enum RoomType
 };
 
 
+//マップ部品の基底クラス
 class MapBase :public KdGameObject
 {
 public:

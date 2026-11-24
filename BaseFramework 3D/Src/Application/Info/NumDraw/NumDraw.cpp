@@ -1,9 +1,12 @@
-﻿#include "NumDraw.h"
-#include <string>
-#include <vector>
-#include <cmath>
+﻿//---- 自分のヘッダー ----
+#include "NumDraw.h"		//数字の画像描画
 
-void NumDraw::Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _siz, bool _separator, int _digit, Math::Vector2 _maxSiz)
+//---- 標準ライブラリ ----
+#include <string>			//文字列
+#include <vector>			//可変長配列(std::vector)
+#include <cmath>			//数学関数
+
+void NumDraw::Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color, float _size, bool _separator, int _digit, Math::Vector2 _maxSize)
 {
 	if (!m_spTex) return;
 
@@ -38,20 +41,20 @@ void NumDraw::Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color 
 	}
 
 	// 3. 各文字の描画サイズと位置を計算して描画
-	float charW = m_recX * _siz;
-	float charH = m_recY * _siz;
+	float charW = m_recX * _size;
+	float charH = m_recY * _size;
 	int totalGlyphs = static_cast<int>(glyphs.size());
 
 	// 超えてはいけない大きさがあれば、横・縦それぞれの倍率を下げて収める
-	// 横 … 全部の文字を並べた幅が _maxSiz.x を超えたら、1文字の幅を縮める
-	if (_maxSiz.x > 0.0f && totalGlyphs > 0 && charW * totalGlyphs > _maxSiz.x)
+	// 横 … 全部の文字を並べた幅が _maxSize.x を超えたら、1文字の幅を縮める
+	if (_maxSize.x > 0.0f && totalGlyphs > 0 && charW * totalGlyphs > _maxSize.x)
 	{
-		charW = _maxSiz.x / totalGlyphs;
+		charW = _maxSize.x / totalGlyphs;
 	}
-	// 縦 … 1文字の高さが _maxSiz.y を超えたら、高さを縮める
-	if (_maxSiz.y > 0.0f && charH > _maxSiz.y)
+	// 縦 … 1文字の高さが _maxSize.y を超えたら、高さを縮める
+	if (_maxSize.y > 0.0f && charH > _maxSize.y)
 	{
-		charH = _maxSiz.y;
+		charH = _maxSize.y;
 	}
 
 	for (int k = 0; k < totalGlyphs; k++)

@@ -36,11 +36,11 @@ enum WeaponStrengtheningID
 	//武器本体
 	WeaponsStrengthening_Body,
 
-	WeaponsStrengtheningSiz
+	WeaponsStrengtheningSize
 };
 
 // WeaponStrengtheningIDと同じ順番にする
-const char* const kStrengtheningKeys[WeaponsStrengtheningSiz] =
+const char* const kStrengtheningKeys[WeaponsStrengtheningSize] =
 {
 	"attack",               // WeaponsStrengthening_Attack
 	"stamina",              // WeaponsStrengthening_Stamina
@@ -88,6 +88,7 @@ struct WeaponsStrengtheningInfo
 	int m_preconditionNodeID = -1;
 };
 
+//武器の基底クラス
 class WeaponBase :public KdGameObject
 {
 public:
@@ -111,6 +112,7 @@ public:
 	//ライトありの描画
 	void DrawLit()override;
 
+	//光る部分の描画
 	void DrawBright()override;
 
 	//---- 取得 ----
@@ -124,7 +126,7 @@ public:
 
 	//種類が範囲内か
 	// _type ... 強化の種類
-	bool IsValidType(int _type) const { return _type >= 0 && _type < WeaponsStrengtheningSiz; }
+	bool IsValidType(int _type) const { return _type >= 0 && _type < WeaponsStrengtheningSize; }
 
 	// 前提ノードが解放済みか（前提なし(-1)なら true）
 	// _type ... 強化の種類
@@ -219,7 +221,7 @@ public:
 	const std::vector<WeaponsStrengtheningInfo> GetWeaponsStrengtheningInfoList()
 	{
 		std::vector<WeaponsStrengtheningInfo> list;
-		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+		for (int i = 0; i < WeaponsStrengtheningSize; ++i)
 		{
 			list.push_back(m_weaponsStrengtheningInfo[i]);
 		}
@@ -347,7 +349,7 @@ public:
 	// _weaponsStrengtheningInfo ... 強化情報の一覧
 	void SetWeaponsStrengtheningInfo(std::vector<WeaponsStrengtheningInfo> _weaponsStrengtheningInfo)
 	{
-		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+		for (int i = 0; i < WeaponsStrengtheningSize; ++i)
 		{
 			if (i < _weaponsStrengtheningInfo.size())
 			{
@@ -418,7 +420,7 @@ public:
 	// _nodeID ... ノードID
 	int FindIndexByNodeID(int _nodeID) const
 	{
-		for (int i = 0; i < WeaponsStrengtheningSiz; ++i)
+		for (int i = 0; i < WeaponsStrengtheningSize; ++i)
 		{
 			if (m_weaponsStrengtheningInfo[i].m_myNodeID == _nodeID) { return i; }
 		}
@@ -574,7 +576,7 @@ protected:
 	float m_chargeAttackMaxDamage = 100;
 
 	//強化情報(種類ごと)
-	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
+	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSize];
 
 	//防御無視の値
 	float m_defenseIgnore = 0;
@@ -591,7 +593,7 @@ protected:
 	//今の段
 	ComboStep m_comboStepNow;
 	float     m_defaultPolyStart = 0.0f;   // コンボ以外の攻撃の軌跡のタイミング
-	float     m_defaultPolyEnd = 0.0f;
+	float     m_defaultPolyEnd = 0.0f;     // コンボ以外の攻撃の軌跡を消すタイミング
 
 	//今のアニメーションの進み具合
 	float m_animePercentNow = 0.0f;

@@ -1,5 +1,12 @@
-﻿#include "ComboStepEditor.h"
-#include"ComboStepSaveLoad.h"
+﻿//---- 自分のヘッダー ----
+#include "ComboStepEditor.h"		//コンボ編集エディター
+
+//---- 武器 ----
+#include"ComboStepSaveLoad.h"		//コンボの保存・読み込み
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 ComboStepEditor::ComboStepEditor()
 {
@@ -19,6 +26,10 @@ ComboStepEditor::ComboStepEditor()
 
 	m_isDirty = false;
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void ComboStepEditor::Draw(bool* _open)
 {
@@ -1016,10 +1027,13 @@ void ComboStepEditor::DrawPreviewWindow()
 	ImGui::End();
 }
 
+//=============================================
+// 取得
+//=============================================
+
 //==============================
 // 連続再生プレビュー（第6章）
 //==============================
-
 float ComboStepEditor::GetAnimeLength(const std::string& _name) const
 {
 	for (const AnimeInfo& info : m_animeList)
@@ -1028,6 +1042,10 @@ float ComboStepEditor::GetAnimeLength(const std::string& _name) const
 	}
 	return 0.0f;
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void ComboStepEditor::AddStep()
 {
@@ -1039,6 +1057,10 @@ void ComboStepEditor::AddStep()
 	m_selected = m_steps.size() - 1;
 	RenumberComboIndex();
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool ComboStepEditor::LoadFromFile(const std::string& _path)
 {
@@ -1269,8 +1291,8 @@ void ComboStepEditor::DeleteStep()
 	}
 	else
 	{
-		int listSiz = m_steps.size();
-		m_selected = std::min(m_selected, listSiz - 1);
+		int listSize = m_steps.size();
+		m_selected = std::min(m_selected, listSize - 1);
 	}
 
 	RenumberComboIndex();

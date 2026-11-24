@@ -1,6 +1,8 @@
-﻿#include "AccessoryManager.h"
+﻿//---- 自分のヘッダー ----
+#include "AccessoryManager.h"		//アクセサリーの管理
 
-#include"AccessoryBase.h"
+//---- アクセサリー ----
+#include"AccessoryBase.h"			//アクセサリーの基底クラス
 
 void AccessoryManager::Init()
 {}

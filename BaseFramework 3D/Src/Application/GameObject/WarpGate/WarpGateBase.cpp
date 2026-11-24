@@ -1,10 +1,25 @@
-#include "WarpGateBase.h"
-#include"../Character/Player/PlayerBase.h"
-#include"../../Scene/GameScene/GameScene.h"
-#include"../UI/UIManager.h"
-#include"../UI/UI2/UIBase2.h"
-#include"../Camera/TPSCamera/TPSCamera.h"
-#include"../../Info/DeltaTime/DeltaTime.h"
+//---- 自分のヘッダー ----
+#include "WarpGateBase.h"						//ワープゲートの基底クラス
+
+//---- シーン ----
+#include"../../Scene/GameScene/GameScene.h"		//ゲームシーン
+
+//---- カメラ ----
+#include"../Camera/TPSCamera/TPSCamera.h"		//三人称カメラ
+
+//---- プレイヤー ----
+#include"../Character/Player/PlayerBase.h"		//プレイヤー
+
+//---- UI ----
+#include"../UI/UIManager.h"						//UIの管理
+#include"../UI/UI2/UIBase2.h"					//キー表示付きUIの基底クラス
+
+//---- 便利機能 ----
+#include"../../Info/DeltaTime/DeltaTime.h"		//デルタタイム
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void WarpGateBase::Init()
 {
@@ -44,6 +59,10 @@ void WarpGateBase::DrawLit()
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWarpGate, m_mWorld);
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool WarpGateBase::PlayerHit()
 {

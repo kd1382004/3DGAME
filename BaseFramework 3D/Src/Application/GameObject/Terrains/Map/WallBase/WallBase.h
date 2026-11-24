@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../MapBase.h"
 
+//壁
 class WallBase:public MapBase
 {
 public:

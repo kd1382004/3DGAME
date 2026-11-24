@@ -1,4 +1,9 @@
-﻿#include "StaminaGage.h"
+﻿//---- 自分のヘッダー ----
+#include "StaminaGage.h"		//スタミナゲージ
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void StaminaGage::Init()
 {
@@ -28,7 +33,7 @@ void StaminaGage::Init()
 		m_spstaminaMemoryTex->Load("Asset/Textures/GameUI/StaminaGage/StaminaGageScaleTex.png");
 	}
 
-	m_siz = 1;
+	m_size = 1;
 	m_staminaBarTexPercent = std::clamp(m_staminaBarTexPercent, 0.0f, 1.0f);
 }
 
@@ -49,13 +54,13 @@ void StaminaGage::DrawSprite()
 	//スタミナゲージ背景
 	if (m_spStaminaBarBackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spStaminaBarBackTex, m_staminaBarTexBack2DPos.x, m_staminaBarTexBack2DPos.y, m_staminaBarTexBackLength.x * m_siz, m_staminaBarTexBackLength.y * m_siz, &m_staminaBarTexBackRect, &kWhiteColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spStaminaBarBackTex, m_staminaBarTexBack2DPos.x, m_staminaBarTexBack2DPos.y, m_staminaBarTexBackLength.x * m_size, m_staminaBarTexBackLength.y * m_size, &m_staminaBarTexBackRect, &kWhiteColor, pivot);
 	}
 
 	//スタミナゲージ本体
 	if (m_spStaminaBarTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spStaminaBarTex, m_staminaBarTex2DPos.x, m_staminaBarTex2DPos.y, m_staminaBarTexLength.x * m_siz * m_staminaBarTexPercent, m_staminaBarTexLength.y * m_siz, &m_staminaBarTexRect, &m_staminaBarTexColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spStaminaBarTex, m_staminaBarTex2DPos.x, m_staminaBarTex2DPos.y, m_staminaBarTexLength.x * m_size * m_staminaBarTexPercent, m_staminaBarTexLength.y * m_size, &m_staminaBarTexRect, &m_staminaBarTexColor, pivot);
 	}
 
 
@@ -64,11 +69,11 @@ void StaminaGage::DrawSprite()
 	{
 		//バー本体の左端と横幅(画面上)
 		const float barLeft = m_staminaBarTex2DPos.x;
-		const float barWidth = m_staminaBarTexLength.x * m_siz;
+		const float barWidth = m_staminaBarTexLength.x * m_size;
 
 		//目盛りの大きさ(画像の大きさ × 拡大率)
-		const int memoryW = static_cast<int>(m_spstaminaMemoryTex->GetWidth() * m_siz);
-		const int memoryH = static_cast<int>(m_spstaminaMemoryTex->GetHeight() * m_siz);
+		const int memoryW = static_cast<int>(m_spstaminaMemoryTex->GetWidth() * m_size);
+		const int memoryH = static_cast<int>(m_spstaminaMemoryTex->GetHeight() * m_size);
 
 		for (float hp = m_staminaPerScale; hp < m_maxStamina; hp += m_staminaPerScale)
 		{
@@ -94,6 +99,10 @@ void StaminaGage::DrawSprite()
 	}
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void StaminaGage::SetStaminaBarTexPercent(float _percent)
 {
 	float percent = std::clamp(_percent, 0.0f, 1.0f);
@@ -101,8 +110,11 @@ void StaminaGage::SetStaminaBarTexPercent(float _percent)
 	m_staminaBarTexPercent = percent;
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void StaminaGage::Delete()
 {
 
 }
-

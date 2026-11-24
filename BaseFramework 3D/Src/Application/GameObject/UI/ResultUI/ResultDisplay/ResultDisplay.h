@@ -11,6 +11,7 @@ class WeaponBase;
 
 struct Inventory;
 
+//リザルト画面
 class ResultDisplay :public UIBase
 {
 public:
@@ -85,7 +86,7 @@ private:
 	//右の矢印の位置
 	Math::Vector2 m_arrowRPos;
 	//矢印の大きさ
-	Math::Vector2 m_arrowSiz;
+	Math::Vector2 m_arrowSize;
 
 	//右の矢印にマウスが乗っているか
 	bool m_arrowRHitFlg = false;
@@ -121,7 +122,7 @@ private:
 	//ハンコの位置
 	Math::Vector2 m_lostTexPos;
 	//ハンコの大きさ
-	Math::Vector2 m_lostTexSiz;
+	Math::Vector2 m_lostTexSize;
 	//---------- Lost（失敗のハンコ）の演出 ----------
 	// ハンコを表示してからの経過時間（秒）
 	// 0.4秒までは何も出さず、そこから押すアニメーションに使う

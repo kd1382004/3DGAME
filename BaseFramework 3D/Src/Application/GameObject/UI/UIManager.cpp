@@ -1,19 +1,24 @@
-﻿#include "UIManager.h"
-#include"UIBase.h"
-#include"NextFloorGaugeUI/NextFloorGaugeUI.h"
+﻿//---- 自分のヘッダー ----
+#include "UIManager.h"									//UIの管理
 
+//---- プレイヤー ----
+#include"../Character/Player/PlayerBase.h"				//プレイヤー
 
-#include"../Character/Player/PlayerBase.h"
+//---- ポーション ----
+#include"../Potions/PotionTexInfo/PotionTexInfo.h"		//アイテムの名前・画像情報
 
-#include"HPBar/HPBar.h"
+//---- UI ----
+#include"UIBase.h"										//UIの基底クラス
+#include"NextFloorGaugeUI/NextFloorGaugeUI.h"			//次の階へ進むゲージ
+#include"HPBar/HPBar.h"									//HPバー
+#include"UI2/UIBase2.h"									//キー表示付きUIの基底クラス
+#include"UIMap/UIMapManager.h"							//ミニマップの管理
+#include"PlayerInventoryUI/PlayerInventoryUI.h"			//インベントリ画面
 
-#include"UI2/UIBase2.h"
+//=============================================
+// 基本の処理
+//=============================================
 
-#include"UIMap/UIMapManager.h"
-
-#include"PlayerInventoryUI/PlayerInventoryUI.h"
-
-#include"../Potions/PotionTexInfo/PotionTexInfo.h"
 void UIManager::Init()
 {
 	m_pauseStop = false;
@@ -48,7 +53,7 @@ void UIManager::PreUpdate()
 	}
 
 	//ソートする(描画優先数字が大きいほど後に)
-	if (m_uiListOldSiz != m_spUIList.size())
+	if (m_uiListOldSize != m_spUIList.size())
 	{
 		m_spUIList.sort(
 			[](const std::shared_ptr<UIBase>& _spA, const std::shared_ptr<UIBase>& _spB)
@@ -57,7 +62,7 @@ void UIManager::PreUpdate()
 			}
 		);
 
-		m_uiListOldSiz = m_spUIList.size();
+		m_uiListOldSize = m_spUIList.size();
 	}
 
 	if (m_spUIBase2)
@@ -95,6 +100,10 @@ void UIManager::DrawSprite()
 		ui->DrawSprite();
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void UIManager::SetPlayer(std::shared_ptr<PlayerBase> _spPlayerBase)
 {
@@ -161,4 +170,3 @@ void UIManager::SetMinimapRevealAll(bool _enable)
 		spUIMap->SetMinimapRevealAll(_enable);
 	}
 }
-

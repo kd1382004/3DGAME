@@ -3,6 +3,7 @@ class PlayerBase;
 class GameScene;
 class WarpGateManager;
 
+//ワープゲートの基底クラス
 class WarpGateBase :public KdGameObject
 {
 public:

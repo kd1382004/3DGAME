@@ -1,6 +1,7 @@
 #pragma once
 class PlayerBase;
 
+//最大スタミナアップポーション
 class StaminaMaxUPPotion
 {
 public:

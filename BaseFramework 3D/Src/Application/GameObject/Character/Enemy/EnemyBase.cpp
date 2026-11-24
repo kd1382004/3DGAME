@@ -1,25 +1,37 @@
-﻿#include "EnemyBase.h"
-#include"../../Camera/CameraBase.h"
-#include"../../Weapon/ComboStep/ComboStepSaveLoad.h"
-#include"Attack/AttackShape.h"
-#include"../../../Scene/SceneManager.h"
-#include"../../../Scene/GameScene/GameScene.h"
+﻿//---- 自分のヘッダー ----
+#include "EnemyBase.h"										//敵の基底クラス
 
-//プレイヤー
-#include"../Player/PlayerBase.h"
+//---- シーン ----
+#include"../../../Scene/SceneManager.h"						//シーンの管理
+#include"../../../Scene/GameScene/GameScene.h"				//ゲームシーン
 
-//マップ
-#include"../../Terrains/Map/MapManager.h"
+//---- カメラ ----
+#include"../../Camera/CameraBase.h"							//カメラの基底クラス
 
-//UI
-#include"../../UI/UIManager.h"
-#include"../../UI/HPBar/HPBar.h"
-#include"../../UI/AttackGage/AttackGage.h"
+//---- プレイヤー ----
+#include"../Player/PlayerBase.h"							//プレイヤー
 
+//---- 敵 ----
+#include"Attack/AttackShape.h"								//敵の攻撃判定の形
+#include"EnemyCrowdController/EnemyCrowdController.h"		//敵同士の押し合い・群れ制御
 
-#include"EnemyCrowdController/EnemyCrowdController.h"
+//---- 武器 ----
+#include"../../Weapon/ComboStep/ComboStepSaveLoad.h"		//コンボの保存・読み込み
 
-#include"../../DropCoin/DropCoin.h"
+//---- アイテム ----
+#include"../../DropCoin/DropCoin.h"							//敵が落とすコイン
+
+//---- マップ ----
+#include"../../Terrains/Map/MapManager.h"					//マップの管理・経路探索
+
+//---- UI ----
+#include"../../UI/UIManager.h"								//UIの管理
+#include"../../UI/HPBar/HPBar.h"							//HPバー
+#include"../../UI/AttackGage/AttackGage.h"					//攻撃(溜め)ゲージ
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void EnemyBase::Init()
 {
@@ -149,6 +161,10 @@ void EnemyBase::PreDraw()
 	}
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void EnemyBase::SetSpawnPos(const Math::Vector3& _pos)
 {
 
@@ -209,6 +225,10 @@ void EnemyBase::SetLV(int _lv)
 		spHPBar->SetHPBarTexPercent(m_status.m_HP.m_nowHP / m_status.m_HP.m_maxHP);
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void EnemyBase::SearchPlayer()
 {
@@ -409,6 +429,24 @@ void EnemyBase::OnAttackHit(float _damage, float _knockbackDistance, const Math:
 
 }
 
+void EnemyBase::ReloadAttackPatterns()
+{
+	//パターンを使わない敵は何もしない
+	if (m_patternFilePath.empty()) { return; }
+
+	//攻撃中なら終わらせてから読み直す(番号がずれないように)
+	if (m_attackFlg)
+	{
+		EndPattern();
+	}
+
+	LoadAttackPatterns();
+}
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void EnemyBase::Release()
 {
 	//パターン攻撃の当たり判定が残っていたら消す
@@ -426,6 +464,10 @@ void EnemyBase::Release()
 		spAttackGauge->Delete();
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void EnemyBase::SetDead()
 {
@@ -501,6 +543,10 @@ void EnemyBase::SetAttackGaugePercent(float _percent)
 	if (!spAttackGauge) { return; }
 	spAttackGauge->SetAttackGaugeTexPercent(_percent);
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void EnemyBase::ApplyLevelStatus()
 {
@@ -779,6 +825,10 @@ void EnemyBase::PlayMaterialSE(const std::string& _folder, float _volRate)
 		spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * _volRate);
 	}
 }
+
+//=============================================
+// 攻撃パターン
+//=============================================
 
 bool EnemyBase::LoadAttackPatterns()
 {
@@ -1105,20 +1155,6 @@ void EnemyBase::UpdateStepForward(float _progress)
 		m_pos = nextPos;
 	}
 	m_stepForwardDone = target;
-}
-
-void EnemyBase::ReloadAttackPatterns()
-{
-	//パターンを使わない敵は何もしない
-	if (m_patternFilePath.empty()) { return; }
-
-	//攻撃中なら終わらせてから読み直す(番号がずれないように)
-	if (m_attackFlg)
-	{
-		EndPattern();
-	}
-
-	LoadAttackPatterns();
 }
 
 void EnemyBase::UpdatePatternAttack()

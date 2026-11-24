@@ -4,6 +4,7 @@
 class CameraBase;
 class GameScene;
 
+//マップオブジェクトの基底クラス
 class MapObjBase:public KdGameObject
 {
 public:

@@ -1,7 +1,12 @@
-﻿#include "TitleButton.h"
-#include "../../../Scene/SceneManager.h"
-#include"../../../Info/DebugInfo/DebugInfo.h"
-#include"../../../Info/KeyInfo/KeyInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "TitleButton.h"							//タイトルシーンへ戻るボタン
+
+//---- シーン ----
+#include "../../../Scene/SceneManager.h"			//シーンの管理
+
+//---- 便利機能 ----
+#include"../../../Info/DebugInfo/DebugInfo.h"		//デバッグ用の状態
+#include"../../../Info/KeyInfo/KeyInfo.h"			//キー入力
 
 void TitleButton::Init()
 {
@@ -57,4 +62,3 @@ void TitleButton::Update()
 	}
 
 }
-

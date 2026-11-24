@@ -1,5 +1,9 @@
-﻿#include "AttackBaseUPPotion.h"
-#include"../../Character/Player/PlayerBase.h"
+﻿//---- 自分のヘッダー ----
+#include "AttackBaseUPPotion.h"						//基礎攻撃力アップポーション
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"		//プレイヤー
+
 
 void AttackBaseUPPotion::UseAttackBaseUPPotion()
 {

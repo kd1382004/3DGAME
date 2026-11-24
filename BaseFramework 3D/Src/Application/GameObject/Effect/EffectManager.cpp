@@ -1,4 +1,5 @@
-﻿#include "EffectManager.h"
+﻿//---- 自分のヘッダー ----
+#include "EffectManager.h"		//エフェクトの管理
 
 void EffectManager::Init()
 {

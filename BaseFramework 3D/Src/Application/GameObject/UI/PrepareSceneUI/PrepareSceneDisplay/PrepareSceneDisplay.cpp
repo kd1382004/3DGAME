@@ -1,9 +1,18 @@
-﻿#include "PrepareSceneDisplay.h"
-#include"../../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Scene/SceneManager.h"
-#include"../../../../Scene/PrepareScene/PrepareScene.h"
-#include"../../../../Info/NumDraw/NumDraw.h"
+﻿//---- 自分のヘッダー ----
+#include "PrepareSceneDisplay.h"							//準備シーンの画面管理
+
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"					//シーンの管理
+#include"../../../../Scene/PrepareScene/PrepareScene.h"		//準備シーン
+
+//---- 便利機能 ----
+#include"../../../../Info/MouseInfo/MouseInfo.h"			//マウス入力
+#include"../../../../Info/KeyInfo/KeyInfo.h"				//キー入力
+#include"../../../../Info/NumDraw/NumDraw.h"				//数字の画像描画
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void PrepareSceneDisplay::Init()
 {
@@ -23,10 +32,10 @@ void PrepareSceneDisplay::Init()
 
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
-		m_menuSiz[i].x = m_spMenuTex[i]->GetWidth() * 0.5;
-		m_menuSiz[i].y = m_spMenuTex[i]->GetHeight() * 0.5;
+		m_menuSize[i].x = m_spMenuTex[i]->GetWidth() * 0.5;
+		m_menuSize[i].y = m_spMenuTex[i]->GetHeight() * 0.5;
 
-		m_menuDrawSiz[i] = m_menuSiz[i] * m_menuScale;
+		m_menuDrawSize[i] = m_menuSize[i] * m_menuScale;
 
 		//左端を揃えて上から順に並べる → 幅が段々短くなる階段状になる
 		m_menuPos[i] = { menuLeft, menuTopY - menuSpaceY * i };
@@ -64,7 +73,7 @@ void PrepareSceneDisplay::Init()
 	SetTextPos(InfoText::Count, panelLeft + 258.0f, equipTop - 146.0f);
 
 	m_weaponIconPos = m_textPos[static_cast<int>(InfoText::Sword)];
-	m_weaponIconPos.x -= m_weaponIconSiz + 8.0f;
+	m_weaponIconPos.x -= m_weaponIconSize + 8.0f;
 
 	//所持金パネル(Gは金額の数字の右)
 	SetTextPos(InfoText::Money, panelLeft + 20.0f, moneyTop - 46.0f);
@@ -88,7 +97,7 @@ void PrepareSceneDisplay::Update()
 {
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
-		if (MouseHit(m_menuPos[i], m_menuDrawSiz[i].x, m_menuDrawSiz[i].y))
+		if (MouseHit(m_menuPos[i], m_menuDrawSize[i].x, m_menuDrawSize[i].y))
 		{
 			m_mouseHitFlg[i] = true;
 
@@ -118,8 +127,8 @@ void PrepareSceneDisplay::DrawSprite()
 		if (!m_spMenuTex[i]) { continue; }
 		if (!m_spNotMenuTex[i]) { continue; }
 
-		float w = m_menuDrawSiz[i].x;
-		float h = m_menuDrawSiz[i].y;
+		float w = m_menuDrawSize[i].x;
+		float h = m_menuDrawSize[i].y;
 
 		if (m_mouseHitFlg[i])
 		{
@@ -155,29 +164,19 @@ void PrepareSceneDisplay::DrawSprite()
 	}
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void PrepareSceneDisplay::SetMoney(long _money)
 {
 	//マイナスにはしない
 	m_money = std::max(0L, _money);
 }
 
-bool PrepareSceneDisplay::IsMenuSelected(PrepareMenu _menu) const
-{
-	auto spScene = m_wpPrepareScene.lock();
-	if (!spScene) { return true; }
-
-	const PrepareScene::PrepareTab nowTab = spScene->GetCurrentTab();
-
-	//メニューとタブを対応させる(並び順が違うので1つずつ)
-	switch (_menu)
-	{
-	case PrepareMenu::Equip:   return nowTab == PrepareScene::PrepareTab::Equip;
-	case PrepareMenu::Shop:    return nowTab == PrepareScene::PrepareTab::Shop;
-	case PrepareMenu::Records: return nowTab == PrepareScene::PrepareTab::Records;
-	case PrepareMenu::Explore: return nowTab == PrepareScene::PrepareTab::None;
-	default:                   return false;
-	}
-}
+//=============================================
+// 基本の処理
+//=============================================
 
 void PrepareSceneDisplay::Draw()
 {
@@ -215,7 +214,7 @@ void PrepareSceneDisplay::Draw()
 	{
 		sprite.DrawTex(m_spWeaponIconTex[weapon].get(),
 			static_cast<int>(m_weaponIconPos.x), static_cast<int>(m_weaponIconPos.y),
-			static_cast<int>(m_weaponIconSiz), static_cast<int>(m_weaponIconSiz),
+			static_cast<int>(m_weaponIconSize), static_cast<int>(m_weaponIconSize),
 			nullptr, &kWhiteColor, { 0.0f, 0.5f });
 	}
 
@@ -237,6 +236,10 @@ void PrepareSceneDisplay::Draw()
 	//所持金は3桁区切り(1,250)。パネルの左端 〜 「G」の左
 	DrawInfoNum(m_money, InfoText::Gold, true, 230.0f);
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void PrepareSceneDisplay::LoadMenuTex()
 {
@@ -329,8 +332,12 @@ void PrepareSceneDisplay::DrawInfoNum(long _num, InfoText _unit, bool _separator
 
 	NumDraw::GetInstance().Draw(_num, RAligned,
 		{ unitPos.x - m_numGap, unitPos.y },
-		Math::Color(1, 1, 1, 1), m_numSiz, _separator, -1, { _maxW, 0.0f });
+		Math::Color(1, 1, 1, 1), m_numSize, _separator, -1, { _maxW, 0.0f });
 }
+
+//=============================================
+// メニューが押された時の処理
+//=============================================
 
 void PrepareSceneDisplay::OnExplore()
 {
@@ -361,5 +368,23 @@ void PrepareSceneDisplay::OnRecords()
 	if (auto spScene = m_wpPrepareScene.lock())
 	{
 		spScene->ChangeTab(PrepareScene::PrepareTab::Records);
+	}
+}
+
+bool PrepareSceneDisplay::IsMenuSelected(PrepareMenu _menu) const
+{
+	auto spScene = m_wpPrepareScene.lock();
+	if (!spScene) { return true; }
+
+	const PrepareScene::PrepareTab nowTab = spScene->GetCurrentTab();
+
+	//メニューとタブを対応させる(並び順が違うので1つずつ)
+	switch (_menu)
+	{
+	case PrepareMenu::Equip:   return nowTab == PrepareScene::PrepareTab::Equip;
+	case PrepareMenu::Shop:    return nowTab == PrepareScene::PrepareTab::Shop;
+	case PrepareMenu::Records: return nowTab == PrepareScene::PrepareTab::Records;
+	case PrepareMenu::Explore: return nowTab == PrepareScene::PrepareTab::None;
+	default:                   return false;
 	}
 }

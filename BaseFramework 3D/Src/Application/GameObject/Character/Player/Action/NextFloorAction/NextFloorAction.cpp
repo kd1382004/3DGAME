@@ -1,9 +1,19 @@
-﻿#include "NextFloorAction.h"
-#include"../../../../../Info/VOL/VOLInfo.h"
-#include"../../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../../Scene/GameScene/GameScene.h"
+﻿//---- 自分のヘッダー ----
+#include "NextFloorAction.h"										//次の階へ進む操作
 
-#include"../../../../UI/NextFloorGaugeUI/NextFloorGaugeUI.h"
+//---- シーン ----
+#include"../../../../../Scene/GameScene/GameScene.h"				//ゲームシーン
+
+//---- UI ----
+#include"../../../../UI/NextFloorGaugeUI/NextFloorGaugeUI.h"		//次の階へ進むゲージ
+
+//---- 便利機能 ----
+#include"../../../../../Info/VOL/VOLInfo.h"							//音量設定
+#include"../../../../../Info/KeyInfo/KeyInfo.h"						//キー入力
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void NextFloorAction::Init()
 {
@@ -60,6 +70,10 @@ void NextFloorAction::Update(bool _nextFloorActionFlg)
 		m_nextFloorCount = 0;
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void NextFloorAction::SetNextFloorGaugeUI(const std::shared_ptr<NextFloorGaugeUI>& _spNextFloorGaugeUI)
 {

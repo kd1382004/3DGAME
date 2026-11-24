@@ -1,5 +1,10 @@
-﻿#include "MapObjBase.h"
-#include"../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "MapObjBase.h"						//マップオブジェクトの基底クラス
+
+//---- シーン ----
+#include"../../../Scene/SceneManager.h"		//シーンの管理
+
+
 void MapObjBase::DrawModelWithFade(KdModelWork& _model, bool _isEdge)
 {
 
@@ -10,7 +15,7 @@ void MapObjBase::DrawModelWithFade(KdModelWork& _model, bool _isEdge)
 	if (_isEdge)
 	{
 		float         edgeRange = 0.04f;
-		Math::Vector3 edgeColor = { SceneManager::Instance().GetFogCol()};
+		Math::Vector3 edgeColor = { SceneManager::Instance().GetFogColor()};
 		shader.SetDissolve(m_fader.GetDissolve(), &edgeRange, &edgeColor);
 	}
 	else

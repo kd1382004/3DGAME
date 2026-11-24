@@ -23,6 +23,7 @@ class CharaStatusEditor;
 class EnemyAttackPatternEditor;
 
 
+//ゲームシーン
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
 {
 public:

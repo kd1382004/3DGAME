@@ -1,7 +1,15 @@
-﻿#include "StairsBase.h"
-#include"../../../Character/Player/PlayerBase.h"
-#include"../../../../Info/VOL/VOLInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "StairsBase.h"									//階段
 
+//---- プレイヤー ----
+#include"../../../Character/Player/PlayerBase.h"		//プレイヤー
+
+//---- 便利機能 ----
+#include"../../../../Info/VOL/VOLInfo.h"				//音量設定
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 StairsBase::~StairsBase()
 {
@@ -27,6 +35,10 @@ StairsBase::~StairsBase()
 		m_spAmbient3DSE = nullptr;
 	}
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void StairsBase::Init()
 {
@@ -129,6 +141,10 @@ void StairsBase::PostUpdate()
 		}
 	}
 }
+
+//=============================================
+// 取得
+//=============================================
 
 void StairsBase::IsHit()
 {

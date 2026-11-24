@@ -1,58 +1,67 @@
-﻿#include "GameScene.h"
-#include <ctime>
-//プレイヤー
-#include"../../GameObject/Character/Player/PlayerBase.h"
-#include"../../GameObject/Character/Player/PlayerBuffManager/PlayerBuffManager.h"
-#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"
+﻿//---- 自分のヘッダー ----
+#include "GameScene.h"																								//ゲームシーン
 
-#include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
-#include"../../Info/MouseInfo/MouseInfo.h"
-#include"../../Info/FadeDraw/FadeDraw.h"
+//---- カメラ ----
+#include"../../GameObject/Camera/TPSCamera/TPSCamera.h"																//三人称カメラ
 
+//---- プレイヤー ----
+#include"../../GameObject/Character/Player/PlayerBase.h"															//プレイヤー
+#include"../../GameObject/Character/Player/PlayerBuffManager/PlayerBuffManager.h"									//プレイヤーのバフ管理
+#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"										//プレイヤーの所持品
 
-//マップ
-#include"../../GameObject/Terrains/MapObj/MapObjBase.h"
-#include"../../GameObject/Terrains/Map/MapBase.h" 
-#include"../../GameObject/Terrains/Map/MapManager.h"
-#include"../../GameObject/Terrains/MapObj/MapObjManager.h"
+//---- 敵 ----
+#include"../../GameObject/Character/Enemy/EnemyManager.h"															//敵の管理
+#include"../../GameObject/Character/Enemy/EnemyBase.h"																//敵の基底クラス
 
+//---- 武器 ----
+#include"../../GameObject/Weapon/Dagger/Dagger.h"																	//短剣
+#include"../../GameObject/Weapon/Sword/Sword.h"																		//剣
+#include"../../GameObject/Weapon/WeaponStrengtheningEditor/WeaponStrengtheningEditor.h"								//武器強化データ編集エディター
+#include"../../GameObject/Weapon/ComboStep/ComboStepEditor.h"														//コンボ編集エディター
 
-#include"../../../Application/Info/DebugInfo/DebugInfo.h"
+//---- アクセサリー ----
+#include"../../GameObject/Accessory/AccessoryManager.h"																//アクセサリーの管理
 
-//UI
-#include"../../GameObject/UI/UIManager.h"
-#include"../../GameObject/UI/BuffUI/BuffUI.h"
-#include"../../GameObject/UI/HitDamage/HitDamage.h"
-#include"../../GameObject/UI/UI2/UIBase2.h"
-#include"../../GameObject/UI/ItemBar/ItemBar.h"
+//---- ポーション ----
+#include"../../GameObject/Potions/PotionUseController.h"															//ポーションの使用処理
 
-//武器
-#include"../../GameObject/Weapon/Dagger/Dagger.h"
-#include"../../GameObject/Weapon/Sword/Sword.h"
+//---- マップ ----
+#include"../../GameObject/Terrains/Map/MapBase.h"																	//マップ部品の基底クラス
+#include"../../GameObject/Terrains/Map/MapManager.h"																//マップの管理・経路探索
 
-//敵
-#include"../../GameObject/Character/Enemy/EnemyManager.h"
-#include"../../GameObject/Character/Enemy/EnemyBase.h"
+//---- マップオブジェクト ----
+#include"../../GameObject/Terrains/MapObj/MapObjBase.h"																//マップオブジェクトの基底クラス
+#include"../../GameObject/Terrains/MapObj/MapObjManager.h"															//マップオブジェクトの管理
+#include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestTableEditor/TreasureChestTableEditor.h"		//宝箱のドロップテーブル編集エディター
 
-//ポーション
-#include"../../GameObject/Potions/PotionUseController.h"
+//---- ワープゲート ----
+#include"../../GameObject/WarpGate/WarpGateManager.h"																//ワープゲートの管理
 
-//ワープゲート
-#include"../../GameObject/WarpGate/WarpGateManager.h"
+//---- エフェクト ----
+#include"../../GameObject/Effect/EffectManager.h"																	//エフェクトの管理
 
-//エフェクト
-#include"../../GameObject/Effect/EffectManager.h"
+//---- UI ----
+#include"../../GameObject/UI/UIManager.h"																			//UIの管理
+#include"../../GameObject/UI/BuffUI/BuffUI.h"																		//バフの表示
+#include"../../GameObject/UI/HitDamage/HitDamage.h"																	//ダメージ数字の表示
+#include"../../GameObject/UI/UI2/UIBase2.h"																			//キー表示付きUIの基底クラス
+#include"../../GameObject/UI/ItemBar/ItemBar.h"																		//アイテムバー
 
-//アクセサリー
-#include"../../GameObject/Accessory/AccessoryManager.h"
+//---- エディター ----
+#include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"														//キャラステータス編集エディター
+#include"../../Editor/EnemyAttackPatternEditor/EnemyAttackPatternEditor.h"											//敵の攻撃パターン編集エディター
 
+//---- 便利機能 ----
+#include"../../Info/MouseInfo/MouseInfo.h"																			//マウス入力
+#include"../../Info/FadeDraw/FadeDraw.h"																			//画面フェードの描画
+#include"../../../Application/Info/DebugInfo/DebugInfo.h"															//デバッグ用の状態
 
-//ImGui
-#include"../../GameObject/Weapon/WeaponStrengtheningEditor/WeaponStrengtheningEditor.h"
-#include"../../GameObject/Terrains/MapObj/TreasureChest/TreasureChestTableEditor/TreasureChestTableEditor.h"
-#include"../../GameObject/Weapon/ComboStep/ComboStepEditor.h"
-#include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"
-#include"../../Editor/EnemyAttackPatternEditor/EnemyAttackPatternEditor.h"
+//---- 標準ライブラリ ----
+#include <ctime>																									//時刻
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 GameScene::~GameScene()
 {
@@ -67,6 +76,10 @@ GameScene::~GameScene()
 	}
 
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void GameScene::ImGUI()
 {
@@ -111,20 +124,6 @@ void GameScene::ImGUI()
 	if (m_spEnemyAttackPatternEditor && m_spEnemyAttackPatternEditor->PopSaved())
 	{
 		ReloadEnemyAttackPatterns();
-	}
-}
-
-void GameScene::ReloadEnemyAttackPatterns()
-{
-	if (!m_spEnemyManager) { return; }
-
-	//パターンを使っていない敵は何もしない(EnemyBase::ReloadAttackPatterns)
-	for (const std::shared_ptr<EnemyBase>& spEnemy : m_spEnemyManager->GetEnemyList())
-	{
-		if (spEnemy)
-		{
-			spEnemy->ReloadAttackPatterns();
-		}
 	}
 }
 
@@ -445,6 +444,10 @@ void GameScene::Init()
 	FadeDraw::Instance().SetFadeType(FadeOut, 1.0f);
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void GameScene::SetGameResult()
 {
 	GameResult gameResult;
@@ -502,6 +505,10 @@ void GameScene::AddTreasureChestsNum()
 {
 	m_displayFloorInfo.m_treasureChestsNum++;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 //マップ生成
 void GameScene::GenerateMap()
@@ -767,4 +774,18 @@ void GameScene::Event()
 	float dt = DeltaTime::Instance().GetRealDeltaTime();
 
 	m_displayFloorInfo.m_playTimeSc += dt;
+}
+
+void GameScene::ReloadEnemyAttackPatterns()
+{
+	if (!m_spEnemyManager) { return; }
+
+	//パターンを使っていない敵は何もしない(EnemyBase::ReloadAttackPatterns)
+	for (const std::shared_ptr<EnemyBase>& spEnemy : m_spEnemyManager->GetEnemyList())
+	{
+		if (spEnemy)
+		{
+			spEnemy->ReloadAttackPatterns();
+		}
+	}
 }

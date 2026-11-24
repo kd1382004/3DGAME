@@ -1,4 +1,5 @@
-﻿#include "ComboStepValidator.h"
+﻿//---- 自分のヘッダー ----
+#include "ComboStepValidator.h"		//コンボデータのチェック
 
 std::vector<ComboStepIssue> ComboStepValidator::Validate(
 	const std::vector<ComboStep>& _steps,

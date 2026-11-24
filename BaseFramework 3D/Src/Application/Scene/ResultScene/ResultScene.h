@@ -3,6 +3,7 @@
 #include"../BaseScene/BaseScene.h"
 
 
+//リザルトシーン
 class ResultScene : public BaseScene
 {
 public:

@@ -2,6 +2,7 @@
 class EnemyBase;
 
 
+//敵同士の押し合い・群れ制御
 class EnemyCrowdController
 {
 public:

@@ -2,6 +2,7 @@
 
 #include"../EnemyAmbush/EnemyAmbush.h"
 
+//敵(ゴブリン)。待ち伏せして出てくる
 class Goblin :public EnemyAmbush
 {
 public:

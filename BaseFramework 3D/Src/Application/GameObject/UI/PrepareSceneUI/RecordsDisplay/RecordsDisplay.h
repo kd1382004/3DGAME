@@ -220,13 +220,13 @@ private:
 	const float m_detailPad = 22.0f;
 
 	//枠の中の武器アイコンの大きさ
-	const float m_cardIconSiz = 36.0f;
+	const float m_cardIconSize = 36.0f;
 
 	//詳細の中の武器アイコンの大きさ
-	const float m_detailIconSiz = 36.0f;
+	const float m_detailIconSize = 36.0f;
 
 	//数字の大きさ(元画像9×14px → 18×28px。メニュー画面と同じ)
-	const float m_numSiz = 2.0f;
+	const float m_numSize = 2.0f;
 
 	//数字と単位のすき間
 	const float m_numGap = 4.0f;

@@ -1,9 +1,19 @@
-﻿#include "Dagger_ChargeAttack.h"
+﻿//---- 自分のヘッダー ----
+#include "Dagger_ChargeAttack.h"					//短剣の溜め攻撃(衝撃波)
 
-#include"../../../Character/CharacterBase.h"
-#include"../../../Camera/CameraBase.h"
+//---- カメラ ----
+#include"../../../Camera/CameraBase.h"				//カメラの基底クラス
 
-#include"../../../Terrains/Map/MapBase.h"
+//---- キャラクター ----
+#include"../../../Character/CharacterBase.h"		//キャラクターの基底クラス
+
+//---- マップ ----
+#include"../../../Terrains/Map/MapBase.h"			//マップ部品の基底クラス
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void Dagger_ChargeAttack::Init()
 {
 	if (!m_spPoly)
@@ -190,7 +200,6 @@ void Dagger_ChargeAttack::Update()
 
 }
 
-
 void Dagger_ChargeAttack::DrawEffect()
 {
 	// 残像を描画
@@ -207,6 +216,9 @@ void Dagger_ChargeAttack::DrawEffect()
 	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly, m_mWorld);
 }
 
+//=============================================
+// 取得
+//=============================================
 
 bool Dagger_ChargeAttack::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)
 {
@@ -219,6 +231,10 @@ bool Dagger_ChargeAttack::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _sp
 	}
 	return false;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void Dagger_ChargeAttack::GhostTrailUpdate()
 {

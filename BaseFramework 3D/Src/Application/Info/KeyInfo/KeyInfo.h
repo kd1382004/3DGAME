@@ -16,6 +16,7 @@ struct Key
 	bool m_useFlg = false;
 };
 
+//キー入力
 class KeyInfo
 {
 public:
@@ -30,10 +31,10 @@ public:
 	//2D描画
 	// _key ... Key番号
 	// _2DPos ... 2D座標
-	// _siz ... サイズ
+	// _size ... サイズ
 	// _alpha ... 不透明度
 	// _pivot ... ピボット
-	void Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _siz, float _alpha = 1, Math::Vector2 _pivot = { 0.5,0.5 });
+	void Draw2Dkey(int _key, Math::Vector2 _2DPos, Math::Vector2 _size, float _alpha = 1, Math::Vector2 _pivot = { 0.5,0.5 });
 
 	//---- 取得 ----
 
@@ -121,10 +122,10 @@ private:
 	std::shared_ptr<KdTexture> m_spKeyTexture2;
 
 	//Key1つのテクスチャサイズ
-	Math::Vector2 m_keyTexSiz;
+	Math::Vector2 m_keyTexSize;
 
 	//特殊キーの画像1つ分のサイズ
-	Math::Vector2 m_keyTex2Siz;
+	Math::Vector2 m_keyTex2Size;
 
 	//---- コンストラクタ・デストラクタ ----
 

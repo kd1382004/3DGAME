@@ -1,15 +1,21 @@
-﻿#include "SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "SceneManager.h"					//シーンの管理
 
-#include"../Info/MouseInfo/MouseInfo.h"
-#include"../Info/KeyInfo/KeyInfo.h"
+//---- シーン ----
+#include "BaseScene/BaseScene.h"			//シーンの基底クラス
+#include "TitleScene/TitleScene.h"			//タイトルシーン
+#include "PrepareScene/PrepareScene.h"		//準備シーン
+#include "GameScene/GameScene.h"			//ゲームシーン
+#include "ResultScene/ResultScene.h"		//リザルトシーン
 
-#include "BaseScene/BaseScene.h"
-#include "TitleScene/TitleScene.h"
-#include "PrepareScene/PrepareScene.h"
-#include "GameScene/GameScene.h"
-#include "ResultScene/ResultScene.h"
+//---- 便利機能 ----
+#include"../Info/MouseInfo/MouseInfo.h"		//マウス入力
+#include"../Info/KeyInfo/KeyInfo.h"			//キー入力
+#include"../Info/DebugInfo/DebugInfo.h"		//デバッグ用の状態
 
-#include"../Info/DebugInfo/DebugInfo.h"
+//=============================================
+// 基本の処理
+//=============================================
 
 void SceneManager::PreUpdate()
 {
@@ -85,16 +91,16 @@ void SceneManager::ImGUI()
 	//FOGImGUI
 	if (ImGui::TreeNode(U8("FOG")))
 	{
-		ImGui::InputFloat(U8("R"), &m_FOGCol.x, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("G"), &m_FOGCol.y, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("B"), &m_FOGCol.z, 0.01f, 1.0f, "%.2f");
-		ImGui::InputFloat(U8("m_FOGdensity"), &m_FOGdensity, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("R"), &m_fogColor.x, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("G"), &m_fogColor.y, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("B"), &m_fogColor.z, 0.01f, 1.0f, "%.2f");
+		ImGui::InputFloat(U8("m_FOGdensity"), &m_fogDensity, 0.01f, 1.0f, "%.2f");
 		ImGui::Checkbox(U8("Fog"), &m_fogFlg);
 
 		if (ImGui::Button(U8("変更")))
 		{
 			KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
-			KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+			KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_fogColor, m_fogDensity);
 		}
 
 
@@ -140,15 +146,27 @@ void SceneManager::ImGUI()
 	}
 }
 
+//=============================================
+// 取得
+//=============================================
+
 const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()
 {
 	return m_spCurrentScene->GetObjList();
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _spObj)
 {
 	m_spCurrentScene->AddObject(_spObj);
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void SceneManager::ChangeRendertarget(std::shared_ptr<KdRenderTargetPack> _spRtPack)
 {
@@ -165,9 +183,13 @@ void SceneManager::UndoRenderTarget()
 void SceneManager::UnFogAmbient()
 {
 	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_fogColor, m_fogDensity);
 	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void SceneManager::Init()
 {
@@ -189,12 +211,16 @@ void SceneManager::Init()
 		//距離フォグの設定
 		//col...色
 		//density...密度
-		KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+		KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_fogColor, m_fogDensity);
 
 		//アンビエント
 		KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void SceneManager::ChangeScene(SceneType _sceneType)
 {
@@ -232,7 +258,7 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	//距離フォグの設定
 	//col...色
 	//density...密度
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_fogColor, m_fogDensity);
 
 	//アンビエント
 	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);
@@ -255,8 +281,8 @@ void SceneManager::FogAmbientJsonSave()
 	nlohmann::json data;
 
 	// Fog
-	data["Fog"]["Color"] = { m_FOGCol.x, m_FOGCol.y, m_FOGCol.z };
-	data["Fog"]["Density"] = m_FOGdensity;
+	data["Fog"]["Color"] = { m_fogColor.x, m_fogColor.y, m_fogColor.z };
+	data["Fog"]["Density"] = m_fogDensity;
 
 	// Ambient
 	data["Ambient"]["Color"] = { m_defaultAmbient.x, m_defaultAmbient.y, m_defaultAmbient.z, m_defaultAmbient.w };
@@ -326,8 +352,8 @@ void SceneManager::FogAmbientJsonLoad()
 	{
 		auto fog = data["Fog"];
 		Math::Vector4 col = getArray(fog, "Color", 3);
-		m_FOGCol = { col.x, col.y, col.z };
-		m_FOGdensity = getFloat(fog, "Density", 0.02f);
+		m_fogColor = { col.x, col.y, col.z };
+		m_fogDensity = getFloat(fog, "Density", 0.02f);
 	}
 
 	// Ambient
@@ -341,7 +367,7 @@ void SceneManager::FogAmbientJsonLoad()
 	//距離フォグの設定
 	//col...色
 	//density...密度
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_fogColor, m_fogDensity);
 
 	//アンビエント
 	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_ambient);

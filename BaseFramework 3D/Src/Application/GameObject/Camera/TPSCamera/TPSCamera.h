@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../CameraBase.h"
 
+//三人称カメラ
 class TPSCamera : public CameraBase
 {
 public:

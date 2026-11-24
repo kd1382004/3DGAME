@@ -1,5 +1,9 @@
-#include "StaminaRegenBaseUPPotion.h"
-#include"../../Character/Player/PlayerBase.h"
+//---- 自分のヘッダー ----
+#include "StaminaRegenBaseUPPotion.h"				//基礎スタミナ回復量アップポーション
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"		//プレイヤー
+
 
 void StaminaRegenBaseUPPotion::UseStaminaRegenBaseUPPotion()
 {

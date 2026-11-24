@@ -1,24 +1,34 @@
-﻿#include "ResultScene.h"
-#include"../SceneManager.h"
-#include"../../Info/FadeDraw/FadeDraw.h"
+﻿//---- 自分のヘッダー ----
+#include "ResultScene.h"															//リザルトシーン
 
-#include"../../Info/DebugInfo/DebugInfo.h"
+//---- シーン ----
+#include"../SceneManager.h"															//シーンの管理
 
-#include"../../Info/MouseInfo/MouseInfo.h"
+//---- プレイヤー ----
+#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
-#include"../../GameObject/UI/UIManager.h"
-#include"../../GameObject/UI/ResultUI/ResultDisplay/ResultDisplay.h"
+//---- 武器 ----
+#include"../../GameObject/Weapon/WeaponBase.h"										//武器の基底クラス
+#include"../../GameObject/Weapon/Dagger/Dagger.h"									//短剣
+#include"../../GameObject/Weapon/Sword/Sword.h"										//剣
 
-#include"../../GameObject/Button/PrepareButton/PrepareButton.h"
-#include"../../GameObject/Button/TitleButton/TitleButton.h"
+//---- UI ----
+#include"../../GameObject/UI/UIManager.h"											//UIの管理
+#include"../../GameObject/UI/ResultUI/ResultDisplay/ResultDisplay.h"				//リザルト画面
 
+//---- ボタン ----
+#include"../../GameObject/Button/PrepareButton/PrepareButton.h"						//準備シーンへ進むボタン
+#include"../../GameObject/Button/TitleButton/TitleButton.h"							//タイトルシーンへ戻るボタン
 
-#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"
+//---- 便利機能 ----
+#include"../../Info/FadeDraw/FadeDraw.h"											//画面フェードの描画
+#include"../../Info/DebugInfo/DebugInfo.h"											//デバッグ用の状態
+#include"../../Info/MouseInfo/MouseInfo.h"											//マウス入力
 
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
-#include"../../GameObject/Weapon/WeaponBase.h"
-#include"../../GameObject/Weapon/Dagger/Dagger.h" 
-#include"../../GameObject/Weapon/Sword/Sword.h" 
 ResultScene::~ResultScene()
 {
 	if (m_spPlayerDeadBGM)
@@ -31,6 +41,11 @@ ResultScene::~ResultScene()
 		m_spEscapeBGM->Stop();
 	}
 }
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void ResultScene::ImGUI()
 {
 
@@ -109,6 +124,10 @@ void ResultScene::Init()
 		}
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void ResultScene::Event()
 {

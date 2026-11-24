@@ -1,5 +1,9 @@
-﻿#include "InstantStaminaHealPotion.h"
-#include"../../Character/Player/PlayerBase.h"
+﻿//---- 自分のヘッダー ----
+#include "InstantStaminaHealPotion.h"				//スタミナ回復ポーション
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"		//プレイヤー
+
 
 void InstantStaminaHealPotion::UseInstantStaminaHeal()
 {

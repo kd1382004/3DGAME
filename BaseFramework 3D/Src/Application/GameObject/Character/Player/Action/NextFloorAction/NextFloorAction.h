@@ -3,6 +3,7 @@
 class GameScene;
 class NextFloorGaugeUI;
 
+//次の階へ進む操作
 class NextFloorAction
 {
 public:

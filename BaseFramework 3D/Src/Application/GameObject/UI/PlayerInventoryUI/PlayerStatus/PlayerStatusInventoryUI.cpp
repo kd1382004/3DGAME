@@ -1,21 +1,26 @@
-﻿#include "PlayerStatusInventoryUI.h"
-#include"../../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "PlayerStatusInventoryUI.h"										//インベントリ画面(ステータスタブ)
 
-#include"../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Scene/GameScene/GameScene.h"
-#include"../../../../Info/MouseInfo/MouseInfo.h"
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"									//シーンの管理
+#include"../../../../Scene/GameScene/GameScene.h"							//ゲームシーン
 
-#include"../../../Potions/PotionsType.h"
-#include"../../../Potions/PotionUseController.h"
+//---- プレイヤー ----
+#include"../../../Character/Player/PlayerBase.h"							//プレイヤー
+#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
-#include"../../../Character/Player/PlayerBase.h"
-#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
+//---- 武器 ----
+#include"../../../Weapon/WeaponBase.h"										//武器の基底クラス
 
-#include"../../../Potions/PotionTexInfo/PotionTexInfo.h"
+//---- ポーション ----
+#include"../../../Potions/PotionsType.h"									//ポーションの種類
+#include"../../../Potions/PotionUseController.h"							//ポーションの使用処理
+#include"../../../Potions/PotionTexInfo/PotionTexInfo.h"					//アイテムの名前・画像情報
 
-#include"../../../../Info/NumDraw/NumDraw.h"
-
-#include"../../../Weapon/WeaponBase.h"
+//---- 便利機能 ----
+#include"../../../../Info/KeyInfo/KeyInfo.h"								//キー入力
+#include"../../../../Info/MouseInfo/MouseInfo.h"							//マウス入力
+#include"../../../../Info/NumDraw/NumDraw.h"								//数字の画像描画
 
 void PlayerStatusInventoryUI::Init()
 {
@@ -32,7 +37,7 @@ void PlayerStatusInventoryUI::Init()
 	Math::Vector2 nameBasePos = { iconBasePos.x + 70,iconBasePos.y };
 	Math::Vector2 numBasePos = { nameBasePos.x + 370, iconBasePos.y };
 
-	for (int i = 0; i < PlayerStatusInfoSiz; i++)
+	for (int i = 0; i < PlayerStatusInfoSize; i++)
 	{
 		m_playerStatusInfo[i].m_num = 0;
 		m_playerStatusInfo[i].m_numPos = numBasePos;
@@ -133,7 +138,7 @@ void PlayerStatusInventoryUI::PreDraw()
 
 		std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
 		if (!spWeapon) { return; }
-		for (int i = 0; i < PlayerStatusInfoSiz; i++)
+		for (int i = 0; i < PlayerStatusInfoSize; i++)
 		{
 			int num = 0;
 
@@ -171,23 +176,23 @@ void PlayerStatusInventoryUI::DrawSprite()
 {
 	if (!m_spRtTargetPack) { return; }
 
-	float scal = 0.25;
-	Math::Vector2 siz = { 1280 * scal ,720 * scal };
+	float scale = 0.25;
+	Math::Vector2 size = { 1280 * scale ,720 * scale };
 
 
-	Math::Vector2 pos = { m_spContext->m_back1Tex2DPos.x - m_spContext->m_back1TexWidth / 2 + siz.x / 2,m_spContext->m_back1Tex2DPos.y };
+	Math::Vector2 pos = { m_spContext->m_back1Tex2DPos.x - m_spContext->m_back1TexWidth / 2 + size.x / 2,m_spContext->m_back1Tex2DPos.y };
 
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, siz.x, siz.y);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spRtTargetPack->m_RTTexture, pos.x, pos.y, size.x, size.y);
 
 
 	//ステータス描画
 	Math::Vector2 pivot = { 0,0.5 };
-	for (int i = 0; i < PlayerStatusInfoSiz; i++)
+	for (int i = 0; i < PlayerStatusInfoSize; i++)
 	{
 		Math::Color color;
 		Math::Vector2 backPos = m_playerStatusInfo[i].m_namePos;
-		Math::Vector2 backSiz = { 380,55 };
+		Math::Vector2 backSize = { 380,55 };
 		Math::Vector2 pivot = { 0,0.5 };
 		if (i % 2 == 0)
 		{
@@ -198,7 +203,7 @@ void PlayerStatusInventoryUI::DrawSprite()
 			color = { 0.5,0.5,0.5,0.3f };
 		}
 
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayerStatusInfoBackTex, backPos.x, backPos.y, backSiz.x, backSiz.y, nullptr, &color, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPlayerStatusInfoBackTex, backPos.x, backPos.y, backSize.x, backSize.y, nullptr, &color, pivot);
 
 
 

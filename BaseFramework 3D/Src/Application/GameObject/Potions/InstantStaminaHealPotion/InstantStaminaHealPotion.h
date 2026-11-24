@@ -1,6 +1,7 @@
 #pragma once
 class PlayerBase;
 
+//スタミナ回復ポーション
 class InstantStaminaHealPotion
 {
 public:

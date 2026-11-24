@@ -1,16 +1,21 @@
-﻿#include "ResultDisplay.h"
+﻿//---- 自分のヘッダー ----
+#include "ResultDisplay.h"													//リザルト画面
 
-#include"ResultDisplayBase.h"
-#include"ResultDisplay_Score/ResultDisplay_Score.h"
-#include"ResultDisplay_PotionInventory/ResultDisplay_PotionInventory.h"
-#include"ResultDisplay_PlayerStatus/ResultDisplay_PlayerStatus.h"
-#include"ResultDisplay_WeponInventory/ResultDisplay_WeponInventory.h"
+//---- プレイヤー ----
+#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
-#include"../../../../Info/MouseInfo/MouseInfo.h"
-#include"../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Info/VOL/VOLInfo.h"
+//---- UI ----
+#include"ResultDisplayBase.h"												//リザルト画面の基底クラス
+#include"ResultDisplay_Score/ResultDisplay_Score.h"							//リザルト画面(スコア)
+#include"ResultDisplay_PotionInventory/ResultDisplay_PotionInventory.h"		//リザルト画面(ポーション)
+#include"ResultDisplay_PlayerStatus/ResultDisplay_PlayerStatus.h"			//リザルト画面(ステータス)
+#include"ResultDisplay_WeponInventory/ResultDisplay_WeponInventory.h"		//リザルト画面(武器強化)
 
-#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
+//---- 便利機能 ----
+#include"../../../../Info/MouseInfo/MouseInfo.h"							//マウス入力
+#include"../../../../Info/KeyInfo/KeyInfo.h"								//キー入力
+#include"../../../../Info/VOL/VOLInfo.h"									//音量設定
+
 void ResultDisplay::Init()
 {
 
@@ -29,7 +34,7 @@ void ResultDisplay::Init()
 	{
 		m_spArrowTex = std::make_shared<KdTexture>();
 		m_spArrowTex->Load("Asset/Textures/GameUI/Result/Arrow.png");
-		m_arrowSiz = { (float)m_spArrowTex->GetWidth(),(float)m_spArrowTex->GetHeight() };
+		m_arrowSize = { (float)m_spArrowTex->GetWidth(),(float)m_spArrowTex->GetHeight() };
 		m_arrowLPos = { -400, 0 };
 		m_arrowRPos = { 400, 0 };
 	}
@@ -160,8 +165,8 @@ void ResultDisplay::SetPlayerDead(bool _flg)
 
 			m_lostTexPos = { 390, 270 };
 
-			m_lostTexSiz.x = m_spLostTex->GetWidth();
-			m_lostTexSiz.y = m_spLostTex->GetHeight();
+			m_lostTexSize.x = m_spLostTex->GetWidth();
+			m_lostTexSize.y = m_spLostTex->GetHeight();
 		}
 
 		m_lostStampAngle = kLostStampBaseAngle + KdRandom::GetFloat(-kLostStampAngleRange, kLostStampAngleRange);
@@ -193,10 +198,10 @@ void ResultDisplay::ArrowUpdate()
 	{
 
 		//左
-		float left = m_arrowLPos.x - m_arrowSiz.x / 2;
-		float right = m_arrowLPos.x + m_arrowSiz.x / 2;
-		float top = m_arrowLPos.y + m_arrowSiz.y / 2;
-		float bot = m_arrowLPos.y - m_arrowSiz.y / 2;
+		float left = m_arrowLPos.x - m_arrowSize.x / 2;
+		float right = m_arrowLPos.x + m_arrowSize.x / 2;
+		float top = m_arrowLPos.y + m_arrowSize.y / 2;
+		float bot = m_arrowLPos.y - m_arrowSize.y / 2;
 
 		if (mouse.x >= left && mouse.x <= right
 			&& mouse.y <= top && mouse.y >= bot)
@@ -231,10 +236,10 @@ void ResultDisplay::ArrowUpdate()
 	{
 
 		//migi
-		float left = m_arrowRPos.x - m_arrowSiz.x / 2;
-		float right = m_arrowRPos.x + m_arrowSiz.x / 2;
-		float top = m_arrowRPos.y + m_arrowSiz.y / 2;
-		float bot = m_arrowRPos.y - m_arrowSiz.y / 2;
+		float left = m_arrowRPos.x - m_arrowSize.x / 2;
+		float right = m_arrowRPos.x + m_arrowSize.x / 2;
+		float top = m_arrowRPos.y + m_arrowSize.y / 2;
+		float bot = m_arrowRPos.y - m_arrowSize.y / 2;
 
 		if (mouse.x >= left && mouse.x <= right
 			&& mouse.y <= top && mouse.y >= bot)
@@ -277,26 +282,26 @@ void ResultDisplay::ArrowDrawSprite()
 
 		Math::Color col = { 1,1,1,m_arrowAlpha };
 
-		Math::Vector2 siz = m_arrowSiz;
+		Math::Vector2 size = m_arrowSize;
 		if (m_arrowLHitFlg)
 		{
-			siz *= m_arrowHitScale;
+			size *= m_arrowHitScale;
 		}
 
 		if (m_currentDisplayIndex != 0)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spArrowTex, m_arrowLPos.x, m_arrowLPos.y, siz.x, siz.y, nullptr, &col);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spArrowTex, m_arrowLPos.x, m_arrowLPos.y, size.x, size.y, nullptr, &col);
 		}
 
 
-		siz = m_arrowSiz;
+		size = m_arrowSize;
 		if (m_arrowRHitFlg)
 		{
-			siz *= m_arrowHitScale;
+			size *= m_arrowHitScale;
 		}
 		if (m_currentDisplayIndex != m_resultDisplayList.size() - 1)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spArrowTex, m_arrowRPos.x, m_arrowRPos.y, siz.x, siz.y, nullptr, &col, { 0.5,0.5 }, 180);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spArrowTex, m_arrowRPos.x, m_arrowRPos.y, size.x, size.y, nullptr, &col, { 0.5,0.5 }, 180);
 		}
 	}
 

@@ -56,7 +56,7 @@ private:
 		Math::Vector2 m_iconPos;
 
 		//アイコンのサイズ
-		Math::Vector2 m_iconSiz;
+		Math::Vector2 m_iconSize;
 
 		//当たってるか
 		bool m_hit = false;
@@ -75,7 +75,7 @@ private:
 		Math::Vector2 m_iconStrengtheningPos;
 
 		//アイコンのサイズ
-		Math::Vector2 m_iconStrengtheningSiz;
+		Math::Vector2 m_iconStrengtheningSize;
 
 		//演出用のタイマー
 		float m_timer = 0.0f;
@@ -134,7 +134,7 @@ private:
 		//武器アイコン
 		WeaponsStrengthening_Icon,
 
-		WeaponsStrengtheningSiz
+		WeaponsStrengtheningSize
 	};
 
 	//---- メンバ変数 ----
@@ -200,10 +200,10 @@ private:
 	int m_selectIndex = 0;
 
 	//選んでいる強化アイコンの大きさ
-	Math::Vector2 m_selectWeaponsStrengtheningIconSiz;
+	Math::Vector2 m_selectWeaponsStrengtheningIconSize;
 
 	//強化の情報(種類ごと)
-	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSiz];
+	WeaponsStrengtheningInfo m_weaponsStrengtheningInfo[WeaponsStrengtheningSize];
 
 	//強化アイテムのアイコン情報
 	InventoryItemIconInfo m_weaponsStrengtheningIconInfo;

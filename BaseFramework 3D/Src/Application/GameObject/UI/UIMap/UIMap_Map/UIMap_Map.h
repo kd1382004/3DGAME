@@ -19,6 +19,7 @@ struct MiniMapInfo
 	int m_roomNum = -1;
 };
 
+//ミニマップの地形
 class UIMap_Map
 {
 public:
@@ -50,7 +51,7 @@ public:
 
 	//1マスの画像の大きさを返す
 	//戻り値 ... 画像の大きさ
-	Math::Vector2 GetMapTexSiz() { return m_mapTexSiz; }
+	Math::Vector2 GetMapTexSize() { return m_mapTexSize; }
 
 	//---- 設定 ----
 
@@ -118,7 +119,7 @@ private:
 	std::unordered_map<long long, MiniMapInfo*> m_tileMap;
 
 	//大きさの倍率
-	float m_siz = 1.0f;
+	float m_size = 1.0f;
 
 	//ミニマップの基準位置(画面)
 	Math::Vector2 m_basePos;
@@ -133,7 +134,7 @@ private:
 	std::shared_ptr<KdTexture>m_spMapStairsTex;
 
 	//1マスの画像の大きさ
-	Math::Vector2 m_mapTexSiz;
+	Math::Vector2 m_mapTexSize;
 
 	//ミニマップ上のプレイヤーの位置
 	Math::Vector2 m_miniMapPlayerPos;

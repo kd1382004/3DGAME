@@ -226,7 +226,7 @@ private:
 	//映すキャラのモデル
 	std::shared_ptr<KdModelWork> m_spModel = nullptr;
 	std::shared_ptr<KdModelData> m_spWeapon = nullptr;   // 手に持たせる武器（アニメーションなし）
-	std::weak_ptr<KdGameObject>  m_wpMainCamera;
+	std::weak_ptr<KdGameObject>  m_wpMainCamera;   // プレビューを映すカメラ
 
 	//当たり判定が出ているか
 	bool                         m_hitActive = false;
@@ -237,9 +237,9 @@ private:
 	//軌跡
 	std::shared_ptr<KdTrailPolygon> m_spTrail = nullptr;
 	Math::Vector3 m_tipLocal = { 0.0f, 0.6f, 0.0f };   // 武器のローカルでの切っ先の位置
-	bool          m_trailActive = false;
+	bool          m_trailActive = false;   // 今のフレームで軌跡を出すか
 	bool          m_prevTrailActive = false;   // 前のフレームの m_trailActive（始まり・途切れを見つける用）
-	bool          m_trailClearRequest = false;
+	bool          m_trailClearRequest = false;   // 軌跡を消すように頼まれているか
 
 	//このフレームで姿勢が変わったか
 	bool          m_poseChanged = false;

@@ -1,4 +1,5 @@
-﻿#include "Slope.h"
+﻿//---- 自分のヘッダー ----
+#include "Slope.h"		//坂
 
 void Slope::Init()
 {
@@ -21,4 +22,3 @@ void Slope::Update()
 {
 
 }
-

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//エフェクトの基底クラス
 class EffectBase:public KdGameObject
 {
 public:

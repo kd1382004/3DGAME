@@ -1,6 +1,7 @@
 ﻿#pragma once
 class PlayerBase;
 
+//基礎攻撃力アップポーション
 class AttackBaseUPPotion
 {
 public:

@@ -1,10 +1,16 @@
-﻿#include "PrepareLayoutEditor.h"
+﻿//---- 自分のヘッダー ----
+#include "PrepareLayoutEditor.h"												//準備シーンの配置編集エディター
 
-#include"../../Scene/PrepareScene/PrepareScene.h"
-#include"../../GameObject/Camera/PrepareCamera/PrepareCamera.h"
-#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"
-#include"../../GameObject/Terrains/Camp/CampLight/CampLight.h"
-#include"../../GameObject/Terrains/Camp/CampObject/CampObject.h"
+//---- シーン ----
+#include"../../Scene/PrepareScene/PrepareScene.h"								//準備シーン
+
+//---- カメラ ----
+#include"../../GameObject/Camera/PrepareCamera/PrepareCamera.h"					//準備シーン用カメラ
+
+//---- キャンプ ----
+#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"		//キャンプの配置データ
+#include"../../GameObject/Terrains/Camp/CampLight/CampLight.h"					//キャンプのライト
+#include"../../GameObject/Terrains/Camp/CampObject/CampObject.h"				//キャンプの置物
 
 namespace
 {
@@ -25,6 +31,10 @@ namespace
 	};
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void PrepareLayoutEditor::SetTargets(const std::shared_ptr<PrepareScene>& _spScene,
 	const std::shared_ptr<PrepareCamera>& _spCamera,
 	const std::vector<std::shared_ptr<CampLight>>& _lights,
@@ -39,6 +49,10 @@ void PrepareLayoutEditor::SetTargets(const std::shared_ptr<PrepareScene>& _spSce
 	m_wpObjects.clear();
 	for (const auto& spObj : _objects) { m_wpObjects.push_back(spObj); }
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void PrepareLayoutEditor::Draw(bool* _open)
 {
@@ -79,6 +93,67 @@ void PrepareLayoutEditor::Draw(bool* _open)
 
 	ImGui::End();
 }
+
+//=============================================
+// その他の処理
+//=============================================
+
+bool PrepareLayoutEditor::SaveTune()
+{
+	nlohmann::json root;
+
+	//---- カメラ(glTFの座標に戻して保存) ----
+	if (auto spCam = m_wpCamera.lock())
+	{
+		for (const auto& [name, cam] : spCam->WorkCameraData())
+		{
+			root["Cameras"][name] = {
+				{ "Pos",    Vec3ToJson(ConvPos(cam.m_pos)) },
+				{ "Target", Vec3ToJson(ConvPos(cam.m_target)) },
+				{ "FovY",   cam.m_fovY } };
+		}
+	}
+
+	//---- ライト(名前ごとに、色・明るさ・半径) ----
+	for (const auto& wpLight : m_wpLights)
+	{
+		auto spLight = wpLight.lock();
+		if (!spLight) { continue; }
+
+		const CampLightData& d = spLight->WorkData();
+		root["Lights"][d.m_name] = {
+			{ "Color",     Vec3ToJson(d.m_color) },
+			{ "Intensity", d.m_intensity },
+			{ "Radius",    d.m_radius } };
+	}
+
+	//---- 出発の演出(行き先はカメラと同じく glTF の座標に戻して保存) ----
+	if (m_pDepart)
+	{
+		root["Depart"] = {
+			{ "Target",        Vec3ToJson(ConvPos(m_pDepart->m_target)) },
+			{ "WalkTime",      m_pDepart->m_walkTime },
+			{ "FadeStartRate", m_pDepart->m_fadeStartRate },
+			{ "FadeTime",      m_pDepart->m_fadeTime } };
+	}
+
+	std::ofstream file(m_tuneFilePath);
+	if (!file.is_open())
+	{
+		m_message = U8("保存できませんでした");
+		return false;
+	}
+
+	file << root.dump(4);
+
+	m_dirty   = false;
+	m_message = U8("保存しました");
+	return true;
+}
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void PrepareLayoutEditor::CameraImGui()
 {
@@ -212,16 +287,6 @@ void PrepareLayoutEditor::ObjectImGui()
 	ImGui::EndChild();
 }
 
-std::shared_ptr<CampObject> PrepareLayoutEditor::FindCampPlayer() const
-{
-	for (const auto& wpObj : m_wpObjects)
-	{
-		auto spObj = wpObj.lock();
-		if (spObj && spObj->WorkData().m_kind == "Player") { return spObj; }
-	}
-	return nullptr;
-}
-
 void PrepareLayoutEditor::DepartImGui()
 {
 	if (!m_pDepart) { ImGui::Text(U8("出発のデータがありません")); return; }
@@ -303,55 +368,16 @@ void PrepareLayoutEditor::DepartImGui()
 	}
 }
 
-bool PrepareLayoutEditor::SaveTune()
+//=============================================
+// その他の処理
+//=============================================
+
+std::shared_ptr<CampObject> PrepareLayoutEditor::FindCampPlayer() const
 {
-	nlohmann::json root;
-
-	//---- カメラ(glTFの座標に戻して保存) ----
-	if (auto spCam = m_wpCamera.lock())
+	for (const auto& wpObj : m_wpObjects)
 	{
-		for (const auto& [name, cam] : spCam->WorkCameraData())
-		{
-			root["Cameras"][name] = {
-				{ "Pos",    Vec3ToJson(ConvPos(cam.m_pos)) },
-				{ "Target", Vec3ToJson(ConvPos(cam.m_target)) },
-				{ "FovY",   cam.m_fovY } };
-		}
+		auto spObj = wpObj.lock();
+		if (spObj && spObj->WorkData().m_kind == "Player") { return spObj; }
 	}
-
-	//---- ライト(名前ごとに、色・明るさ・半径) ----
-	for (const auto& wpLight : m_wpLights)
-	{
-		auto spLight = wpLight.lock();
-		if (!spLight) { continue; }
-
-		const CampLightData& d = spLight->WorkData();
-		root["Lights"][d.m_name] = {
-			{ "Color",     Vec3ToJson(d.m_color) },
-			{ "Intensity", d.m_intensity },
-			{ "Radius",    d.m_radius } };
-	}
-
-	//---- 出発の演出(行き先はカメラと同じく glTF の座標に戻して保存) ----
-	if (m_pDepart)
-	{
-		root["Depart"] = {
-			{ "Target",        Vec3ToJson(ConvPos(m_pDepart->m_target)) },
-			{ "WalkTime",      m_pDepart->m_walkTime },
-			{ "FadeStartRate", m_pDepart->m_fadeStartRate },
-			{ "FadeTime",      m_pDepart->m_fadeTime } };
-	}
-
-	std::ofstream file(m_tuneFilePath);
-	if (!file.is_open())
-	{
-		m_message = U8("保存できませんでした");
-		return false;
-	}
-
-	file << root.dump(4);
-
-	m_dirty   = false;
-	m_message = U8("保存しました");
-	return true;
+	return nullptr;
 }

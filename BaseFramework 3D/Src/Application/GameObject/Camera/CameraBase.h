@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//カメラの基底クラス
 class CameraBase : public KdGameObject
 {
 public:
@@ -53,7 +54,7 @@ public:
 
 	//カメラの当たり判定をするオブジェクトを追加
 	// _spObject ... 当たり判定をするオブジェクト
-	void RegistHitObject(const std::shared_ptr<KdGameObject>& _spObject)
+	void RegisterHitObject(const std::shared_ptr<KdGameObject>& _spObject)
 	{
 		m_wpHitObjectList.push_back(_spObject);
 	}

@@ -1,10 +1,22 @@
-﻿#include "Dagger.h"
-#include <cmath>
-#include <algorithm>
-#include"../../Character/CharacterBase.h"
-#include"ChargeAttack/Dagger_ChargeAttack.h"
+﻿//---- 自分のヘッダー ----
+#include "Dagger.h"									//短剣
 
-#include"../../../Scene/SceneManager.h"
+//---- シーン ----
+#include"../../../Scene/SceneManager.h"				//シーンの管理
+
+//---- キャラクター ----
+#include"../../Character/CharacterBase.h"			//キャラクターの基底クラス
+
+//---- 武器 ----
+#include"ChargeAttack/Dagger_ChargeAttack.h"		//短剣の溜め攻撃(衝撃波)
+
+//---- 標準ライブラリ ----
+#include <cmath>									//数学関数
+#include <algorithm>								//並べ替え・検索などのアルゴリズム
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void Dagger::Init()
 {
@@ -259,6 +271,10 @@ void Dagger::DrawLit()
 
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void Dagger::SetNowChargeTime(float _time)
 {
 	m_chargeTime = _time;
@@ -424,6 +440,10 @@ void Dagger::SetAttackFlg(bool _flg)
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void Dagger::ChargeAttackPlay()
 {
 	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
@@ -521,6 +541,10 @@ void Dagger::StopWeaponSE()
 		spEffect2->StopEffect();
 	}
 }
+
+//=============================================
+// 取得
+//=============================================
 
 bool Dagger::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)
 {

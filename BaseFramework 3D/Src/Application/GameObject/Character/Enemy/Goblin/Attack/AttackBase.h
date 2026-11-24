@@ -2,6 +2,7 @@
 
 class PlayerBase;
 
+//ゴブリンの攻撃の基底クラス
 class AttackBase :public KdGameObject
 {
 public:

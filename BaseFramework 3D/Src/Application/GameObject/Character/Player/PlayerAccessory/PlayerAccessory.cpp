@@ -1,8 +1,12 @@
-﻿#include "PlayerAccessory.h"
+﻿//---- 自分のヘッダー ----
+#include "PlayerAccessory.h"								//プレイヤーの装着アクセサリー
 
-#include"../PlayerBase.h"
+//---- プレイヤー ----
+#include"../PlayerBase.h"									//プレイヤー
 
-#include"../../../Accessory/Flashlight/Flashlight.h"
+//---- アクセサリー ----
+#include"../../../Accessory/Flashlight/Flashlight.h"		//懐中電灯
+
 void PlayerAccessory::Init()
 {
 

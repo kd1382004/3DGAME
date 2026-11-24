@@ -7,6 +7,7 @@ enum WeaponStrengtheningID;
 
 struct WeaponsStrengtheningInfo;
 
+//シーンの基底クラス
 class BaseScene
 {
 public:

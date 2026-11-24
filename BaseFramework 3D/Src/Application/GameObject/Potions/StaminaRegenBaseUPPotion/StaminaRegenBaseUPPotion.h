@@ -1,6 +1,7 @@
 #pragma once
 class PlayerBase;
 
+//基礎スタミナ回復量アップポーション
 class StaminaRegenBaseUPPotion
 {
 public:

@@ -418,7 +418,7 @@ private:
 	const float m_buttonH = 38.0f;
 
 	//＋・－ボタンの大きさ
-	const float m_smallButtonSiz = 36.0f;
+	const float m_smallButtonSize = 36.0f;
 
 	//「あり」「なし」(76×48)の真ん中のx
 	const float m_haveTextX = 400.0f;
@@ -557,10 +557,10 @@ private:
 	// _num       ... 描く数字
 	// _aligned   ... どちらの端で揃えるか
 	// _pos       ... x は _aligned で揃える側の端、y は数字の上下の真ん中
-	// _siz       ... 大きさ
+	// _size       ... 大きさ
 	// _separator ... 3桁ごとに「,」を入れるか
 	// _maxW      ... 超えてはいけない横幅(0なら制限なし。超えるときは横を縮める)
-	void DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _siz = 2.0f, bool _separator = false, float _maxW = 0.0f);
+	void DrawNum(long _num, Aligned _aligned, const Math::Vector2& _pos, float _size = 2.0f, bool _separator = false, float _maxW = 0.0f);
 
 	//値段の列(ラベル・数字・「G」)を描く
 	// _label   ... ラベルの画像(購入価格・売却価格)
@@ -612,11 +612,11 @@ private:
 
 	//数字を描いたときの横幅を返す(_maxWで縮んだ後の幅)
 	// _num       ... 数字
-	// _siz       ... 大きさ
+	// _size       ... 大きさ
 	// _separator ... 3桁ごとに「,」を入れるか
 	// _maxW      ... 超えてはいけない横幅(0なら制限なし)
 	//戻り値 ... 横幅
-	float GetNumWidth(long _num, float _siz = 2.0f, bool _separator = false, float _maxW = 0.0f) const;
+	float GetNumWidth(long _num, float _size = 2.0f, bool _separator = false, float _maxW = 0.0f) const;
 
 	//右の欄の行の真ん中のyを返す
 	// _row ... 1行目から何行下か

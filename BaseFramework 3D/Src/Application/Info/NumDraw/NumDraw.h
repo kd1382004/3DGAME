@@ -8,6 +8,7 @@ enum Aligned
 	CAligned, //中央揃え
 };
 
+//数字の画像描画
 class NumDraw
 {
 public:
@@ -24,11 +25,11 @@ public:
 	// _aligned ... どちらに揃えるか(LAligned:左揃え / RAligned:右揃え / CAligned:中央揃え)
 	// _pos ... _alignedで揃えた側の端の座標(上下は真ん中)
 	// _color ... 色
-	// _siz ... 大きさの倍率(元の画像は1文字9×14)
+	// _size ... 大きさの倍率(元の画像は1文字9×14)
 	// _separator ... 3桁ごとにカンマを入れるか
 	// _digit ... 表示する桁数(足りない分は0で埋める。-1ならそのままの桁)
-	// _maxSiz ... 超えてはいけない大きさ(横・縦。0なら制限なし。超えるときは倍率を下げて収める)
-	void Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color = Math::Color(1, 1, 1, 1), float _siz = 1, bool _separator = false, int _digit = -1, Math::Vector2 _maxSiz = { 0, 0 });
+	// _maxSize ... 超えてはいけない大きさ(横・縦。0なら制限なし。超えるときは倍率を下げて収める)
+	void Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color = Math::Color(1, 1, 1, 1), float _size = 1, bool _separator = false, int _digit = -1, Math::Vector2 _maxSize = { 0, 0 });
 
 	//---- 取得 ----
 

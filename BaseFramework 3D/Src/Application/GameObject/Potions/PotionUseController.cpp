@@ -1,22 +1,20 @@
-﻿#include "PotionUseController.h"
+﻿//---- 自分のヘッダー ----
+#include "PotionUseController.h"									//ポーションの使用処理
 
+//---- プレイヤー ----
+#include"../Character/Player/PlayerBase.h"							//プレイヤー
 
+//---- ポーション ----
+#include"InstantHealPotion/InstantHealPotion.h"						//体力回復ポーション
+#include"AttackBaseUPPotion/AttackBaseUPPotion.h"					//基礎攻撃力アップポーション
+#include"AttackBoostPotion/AttackBoostPotion.h"						//攻撃力一時アップポーション
+#include"InstantStaminaHealPotion/InstantStaminaHealPotion.h"		//スタミナ回復ポーション
+#include"StaminaRegenBaseUPPotion/StaminaRegenBaseUPPotion.h"		//基礎スタミナ回復量アップポーション
+#include"StaminaRegenBoostPotion/StaminaRegenBoostPotion.h"			//スタミナ回復量一時アップポーション
+#include"StaminaMaxUPPotion/StaminaMaxUPPotion.h"					//最大スタミナアップポーション
 
-//HP関係
-#include"InstantHealPotion/InstantHealPotion.h"
-
-//攻撃力関係
-#include"AttackBaseUPPotion/AttackBaseUPPotion.h"
-#include"AttackBoostPotion/AttackBoostPotion.h"
-
-//スタミナ関係
-#include"InstantStaminaHealPotion/InstantStaminaHealPotion.h"
-#include"StaminaRegenBaseUPPotion/StaminaRegenBaseUPPotion.h"
-#include"StaminaRegenBoostPotion/StaminaRegenBoostPotion.h"
-#include"StaminaMaxUPPotion/StaminaMaxUPPotion.h"
-
-#include"../Character/Player/PlayerBase.h"
-#include"../../Info/VOL/VOLInfo.h"
+//---- 便利機能 ----
+#include"../../Info/VOL/VOLInfo.h"									//音量設定
 
 void PotionUseController::PotionUse(int _potionsID)
 {

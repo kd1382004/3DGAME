@@ -1,9 +1,13 @@
-﻿#include "DropCoin.h"
-#include"../../Info/VOL/VOLInfo.h"
-#include"../Character/Player/PlayerBase.h"
-#include"../Character/Player/PlayerInventory/PlayerInventory.h"
+﻿//---- 自分のヘッダー ----
+#include "DropCoin.h"												//敵が落とすコイン
 
-#include"../../Info/DeltaTime/DeltaTime.h"
+//---- プレイヤー ----
+#include"../Character/Player/PlayerBase.h"							//プレイヤー
+#include"../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
+
+//---- 便利機能 ----
+#include"../../Info/VOL/VOLInfo.h"									//音量設定
+#include"../../Info/DeltaTime/DeltaTime.h"							//デルタタイム
 
 void DropCoin::Init()
 {

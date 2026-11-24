@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"../WarpGateBase.h"
 
+//次のステージへのゲート
 class NextStageGate :public WarpGateBase
 {
 public:

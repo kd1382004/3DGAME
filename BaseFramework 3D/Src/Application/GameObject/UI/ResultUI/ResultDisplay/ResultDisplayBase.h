@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//リザルト画面の基底クラス
 class ResultDisplayBase:public KdGameObject
 {
 public:

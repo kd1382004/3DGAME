@@ -1,43 +1,46 @@
-﻿#include "PlayerBase.h"
-#include"../../Camera/CameraBase.h"
-#include"../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../Scene/GameScene/GameScene.h"
-#include"Action/NextFloorAction/NextFloorAction.h"
+﻿//---- 自分のヘッダー ----
+#include "PlayerBase.h"												//プレイヤー
 
-#include"../../../Scene/SceneManager.h"
+//---- シーン ----
+#include"../../../Scene/GameScene/GameScene.h"						//ゲームシーン
+#include"../../../Scene/SceneManager.h"								//シーンの管理
 
+//---- カメラ ----
+#include"../../Camera/CameraBase.h"									//カメラの基底クラス
 
-//UI
-#include"../../UI/UIManager.h"
-#include"../../UI/HPBar/HPBar.h"
-#include"../../UI/UIMap/UIMapManager.h"
-#include"../../UI/UIMap/UIMap_Player/UIMap_Player.h"
-#include"../../UI/StaminaGage/StaminaGage.h"
-#include"../../UI/SkillGage/SkillGage.h"
-#include"../../UI/ItemGetUIController/ItemGetUIController.h"
+//---- プレイヤー ----
+#include"Action/NextFloorAction/NextFloorAction.h"					//次の階へ進む操作
+#include"PlayerInventory/PlayerInventory.h"							//プレイヤーの所持品
+#include"PlayerBuffManager/PlayerBuffManager.h"						//プレイヤーのバフ管理
+#include"PlayreLV/PlayreLV.h"										//プレイヤーのレベル
+#include"PlayerAccessory/PlayerAccessory.h"							//プレイヤーの装着アクセサリー
 
+//---- 武器 ----
+#include"../../Weapon/WeaponBase.h"									//武器の基底クラス
 
-//武器
-#include"../../Weapon/WeaponBase.h"
+//---- アクセサリー ----
+#include"../../Accessory/AccessoryManager.h"						//アクセサリーの管理
+#include"../../Accessory/Flashlight/Flashlight.h"					//懐中電灯
 
-//インベントリ
-#include"PlayerInventory/PlayerInventory.h"
+//---- エフェクト ----
+#include"../../Effect/EffectManager.h"								//エフェクトの管理
+#include"../../Effect/DamageOverlay/DamageOverlay.h"				//被ダメージ時の画面演出
 
+//---- UI ----
+#include"../../UI/UIManager.h"										//UIの管理
+#include"../../UI/HPBar/HPBar.h"									//HPバー
+#include"../../UI/UIMap/UIMapManager.h"								//ミニマップの管理
+#include"../../UI/UIMap/UIMap_Player/UIMap_Player.h"				//ミニマップのプレイヤーアイコン
+#include"../../UI/StaminaGage/StaminaGage.h"						//スタミナゲージ
+#include"../../UI/SkillGage/SkillGage.h"							//スキルゲージ
+#include"../../UI/ItemGetUIController/ItemGetUIController.h"		//アイテム入手の表示
 
-//バフ
-#include"PlayerBuffManager/PlayerBuffManager.h"
+//---- 便利機能 ----
+#include"../../../Info/KeyInfo/KeyInfo.h"							//キー入力
 
-//エフェクト
-#include"../../Effect/EffectManager.h"
-#include"../../Effect/DamageOverlay/DamageOverlay.h"
-
-//LV
-#include"PlayreLV/PlayreLV.h"
-
-#include"../../Accessory/AccessoryManager.h"
-#include"../../Accessory/Flashlight/Flashlight.h"
-
-#include"PlayerAccessory/PlayerAccessory.h"
+//=============================================
+// 基本の処理
+//=============================================
 
 void PlayerBase::Init()
 {
@@ -321,6 +324,10 @@ void PlayerBase::PostUpdate()
 void PlayerBase::GenerateDepthMapFromLight()
 {}
 
+//=============================================
+// 取得
+//=============================================
+
 const std::vector<Inventory>& PlayerBase::GetPotionsInventoryList()
 {
 	if (m_spPlayerInventory)
@@ -362,6 +369,10 @@ Math::Matrix PlayerBase::GetBoneWorldMatrix(const std::string& _boneName)
 	// ボーンの行列（モデル基準） × キャラのワールド行列
 	return node->m_worldTransform * m_mWorld;
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void PlayerBase::SetPotionsInventoryList(const std::vector<Inventory>& _potions)
 {
@@ -430,7 +441,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 	{
 		std::shared_ptr<HPBar>spHPBar = std::make_shared<HPBar>();
 		spHPBar->Init();
-		spHPBar->SetSiz(2);
+		spHPBar->SetSize(2);
 		spHPBar->SetMaxHP(m_status.m_HP.m_maxHP);
 		spHPBar->Set2DPos({ 0,-260 });
 		spHPBar->SetDrawFlg(true);
@@ -446,7 +457,7 @@ void PlayerBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 
 		std::shared_ptr<StaminaGage>spStaminaGauge = std::make_shared<StaminaGage>();
 		spStaminaGauge->Init();
-		spStaminaGauge->SetSiz(2);
+		spStaminaGauge->SetSize(2);
 		spStaminaGauge->Set2DPos({ 0,-290 });
 		spStaminaGauge->SetMaxStamina(m_status.m_stamina.m_staminaMax);
 		m_wpStaminaGauge = spStaminaGauge;
@@ -572,6 +583,10 @@ void PlayerBase::SetPlayerWeaponInfo(int _info)
 		m_playerAnimeName.m_attackAnime;
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void PlayerBase::ClearAllBuffs()
 {

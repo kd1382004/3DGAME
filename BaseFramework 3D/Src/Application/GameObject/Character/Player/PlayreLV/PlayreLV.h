@@ -2,6 +2,7 @@
 
 class PlayerBase;
 
+//プレイヤーのレベル
 class PlayreLV
 {
 public:

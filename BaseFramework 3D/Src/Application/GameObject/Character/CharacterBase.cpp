@@ -1,12 +1,21 @@
-﻿#include "CharacterBase.h"
-#include"../../Info/DeltaTime/DeltaTime.h"
+﻿//---- 自分のヘッダー ----
+#include "CharacterBase.h"						//キャラクターの基底クラス
 
-#include"../Camera/CameraBase.h"
+//---- カメラ ----
+#include"../Camera/CameraBase.h"				//カメラの基底クラス
 
-#include"../UI/HPBar/HPBar.h"
-#include"../UI/UIManager.h"
-#include"../UI/HitDamage/HitDamage.h"
-#include"../UI/StaminaGage/StaminaGage.h"
+//---- UI ----
+#include"../UI/HPBar/HPBar.h"					//HPバー
+#include"../UI/UIManager.h"						//UIの管理
+#include"../UI/HitDamage/HitDamage.h"			//ダメージ数字の表示
+#include"../UI/StaminaGage/StaminaGage.h"		//スタミナゲージ
+
+//---- 便利機能 ----
+#include"../../Info/DeltaTime/DeltaTime.h"		//デルタタイム
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void CharacterBase::Init()
 {
@@ -105,6 +114,10 @@ void CharacterBase::ImGUI()
 	ImGui::End();
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void CharacterBase::AddUIList(std::shared_ptr<UIManager> _spUIManager)
 {
 
@@ -126,6 +139,10 @@ void CharacterBase::AddMaxStamina(float _boost)
 		spStaminaGauge->SetMaxStamina(m_status.m_stamina.m_staminaMax);
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void CharacterBase::LoadCharaStatus(std::string _filePath)
 {
@@ -643,10 +660,18 @@ bool CharacterBase::RaycastFromTo(Math::Vector3 _nextPos)
 	return hit;
 }
 
+//=============================================
+// 基本の処理
+//=============================================
+
 void CharacterBase::Release()
 {
 	m_spCharaModel = nullptr;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void CharacterBase::CollisionUpdate()
 {

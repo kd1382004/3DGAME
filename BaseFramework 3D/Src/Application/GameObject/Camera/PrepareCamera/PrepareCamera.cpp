@@ -1,21 +1,9 @@
-﻿#include "PrepareCamera.h"
+﻿//---- 自分のヘッダー ----
+#include "PrepareCamera.h"		//準備シーン用カメラ
 
-void PrepareCamera::MoveTo(const std::string& _name, bool _immediate)
-{
-	if (!m_cams.contains(_name)) { return; }
-
-	// 今いる場所から動き出す(移動中に切り替えても飛ばない)
-	m_from = m_now;
-	m_toName = _name;
-	m_moveTimer = 0.0f;
-
-	if (_immediate)
-	{
-		m_moveTimer = m_moveTime;
-		m_now = m_cams[_name];
-		ApplyNow();
-	}
-}
+//=============================================
+// 基本の処理
+//=============================================
 
 void PrepareCamera::Update()
 {
@@ -37,6 +25,31 @@ void PrepareCamera::Update()
 
 	ApplyNow();
 }
+
+//=============================================
+// 設定
+//=============================================
+
+void PrepareCamera::MoveTo(const std::string& _name, bool _immediate)
+{
+	if (!m_cams.contains(_name)) { return; }
+
+	// 今いる場所から動き出す(移動中に切り替えても飛ばない)
+	m_from = m_now;
+	m_toName = _name;
+	m_moveTimer = 0.0f;
+
+	if (_immediate)
+	{
+		m_moveTimer = m_moveTime;
+		m_now = m_cams[_name];
+		ApplyNow();
+	}
+}
+
+//=============================================
+// その他の処理
+//=============================================
 
 void PrepareCamera::ApplyNow()
 {

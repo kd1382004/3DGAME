@@ -196,7 +196,7 @@ public:
 	//---- マップ生成 ----
 
 	//マップ生成
-	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
+	//_mapSize			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
 	//_roomNum			...部屋の数(区画が足りないときは減る。最低 kMinRoomNum)
 	//_tileSiz			...1タイルのサイズ(正方形)
 	//_type				...マップの種類
@@ -204,17 +204,17 @@ public:
 	//_playerSpawnPos	...	プレイヤーのスポーン位置
 	//_basePos	...	マップの基準位置
 	//戻り値...ノード用のマップデータ(歩けるか歩けないか)
-	std::vector<std::vector<bool>> Generate(Math::Vector2 _mapSiz, int _roomNum, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
+	std::vector<std::vector<bool>> Generate(Math::Vector2 _mapSize, int _roomNum, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
 
 	//ボス部屋のマップ生成
-	// _mapSiz ... マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
+	// _mapSize ... マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
 	// _tileSiz ... 1タイルのサイズ(正方形)
 	// _type ... マップの種類
 	// _ret ... 生成結果を格納する先
 	// _playerSpawnPos ... プレイヤーのスポーン位置を入れる先
 	// _basePos ... マップの基準位置を入れる先
 	//戻り値 ... ノード用のマップデータ(歩けるか歩けないか)
-	std::vector<std::vector<bool>> GenerateBoss(Math::Vector2 _mapSiz, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
+	std::vector<std::vector<bool>> GenerateBoss(Math::Vector2 _mapSize, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos);
 
 	//---- 取得 ----
 
@@ -478,44 +478,44 @@ private:
 
 	//部屋のサイズをファイルから読み込む
 	// _filePath ... 読み込むファイルのパス
-	void LoadRoomSiz(std::string _filePath);
+	void LoadRoomSize(std::string _filePath);
 
 	//部屋のサイズをファイルに保存する
 	// _filePath ... 保存するファイルのパス
-	void SaveRoomSiz(std::string _filePath);
+	void SaveRoomSize(std::string _filePath);
 
 	//---- 部屋の置き方(どちらか1つを Generate から呼ぶ) ----
 
 	//区画分割で、マップに部屋と交差点を置く
 	//区画の数を決めて区画に分け、区画ごとに部屋か交差点を1つ置く
-	// _mapSiz ... マップの大きさ(マス)
+	// _mapSize ... マップの大きさ(マス)
 	// _roomNum ... 置きたい部屋の数(区画が足りないときは区画数まで減らして書き戻す)
 	// _map ... マップ(部屋と交差点のタイルを書き込む)
 	// _roomIDVector ... マスごとの部屋ID(部屋のマスに書き込む)
 	// _roomID ... 次に使う部屋ID(部屋を置くたびに1進める)
-	void PlaceRoomsByArea(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID);
+	void PlaceRoomsByArea(const Math::Vector2& _mapSize, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID);
 
 	//ランダムな位置に部屋を置く(区画分割を使わない、元のやり方)
 	//重ならない場所が見つかるまでくり返し、部屋が kMinRoomNum 個に届かなければ全部作り直す
-	// _mapSiz ... マップの大きさ(マス)
+	// _mapSize ... マップの大きさ(マス)
 	// _roomNum ... 置きたい部屋の数
 	// _map ... マップ(部屋のタイルを書き込む)
 	// _roomIDVector ... マスごとの部屋ID(部屋のマスに書き込む)
 	// _roomID ... 次に使う部屋ID(部屋を置くたびに1進める)
-	void PlaceRoomsRandom(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID);
+	void PlaceRoomsRandom(const Math::Vector2& _mapSize, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID);
 
 	//---- 区画分割(PlaceRoomsByArea の中で使う) ----
 
 	//区画の数を決めて m_areaDivX / m_areaDivY に入れる
 	//区画が正方形に近く、余る区画(交差点)が少ない組み合わせを選ぶ
-	// _mapSiz ... マップの大きさ(マス)
+	// _mapSize ... マップの大きさ(マス)
 	// _roomNum ... 置きたい部屋の数(区画が足りないときは区画数まで減らして書き戻す)
-	void DecideAreaDiv(const Math::Vector2& _mapSiz, int& _roomNum);
+	void DecideAreaDiv(const Math::Vector2& _mapSize, int& _roomNum);
 
 	//マップを区画に分けて m_areaGrid を作る
 	//割り切れない余りは、右端の列と下端の行の区画に足す
-	// _mapSiz ... マップの大きさ(マス)
-	void DivideAreas(const Math::Vector2& _mapSiz);
+	// _mapSize ... マップの大きさ(マス)
+	void DivideAreas(const Math::Vector2& _mapSize);
 
 	//どの区画を交差点にするか決める(区画数 - _roomNum 個をランダムに選ぶ)
 	// _roomNum ... 置く部屋の数

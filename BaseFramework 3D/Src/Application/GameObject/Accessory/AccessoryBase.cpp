@@ -1,4 +1,5 @@
-﻿#include "AccessoryBase.h"
+﻿//---- 自分のヘッダー ----
+#include "AccessoryBase.h"		//アクセサリーの基底クラス
 
 void AccessoryBase::Init()
 {}

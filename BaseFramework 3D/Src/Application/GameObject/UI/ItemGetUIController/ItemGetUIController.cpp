@@ -1,7 +1,16 @@
-﻿#include "ItemGetUIController.h"
-#include"../../../Info/NumDraw/NumDraw.h"
+﻿//---- 自分のヘッダー ----
+#include "ItemGetUIController.h"							//アイテム入手の表示
 
-#include"../../Potions/PotionTexInfo/PotionTexInfo.h"
+//---- ポーション ----
+#include"../../Potions/PotionTexInfo/PotionTexInfo.h"		//アイテムの名前・画像情報
+
+//---- 便利機能 ----
+#include"../../../Info/NumDraw/NumDraw.h"					//数字の画像描画
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void ItemGetUIController::Init()
 {
 	if (!m_spBackTex)
@@ -117,16 +126,20 @@ void ItemGetUIController::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(item.m_spIconTex, item.m_iconPos.x, item.m_iconPos.y, m_iconWH.x, m_iconWH.y, nullptr, &color);
 
 		if (!item.m_spNameTex) { continue; }
-		Math::Vector2 nameSiz = {};
-		Math::Vector2 nameNowSiz = { (float)item.m_spNameTex->GetWidth() , (float)item.m_spNameTex->GetHeight() };
+		Math::Vector2 nameSize = {};
+		Math::Vector2 nameNowSize = { (float)item.m_spNameTex->GetWidth() , (float)item.m_spNameTex->GetHeight() };
 		Math::Vector2 pivot = { 0,0.5 };
 
-		float a = m_iconWH.y / nameNowSiz.y;
-		nameSiz = nameNowSiz * a;
-		KdShaderManager::Instance().m_spriteShader.DrawTex(item.m_spNameTex, item.m_namePos.x, item.m_namePos.y, nameSiz.x, nameSiz.y, nullptr, &color, pivot);
+		float a = m_iconWH.y / nameNowSize.y;
+		nameSize = nameNowSize * a;
+		KdShaderManager::Instance().m_spriteShader.DrawTex(item.m_spNameTex, item.m_namePos.x, item.m_namePos.y, nameSize.x, nameSize.y, nullptr, &color, pivot);
 	}
 
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void ItemGetUIController::AddGetItemList(GetItem _item, ItemType _type)
 {

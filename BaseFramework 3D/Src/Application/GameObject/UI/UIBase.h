@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//UIの基底クラス
 class UIBase :public KdGameObject
 {
 public:

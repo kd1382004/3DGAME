@@ -3,6 +3,7 @@
 #pragma once
 #include"../UIBase.h"
 
+//スタミナゲージ
 class StaminaGage :public UIBase
 {
 public:
@@ -36,9 +37,11 @@ public:
 	void SetStaminaBarTexPercent(float _percent);
 
 	//大きさの倍率をセット
-	// _siz ... 倍率
-	void SetSiz(float _siz) { m_siz = _siz; }
+	// _size ... 倍率
+	void SetSize(float _size) { m_size = _size; }
 
+	//最大スタミナをセット(目盛りの数を決める)
+	// _maxStamina ... 最大スタミナ
 	void SetMaxStamina(float _maxStamina) { m_maxStamina = _maxStamina; }
 
 	//---- その他の処理 ----
@@ -47,8 +50,8 @@ public:
 	// _pos ... 画面上の座標(バーの中心)
 	void Set2DPos(const Math::Vector2& _pos) {
 		m_2DPos = _pos;
-		m_staminaBarTexBack2DPos = { m_2DPos.x - m_staminaBarTexBackLength.x / 2.0f * m_siz ,m_2DPos.y };
-		m_staminaBarTex2DPos = { m_2DPos.x - m_staminaBarTexLength.x / 2.0f * m_siz ,m_2DPos.y };
+		m_staminaBarTexBack2DPos = { m_2DPos.x - m_staminaBarTexBackLength.x / 2.0f * m_size ,m_2DPos.y };
+		m_staminaBarTex2DPos = { m_2DPos.x - m_staminaBarTexLength.x / 2.0f * m_size ,m_2DPos.y };
 		}
 
 	//消すときの処理(今は何もしない)
@@ -59,7 +62,7 @@ private:
 	//---- メンバ変数 ----
 
 	//サイズ
-	float m_siz = 1.0f;
+	float m_size = 1.0f;
 
 	//HPバー背景
 	std::shared_ptr<KdTexture>m_spStaminaBarBackTex = nullptr;
@@ -98,6 +101,7 @@ private:
 	//1目盛りあたりのスタミナ
 	const float m_staminaPerScale = 10.0f;
 
+	//最大スタミナ(目盛りの数を決める)
 	float m_maxStamina = 0;
 };
 

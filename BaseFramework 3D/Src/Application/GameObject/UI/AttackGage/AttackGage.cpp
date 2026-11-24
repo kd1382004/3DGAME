@@ -1,4 +1,9 @@
-﻿#include "AttackGage.h"
+﻿//---- 自分のヘッダー ----
+#include "AttackGage.h"		//攻撃(溜め)ゲージ
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void AttackGage::Init()
 {
@@ -46,15 +51,19 @@ void AttackGage::DrawSprite()
 	//攻撃ゲージ背景
 	if (m_spAttackGaugeBackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spAttackGaugeBackTex, m_attackGaugeBackTex2DPos.x, m_attackGaugeBackTex2DPos.y, m_attackGaugeBackTexLength.x * m_siz, m_attackGaugeBackTexLength.y * m_siz, &m_attackGaugeBackTexRect, &kWhiteColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spAttackGaugeBackTex, m_attackGaugeBackTex2DPos.x, m_attackGaugeBackTex2DPos.y, m_attackGaugeBackTexLength.x * m_size, m_attackGaugeBackTexLength.y * m_size, &m_attackGaugeBackTexRect, &kWhiteColor, pivot);
 	}
 
 	//攻撃ゲージ背景
 	if (m_spAttackGaugeBackTex)
 	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spAttackGaugeTex, m_attackGaugeTex2DPos.x, m_attackGaugeTex2DPos.y, m_attackGaugeTexLength.x * m_siz * m_attackGaugeTexPercent, m_attackGaugeTexLength.y * m_siz, &m_attackGaugeTexRect, &kRedColor, pivot);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spAttackGaugeTex, m_attackGaugeTex2DPos.x, m_attackGaugeTex2DPos.y, m_attackGaugeTexLength.x * m_size * m_attackGaugeTexPercent, m_attackGaugeTexLength.y * m_size, &m_attackGaugeTexRect, &kRedColor, pivot);
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void AttackGage::SetAttackGaugeTexPercent(float _percent)
 {
@@ -70,6 +79,10 @@ void AttackGage::SetAttackGaugeTexPercent(float _percent)
 	long height = static_cast<long>(m_attackGaugeTexLength.y);
 	m_attackGaugeTexRect = { left, top, w, height }; 
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void AttackGage::Delete()
 {

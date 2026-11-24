@@ -1,4 +1,5 @@
-﻿#include "DamageOverlay.h"
+﻿//---- 自分のヘッダー ----
+#include "DamageOverlay.h"		//被ダメージ時の画面演出
 
 void DamageOverlay::Init()
 {

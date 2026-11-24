@@ -11,6 +11,7 @@ class PotionInventoryUI;
 class WeponInventoryUI;
 class PlayerStatusInventoryUI;
 
+//インベントリ画面
 class PlayerInventoryUI :public UIBase
 {
 public:
@@ -74,7 +75,7 @@ private:
 		PotionInventory,
 		WeaponInventory,
 		PlayerStatus,
-		InventoryTypeSiz,
+		InventoryTypeSize,
 	};
 
 	//タブを切り替えるボタン1つ分の情報
@@ -89,7 +90,7 @@ private:
 		//アイコンの画像
 		std::shared_ptr<KdTexture>m_spIconTex;
 		//アイコンの大きさ
-		Math::Vector2 m_iconTexSiz;
+		Math::Vector2 m_iconTexSize;
 	};
 
 	//---- メンバ変数 ----
@@ -128,7 +129,7 @@ private:
 	Math::Vector2 m_back2Tex2DPos;
 
 	//右の枠の大きさ
-	Math::Vector2 m_back2Tex2DSiz;
+	Math::Vector2 m_back2Tex2DSize;
 
 	//タブの帯の画像
 	std::shared_ptr<KdTexture>m_spInventoryTypeTex;
@@ -137,13 +138,13 @@ private:
 	Math::Vector2 m_inventoryType2DPos;
 
 	//タブの帯の大きさ
-	Math::Vector2 m_inventoryTypeSiz;
+	Math::Vector2 m_inventoryTypeSize;
 
 	//今開いているタブ
 	InventoryType m_nowInventoryType = PotionInventory;
 
 	//タブの切り替えボタン
-	InventoryTypeChange m_inventoryTypeChange[InventoryTypeSiz];
+	InventoryTypeChange m_inventoryTypeChange[InventoryTypeSize];
 
 	//各タブ
 	std::shared_ptr<PotionInventoryUI>			m_spPotionInventoryUI;

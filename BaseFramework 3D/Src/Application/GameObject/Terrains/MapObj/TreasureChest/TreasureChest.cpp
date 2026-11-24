@@ -1,25 +1,34 @@
-﻿#include "TreasureChest.h"
-#include"../../../../Info/VOL/VOLInfo.h"
-#include"../../../Character/Player/PlayerBase.h"
-#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
+﻿//---- 自分のヘッダー ----
+#include "TreasureChest.h"													//宝箱
 
-#include"../../../../Scene/GameScene/GameScene.h"
-#include"../../../../Scene/SceneManager.h"
+//---- シーン ----
+#include"../../../../Scene/GameScene/GameScene.h"							//ゲームシーン
+#include"../../../../Scene/SceneManager.h"									//シーンの管理
 
-#include"../../../../Info/KeyInfo/KeyInfo.h"
+//---- カメラ ----
+#include"../../../Camera/CameraBase.h"										//カメラの基底クラス
 
-#include"../../../Camera/CameraBase.h"
+//---- プレイヤー ----
+#include"../../../Character/Player/PlayerBase.h"							//プレイヤー
+#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
-#include"../../../UI/UIMap/UIMap_TreasureChest/UIMap_TreasureChest.h"
-#include"../../../UI/UIManager.h"
-#include"../../../UI\UIMap/UIMapManager.h"
+//---- マップオブジェクト ----
+#include"LootTableManager/LootTableManager.h"								//宝箱のドロップテーブル管理
+#include"TreasureDropItem/TreasureDropItem.h"								//宝箱から出るアイテム
 
+//---- UI ----
+#include"../../../UI/UIMap/UIMap_TreasureChest/UIMap_TreasureChest.h"		//ミニマップの宝箱アイコン
+#include"../../../UI/UIManager.h"											//UIの管理
+#include"../../../UI\UIMap/UIMapManager.h"									//ミニマップの管理
+#include"../../../UI/UI2/UIBase2.h"											//キー表示付きUIの基底クラス
 
-#include"LootTableManager/LootTableManager.h"
-#include"TreasureDropItem/TreasureDropItem.h"
+//---- 便利機能 ----
+#include"../../../../Info/VOL/VOLInfo.h"									//音量設定
+#include"../../../../Info/KeyInfo/KeyInfo.h"								//キー入力
 
-#include"../../../UI/UI2/UIBase2.h"
-
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 TreasureChest::~TreasureChest()
 {
@@ -35,6 +44,9 @@ TreasureChest::~TreasureChest()
 	}
 }
 
+//=============================================
+// 基本の処理
+//=============================================
 
 void TreasureChest::Init()
 {
@@ -109,7 +121,6 @@ void TreasureChest::Init()
 
 }
 
-
 void TreasureChest::Update()
 {
 	if (m_open)
@@ -175,7 +186,7 @@ void TreasureChest::Update()
 
 		float dist = (playerPos - pos).Length();
 
-		if (dist < m_openSiz)
+		if (dist < m_openSize)
 		{
 			int key = spPlayer->GetActionKeyConfig().m_interact;
 
@@ -271,7 +282,6 @@ void TreasureChest::PreDraw()
 	}
 }
 
-
 void TreasureChest::DrawLit()
 {
 	if (!m_isInView) { return; }
@@ -281,6 +291,10 @@ void TreasureChest::DrawLit()
 		DrawModelWithFade(*m_spTreasureChestModel);
 	}
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void TreasureChest::SetUIManager(std::shared_ptr<UIManager> _spUIManager)
 {

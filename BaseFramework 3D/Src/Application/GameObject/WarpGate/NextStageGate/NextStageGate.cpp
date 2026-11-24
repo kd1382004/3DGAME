@@ -1,9 +1,23 @@
-#include "NextStageGate.h"
-#include"../../../Info/VOL/VOLInfo.h"
-#include"../../../Info/KeyInfo/KeyInfo.h"
-#include"../../Character/Player/PlayerBase.h"
-#include"../../../Scene/GameScene/GameScene.h"
-#include"../WarpGateManager.h"
+//---- 自分のヘッダー ----
+#include "NextStageGate.h"							//次のステージへのゲート
+
+//---- シーン ----
+#include"../../../Scene/GameScene/GameScene.h"		//ゲームシーン
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"		//プレイヤー
+
+//---- ワープゲート ----
+#include"../WarpGateManager.h"						//ワープゲートの管理
+
+//---- 便利機能 ----
+#include"../../../Info/VOL/VOLInfo.h"				//音量設定
+#include"../../../Info/KeyInfo/KeyInfo.h"			//キー入力
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
+
 NextStageGate::~NextStageGate()
 {
 	auto spEffect = m_wpWarpGateEffect.lock();
@@ -12,6 +26,11 @@ NextStageGate::~NextStageGate()
 		spEffect->StopEffect();
 	}
 }
+
+//=============================================
+// 基本の処理
+//=============================================
+
 void NextStageGate::Init()
 {
 

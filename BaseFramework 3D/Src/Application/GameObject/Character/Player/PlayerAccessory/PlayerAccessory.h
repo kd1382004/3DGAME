@@ -3,6 +3,7 @@
 class Flashlight;
 class PlayerBase;
 
+//プレイヤーの装着アクセサリー
 class PlayerAccessory
 {
 public:

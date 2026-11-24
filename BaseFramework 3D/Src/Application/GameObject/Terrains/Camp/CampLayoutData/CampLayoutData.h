@@ -15,9 +15,9 @@ struct CampObjectData
 	std::string   m_name;					// Blenderでの名前(エディタの表示用)
 	std::string   m_kind;					// Prop / Torch / Campfire / Player
 	std::string   m_modelPath;				// モデルのパス
-	Math::Vector3 m_pos    = Math::Vector3::Zero;
+	Math::Vector3 m_pos    = Math::Vector3::Zero;	// 位置
 	Math::Vector3 m_rotDeg = Math::Vector3::Zero;	// 度
-	Math::Vector3 m_scale  = Math::Vector3::One;
+	Math::Vector3 m_scale  = Math::Vector3::One;	// 大きさ
 
 	// ワールド行列を作る(拡大 → X → Y → Z回転 → 移動)
 	// 戻り値 ... ワールド行列
@@ -34,8 +34,8 @@ struct CampObjectData
 // 点光源1個分
 struct CampLightData
 {
-	std::string   m_name;
-	Math::Vector3 m_pos       = Math::Vector3::Zero;
+	std::string   m_name;						// Blenderでの名前(エディタの表示用)
+	Math::Vector3 m_pos       = Math::Vector3::Zero;	// 位置
 	Math::Vector3 m_color     = Math::Vector3::One;	// 0〜1
 	float         m_power     = 0.0f;				// Blenderの値(参考)
 	float         m_intensity = 10.0f;				// ゲーム用の明るさ(色に掛ける)
@@ -45,7 +45,7 @@ struct CampLightData
 // カメラ1台分
 struct CampCameraData
 {
-	Math::Vector3 m_pos    = Math::Vector3::Zero;
+	Math::Vector3 m_pos    = Math::Vector3::Zero;	// カメラの位置
 	Math::Vector3 m_target = Math::Vector3::Zero;	// 注視点
 	float         m_fovY   = 40.0f;					// 縦の画角(度)
 };
@@ -64,8 +64,8 @@ struct CampDepartData
 // ファイル丸ごと
 struct CampLayoutData
 {
-	std::vector<CampObjectData>           m_objects;
-	std::vector<CampLightData>            m_lights;
+	std::vector<CampObjectData>           m_objects;	// 置物の一覧
+	std::vector<CampLightData>            m_lights;		// 点光源の一覧
 	std::map<std::string, CampCameraData> m_cameras;	// "Explore" "Equip" "Shop" "Records"
 	CampDepartData                        m_depart;		// 出発の演出
 };

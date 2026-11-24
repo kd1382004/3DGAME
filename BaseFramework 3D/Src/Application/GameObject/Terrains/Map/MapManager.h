@@ -46,7 +46,7 @@ public:
 	// 経路復元用
 	Node* m_parent = nullptr;
 	uint32_t m_searchId = 0; // 今回の探索ID（これで初期化を判定）
-	bool m_inClosed = false;
+	bool m_inClosed = false;	// 探索済み(クローズドリストに入っている)か
 };
 
 //マップの種類
@@ -57,6 +57,7 @@ enum MapType
 
 };
 
+//マップの管理・経路探索
 class MapManager : public KdGameObject
 {
 public:
@@ -176,14 +177,14 @@ public:
 	void MapHitEnemy(const std::shared_ptr<EnemyBase>& _spObj);
 
 	//マップ生成
-	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
+	//_mapSize			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
 	//_roomNum			...部屋の最大個数
 	//_type				...マップの種類
-	void GenerateMap(Math::Vector2 _mapSiz, int _roomNum, MapType _type);
+	void GenerateMap(Math::Vector2 _mapSize, int _roomNum, MapType _type);
 
-	//_mapSiz			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
+	//_mapSize			...マップのサイズ(マップタイルが縦横それぞれ何個ずつか)
 	//_type				...マップの種類
-	void GenerateBossMap(Math::Vector2 _mapSiz, MapType _type);
+	void GenerateBossMap(Math::Vector2 _mapSize, MapType _type);
 
 	// ノードからワールド座標に変換
 	// _node ... ノード
@@ -250,7 +251,7 @@ private:
 	bool m_isChunkChanged = false;
 
 	//1タイルの大きさ
-	float m_mapTileSiz = 10.0f;
+	float m_mapTileSize = 10.0f;
 
 	// UI用マップ
 	std::weak_ptr<UIManager> m_wpUIManager;

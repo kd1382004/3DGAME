@@ -1,8 +1,15 @@
-﻿#include "Enemy_Goblin.h"
+﻿//---- 自分のヘッダー ----
+#include "Enemy_Goblin.h"						//敵(ゴブリン)
 
-#include"../../../../Scene/SceneManager.h"
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"		//シーンの管理
 
-#include"../../../Camera/CameraBase.h"
+//---- カメラ ----
+#include"../../../Camera/CameraBase.h"			//カメラの基底クラス
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void Goblin::Init()
 {
@@ -183,6 +190,10 @@ void Goblin::Release()
 		m_spSlam3DSE = nullptr;
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void Goblin::UpdateFootstepSE()
 {

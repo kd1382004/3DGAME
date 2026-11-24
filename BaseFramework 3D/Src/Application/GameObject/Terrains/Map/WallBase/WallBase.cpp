@@ -1,4 +1,5 @@
-﻿#include "WallBase.h"
+﻿//---- 自分のヘッダー ----
+#include "WallBase.h"		//壁
 
 void WallBase::Init()
 {

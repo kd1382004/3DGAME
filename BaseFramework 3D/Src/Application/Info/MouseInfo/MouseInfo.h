@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//マウス入力
 class MouseInfo
 {
 public:

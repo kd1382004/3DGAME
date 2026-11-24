@@ -3,6 +3,7 @@
 
 class GameScene;
 
+//ボス(巨人)
 class Giant :public EnemyBase
 {
 public:

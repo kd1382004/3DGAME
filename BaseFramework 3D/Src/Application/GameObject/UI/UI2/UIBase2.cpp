@@ -1,5 +1,8 @@
-﻿#include "UIBase2.h"
-#include"../../../Info/KeyInfo/KeyInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "UIBase2.h"							//キー表示付きUIの基底クラス
+
+//---- 便利機能 ----
+#include"../../../Info/KeyInfo/KeyInfo.h"		//キー入力
 
 void UIBase2::Update()
 {
@@ -26,7 +29,7 @@ void UIBase2::DrawSprite()
 			Math::Vector2 piv = { 0.5,0.5 };
 
 			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTex, m_2DPos.x, m_2DPos.y, nullptr, nullptr, piv);
-			float siz = m_spTex->GetHeight();
+			float size = m_spTex->GetHeight();
 			Math::Vector2 pos = m_2DPos;
 
 			switch (m_drawKeyPos)
@@ -56,7 +59,7 @@ void UIBase2::DrawSprite()
 			}
 
 
-			KeyInfo::Instance().Draw2Dkey(m_drawKey, pos, { siz,siz }, m_alpha, piv);
+			KeyInfo::Instance().Draw2Dkey(m_drawKey, pos, { size,size }, m_alpha, piv);
 		}
 	}
 

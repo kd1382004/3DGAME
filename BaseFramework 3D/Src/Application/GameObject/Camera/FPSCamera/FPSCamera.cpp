@@ -1,4 +1,5 @@
-﻿#include "FPSCamera.h"
+﻿//---- 自分のヘッダー ----
+#include "FPSCamera.h"		//一人称カメラ
 
 void FPSCamera::Init()
 {

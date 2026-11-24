@@ -39,7 +39,7 @@ private:
 	{
 		ItemType_Potion = 0,
 		ItemType_Material = 1,
-		ItemTypeSiz
+		ItemTypeSize
 	};
 
 	//テーブルに入れられるアイテム1つ分(番号と名前)
@@ -59,7 +59,7 @@ private:
 	//読み込んだjson
 	nlohmann::json m_data;
 	bool           m_dirty = false; // 未保存の変更があるか
-	std::string    m_message;
+	std::string    m_message;			// 画面に出すメッセージ(保存の結果など)
 	std::string m_selectTable;      // 選択中のテーブル名
 	char        m_renameBuf[64] = {};
 

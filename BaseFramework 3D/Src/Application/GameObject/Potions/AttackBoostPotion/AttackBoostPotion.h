@@ -1,6 +1,7 @@
 ﻿#pragma once
 class PlayerBase;
 
+//攻撃力一時アップポーション
 class AttackBoostPotion
 {
 public:

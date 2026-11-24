@@ -1,4 +1,5 @@
-﻿#include "CharaStatusEditor.h"
+﻿//---- 自分のヘッダー ----
+#include "CharaStatusEditor.h"		//キャラステータス編集エディター
 
 namespace
 {
@@ -39,43 +40,9 @@ namespace
 	constexpr float kInputW    = 140.0f;							// 入力欄の幅
 }
 
-//編集する値の一覧(CharacterBase::LoadCharaStatus / SaveCharaStatus のキーと同じ)
-//キーの打ち間違い(attck, baseAttckPowe など)もファイルに合わせてそのまま使う
-// { グループ, キー, 表示名, 説明, 無いときに代わりに使うキー, +/-の量, 整数か }
-const std::vector<CharaStatusEditor::FieldInfo>& CharaStatusEditor::GetFieldList()
-{
-	static const std::vector<FieldInfo> kFieldList =
-	{
-		// HP
-		{ "HP", "baseHP", U8("基礎HP"),   U8("HPの元の値。敵はレベル(階)が上がると、この値を元に最大HPが増える"),               nullptr,   1.0f, false },
-		{ "HP", "maxHP",  U8("最大HP"),   U8("始めの最大HP。無ければ基礎HPと同じ"),               "baseHP",  1.0f, false },
-		{ "HP", "nowHP",  U8("始めのHP"), U8("出てきたときのHP。無ければ最大HPと同じ"),           "maxHP",   1.0f, false },
-
-		// 攻撃力
-		{ "attck", "baseAttckPowe", U8("基礎攻撃力"), U8("ダメージ計算に使う攻撃力。敵はレベル(階)が上がると、この値を元に増える"),                    nullptr, 1.0f, false },
-		{ "attck", "addAttack",     U8("増加攻撃力"), U8("バフなどで足される攻撃力。ふつうは0"),          nullptr, 1.0f, false },
-
-		// 防御力
-		{ "defense", "baseDefensePowe", U8("基礎防御力"), U8("受けるダメージを減らす防御力"),             nullptr, 1.0f, false },
-		{ "defense", "addDefense",      U8("増加防御力"), U8("バフなどで足される防御力。ふつうは0"),       nullptr, 1.0f, false },
-
-		// 移動速度
-		{ "moveSpeed", "baseSpeed",    U8("基礎速度"),       U8("歩き・ダッシュの元になる速度"),         nullptr, 0.1f, false },
-		{ "moveSpeed", "walkMovePowe", U8("歩きで足す速度"), U8("歩く速度 = 基礎速度 + この値"),         nullptr, 0.1f, false },
-		{ "moveSpeed", "runMovePowe",  U8("走りで足す速度"), U8("走る速度 = 基礎速度 + この値"),         nullptr, 0.1f, false },
-
-		// スタミナ
-		{ "stamina", "staminaMax",             U8("最大スタミナ"),       U8("スタミナの上限"),                              nullptr,      1.0f, false },
-		{ "stamina", "staminaNow",             U8("始めのスタミナ"),     U8("出てきたときのスタミナ。無ければ最大と同じ"),  "staminaMax", 1.0f, false },
-		{ "stamina", "dashStaminaDrainPerSec", U8("ダッシュの消費(秒)"), U8("ダッシュ中に1秒で減る量"),                     nullptr,      0.5f, false },
-		{ "stamina", "staminaRegenPerSec",     U8("自然回復(秒)"),       U8("1秒で回復する量(回復し始めの値)"),             nullptr,      0.1f, false },
-		{ "stamina", "staminaRegenBuff",       U8("回復バフ(秒)"),       U8("バフで足される回復量。ふつうは0"),             nullptr,      0.1f, false },
-
-		// レベル
-		{ "LV", "LV", U8("レベル"), U8("始めのレベル(1以上)"), nullptr, 1.0f, true },
-	};
-	return kFieldList;
-}
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 CharaStatusEditor::CharaStatusEditor(const std::string& _playerSaveFilePath)
 	: m_playerSaveFilePath(_playerSaveFilePath)
@@ -91,6 +58,10 @@ CharaStatusEditor::CharaStatusEditor(const std::string& _playerSaveFilePath)
 
 	Load();
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void CharaStatusEditor::Draw(bool* _open)
 {
@@ -152,6 +123,10 @@ void CharaStatusEditor::Draw(bool* _open)
 	ImGui::End();
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 bool CharaStatusEditor::Load()
 {
 	bool allLoaded = true;
@@ -199,6 +174,10 @@ bool CharaStatusEditor::Save()
 	m_message = std::to_string(savedNum) + U8("体分を保存しました");
 	return true;
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void CharaStatusEditor::DrawChara(CharaFile& _chara)
 {
@@ -377,6 +356,48 @@ void CharaStatusEditor::DrawCompareTable()
 	ImGui::EndTable();
 }
 
+//=============================================
+// 取得
+//=============================================
+
+//編集する値の一覧(CharacterBase::LoadCharaStatus / SaveCharaStatus のキーと同じ)
+//キーの打ち間違い(attck, baseAttckPowe など)もファイルに合わせてそのまま使う
+// { グループ, キー, 表示名, 説明, 無いときに代わりに使うキー, +/-の量, 整数か }
+const std::vector<CharaStatusEditor::FieldInfo>& CharaStatusEditor::GetFieldList()
+{
+	static const std::vector<FieldInfo> kFieldList =
+	{
+		// HP
+		{ "HP", "baseHP", U8("基礎HP"),   U8("HPの元の値。敵はレベル(階)が上がると、この値を元に最大HPが増える"),               nullptr,   1.0f, false },
+		{ "HP", "maxHP",  U8("最大HP"),   U8("始めの最大HP。無ければ基礎HPと同じ"),               "baseHP",  1.0f, false },
+		{ "HP", "nowHP",  U8("始めのHP"), U8("出てきたときのHP。無ければ最大HPと同じ"),           "maxHP",   1.0f, false },
+
+		// 攻撃力
+		{ "attck", "baseAttckPowe", U8("基礎攻撃力"), U8("ダメージ計算に使う攻撃力。敵はレベル(階)が上がると、この値を元に増える"),                    nullptr, 1.0f, false },
+		{ "attck", "addAttack",     U8("増加攻撃力"), U8("バフなどで足される攻撃力。ふつうは0"),          nullptr, 1.0f, false },
+
+		// 防御力
+		{ "defense", "baseDefensePowe", U8("基礎防御力"), U8("受けるダメージを減らす防御力"),             nullptr, 1.0f, false },
+		{ "defense", "addDefense",      U8("増加防御力"), U8("バフなどで足される防御力。ふつうは0"),       nullptr, 1.0f, false },
+
+		// 移動速度
+		{ "moveSpeed", "baseSpeed",    U8("基礎速度"),       U8("歩き・ダッシュの元になる速度"),         nullptr, 0.1f, false },
+		{ "moveSpeed", "walkMovePowe", U8("歩きで足す速度"), U8("歩く速度 = 基礎速度 + この値"),         nullptr, 0.1f, false },
+		{ "moveSpeed", "runMovePowe",  U8("走りで足す速度"), U8("走る速度 = 基礎速度 + この値"),         nullptr, 0.1f, false },
+
+		// スタミナ
+		{ "stamina", "staminaMax",             U8("最大スタミナ"),       U8("スタミナの上限"),                              nullptr,      1.0f, false },
+		{ "stamina", "staminaNow",             U8("始めのスタミナ"),     U8("出てきたときのスタミナ。無ければ最大と同じ"),  "staminaMax", 1.0f, false },
+		{ "stamina", "dashStaminaDrainPerSec", U8("ダッシュの消費(秒)"), U8("ダッシュ中に1秒で減る量"),                     nullptr,      0.5f, false },
+		{ "stamina", "staminaRegenPerSec",     U8("自然回復(秒)"),       U8("1秒で回復する量(回復し始めの値)"),             nullptr,      0.1f, false },
+		{ "stamina", "staminaRegenBuff",       U8("回復バフ(秒)"),       U8("バフで足される回復量。ふつうは0"),             nullptr,      0.1f, false },
+
+		// レベル
+		{ "LV", "LV", U8("レベル"), U8("始めのレベル(1以上)"), nullptr, 1.0f, true },
+	};
+	return kFieldList;
+}
+
 float CharaStatusEditor::GetValue(const nlohmann::json& _data, const FieldInfo& _field) const
 {
 	// ファイルに書いてあればその値
@@ -420,6 +441,10 @@ bool CharaStatusEditor::HasError() const
 	return false;
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void CharaStatusEditor::SetValue(nlohmann::json& _data, const FieldInfo& _field, float _value)
 {
 	if (_field.m_isInt)
@@ -431,6 +456,10 @@ void CharaStatusEditor::SetValue(nlohmann::json& _data, const FieldInfo& _field,
 		_data[_field.m_group][_field.m_key] = _value;
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 bool CharaStatusEditor::LoadChara(CharaFile& _chara)
 {

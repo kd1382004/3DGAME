@@ -1,22 +1,31 @@
-﻿#include "WeponInventoryUI.h"
-#include"../../../../Info/VOL/VOLInfo.h"
-#include"../../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "WeponInventoryUI.h"												//インベントリ画面(武器強化タブ)
 
-#include"../../../../Info/KeyInfo/KeyInfo.h"
-#include"../../../../Scene/GameScene/GameScene.h"
-#include"../../../../Info/MouseInfo/MouseInfo.h"
+//---- シーン ----
+#include"../../../../Scene/SceneManager.h"									//シーンの管理
+#include"../../../../Scene/GameScene/GameScene.h"							//ゲームシーン
 
-#include"../../../Potions/PotionsType.h"
-#include"../../../Potions/PotionUseController.h"
+//---- プレイヤー ----
+#include"../../../Character/Player/PlayerBase.h"							//プレイヤー
+#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"		//プレイヤーの所持品
 
-#include"../../../Character/Player/PlayerBase.h"
-#include"../../../Character/Player/PlayerInventory/PlayerInventory.h"
+//---- 武器 ----
+#include"../../../Weapon/WeaponBase.h"										//武器の基底クラス
 
-#include"../../../Potions/PotionTexInfo/PotionTexInfo.h"
+//---- ポーション ----
+#include"../../../Potions/PotionsType.h"									//ポーションの種類
+#include"../../../Potions/PotionUseController.h"							//ポーションの使用処理
+#include"../../../Potions/PotionTexInfo/PotionTexInfo.h"					//アイテムの名前・画像情報
 
-#include"../../../../Info/NumDraw/NumDraw.h"
+//---- 便利機能 ----
+#include"../../../../Info/VOL/VOLInfo.h"									//音量設定
+#include"../../../../Info/KeyInfo/KeyInfo.h"								//キー入力
+#include"../../../../Info/MouseInfo/MouseInfo.h"							//マウス入力
+#include"../../../../Info/NumDraw/NumDraw.h"								//数字の画像描画
 
-#include"../../../Weapon/WeaponBase.h"
+//=============================================
+// 基本の処理
+//=============================================
 
 void WeponInventoryUI::Init()
 {
@@ -88,9 +97,9 @@ void WeponInventoryUI::Init()
 
 	float rad = DirectX::XMConvertToRadians(90.0f); // 0°,90°,180°,270°
 
-	m_selectWeaponsStrengtheningIconSiz = { 64,64 };
+	m_selectWeaponsStrengtheningIconSize = { 64,64 };
 
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	for (int i = 0; i < WeaponsStrengtheningSize; i++)
 	{
 		Math::Vector2 pos = weaponsStrengtheningBasePos;
 
@@ -137,7 +146,7 @@ void WeponInventoryUI::Init()
 			break;
 		case WeponInventoryUI::WeaponsStrengthening_Icon:
 			break;
-		case WeponInventoryUI::WeaponsStrengtheningSiz:
+		case WeponInventoryUI::WeaponsStrengtheningSize:
 			break;
 		default:
 			break;
@@ -145,7 +154,7 @@ void WeponInventoryUI::Init()
 
 		// 前提ノードはマスタから読む（WeaponsStrengtheningInfoInit）
 		m_weaponsStrengtheningInfo[i].m_iconPos = pos;
-		m_weaponsStrengtheningInfo[i].m_iconSiz = m_selectWeaponsStrengtheningIconSiz;
+		m_weaponsStrengtheningInfo[i].m_iconSize = m_selectWeaponsStrengtheningIconSize;
 		m_weaponsStrengtheningInfo[i].m_nextLvNum = 0;
 
 		if (!m_weaponsStrengtheningInfo[i].m_spIconTex)
@@ -201,7 +210,7 @@ void WeponInventoryUI::Update()
 	std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
 	if (spPlayer && spWeapon)
 	{
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+		for (int i = 0; i < WeaponsStrengtheningSize; i++)
 		{
 			int weaponsStrengtheningItemID = m_weaponsStrengtheningInfo[i].m_strengtheningItemID;
 			int num = spPlayer->GetPlayerInventory()->GetWeaponsStrengtheningInventoryNum(weaponsStrengtheningItemID);
@@ -219,7 +228,7 @@ void WeponInventoryUI::Update()
 
 	const float dt = DeltaTime::Instance().GetRealDeltaTime();
 	const float k = std::min(1.0f, dt * m_lineGlowFadeSpeed);
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	for (int i = 0; i < WeaponsStrengtheningSize; i++)
 	{
 		WeaponsStrengtheningInfo& info = m_weaponsStrengtheningInfo[i];
 		float target = (info.m_lv > 0) ? 1.0f : 0.0f;
@@ -230,7 +239,7 @@ void WeponInventoryUI::Update()
 void WeponInventoryUI::DrawSprite()
 {
 
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	for (int i = 0; i < WeaponsStrengtheningSize; i++)
 	{
 		//前提ノードから伸ばす
 
@@ -261,15 +270,15 @@ void WeponInventoryUI::DrawSprite()
 
 
 		Math::Vector2 pivot = { 0,0.5 };
-		Math::Vector2 siz = { 0,20 };
-		siz.x = sqrtf(dx * dx + dy * dy);
+		Math::Vector2 size = { 0,20 };
+		size.x = sqrtf(dx * dx + dy * dy);
 		Math::Color col = kWhiteColor;
 		float defaultScale = 0.8;
 		float scale = 1;
 
 		int preconditionNodeIDIndex = m_weaponsStrengtheningInfo[i].m_preconditionNodeIndex;
 
-		if (preconditionNodeIDIndex < 0 || preconditionNodeIDIndex >= WeaponsStrengtheningSiz)
+		if (preconditionNodeIDIndex < 0 || preconditionNodeIDIndex >= WeaponsStrengtheningSize)
 		{
 			break;
 		}
@@ -284,7 +293,7 @@ void WeponInventoryUI::DrawSprite()
 		if (m_spLineTex)
 		{
 			// 通常の線
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spLineTex, x1, y1, siz.x, siz.y * defaultScale, nullptr, &col, pivot, deg);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spLineTex, x1, y1, size.x, size.y * defaultScale, nullptr, &col, pivot, deg);
 		}
 
 
@@ -293,12 +302,12 @@ void WeponInventoryUI::DrawSprite()
 		if (glow > 0.001f && m_spLineGlowTex)
 		{
 			Math::Color glowCol = { 1.0f, 0.8f, 0.4f, 0.6f * glow };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spLineGlowTex, x1, y1, siz.x * glow, siz.y * 3.0f * (0.7f + 0.3f * glow), nullptr, &glowCol, pivot, deg);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spLineGlowTex, x1, y1, size.x * glow, size.y * 3.0f * (0.7f + 0.3f * glow), nullptr, &glowCol, pivot, deg);
 		}
 		KdShaderManager::Instance().ChangeBlendState(KdBlendState::Alpha);
 	}
 
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	for (int i = 0; i < WeaponsStrengtheningSize; i++)
 	{
 		if (!m_weaponsStrengtheningInfo[i].m_spIconTex) { continue; }
 		bool preconditionNodeIconFlg = false;
@@ -333,8 +342,8 @@ void WeponInventoryUI::DrawSprite()
 		{
 			t = sinf(DirectX::XM_PI * (1.0f - m_spContext->m_useEffectTimer / m_spContext->m_useEffectTime));
 		}
-		float w = m_weaponsStrengtheningInfo[i].m_iconSiz.x;
-		float h = m_weaponsStrengtheningInfo[i].m_iconSiz.y;
+		float w = m_weaponsStrengtheningInfo[i].m_iconSize.x;
+		float h = m_weaponsStrengtheningInfo[i].m_iconSize.y;
 		bool isUseEffect = (t > 0.0f && m_weaponsStrengtheningInfo[i].m_myNodeID == m_spContext->m_useEffectItemID);
 		if (isUseEffect)
 		{
@@ -403,7 +412,7 @@ void WeponInventoryUI::DrawSprite()
 		//前提ノードが解放されてなければ描画
 		if (m_spPreconditionNodeIconTex && preconditionNodeIconFlg)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPreconditionNodeIconTex, m_weaponsStrengtheningInfo[i].m_iconPos.x, m_weaponsStrengtheningInfo[i].m_iconPos.y, m_weaponsStrengtheningInfo[i].m_iconSiz.x * choseSizUp, m_weaponsStrengtheningInfo[i].m_iconSiz.y * choseSizUp, nullptr, &iconCol);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spPreconditionNodeIconTex, m_weaponsStrengtheningInfo[i].m_iconPos.x, m_weaponsStrengtheningInfo[i].m_iconPos.y, m_weaponsStrengtheningInfo[i].m_iconSize.x * choseSizUp, m_weaponsStrengtheningInfo[i].m_iconSize.y * choseSizUp, nullptr, &iconCol);
 		}
 
 
@@ -441,7 +450,7 @@ void WeponInventoryUI::DrawSprite()
 							}
 						}
 						// アイコンの半分の幅に収める(「/」の左側)
-						NumDraw::GetInstance().Draw(m_weaponsStrengtheningIconInfo.m_num, Aligned::RAligned, pos, color, numScale, false, -1, { m_selectWeaponsStrengtheningIconSiz.x / 2.0f, 0.0f });
+						NumDraw::GetInstance().Draw(m_weaponsStrengtheningIconInfo.m_num, Aligned::RAligned, pos, color, numScale, false, -1, { m_selectWeaponsStrengtheningIconSize.x / 2.0f, 0.0f });
 					}
 					{
 						//「/」
@@ -457,7 +466,7 @@ void WeponInventoryUI::DrawSprite()
 						pos.x += numGapX;
 						pos.y -= numGapY;
 						// アイコンの半分の幅に収める(「/」の右側)
-						NumDraw::GetInstance().Draw(m_selectWeaponsStrengtheningNextLVNum, Aligned::LAligned, pos, kWhiteColor, numScale, false, -1, { m_selectWeaponsStrengtheningIconSiz.x / 2.0f, 0.0f });
+						NumDraw::GetInstance().Draw(m_selectWeaponsStrengtheningNextLVNum, Aligned::LAligned, pos, kWhiteColor, numScale, false, -1, { m_selectWeaponsStrengtheningIconSize.x / 2.0f, 0.0f });
 					}
 				}
 			}
@@ -501,10 +510,14 @@ void WeponInventoryUI::DrawSprite()
 
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void WeponInventoryUI::OnSelect()
 {
 	// UI と武器の強化 enum は同じ並び（末尾が UI では Icon、武器では Body）であることが前提
-	static_assert(static_cast<int>(WeaponsStrengtheningSiz) == static_cast<int>(::WeaponsStrengtheningSiz),
+	static_assert(static_cast<int>(WeaponsStrengtheningSize) == static_cast<int>(::WeaponsStrengtheningSize),
 		"PlayerInventoryUI と WeaponBase の強化 enum の数が違います");
 
 	std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
@@ -515,7 +528,7 @@ void WeponInventoryUI::OnSelect()
 	if (!spTexInfo) { return; }
 
 	// 配列の番号 = 種類。武器側も同じ並びなので、番号どおりにコピーする
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	for (int i = 0; i < WeaponsStrengtheningSize; i++)
 	{
 		WeaponsStrengtheningInfo& ui = m_weaponsStrengtheningInfo[i];
 		const ::WeaponsStrengtheningInfo& src = spWeapon->GetWeaponsStrengtheningInfo(i);
@@ -592,7 +605,7 @@ void WeponInventoryUI::WeaponsStrengtheningTexInfo()
 	if (spWeapon)
 	{
 		// 全ノード分、武器側の最新の状態を取り直す
-		for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+		for (int i = 0; i < WeaponsStrengtheningSize; i++)
 		{
 			WeaponsStrengtheningInfo& weapon = m_weaponsStrengtheningInfo[i];
 			weapon.m_lvMaxFlg = spWeapon->GetWeaponsStrengtheningLVMaxFlg(i);
@@ -607,14 +620,14 @@ void WeponInventoryUI::WeaponsStrengtheningIconHit()
 {
 	POINT mousePos = MouseInfo::Instance().m_windowPos;
 
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	for (int i = 0; i < WeaponsStrengtheningSize; i++)
 	{
 		WeaponsStrengtheningInfo& weapon = m_weaponsStrengtheningInfo[i];
 
-		float left = weapon.m_iconPos.x - m_selectWeaponsStrengtheningIconSiz.x / 2;
-		float right = weapon.m_iconPos.x + m_selectWeaponsStrengtheningIconSiz.x / 2;
-		float top = weapon.m_iconPos.y + m_selectWeaponsStrengtheningIconSiz.y / 2;
-		float bot = weapon.m_iconPos.y - m_selectWeaponsStrengtheningIconSiz.y / 2;
+		float left = weapon.m_iconPos.x - m_selectWeaponsStrengtheningIconSize.x / 2;
+		float right = weapon.m_iconPos.x + m_selectWeaponsStrengtheningIconSize.x / 2;
+		float top = weapon.m_iconPos.y + m_selectWeaponsStrengtheningIconSize.y / 2;
+		float bot = weapon.m_iconPos.y - m_selectWeaponsStrengtheningIconSize.y / 2;
 
 
 		if (mousePos.x >= left && mousePos.x <= right &&
@@ -736,7 +749,7 @@ void WeponInventoryUI::WeaponsStrengtheningButtonHit()
 
 void WeponInventoryUI::WeaponChooseFlg(int _index)
 {
-	for (int i = 0; i < WeaponsStrengtheningSiz; i++)
+	for (int i = 0; i < WeaponsStrengtheningSize; i++)
 	{
 		m_weaponsStrengtheningInfo[i].m_chooseFlg = (i == _index);
 	}

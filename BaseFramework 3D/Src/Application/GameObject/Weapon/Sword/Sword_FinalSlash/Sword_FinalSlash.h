@@ -25,6 +25,7 @@ public:
 	void Update()override;
 	//エフェクトの描画
 	void DrawEffect()override;
+	//光る部分の描画
 	void DrawBright()override;
 
 	// 出すときに Sword から呼ぶ

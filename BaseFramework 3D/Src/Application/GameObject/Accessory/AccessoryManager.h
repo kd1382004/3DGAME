@@ -2,6 +2,7 @@
 
 class AccessoryBase;
 
+//アクセサリーの管理
 class AccessoryManager:public KdGameObject
 {
 public:

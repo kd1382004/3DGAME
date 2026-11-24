@@ -1,26 +1,44 @@
-﻿#include "TitleScene.h"
-#include "../SceneManager.h"
-#include"../../Editor/TitleSceneEditor/TitleSceneEditor.h"
+﻿//---- 自分のヘッダー ----
+#include "TitleScene.h"												//タイトルシーン
 
-#include"../../GameObject/Camera/TPSCamera/TPSCamera.h"
+//---- シーン ----
+#include "../SceneManager.h"										//シーンの管理
 
-#include"../../Info/DebugInfo/DebugInfo.h"
+//---- カメラ ----
+#include"../../GameObject/Camera/TPSCamera/TPSCamera.h"				//三人称カメラ
 
-#include"../../GameObject/Button/GameButton/GameButton.h"
-#include"../../GameObject/Button/PrepareButton/PrepareButton.h"
+//---- キャラクター ----
+#include"../../GameObject/TitelMove/TitelMove.h"					//タイトル画面で歩き回るキャラ
 
-#include"../../Info/MouseInfo/MouseInfo.h"
+//---- 敵 ----
+#include"../../GameObject/Character/Enemy/EnemyManager.h"			//敵の管理
+#include"../../GameObject/Character/Enemy/EnemyBase.h"				//敵の基底クラス
 
-#include"../../GameObject/Terrains/Map/MapManager.h"
-#include"../../GameObject/Terrains/MapObj/MapObjManager.h"
-#include"../../GameObject/TitelMove/TitelMove.h"
-#include"../../GameObject/Character/Enemy/EnemyManager.h"
-#include"../../GameObject/Character/Enemy/EnemyBase.h"
+//---- マップ ----
+#include"../../GameObject/Terrains/Map/MapManager.h"				//マップの管理・経路探索
 
+//---- マップオブジェクト ----
+#include"../../GameObject/Terrains/MapObj/MapObjManager.h"			//マップオブジェクトの管理
 
-#include"../../GameObject/UI/VOLUI/VOLUI.h"
-#include"../../GameObject/UI/UIManager.h"
-#include"../../GameObject/UI/DrawTex/DrawTex.h"
+//---- UI ----
+#include"../../GameObject/UI/VOLUI/VOLUI.h"							//音量設定画面
+#include"../../GameObject/UI/UIManager.h"							//UIの管理
+#include"../../GameObject/UI/DrawTex/DrawTex.h"						//画像を1枚描くUI
+
+//---- ボタン ----
+#include"../../GameObject/Button/GameButton/GameButton.h"			//ゲームシーンへ進むボタン
+#include"../../GameObject/Button/PrepareButton/PrepareButton.h"		//準備シーンへ進むボタン
+
+//---- エディター ----
+#include"../../Editor/TitleSceneEditor/TitleSceneEditor.h"			//タイトルシーンの配置編集エディター
+
+//---- 便利機能 ----
+#include"../../Info/DebugInfo/DebugInfo.h"							//デバッグ用の状態
+#include"../../Info/MouseInfo/MouseInfo.h"							//マウス入力
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 TitleScene::~TitleScene()
 {
@@ -29,6 +47,10 @@ TitleScene::~TitleScene()
 		m_spTitleBGM->Stop();
 	}
 }
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void TitleScene::ImGUI()
 {
@@ -85,7 +107,7 @@ void TitleScene::Init()
 		});
 
 
-	SetObjeList();
+	SetObjectList();
 
 	/////////////////////////////////////////
 	//カメラ
@@ -165,8 +187,8 @@ void TitleScene::Init()
 
 
 	//
-	Math::Vector2 siz = { 50,50 };
-	m_spMapManager->GenerateMap(siz, 20, MapType_Grassland);
+	Math::Vector2 size = { 50,50 };
+	m_spMapManager->GenerateMap(size, 20, MapType_Grassland);
 
 	m_spCamera->SetPos(m_spMapManager->GetPlayerSpawnPos());
 	m_spTitleMove->SetPos(m_spMapManager->GetPlayerSpawnPos());
@@ -187,7 +209,11 @@ void TitleScene::Init()
 	}
 }
 
-void TitleScene::SetObjeList()
+//=============================================
+// 設定
+//=============================================
+
+void TitleScene::SetObjectList()
 {
 	//nlohmann::json root;
 
@@ -215,12 +241,16 @@ void TitleScene::SetObjeList()
 		if (obj)
 		{
 			obj->SetFilePass(dataPath);
-			obj->DataLodo();
+			obj->DataLoad();
 			m_objList.push_back(obj);
 		}
 
 	}
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void TitleScene::Event()
 {

@@ -1,6 +1,8 @@
-﻿#include "CameraBase.h"
+﻿//---- 自分のヘッダー ----
+#include "CameraBase.h"							//カメラの基底クラス
 
-#include"../../Info/MouseInfo/MouseInfo.h"
+//---- 便利機能 ----
+#include"../../Info/MouseInfo/MouseInfo.h"		//マウス入力
 
 void CameraBase::Init()
 {

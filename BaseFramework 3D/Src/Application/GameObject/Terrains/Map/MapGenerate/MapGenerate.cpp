@@ -1,14 +1,24 @@
-﻿#include "MapGenerate.h"
-#include<array>
-#include<queue>
-#include<set>
-#include"../FloorBase/FloorBase.h"
-#include"../WallBase/WallBase.h"
-#include"../Stairs/StairsBase.h"
-#include"../Slope/Slope.h"
-//
-#include"../../MapObj/MapObjManager.h"
-#include"../../MapObj/Torch/Torch.h"
+﻿//---- 自分のヘッダー ----
+#include "MapGenerate.h"					//ダンジョンのマップ生成
+
+//---- マップ ----
+#include"../FloorBase/FloorBase.h"			//床
+#include"../WallBase/WallBase.h"			//壁
+#include"../Stairs/StairsBase.h"			//階段
+#include"../Slope/Slope.h"					//坂
+
+//---- マップオブジェクト ----
+#include"../../MapObj/MapObjManager.h"		//マップオブジェクトの管理
+#include"../../MapObj/Torch/Torch.h"		//松明
+
+//---- 標準ライブラリ ----
+#include<array>								//固定長配列(std::array)
+#include<queue>								//キュー(std::queue)
+#include<set>								//集合(std::set)
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 //コンストラクタ
 //部屋サイズの設定ファイルと、床・坂・壁・階段のモデルを読み込む
@@ -16,7 +26,7 @@ MapGenerate::MapGenerate()
 {
 	m_roomSizPath = "Asset/Data/ObjeData/Terrains/Map/MapSiz.json";
 
-	LoadRoomSiz(m_roomSizPath);
+	LoadRoomSize(m_roomSizPath);
 
 
 	if (!m_spFloorModel)
@@ -44,6 +54,10 @@ MapGenerate::MapGenerate()
 	}
 }
 
+//=============================================
+// マップ生成
+//=============================================
+
 //===================================================
 // マップ生成
 //===================================================
@@ -57,7 +71,7 @@ MapGenerate::MapGenerate()
 // 5. 高さを調整して坂を置き、異常があれば作り直す
 // 6. スポーン部屋・階段部屋を決めて、床・壁・天井を作る
 //////////////////////////////////////////////////////
-std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int _roomNum, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
+std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSize, int _roomNum, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
 	m_chunks.clear();
 
@@ -82,16 +96,16 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 
 	//マップのサイズを作る
 	//TileType::Noneで初期化(何もない)
-	std::vector<std::vector<FloorInfo>> map(static_cast<size_t>(_mapSiz.y), std::vector<FloorInfo>(static_cast<size_t>(_mapSiz.x)));
-	std::vector<std::vector<int>> roomIDVector(static_cast<size_t>(_mapSiz.y), std::vector<int>(static_cast<size_t>(_mapSiz.x), -1));
+	std::vector<std::vector<FloorInfo>> map(static_cast<size_t>(_mapSize.y), std::vector<FloorInfo>(static_cast<size_t>(_mapSize.x)));
+	std::vector<std::vector<int>> roomIDVector(static_cast<size_t>(_mapSize.y), std::vector<int>(static_cast<size_t>(_mapSize.x), -1));
 
 	//戻り値用のデータ
-	std::vector<std::vector<bool>> returnMapDate(static_cast<size_t>(_mapSiz.y), std::vector<bool>(static_cast<size_t>(_mapSiz.x), false));
+	std::vector<std::vector<bool>> returnMapDate(static_cast<size_t>(_mapSize.y), std::vector<bool>(static_cast<size_t>(_mapSize.x), false));
 
 
 	//チャンク対応
-	int chunkW = std::max(1, static_cast<int>(std::ceil(_mapSiz.x / static_cast<float>(kChunkSize))));
-	int chunkH = std::max(1, static_cast<int>(std::ceil(_mapSiz.y / static_cast<float>(kChunkSize))));
+	int chunkW = std::max(1, static_cast<int>(std::ceil(_mapSize.x / static_cast<float>(kChunkSize))));
+	int chunkH = std::max(1, static_cast<int>(std::ceil(_mapSize.y / static_cast<float>(kChunkSize))));
 
 	m_chunks.resize(chunkH);
 	for (auto& row : m_chunks)
@@ -111,12 +125,12 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	if (useArea)
 	{
 		//区画分割による生成
-		PlaceRoomsByArea(_mapSiz, _roomNum, map, roomIDVector, roomID);
+		PlaceRoomsByArea(_mapSize, _roomNum, map, roomIDVector, roomID);
 	}
 	else
 	{
 		//単純なランダム生成
-		PlaceRoomsRandom(_mapSiz, _roomNum, map, roomIDVector, roomID);
+		PlaceRoomsRandom(_mapSize, _roomNum, map, roomIDVector, roomID);
 	}
 
 	//部屋IDごとの部屋の種類(添え字は部屋ID。交差点は含まない)
@@ -394,7 +408,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 	if (!MapCheck(map))
 	{
 		// 異常がある場合、再度生成
-		return Generate(_mapSiz, _roomNum, _tileSiz, _type, _ret, _playerSpawnPos, _basePos);
+		return Generate(_mapSize, _roomNum, _tileSiz, _type, _ret, _playerSpawnPos, _basePos);
 	}
 	//異常がないから続く
 
@@ -868,27 +882,27 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSiz, int 
 }
 
 //ボス部屋のマップ生成(マップ全体が1つの大きな部屋)
-std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
+std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSize, float _tileSiz, int _type, std::list<std::shared_ptr<MapBase>>* _ret, Math::Vector3* _playerSpawnPos, Math::Vector3* _basePos)
 {
 	m_chunks.clear();
 	m_roomInfo.clear();
 	m_roomInfoList.clear();
 	m_roomInfoList.resize(1);
 	m_roomTorchList.clear();	// ボス部屋の壁はマスごとのチャンクなので、松明もそのまま
-	if ((int)_mapSiz.x % 2 == 0)
+	if ((int)_mapSize.x % 2 == 0)
 	{
-		_mapSiz.x++;
+		_mapSize.x++;
 	}
 
-	if ((int)_mapSiz.y % 2 == 0)
+	if ((int)_mapSize.y % 2 == 0)
 	{
-		_mapSiz.y++;
+		_mapSize.y++;
 	}
 
 
 	//チャンク対応
-	int chunkW = std::max(1, static_cast<int>(std::ceil(_mapSiz.x / static_cast<float>(kChunkSize))));
-	int chunkH = std::max(1, static_cast<int>(std::ceil(_mapSiz.y / static_cast<float>(kChunkSize))));
+	int chunkW = std::max(1, static_cast<int>(std::ceil(_mapSize.x / static_cast<float>(kChunkSize))));
+	int chunkH = std::max(1, static_cast<int>(std::ceil(_mapSize.y / static_cast<float>(kChunkSize))));
 
 	m_chunks.resize(chunkH);
 	for (auto& row : m_chunks)
@@ -903,13 +917,13 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	defaultTile.m_heightLevel = 0;
 
 	std::vector<std::vector<FloorInfo>> map(
-		static_cast<size_t>(_mapSiz.y),
-		std::vector<FloorInfo>(static_cast<size_t>(_mapSiz.x), defaultTile)
+		static_cast<size_t>(_mapSize.y),
+		std::vector<FloorInfo>(static_cast<size_t>(_mapSize.x), defaultTile)
 	);
-	std::vector<std::vector<bool>> mapDate(static_cast<size_t>(_mapSiz.y), std::vector<bool>(static_cast<size_t>(_mapSiz.x), true));
+	std::vector<std::vector<bool>> mapDate(static_cast<size_t>(_mapSize.y), std::vector<bool>(static_cast<size_t>(_mapSize.x), true));
 
-	int centerX = _mapSiz.x / 2;
-	int centerY = _mapSiz.y / 2;
+	int centerX = _mapSize.x / 2;
+	int centerY = _mapSize.y / 2;
 
 
 
@@ -1054,11 +1068,14 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSiz, 
 	return mapDate;
 }
 
+//=============================================
+// 設定ファイル
+//=============================================
+
 //===================================================
 // 設定ファイル
 //===================================================
-
-void MapGenerate::LoadRoomSiz(std::string _filePath)
+void MapGenerate::LoadRoomSize(std::string _filePath)
 {
 	std::ifstream ifs(_filePath);
 	if (!ifs.is_open())
@@ -1081,7 +1098,7 @@ void MapGenerate::LoadRoomSiz(std::string _filePath)
 
 }
 
-void MapGenerate::SaveRoomSiz(std::string _filePath)
+void MapGenerate::SaveRoomSize(std::string _filePath)
 {
 	nlohmann::json data;
 	data["room"]["sizeMin"] = m_roomMin;
@@ -1092,17 +1109,20 @@ void MapGenerate::SaveRoomSiz(std::string _filePath)
 	ofs << data.dump(4);
 }
 
+//=============================================
+// 部屋の置き方(どちらか1つを Generate から呼ぶ)
+//=============================================
+
 //===================================================
 // 区画分割(部屋と交差点の配置)
 //===================================================
-
-void MapGenerate::PlaceRoomsByArea(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID)
+void MapGenerate::PlaceRoomsByArea(const Math::Vector2& _mapSize, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID)
 {
 	//区画の数を決める(区画が足りないときは _roomNum が減る)
-	DecideAreaDiv(_mapSiz, _roomNum);
+	DecideAreaDiv(_mapSize, _roomNum);
 
 	//マップを区画に分ける
-	DivideAreas(_mapSiz);
+	DivideAreas(_mapSize);
 
 	//どの区画を交差点にするか決める
 	DecideDummyAreas(_roomNum);
@@ -1126,10 +1146,10 @@ void MapGenerate::PlaceRoomsByArea(const Math::Vector2& _mapSiz, int& _roomNum, 
 	}
 }
 
-void MapGenerate::PlaceRoomsRandom(const Math::Vector2& _mapSiz, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID)
+void MapGenerate::PlaceRoomsRandom(const Math::Vector2& _mapSize, int& _roomNum, std::vector<std::vector<FloorInfo>>& _map, std::vector<std::vector<int>>& _roomIDVector, int& _roomID)
 {
-	int mapSizX = static_cast<int>(_mapSiz.x);
-	int mapSizY = static_cast<int>(_mapSiz.y);
+	int mapSizX = static_cast<int>(_mapSize.x);
+	int mapSizY = static_cast<int>(_mapSize.y);
 
 	// 1部屋につき最大50回試行、できなかったらスキップ
 	const int maxTry = 50;
@@ -1239,9 +1259,13 @@ void MapGenerate::PlaceRoomsRandom(const Math::Vector2& _mapSiz, int& _roomNum, 
 	}
 }
 
+//=============================================
+// 区画分割(PlaceRoomsByArea の中で使う)
+//=============================================
+
 //区画の数を決めて m_areaDivX / m_areaDivY に入れる
 //区画が正方形に近く、余る区画(交差点)が少ない組み合わせを選ぶ
-void MapGenerate::DecideAreaDiv(const Math::Vector2& _mapSiz, int& _roomNum)
+void MapGenerate::DecideAreaDiv(const Math::Vector2& _mapSize, int& _roomNum)
 {
 	//部屋の最大サイズを奇数に
 	int roomMaxOdd = m_roomMax;
@@ -1256,8 +1280,8 @@ void MapGenerate::DecideAreaDiv(const Math::Vector2& _mapSiz, int& _roomNum)
 
 
 	//置ける区画数の上限(縦横)
-	int mapDivX = std::max(1, static_cast<int>(_mapSiz.x) / minAreaSize);
-	int mapDivY = std::max(1, static_cast<int>(_mapSiz.y) / minAreaSize);
+	int mapDivX = std::max(1, static_cast<int>(_mapSize.x) / minAreaSize);
+	int mapDivY = std::max(1, static_cast<int>(_mapSize.y) / minAreaSize);
 
 	//一番点数の小さい組み合わせ(点数が小さいほど良い)
 	int bestDivX = 0;
@@ -1274,8 +1298,8 @@ void MapGenerate::DecideAreaDiv(const Math::Vector2& _mapSiz, int& _roomNum)
 			//部屋が全部入る組み合わせだけ調べる
 			if (areaNum >= _roomNum)
 			{
-				float areaW = _mapSiz.x / divX;
-				float areaH = _mapSiz.y / divY;
+				float areaW = _mapSize.x / divX;
+				float areaH = _mapSize.y / divY;
 
 				//点数 = 区画の縦横比のずれ(正方形なら0) + 余る区画の数 × 重み
 				float score = std::abs(std::log(areaW / areaH)) + kAreaAspectWeight * (areaNum - _roomNum);
@@ -1304,11 +1328,11 @@ void MapGenerate::DecideAreaDiv(const Math::Vector2& _mapSiz, int& _roomNum)
 }
 
 //マップを区画に分けて m_areaGrid を作る
-void MapGenerate::DivideAreas(const Math::Vector2& _mapSiz)
+void MapGenerate::DivideAreas(const Math::Vector2& _mapSize)
 {
 	//区画1つの基本の大きさ(割り切れない余りは右端の列・下端の行に足す)
-	int baseW = std::max(1, static_cast<int>(_mapSiz.x) / m_areaDivX);
-	int baseH = std::max(1, static_cast<int>(_mapSiz.y) / m_areaDivY);
+	int baseW = std::max(1, static_cast<int>(_mapSize.x) / m_areaDivX);
+	int baseH = std::max(1, static_cast<int>(_mapSize.y) / m_areaDivY);
 
 
 	//区画の一覧を [行][列] の大きさにする
@@ -1336,7 +1360,7 @@ void MapGenerate::DivideAreas(const Math::Vector2& _mapSiz)
 			//右端の列はマップの右端まで(余りを含める)
 			if (x == m_areaDivX - 1)
 			{
-				area.m_right = static_cast<int>(_mapSiz.x) - 1;
+				area.m_right = static_cast<int>(_mapSize.x) - 1;
 			}
 			else
 			{
@@ -1346,7 +1370,7 @@ void MapGenerate::DivideAreas(const Math::Vector2& _mapSiz)
 			//下端の行はマップの下端まで(余りを含める)
 			if (y == m_areaDivY - 1)
 			{
-				area.m_bottom = static_cast<int>(_mapSiz.y) - 1;
+				area.m_bottom = static_cast<int>(_mapSize.y) - 1;
 			}
 			else
 			{
@@ -1526,6 +1550,10 @@ void MapGenerate::PlaceDummyInArea(const AreaInfo& _area, std::vector<std::vecto
 	// 本物の部屋の m_roomInfo には入れない
 	m_dummyNodeList.push_back(info);
 }
+
+//=============================================
+// つなぐ組(最小全域木＋小さな輪)
+//=============================================
 
 //===================================================
 // つなぐ組(最小全域木＋小さな輪)
@@ -1744,6 +1772,10 @@ void MapGenerate::UnionSet(std::vector<int>& _parent, int _a, int _b)
 	_parent[rootB] = rootA;
 }
 
+//=============================================
+// 通路を掘る
+//=============================================
+
 //===================================================
 // 通路を掘る
 //===================================================
@@ -1837,6 +1869,10 @@ bool MapGenerate::IsReachedRoom(const Math::Vector2& _pos, const RoomInfo& _room
 
 	return false;
 }
+
+//=============================================
+// くねくね通路
+//=============================================
 
 //===================================================
 // くねくね通路
@@ -2213,6 +2249,10 @@ void MapGenerate::AppendLine(std::vector<Math::Vector2>& _path2D, int _x, int _y
 	}
 }
 
+//=============================================
+// T字路
+//=============================================
+
 //===================================================
 // T字路
 //===================================================
@@ -2263,10 +2303,13 @@ bool MapGenerate::IsNearRoom(int _x, int _y, int _dist) const
 	return false;
 }
 
+//=============================================
+// 通路の仕上げ
+//=============================================
+
 //===================================================
 // 通路の仕上げ
 //===================================================
-
 void MapGenerate::ConnectAllRegions(std::vector<std::vector<FloorInfo>>& _map)
 {
 	const int mapH = static_cast<int>(_map.size());
@@ -2482,10 +2525,181 @@ bool MapGenerate::CanRemoveCorridorTile(int _x, int _y, std::vector<std::vector<
 	return allConnected;
 }
 
+//=============================================
+// 高さ・坂
+//=============================================
+
+//===================================================
+// 通路の高さ(段差をまっすぐな所にだけ置く)
+//===================================================
+
+//パスの中で、段差(坂)を置けるマスの番号を集める(前後と一直線に並んでいる所だけ)
+std::vector<int> MapGenerate::FindSlopeCandidates(const std::vector<Math::Vector2>& _path2D) const
+{
+	std::vector<int> candidates;
+
+	//両端(部屋の出入口のマス)は除くので、1 〜 size-2 を見る
+	for (int i = 1; i + 1 < static_cast<int>(_path2D.size()); i++)
+	{
+		const auto& prev = _path2D[i - 1];
+		const auto& cur = _path2D[i];
+		const auto& next = _path2D[i + 1];
+
+		//横一直線か、縦一直線なら置ける
+		bool sameY = (prev.y == cur.y && cur.y == next.y);
+		bool sameX = (prev.x == cur.x && cur.x == next.x);
+
+		if (sameX || sameY)
+		{
+			candidates.push_back(i);
+		}
+	}
+
+	return candidates;
+}
+
+//段差を置く場所を、kSlopeMinGap 以上あけて必要な数だけ選ぶ
+bool MapGenerate::PickSlopeIndices(const std::vector<int>& _candidates, int _needNum, std::vector<int>& _result) const
+{
+	_result.clear();
+	if (_needNum <= 0) { return true; }
+
+	//候補をシャッフルして、段差の場所がいつも同じにならないようにする
+	std::vector<int> shuffled = _candidates;
+	for (int i = static_cast<int>(shuffled.size()) - 1; i > 0; i--)
+	{
+		std::swap(shuffled[i], shuffled[KdRandom::GetInt(0, i)]);
+	}
+
+	//前から見て、すでに選んだ場所と kSlopeMinGap 以上離れていれば選ぶ
+	for (int idx : shuffled)
+	{
+		bool farEnough = true;
+		for (int picked : _result)
+		{
+			if (std::abs(idx - picked) < kSlopeMinGap)
+			{
+				farEnough = false;
+				break;
+			}
+		}
+		if (!farEnough) { continue; }
+
+		_result.push_back(idx);
+		if (static_cast<int>(_result.size()) >= _needNum) { break; }
+	}
+
+	//足りなかった
+	if (static_cast<int>(_result.size()) < _needNum) { return false; }
+
+	//高さを前から割り振るので、小さい順に並べる
+	std::sort(_result.begin(), _result.end());
+	return true;
+}
+
+//パスを、既存の床に当たった所(または隣に来た所)で切る
+void MapGenerate::CutPathAtExisting(std::vector<Math::Vector2>& _path2D, const RoomInfo& _a, const std::vector<std::vector<FloorInfo>>& _map, int& _hB) const
+{
+	static const int dx[] = { 0, 0, -1, 1 };
+	static const int dy[] = { -1, 1, 0, 0 };
+
+	// (_x, _y) が部屋Aの中ならtrue
+	auto inRoomA = [&](int _x, int _y)
+		{
+			return _x >= _a.m_roomEnd.m_farLeft && _x <= _a.m_roomEnd.m_farRight &&
+				_y >= _a.m_roomEnd.m_topEnd && _y <= _a.m_roomEnd.m_downEnd;
+		};
+
+	// 部屋Aを出た後、部屋(Room B他)または既存の通路(Floor/Slope)に当たったらそこで切る
+	for (int i = 0; i < static_cast<int>(_path2D.size()); i++)
+	{
+		int x = static_cast<int>(_path2D[i].x);
+		int y = static_cast<int>(_path2D[i].y);
+
+		if (y < 0 || y >= static_cast<int>(_map.size()) ||
+			x < 0 || x >= static_cast<int>(_map[y].size()))
+		{
+			continue;
+		}
+
+		if (inRoomA(x, y)) { continue; }
+
+		// 直接既存床に到達
+		if (_map[y][x].m_tileType != TileType::None)
+		{
+			_hB = _map[y][x].m_heightLevel;
+			_path2D.resize(i + 1);
+			return;
+		}
+
+		// 隣接マス(上下左右)に部屋A以外の既存の床があれば、このマスで合流して切る
+		for (int d = 0; d < 4; d++)
+		{
+			int nx = x + dx[d];
+			int ny = y + dy[d];
+			if (ny < 0 || ny >= static_cast<int>(_map.size()) ||
+				nx < 0 || nx >= static_cast<int>(_map[ny].size()))
+			{
+				continue;
+			}
+
+			// 直前のマスは見ない
+			if (i > 0 && nx == static_cast<int>(_path2D[i - 1].x) && ny == static_cast<int>(_path2D[i - 1].y)) { continue; }
+
+			if (!inRoomA(nx, ny) && _map[ny][nx].m_tileType != TileType::None)
+			{
+				_hB = _map[ny][nx].m_heightLevel;
+				_path2D.resize(i + 1);
+				return;
+			}
+		}
+	}
+}
+
+//高さを線形補間で割り振る(段差の場所が足りないときの予備)
+std::vector<Math::Vector3> MapGenerate::AssignHeightsLinear(const std::vector<Math::Vector2>& _path2D, int _hA, int _hB) const
+{
+	std::vector<Math::Vector3> ans;
+
+	int totalSteps = static_cast<int>(_path2D.size());
+	if (totalSteps == 0) { return ans; }
+
+	ans.reserve(totalSteps);
+
+	int curH = _hA;
+	ans.push_back({ _path2D[0].x, _path2D[0].y, static_cast<float>(curH) });
+
+	for (int i = 1; i < totalSteps; i++)
+	{
+		int stepsLeftAfter = (totalSteps - 1) - i;
+		int neededDiff = _hB - curH;
+
+		// 残りのステップ数に対して高さ差が追いつかない場合（必要高さ差 >= 残りステップ数+1）、強制的に1ずつ高さを変化
+		if (std::abs(neededDiff) >= stepsLeftAfter + 1)
+		{
+			int step = (neededDiff > 0) ? 1 : -1;
+			curH += step;
+		}
+		else
+		{
+			// 通常は線形補間で目標高さを決定し、差分を反映
+			float ratio = static_cast<float>(i) / static_cast<float>(totalSteps - 1);
+			float hFloat = static_cast<float>(_hA) + static_cast<float>(_hB - _hA) * ratio;
+			int targetH = static_cast<int>(std::round(hFloat));
+
+			int step = std::clamp(targetH - curH, -1, 1);
+			curH += step;
+		}
+
+		ans.push_back({ _path2D[i].x, _path2D[i].y, static_cast<float>(curH) });
+	}
+
+	return ans;
+}
+
 //===================================================
 // 高さ・坂
 //===================================================
-
 void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* _map)
 {
 	int height = static_cast<int>(_map->size());
@@ -2578,10 +2792,13 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* _map)
 	}
 }
 
+//=============================================
+// できあがりのチェック
+//=============================================
+
 //===================================================
 // できあがりのチェック
 //===================================================
-
 bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 {
 
@@ -2726,10 +2943,13 @@ bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 	return true;
 }
 
+//=============================================
+// 壁・階段・松明
+//=============================================
+
 //===================================================
 // 壁・階段・松明
 //===================================================
-
 bool MapGenerate::IsNeedWall(int _nx, int _ny, const std::vector<std::vector<FloorInfo>>& _map, int _heightLevel, int _x, int _y)
 {
 	// マップ範囲外なら壁を作る
@@ -3035,172 +3255,4 @@ bool MapGenerate::IsSetTorch(int _x, int _y, const std::vector<std::vector<Floor
 
 
 	return true;
-}
-
-//===================================================
-// 通路の高さ(段差をまっすぐな所にだけ置く)
-//===================================================
-
-//パスの中で、段差(坂)を置けるマスの番号を集める(前後と一直線に並んでいる所だけ)
-std::vector<int> MapGenerate::FindSlopeCandidates(const std::vector<Math::Vector2>& _path2D) const
-{
-	std::vector<int> candidates;
-
-	//両端(部屋の出入口のマス)は除くので、1 〜 size-2 を見る
-	for (int i = 1; i + 1 < static_cast<int>(_path2D.size()); i++)
-	{
-		const auto& prev = _path2D[i - 1];
-		const auto& cur = _path2D[i];
-		const auto& next = _path2D[i + 1];
-
-		//横一直線か、縦一直線なら置ける
-		bool sameY = (prev.y == cur.y && cur.y == next.y);
-		bool sameX = (prev.x == cur.x && cur.x == next.x);
-
-		if (sameX || sameY)
-		{
-			candidates.push_back(i);
-		}
-	}
-
-	return candidates;
-}
-
-//段差を置く場所を、kSlopeMinGap 以上あけて必要な数だけ選ぶ
-bool MapGenerate::PickSlopeIndices(const std::vector<int>& _candidates, int _needNum, std::vector<int>& _result) const
-{
-	_result.clear();
-	if (_needNum <= 0) { return true; }
-
-	//候補をシャッフルして、段差の場所がいつも同じにならないようにする
-	std::vector<int> shuffled = _candidates;
-	for (int i = static_cast<int>(shuffled.size()) - 1; i > 0; i--)
-	{
-		std::swap(shuffled[i], shuffled[KdRandom::GetInt(0, i)]);
-	}
-
-	//前から見て、すでに選んだ場所と kSlopeMinGap 以上離れていれば選ぶ
-	for (int idx : shuffled)
-	{
-		bool farEnough = true;
-		for (int picked : _result)
-		{
-			if (std::abs(idx - picked) < kSlopeMinGap)
-			{
-				farEnough = false;
-				break;
-			}
-		}
-		if (!farEnough) { continue; }
-
-		_result.push_back(idx);
-		if (static_cast<int>(_result.size()) >= _needNum) { break; }
-	}
-
-	//足りなかった
-	if (static_cast<int>(_result.size()) < _needNum) { return false; }
-
-	//高さを前から割り振るので、小さい順に並べる
-	std::sort(_result.begin(), _result.end());
-	return true;
-}
-
-//パスを、既存の床に当たった所(または隣に来た所)で切る
-void MapGenerate::CutPathAtExisting(std::vector<Math::Vector2>& _path2D, const RoomInfo& _a, const std::vector<std::vector<FloorInfo>>& _map, int& _hB) const
-{
-	static const int dx[] = { 0, 0, -1, 1 };
-	static const int dy[] = { -1, 1, 0, 0 };
-
-	// (_x, _y) が部屋Aの中ならtrue
-	auto inRoomA = [&](int _x, int _y)
-		{
-			return _x >= _a.m_roomEnd.m_farLeft && _x <= _a.m_roomEnd.m_farRight &&
-				_y >= _a.m_roomEnd.m_topEnd && _y <= _a.m_roomEnd.m_downEnd;
-		};
-
-	// 部屋Aを出た後、部屋(Room B他)または既存の通路(Floor/Slope)に当たったらそこで切る
-	for (int i = 0; i < static_cast<int>(_path2D.size()); i++)
-	{
-		int x = static_cast<int>(_path2D[i].x);
-		int y = static_cast<int>(_path2D[i].y);
-
-		if (y < 0 || y >= static_cast<int>(_map.size()) ||
-			x < 0 || x >= static_cast<int>(_map[y].size()))
-		{
-			continue;
-		}
-
-		if (inRoomA(x, y)) { continue; }
-
-		// 直接既存床に到達
-		if (_map[y][x].m_tileType != TileType::None)
-		{
-			_hB = _map[y][x].m_heightLevel;
-			_path2D.resize(i + 1);
-			return;
-		}
-
-		// 隣接マス(上下左右)に部屋A以外の既存の床があれば、このマスで合流して切る
-		for (int d = 0; d < 4; d++)
-		{
-			int nx = x + dx[d];
-			int ny = y + dy[d];
-			if (ny < 0 || ny >= static_cast<int>(_map.size()) ||
-				nx < 0 || nx >= static_cast<int>(_map[ny].size()))
-			{
-				continue;
-			}
-
-			// 直前のマスは見ない
-			if (i > 0 && nx == static_cast<int>(_path2D[i - 1].x) && ny == static_cast<int>(_path2D[i - 1].y)) { continue; }
-
-			if (!inRoomA(nx, ny) && _map[ny][nx].m_tileType != TileType::None)
-			{
-				_hB = _map[ny][nx].m_heightLevel;
-				_path2D.resize(i + 1);
-				return;
-			}
-		}
-	}
-}
-
-//高さを線形補間で割り振る(段差の場所が足りないときの予備)
-std::vector<Math::Vector3> MapGenerate::AssignHeightsLinear(const std::vector<Math::Vector2>& _path2D, int _hA, int _hB) const
-{
-	std::vector<Math::Vector3> ans;
-
-	int totalSteps = static_cast<int>(_path2D.size());
-	if (totalSteps == 0) { return ans; }
-
-	ans.reserve(totalSteps);
-
-	int curH = _hA;
-	ans.push_back({ _path2D[0].x, _path2D[0].y, static_cast<float>(curH) });
-
-	for (int i = 1; i < totalSteps; i++)
-	{
-		int stepsLeftAfter = (totalSteps - 1) - i;
-		int neededDiff = _hB - curH;
-
-		// 残りのステップ数に対して高さ差が追いつかない場合（必要高さ差 >= 残りステップ数+1）、強制的に1ずつ高さを変化
-		if (std::abs(neededDiff) >= stepsLeftAfter + 1)
-		{
-			int step = (neededDiff > 0) ? 1 : -1;
-			curH += step;
-		}
-		else
-		{
-			// 通常は線形補間で目標高さを決定し、差分を反映
-			float ratio = static_cast<float>(i) / static_cast<float>(totalSteps - 1);
-			float hFloat = static_cast<float>(_hA) + static_cast<float>(_hB - _hA) * ratio;
-			int targetH = static_cast<int>(std::round(hFloat));
-
-			int step = std::clamp(targetH - curH, -1, 1);
-			curH += step;
-		}
-
-		ans.push_back({ _path2D[i].x, _path2D[i].y, static_cast<float>(curH) });
-	}
-
-	return ans;
 }

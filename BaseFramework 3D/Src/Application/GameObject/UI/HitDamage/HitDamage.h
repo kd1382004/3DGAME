@@ -39,6 +39,7 @@ struct HitDamageDrawInfo {
 	float m_floatY = 0.0f;
 };
 
+//ダメージ数字の表示
 class HitDamage :public UIBase
 {
 public:

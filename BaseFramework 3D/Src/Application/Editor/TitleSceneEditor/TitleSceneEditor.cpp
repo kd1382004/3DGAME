@@ -1,8 +1,18 @@
-﻿#include "TitleSceneEditor.h"
-#include"../../Scene/SceneManager.h"
-#include"../../Info/DebugInfo/DebugInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "TitleSceneEditor.h"									//タイトルシーンの配置編集エディター
 
-#include"../../GameObject/Button/GameButton/GameButton.h"
+//---- シーン ----
+#include"../../Scene/SceneManager.h"							//シーンの管理
+
+//---- ボタン ----
+#include"../../GameObject/Button/GameButton/GameButton.h"		//ゲームシーンへ進むボタン
+
+//---- 便利機能 ----
+#include"../../Info/DebugInfo/DebugInfo.h"						//デバッグ用の状態
+
+//=============================================
+// コンストラクタ・デストラクタ
+//=============================================
 
 TitleSceneEditor::TitleSceneEditor()
 {
@@ -12,6 +22,15 @@ TitleSceneEditor::TitleSceneEditor()
 		return spObj;
 		});
 }
+
+TitleSceneEditor::~TitleSceneEditor()
+{
+
+}
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void TitleSceneEditor::ImGui()
 {
@@ -28,7 +47,7 @@ void TitleSceneEditor::ImGui()
 			objeClassCamera.push_back(obj);
 			break;
 
-		case  KdGameObject::GameObjectClass::GameObjectClass_Botton:
+		case  KdGameObject::GameObjectClass::GameObjectClass_Button:
 			objeClassButton.push_back(obj);
 			break;
 
@@ -78,6 +97,10 @@ void TitleSceneEditor::ImGui()
 	ImGui::End();
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void TitleSceneEditor::CameraImGUI(std::list<std::shared_ptr<KdGameObject>>_obj)
 {
 	if (ImGui::TreeNode(U8("カメラクラス")))
@@ -89,8 +112,8 @@ void TitleSceneEditor::CameraImGUI(std::list<std::shared_ptr<KdGameObject>>_obj)
 		for (auto obj : _obj)
 		{
 
-			std::string titleBer = obj->GetImGUIName() + std::to_string(i);
-			if (ImGui::TreeNode((void*)(intptr_t)i, U8("%s"), titleBer.c_str()))
+			std::string titleBar = obj->GetImGUIName() + std::to_string(i);
+			if (ImGui::TreeNode((void*)(intptr_t)i, U8("%s"), titleBar.c_str()))
 			{
 				obj->ImGUI();
 
@@ -125,8 +148,8 @@ void TitleSceneEditor::ButtonImGUI(std::list<std::shared_ptr<KdGameObject>> _obj
 		int i = 0;
 		for (auto obj : _obj)
 		{
-			std::string titleBer = obj->GetImGUIName() + std::to_string(i);
-			if (ImGui::TreeNode((void*)(intptr_t)i, U8("%s"), titleBer.c_str()))
+			std::string titleBar = obj->GetImGUIName() + std::to_string(i);
+			if (ImGui::TreeNode((void*)(intptr_t)i, U8("%s"), titleBar.c_str()))
 			{
 				obj->ImGUI();
 
@@ -161,8 +184,8 @@ void TitleSceneEditor::TerrainsImGUI(std::list<std::shared_ptr<KdGameObject>> _o
 		int i = 0;
 		for (auto obj : _obj)
 		{
-			std::string titleBer = obj->GetImGUIName() + std::to_string(i);
-			if (ImGui::TreeNode((void*)(intptr_t)i, U8("%s"), titleBer.c_str()))
+			std::string titleBar = obj->GetImGUIName() + std::to_string(i);
+			if (ImGui::TreeNode((void*)(intptr_t)i, U8("%s"), titleBar.c_str()))
 			{
 				obj->ImGUI();
 
@@ -173,9 +196,4 @@ void TitleSceneEditor::TerrainsImGUI(std::list<std::shared_ptr<KdGameObject>> _o
 
 		ImGui::TreePop();
 	}
-}
-
-TitleSceneEditor::~TitleSceneEditor()
-{
-
 }

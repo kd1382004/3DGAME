@@ -83,7 +83,7 @@ public:
 		GameObjectClass_Camera,
 
 		//ボタンクラス
-		GameObjectClass_Botton,
+		GameObjectClass_Button,
 
 		//地形
 		GameObjectClass_Terrains,
@@ -103,10 +103,10 @@ public:
 	std::string GetObjName() { return m_objNemu; };
 	void SetObjName(std::string str) { m_objNemu = str;};
 
-	virtual void DataLodo() {};
+	virtual void DataLoad() {};
 
 	//当り判定をするオブジェクトを入れる
-	void RegistHitObject(const std::shared_ptr<KdGameObject>& object)
+	void RegisterHitObject(const std::shared_ptr<KdGameObject>& object)
 	{
 		m_wpHitObjectList.push_back(object);
 	}

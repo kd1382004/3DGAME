@@ -1,5 +1,9 @@
-#include "StaminaMaxUPPotion.h"
-#include"../../Character/Player/PlayerBase.h"
+//---- 自分のヘッダー ----
+#include "StaminaMaxUPPotion.h"						//最大スタミナアップポーション
+
+//---- プレイヤー ----
+#include"../../Character/Player/PlayerBase.h"		//プレイヤー
+
 
 void StaminaMaxUPPotion::UseStaminaMaxUPPotion()
 {

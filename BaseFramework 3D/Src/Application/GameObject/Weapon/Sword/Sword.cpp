@@ -1,9 +1,18 @@
-﻿#include "Sword.h"
-#include"Sword_FinalSlash/Sword_FinalSlash.h"
+﻿//---- 自分のヘッダー ----
+#include "Sword.h"									//剣
 
-#include"../../Character/CharacterBase.h"
+//---- シーン ----
+#include"../../../Scene/SceneManager.h"				//シーンの管理
 
-#include"../../../Scene/SceneManager.h"
+//---- キャラクター ----
+#include"../../Character/CharacterBase.h"			//キャラクターの基底クラス
+
+//---- 武器 ----
+#include"Sword_FinalSlash/Sword_FinalSlash.h"		//剣の必殺技
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void Sword::Init()
 {
@@ -289,6 +298,10 @@ void Sword::DrawLit()
 
 }
 
+//=============================================
+// 取得
+//=============================================
+
 const std::vector<ComboStep>& Sword::GetComboList()
 {
 	constexpr int kBaseComboCount = 3;
@@ -325,6 +338,10 @@ const std::vector<ComboStep>& Sword::GetComboList()
 	m_finalSlashDoneFlg = false;
 	return m_nowLvComboList;
 }
+
+//=============================================
+// 設定
+//=============================================
 
 void Sword::SetNowChargeTime(float _time)
 {
@@ -491,6 +508,10 @@ void Sword::SetAttackFlg(bool _flg)
 	}
 }
 
+//=============================================
+// その他の処理
+//=============================================
+
 void Sword::ChargeAttackPlay()
 {
 	if (m_chargeLV > 0 && m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic].m_lv > 0)
@@ -544,6 +565,10 @@ void Sword::StopWeaponSE()
 	}
 }
 
+//=============================================
+// 取得
+//=============================================
+
 bool Sword::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)
 {
 	for (auto& wp : m_hitCharactersList)
@@ -555,6 +580,10 @@ bool Sword::IsAlreadyHit(const std::shared_ptr<CharacterBase>& _spChara)
 	}
 	return false;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void Sword::SpawnFinalSlash(int _lv)
 {

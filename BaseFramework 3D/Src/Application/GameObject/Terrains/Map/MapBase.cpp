@@ -1,6 +1,15 @@
-﻿#include "MapBase.h"
-#include"../../Camera/CameraBase.h"
-#include"../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "MapBase.h"						//マップ部品の基底クラス
+
+//---- シーン ----
+#include"../../../Scene/SceneManager.h"		//シーンの管理
+
+//---- カメラ ----
+#include"../../Camera/CameraBase.h"			//カメラの基底クラス
+
+//=============================================
+// 基本の処理
+//=============================================
 
 void MapBase::Init()
 {
@@ -61,7 +70,7 @@ void MapBase::DrawLit()
 
 	// ディゾルブ
 	float         edgeRange = 0.04f;
-	Math::Vector3 edgeColor = { SceneManager::Instance().GetFogCol() };
+	Math::Vector3 edgeColor = { SceneManager::Instance().GetFogColor() };
 	KdShaderManager::Instance().m_StandardShader.SetDissolve(m_fader.GetDissolve(), &edgeRange, &edgeColor);
 
 	KdShaderManager::Instance().m_StandardShader.SetUVTiling(m_uvTiling);
@@ -106,13 +115,17 @@ void MapBase::PreDraw()
 	m_fader.Update(DeltaTime::Instance().GetRealDeltaTime());
 }
 
+//=============================================
+// 設定
+//=============================================
+
 void MapBase::SetRotation(Math::Matrix _rMat)
 {
 	Math::Vector3 pos = GetPos();
-	Math::Vector3 siz = GetScale();
+	Math::Vector3 size = GetScale();
 
 	Math::Matrix tMat = Math::Matrix::CreateTranslation(pos);
-	Math::Matrix sMat = Math::Matrix::CreateScale(siz);
+	Math::Matrix sMat = Math::Matrix::CreateScale(size);
 
 	m_mWorld = sMat * _rMat * tMat;
 }

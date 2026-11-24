@@ -1,35 +1,12 @@
-﻿#include"../CampLayoutData/CampLayoutData.h"
-#include"CampObject.h"
+﻿//---- 自分のヘッダー ----
+#include"CampObject.h"								//キャンプの置物
 
-void CampObject::SetData(const CampObjectData& _data)
-{
-	m_data = _data;
+//---- キャンプ ----
+#include"../CampLayoutData/CampLayoutData.h"		//キャンプの配置データ
 
-	if (!m_spModel) { m_spModel = std::make_shared<KdModelWork>(); }
-	m_spModel->SetModelData(m_data.m_modelPath);
-
-	ApplyData();
-}
-
-void CampObject::PlayAnime(const std::string& _name, bool _loop)
-{
-	if (!m_spModel || !m_spModel->GetData()) { return; }
-	auto anime = m_spModel->GetData()->GetAnimation(_name);
-
-	if (!anime) { return; }
-
-	if (!m_spAnimator) { m_spAnimator = std::make_shared<KdAnimator>(); }
-
-
-	m_spAnimator->SetAnimation(anime, _loop);
-	m_spModel->CalcNodeMatrices();
-}
-
-void CampObject::DrawLit()
-{
-	if (!m_spModel) { return; }
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
-}
+//=============================================
+// 基本の処理
+//=============================================
 
 void CampObject::Init()
 {
@@ -43,9 +20,47 @@ void CampObject::Update()
 	m_spModel->CalcNodeMatrices();
 }
 
+void CampObject::DrawLit()
+{
+	if (!m_spModel) { return; }
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+}
+
 void CampObject::GenerateDepthMapFromLight()
 {
 	// 影を落とす(落としたくない物は描かない)
 	if (!m_spModel) { return; }
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+}
+
+//=============================================
+// 設定
+//=============================================
+
+void CampObject::SetData(const CampObjectData& _data)
+{
+	m_data = _data;
+
+	if (!m_spModel) { m_spModel = std::make_shared<KdModelWork>(); }
+	m_spModel->SetModelData(m_data.m_modelPath);
+
+	ApplyData();
+}
+
+//=============================================
+// その他の処理
+//=============================================
+
+void CampObject::PlayAnime(const std::string& _name, bool _loop)
+{
+	if (!m_spModel || !m_spModel->GetData()) { return; }
+	auto anime = m_spModel->GetData()->GetAnimation(_name);
+
+	if (!anime) { return; }
+
+	if (!m_spAnimator) { m_spAnimator = std::make_shared<KdAnimator>(); }
+
+
+	m_spAnimator->SetAnimation(anime, _loop);
+	m_spModel->CalcNodeMatrices();
 }

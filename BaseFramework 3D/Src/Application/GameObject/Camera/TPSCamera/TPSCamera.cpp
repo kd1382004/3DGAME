@@ -1,4 +1,5 @@
-﻿#include "TPSCamera.h"
+﻿//---- 自分のヘッダー ----
+#include "TPSCamera.h"		//三人称カメラ
 
 void TPSCamera::Init()
 {

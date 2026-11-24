@@ -1,4 +1,5 @@
-﻿#include "Flashlight.h"
+﻿//---- 自分のヘッダー ----
+#include "Flashlight.h"		//懐中電灯
 
 void Flashlight::Init()
 {

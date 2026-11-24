@@ -2,6 +2,7 @@
 
 class UIMap_Map;
 
+//ミニマップの宝箱アイコン
 class UIMap_TreasureChest:public KdGameObject
 {
 public:
@@ -51,12 +52,12 @@ public:
 	void SetPos(Math::Vector3 _3DPos, float _worldTileSize);
 
 	//1タイルの大きさをセット
-	// _siz ... 1タイルの大きさ
-	void SetTileSiz(float _siz) { m_tileSiz = _siz; }
+	// _size ... 1タイルの大きさ
+	void SetTileSize(float _size) { m_tileSize = _size; }
 
 	//ミニマップの1マスの画像の大きさをセット
-	// _siz ... 画像の大きさ
-	void SetMapTexSiz(Math::Vector2 _siz) { m_mapTexSiz = _siz; }
+	// _size ... 画像の大きさ
+	void SetMapTexSize(Math::Vector2 _size) { m_mapTexSize = _size; }
 
 	//マップのUIをセット
 	// _spUIMap_Map ... マップのUI
@@ -94,13 +95,13 @@ private:
 	List m_posList;
 
 	//ミニマップの1マスの画像の大きさ
-	Math::Vector2 m_mapTexSiz = { };
+	Math::Vector2 m_mapTexSize = { };
 
 	//大きさの倍率
-	float m_siz = 1.0f;
+	float m_size = 1.0f;
 
 	//1タイルの大きさ
-	float m_tileSiz = 10.0f;
+	float m_tileSize = 10.0f;
 
 	//ミニマップの基準位置(画面)
 	Math::Vector2 m_basePos;

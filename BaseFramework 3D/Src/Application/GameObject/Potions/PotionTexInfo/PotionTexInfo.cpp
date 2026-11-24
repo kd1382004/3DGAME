@@ -1,5 +1,12 @@
-﻿#include "PotionTexInfo.h"
-#include"../../../Scene/SceneManager.h"
+﻿//---- 自分のヘッダー ----
+#include "PotionTexInfo.h"					//アイテムの名前・画像情報
+
+//---- シーン ----
+#include"../../../Scene/SceneManager.h"		//シーンの管理
+
+//=============================================
+// 取得
+//=============================================
 
 std::shared_ptr<KdTexture> PotionTexInfo::GetPotionIcon(int _ID)
 {
@@ -115,6 +122,10 @@ std::shared_ptr<KdTexture> PotionTexInfo::GetWeaponsStrengtheningItemExplanation
 
 	return nullptr;
 }
+
+//=============================================
+// その他の処理
+//=============================================
 
 void PotionTexInfo::Load()
 {

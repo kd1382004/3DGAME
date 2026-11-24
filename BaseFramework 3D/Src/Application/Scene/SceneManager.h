@@ -73,6 +73,7 @@ struct GameRecord
 
 class BaseScene;
 
+//シーンの管理
 class SceneManager
 {
 public:
@@ -127,8 +128,9 @@ public:
 	//戻り値 ... プレイヤーの武器
 	const PlayerWeaponInfo GetPlayerWeaponInfo() { return m_playerWeaponInfo; }
 
-
-	const Math::Vector3 GetFogCol() { return m_FOGCol; }
+	//霧の色を取得
+	//戻り値 ... 霧の色
+	const Math::Vector3 GetFogColor() { return m_fogColor; }
 
 	//---- 設定 ----
 
@@ -163,7 +165,7 @@ public:
 	{
 		m_fogFlg = _fogFlg;
 		KdShaderManager::Instance().WorkAmbientController().SetFogEnable(m_fogFlg, false);
-		KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_FOGCol, m_FOGdensity);
+		KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_fogColor, m_fogDensity);
 	};
 
 	//値を変えてアンビエントを変更
@@ -227,10 +229,10 @@ private:
 	KdRenderTargetChanger m_rtChanger;
 
 	//フォグ
-	Math::Vector3 m_FOGCol = { 0.35,0.35,0.38 };
+	Math::Vector3 m_fogColor = { 0.35,0.35,0.38 };
 
 	//フォグの濃さ
-	float m_FOGdensity = 0.02;
+	float m_fogDensity = 0.02;
 
 	//フォグを使うか
 	bool m_fogFlg = false;

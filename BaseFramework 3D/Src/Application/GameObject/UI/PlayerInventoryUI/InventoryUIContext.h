@@ -72,7 +72,7 @@ struct InventoryUIContext
 	Math::Vector2 m_back2Tex2DPos;			// 右の枠の位置
 
 	std::shared_ptr<KdTexture> m_spUseTex;		// 使用ボタン
-	Math::Vector2              m_useTex2DPos;
+	Math::Vector2              m_useTex2DPos;		// 使用ボタンの位置
 
 	std::shared_ptr<KdTexture> m_spPotionSelectTex;	// 選択中の枠
 };

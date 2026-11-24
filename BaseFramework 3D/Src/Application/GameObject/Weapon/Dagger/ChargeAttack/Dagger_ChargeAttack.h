@@ -28,6 +28,7 @@ struct StatusShockwave
 
 };
 
+//短剣の溜め攻撃(衝撃波)
 class  Dagger_ChargeAttack :public KdGameObject
 {
 public:
@@ -169,15 +170,15 @@ private:
 	//前フレームの根元の位置(ワールド)
 	Math::Vector3 m_prevBasePos = Math::Vector3::Zero;
 	Math::Matrix  m_prevWeaponParentMat = Math::Matrix::Identity; // 追加：前フレーム行列
-	bool m_isFirstFrame = true;
+	bool m_isFirstFrame = true; // 前フレームの位置がまだ無いか(最初のフレームは掃引しない)
 
 	// 前フレームの位置およびワールド行列
 	Math::Matrix  m_prevWorldMat = Math::Matrix::Identity;
 
 	//残像の一覧
 	std::vector<GhostTrail> m_trails;
-	float m_trailSpawnInterval = 0.002f; //ごとに残像生成
-	float m_trailTimer = 0.0f;
+	float m_trailSpawnInterval = 0.002f; //この秒数ごとに残像を出す
+	float m_trailTimer = 0.0f; //前の残像を出してからの秒数
 
 	//---- 取得 ----
 

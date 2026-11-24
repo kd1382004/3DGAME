@@ -1,5 +1,8 @@
-﻿#include "NextFloorGaugeUI.h"
-#include"../../../Info/KeyInfo/KeyInfo.h"
+﻿//---- 自分のヘッダー ----
+#include "NextFloorGaugeUI.h"					//次の階へ進むゲージ
+
+//---- 便利機能 ----
+#include"../../../Info/KeyInfo/KeyInfo.h"		//キー入力
 
 void NextFloorGaugeUI::Init()
 {
@@ -8,13 +11,13 @@ void NextFloorGaugeUI::Init()
 		m_spGaugeTexture = std::make_shared<KdTexture>();
 		m_spGaugeTexture->Load("Asset/Textures/GameUI/NextFloorCount/NextFloorCount.png");
 
-		m_siz.x = m_spGaugeTexture->GetInfo().Width;
-		m_siz.y = m_spGaugeTexture->GetInfo().Height / 2;
+		m_size.x = m_spGaugeTexture->GetInfo().Width;
+		m_size.y = m_spGaugeTexture->GetInfo().Height / 2;
 
 		m_gaugePercent = 0;
 
 		m_2DPos = { 50, 50 };
-		m_actionKeySiz = { 32,32 };
+		m_actionKeySize = { 32,32 };
 	}
 }
 
@@ -53,14 +56,14 @@ void NextFloorGaugeUI::DrawSprite()
 
 
 	Math::Rectangle srcRect = { 0,  0, (long)m_spGaugeTexture->GetInfo().Width, (long)m_spGaugeTexture->GetInfo().Height / 2 };
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spGaugeTexture, m_2DPos.x, m_2DPos.y, m_siz.x, m_siz.y, &srcRect, nullptr, pivot);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spGaugeTexture, m_2DPos.x, m_2DPos.y, m_size.x, m_size.y, &srcRect, nullptr, pivot);
 
 	srcRect = { 0,
 		(long)m_spGaugeTexture->GetInfo().Height / 2,
 		(long)m_spGaugeTexture->GetInfo().Width,
 		(long)m_spGaugeTexture->GetInfo().Height / 2 };
 
-	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spGaugeTexture, m_2DPos.x, m_2DPos.y, m_siz.x * m_gaugePercent, m_siz.y, &srcRect, nullptr, pivot);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(m_spGaugeTexture, m_2DPos.x, m_2DPos.y, m_size.x * m_gaugePercent, m_size.y, &srcRect, nullptr, pivot);
 
-	KeyInfo::Instance().Draw2Dkey(m_actionKey, { m_2DPos.x - m_actionKeySiz.x / 2, m_2DPos.y }, m_actionKeySiz, m_actionKeyAlpha, { 0.5f,0.5f });
+	KeyInfo::Instance().Draw2Dkey(m_actionKey, { m_2DPos.x - m_actionKeySize.x / 2, m_2DPos.y }, m_actionKeySize, m_actionKeyAlpha, { 0.5f,0.5f });
 }
