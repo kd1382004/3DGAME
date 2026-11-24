@@ -6,15 +6,11 @@
 #include"../WallBase/WallBase.h"			//壁
 #include"../Stairs/StairsBase.h"			//階段
 #include"../Slope/Slope.h"					//坂
+#include"../MapManager.h"					//Manager
 
 //---- マップオブジェクト ----
 #include"../../MapObj/MapObjManager.h"		//マップオブジェクトの管理
 #include"../../MapObj/Torch/Torch.h"		//松明
-
-//---- 標準ライブラリ ----
-#include<array>								//固定長配列(std::array)
-#include<queue>								//キュー(std::queue)
-#include<set>								//集合(std::set)
 
 //=============================================
 // コンストラクタ・デストラクタ
@@ -27,31 +23,6 @@ MapGenerate::MapGenerate()
 	m_roomSizPath = "Asset/Data/ObjeData/Terrains/Map/MapSiz.json";
 
 	LoadRoomSize(m_roomSizPath);
-
-
-	if (!m_spFloorModel)
-	{
-		m_spFloorModel = std::make_shared<KdModelWork>();
-		m_spFloorModel->SetModelData("Asset/Models/Terrains/Map/Castle/Floor/Base.gltf");
-	}
-
-	if (!m_spSlopeModel)
-	{
-		m_spSlopeModel = std::make_shared<KdModelWork>();
-		m_spSlopeModel->SetModelData("Asset/Models/Terrains/Map/Castle/Slope/Slope.gltf");
-	}
-
-	if (!m_spWallModel)
-	{
-		m_spWallModel = std::make_shared<KdModelWork>();
-		m_spWallModel->SetModelData("Asset/Models/Terrains/Map/Castle/Wall/Base.gltf");
-	}
-
-	if (!m_spStairsModel)
-	{
-		m_spStairsModel = std::make_shared<KdModelWork>();
-		m_spStairsModel->SetModelData("Asset/Models/Terrains/Map/Castle/Stairs/Stairs.gltf");
-	}
 }
 
 //=============================================
@@ -755,7 +726,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSize, int
 	}
 
 
-	
+
 	// 1つでもチャンクに同じ部屋の床が入っていたら、部屋の床と壁を全てそのチャンクに入れる
 	for (size_t i = 0; i < m_roomInfoList.size(); i++)
 	{
@@ -1066,6 +1037,17 @@ std::vector<std::vector<bool>> MapGenerate::GenerateBoss(Math::Vector2 _mapSize,
 	}
 
 	return mapDate;
+}
+
+void MapGenerate::LoadModelByMapType(MapType _type)
+{
+	//例: "Asset/Models/Terrains/Map/" + "Castle"
+	const std::string basePath = "Asset/Models/Terrains/Map/" + GetMapModelFolder(_type);
+
+	LoadModel(m_spFloorModel, basePath + "/Floor/Base.gltf");
+	LoadModel(m_spSlopeModel, basePath + "/Slope/Slope.gltf");
+	LoadModel(m_spWallModel, basePath + "/Wall/Base.gltf");
+	LoadModel(m_spStairsModel, basePath + "/Stairs/Stairs.gltf");
 }
 
 //=============================================
@@ -2990,7 +2972,7 @@ std::shared_ptr<MapBase> MapGenerate::CreateWallOrStairs(const Math::Vector3& _p
 
 
 		//モデルの一番下の y(原点基準)
-		float wallBottomY = 0.0f;	
+		float wallBottomY = 0.0f;
 		if (auto spData = m_spWallModel->GetData())
 		{
 			bool first = true;
@@ -3255,4 +3237,20 @@ bool MapGenerate::IsSetTorch(int _x, int _y, const std::vector<std::vector<Floor
 
 
 	return true;
+}
+
+std::string MapGenerate::GetMapModelFolder(MapType _type) const
+{
+	switch (_type)
+	{
+	case MapType_Dungeon: return "Dungeon";
+	case MapType_Factory: return "Factory";
+	default:              return "Dungeon";	//知らない種類のときは地下迷宮のモデルを使う
+	}
+}
+
+void MapGenerate::LoadModel(std::shared_ptr<KdModelWork>& _spModel, const std::string& _path)
+{
+	if (!_spModel) { _spModel = std::make_shared<KdModelWork>(); }
+	_spModel->SetModelData(_path);
 }

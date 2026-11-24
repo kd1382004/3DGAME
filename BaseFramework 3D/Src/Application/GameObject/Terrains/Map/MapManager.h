@@ -52,8 +52,14 @@ public:
 //マップの種類
 enum MapType
 {
-	//草原
-	MapType_Grassland
+	//設定されてない
+	NOLE,
+
+	//地下迷宮(石造りの通路・松明)
+	MapType_Dungeon,
+
+	//機械仕掛け
+	MapType_Factory,
 
 };
 
@@ -316,5 +322,11 @@ private:
 		float dy = std::abs(_a->m_pos.y - _b->m_pos.y);
 		return (dx + dy) + (1.41421356f - 2.0f) * std::min(dx, dy);
 	}
+
+	//マップの種類に合わせたモデルを読み込んでセットする
+	// _type ... マップの種類
+	void LoadModelByMapType(MapType _type);
+
+	MapType m_oldMapType = MapType::NOLE;
 };
 

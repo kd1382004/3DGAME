@@ -134,7 +134,9 @@ bool PrepareLayoutEditor::SaveTune()
 			{ "Target",        Vec3ToJson(ConvPos(m_pDepart->m_target)) },
 			{ "WalkTime",      m_pDepart->m_walkTime },
 			{ "FadeStartRate", m_pDepart->m_fadeStartRate },
-			{ "FadeTime",      m_pDepart->m_fadeTime } };
+			{ "FadeTime",      m_pDepart->m_fadeTime },
+			{ "EffectPos",     Vec3ToJson(ConvPos(m_pDepart->m_effectPos)) },
+			{ "EffectScale",   m_pDepart->m_effectScale } };
 	}
 
 	std::ofstream file(m_tuneFilePath);
@@ -325,6 +327,32 @@ void PrepareLayoutEditor::DepartImGui()
 	changed |= ImGui::DragFloat(U8("歩く時間(秒)"),        &d.m_walkTime,      0.02f, 0.1f, 10.0f, "%.2f");
 	changed |= ImGui::SliderFloat(U8("暗転を始める割合"),  &d.m_fadeStartRate, 0.0f,  1.0f,        "%.2f");
 	changed |= ImGui::DragFloat(U8("暗転の時間(秒)"),      &d.m_fadeTime,      0.02f, 0.1f, 5.0f,  "%.2f");
+
+	//---- 入口の奥のエフェクト ----
+	ImGui::Separator();
+	ImGui::Text(U8("入口の奥のエフェクト (Stairs/Stairs.efkefc)"));
+
+	bool effectChanged = false;
+	if (ImGui::DragFloat3(U8("エフェクトの位置"), &d.m_effectPos.x, 0.02f))
+	{
+		d.m_hasEffectPos = true;
+		effectChanged = true;
+	}
+	effectChanged |= ImGui::DragFloat(U8("エフェクトの大きさ"), &d.m_effectScale, 0.01f, 0.05f, 10.0f, "%.2f");
+
+	if (effectChanged)
+	{
+		changed = true;
+
+		// その場で動かす(ループで出し直すときも同じ位置・大きさになるように再生情報も書き換える)
+		if (auto spEffect = m_wpEntranceEffect.lock())
+		{
+			spEffect->SetPos(d.m_effectPos);
+			spEffect->SetScale(d.m_effectScale);
+			spEffect->WorkPlayEfkInfo().Pos  = d.m_effectPos;
+			spEffect->WorkPlayEfkInfo().Size = Math::Vector3(d.m_effectScale);
+		}
+	}
 
 	if (changed) { m_dirty = true; }
 

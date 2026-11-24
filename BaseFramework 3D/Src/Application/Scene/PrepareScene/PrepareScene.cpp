@@ -261,10 +261,17 @@ void PrepareScene::Init()
 		m_campLights.push_back(spLight);	// エディタ用
 	}
 
+	// 入口の奥のエフェクト(ダンジョンの階段と同じもの)。ループ再生
+	// 位置と大きさはエディタの「出発」タブで合わせて CampLayoutTune.json に保存する
+	m_wpEntranceEffect = KdEffekseerManager::GetInstance().Play("Stairs/Stairs.efkefc",
+		m_campLayout.m_depart.m_effectPos, m_campLayout.m_depart.m_effectScale, 1.0f, true);
+	m_wpKdEffekseerObject.push_back(m_wpEntranceEffect);	// シーンを出るときに止める
+
 	// 背景のカメラ・ライトを調整するEditor
 	m_spLayoutEditor = std::make_shared<PrepareLayoutEditor>(m_campLayoutTuneFilePath);
 	m_spLayoutEditor->SetTargets(shared_from_this(), m_spPrepareCamera, m_campLights, m_campObjects);
 	m_spLayoutEditor->SetDepartData(&m_campLayout.m_depart);
+	m_spLayoutEditor->SetEntranceEffect(m_wpEntranceEffect);
 }
 
 //=============================================

@@ -163,6 +163,9 @@ private:
 	//キャンプで出しているエフェクト(焚き火など)
 	std::vector<std::weak_ptr<KdEffekseerObject>> m_wpKdEffekseerObject;
 
+	//入口の奥のエフェクト(エディタで位置を動かすために覚えておく)
+	std::weak_ptr<KdEffekseerObject> m_wpEntranceEffect;
+
 	// 準備画面(屋外・夕方)の霧と環境光
 	// ダンジョン用の値(霧 0.3 灰色・濃さ 0.02 / 環境光 0.5)のままだと暗く濁るので、準備画面だけ変える
 	// 次のシーンに移るときは SceneManager::ChangeScene がダンジョン用の値に戻すので、戻す処理は要らない

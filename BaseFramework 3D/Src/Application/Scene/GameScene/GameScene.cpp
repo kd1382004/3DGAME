@@ -199,7 +199,7 @@ void GameScene::Init()
 	m_spWeapon->Init();
 	// マスタを土台にセーブの進行状況を重ねる
 	m_spWeapon->SetWeaponsStrengtheningInfo(LoadMergedWeaponStrengtheningData(m_weaponStrengtheningFilePath));
-	
+
 
 	m_objList.push_back(m_spWeapon);
 
@@ -544,9 +544,18 @@ void GameScene::GenerateMap()
 	int baseRoomCount = 3;
 	int roomCount = baseRoomCount + m_mapGenerateDisplayFloor * 2;
 
+	//仮処理
+	if (m_displayFloor % 2 == 1)
+	{
+		m_mapType = MapType::MapType_Dungeon;
+		
+	}
+	else
+	{
+		m_mapType = MapType::MapType_Factory;
+	}
 
-
-
+	m_mapType = MapType::MapType_Dungeon;
 	m_spEnemyManager->EnemyListReset();
 	m_spMapObjManager->ResetMapObj();
 
@@ -563,7 +572,7 @@ void GameScene::GenerateMap()
 			m_spGameBGM->Play();
 		}
 
-		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, MapType_Grassland);
+		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, m_mapType);
 
 		SceneManager::Instance().SetFogEnable(true);
 		SceneManager::Instance().SetDefaultAmbient();
@@ -573,7 +582,7 @@ void GameScene::GenerateMap()
 		//ボス戦用マップ生成
 		mapSizeX = 7;
 		mapSizeY = 7;
-		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, MapType_Grassland);
+		m_spMapManager->GenerateBossMap({ (float)mapSizeX,(float)mapSizeY }, m_mapType);
 		m_spUIManager->SetMinimapRevealAll(true);
 
 		if (m_spBossBGM)

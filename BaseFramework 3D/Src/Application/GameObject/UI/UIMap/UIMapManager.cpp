@@ -84,6 +84,15 @@ void UIMapManager::DrawSprite()
 		m_spUIMap_Map->DrawSprite();
 	}
 
+	for (auto mapTreasureChest : m_UIMap_TreasureChest)
+	{
+		if (mapTreasureChest)
+		{
+			mapTreasureChest->DrawSprite();
+		}
+	}
+
+
 	if (m_spUIMap_Enemy)
 	{
 		m_spUIMap_Enemy->DrawSprite();
@@ -92,11 +101,6 @@ void UIMapManager::DrawSprite()
 	if (m_spUIMap_Player)
 	{
 		m_spUIMap_Player->DrawSprite();
-	}
-
-	for (auto mapTreasureChest : m_UIMap_TreasureChest)
-	{
-		mapTreasureChest->DrawSprite();
 	}
 }
 

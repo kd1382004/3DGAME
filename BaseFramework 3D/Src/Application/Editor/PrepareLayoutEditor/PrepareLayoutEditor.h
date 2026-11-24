@@ -41,6 +41,10 @@ public:
 	// _pDepart ... 出発のデータ(シーンが持っているもの。エディタより長く生きる)
 	void SetDepartData(CampDepartData* _pDepart) { m_pDepart = _pDepart; }
 
+	//入口の奥のエフェクトをセット(位置・大きさをいじったらその場で動かす)
+	// _wpEffect ... PrepareScene が出したエフェクト
+	void SetEntranceEffect(const std::weak_ptr<KdEffekseerObject>& _wpEffect) { m_wpEntranceEffect = _wpEffect; }
+
 	//---- 基本の処理 ----
 
 	// 毎フレーム ImGui のフレーム内で呼ぶ
@@ -74,6 +78,9 @@ private:
 
 	//出発の演出のデータ(PrepareScene が持っている)
 	CampDepartData* m_pDepart = nullptr;
+
+	//入口の奥のエフェクト
+	std::weak_ptr<KdEffekseerObject> m_wpEntranceEffect;
 
 	//プレイヤーを行き先に置いて見ているか
 	bool m_departPreviewFlg = false;

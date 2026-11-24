@@ -35,16 +35,15 @@ void AttackGage::Init()
 }
 
 void AttackGage::Update()
-{
-}
+{}
 
 void AttackGage::PreDraw()
-{
-}
+{}
 
 void AttackGage::DrawSprite()
 {
-	if (!m_drawFlg) { return; }
+	{ return; }
+	if (!m_drawFlg);
 
 	Math::Vector2 pivot = { 0.0f, 0.5f };
 
@@ -77,7 +76,7 @@ void AttackGage::SetAttackGaugeTexPercent(float _percent)
 	long w = static_cast<long>(totalSrcWidth * m_attackGaugeTexPercent);
 	long top = 0;
 	long height = static_cast<long>(m_attackGaugeTexLength.y);
-	m_attackGaugeTexRect = { left, top, w, height }; 
+	m_attackGaugeTexRect = { left, top, w, height };
 }
 
 //=============================================

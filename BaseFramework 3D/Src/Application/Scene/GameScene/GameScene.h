@@ -22,6 +22,7 @@ class ComboStepEditor;
 class CharaStatusEditor;
 class EnemyAttackPatternEditor;
 
+enum MapType;
 
 //ゲームシーン
 class GameScene : public BaseScene, public std::enable_shared_from_this<GameScene>
@@ -201,6 +202,8 @@ private:
 
 	//ImGuiで開けるエディタの一覧
 	std::vector<EditorEntry> m_editors;
+
+	MapType m_mapType;
 
 	//---- その他の処理 ----
 

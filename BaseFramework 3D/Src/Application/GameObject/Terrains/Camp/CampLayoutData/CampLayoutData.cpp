@@ -102,19 +102,47 @@ namespace
 {
 	// 出発の行き先が決まっていないときの仮の値
 	// Explore カメラは入口を映しているので、その注視点をプレイヤーの足の高さにして使う
+	// 入口の奥のエフェクトの位置が決まっていないときは、プレイヤー → 行き先 の向きにさらに奥へ進めた所にする
 	void SetDefaultDepartTarget(CampLayoutData& _layout)
 	{
-		if (_layout.m_depart.m_hasTarget) { return; }
+		CampDepartData& d = _layout.m_depart;
 
-		auto it = _layout.m_cameras.find("Explore");
-		if (it == _layout.m_cameras.end()) { return; }
-
-		Math::Vector3 target = it->second.m_target;
+		// プレイヤーの位置
+		bool hasPlayer = false;
+		Math::Vector3 playerPos = Math::Vector3::Zero;
 		for (const auto& obj : _layout.m_objects)
 		{
-			if (obj.m_kind == "Player") { target.y = obj.m_pos.y; break; }
+			if (obj.m_kind == "Player") { playerPos = obj.m_pos; hasPlayer = true; break; }
 		}
-		_layout.m_depart.m_target = target;
+
+		//---- 行き先 ----
+		if (!d.m_hasTarget)
+		{
+			auto it = _layout.m_cameras.find("Explore");
+			if (it != _layout.m_cameras.end())
+			{
+				d.m_target = it->second.m_target;
+				if (hasPlayer) { d.m_target.y = playerPos.y; }
+			}
+		}
+
+		//---- 入口の奥のエフェクト ----
+		if (!d.m_hasEffectPos)
+		{
+			constexpr float kEffectBackDist = 4.0f;	// 行き先からさらに奥へ何m
+
+			Math::Vector3 dir = d.m_target - playerPos;
+			dir.y = 0.0f;
+			if (hasPlayer && dir.LengthSquared() > 0.0001f)
+			{
+				dir.Normalize();
+				d.m_effectPos = d.m_target + dir * kEffectBackDist;
+			}
+			else
+			{
+				d.m_effectPos = d.m_target;
+			}
+		}
 	}
 }
 
@@ -169,6 +197,13 @@ void ApplyCampLayoutTune(CampLayoutData& _layout, const std::string& _filePath)
 		d.m_walkTime      = dep.value("WalkTime",      d.m_walkTime);
 		d.m_fadeStartRate = dep.value("FadeStartRate", d.m_fadeStartRate);
 		d.m_fadeTime      = dep.value("FadeTime",      d.m_fadeTime);
+
+		if (dep.contains("EffectPos"))
+		{
+			d.m_effectPos    = ConvPos(JsonToVec3(dep["EffectPos"]));
+			d.m_hasEffectPos = true;
+		}
+		d.m_effectScale   = dep.value("EffectScale",   d.m_effectScale);
 	}
 
 	SetDefaultDepartTarget(_layout);

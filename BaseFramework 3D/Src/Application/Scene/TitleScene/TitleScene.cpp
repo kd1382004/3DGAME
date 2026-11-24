@@ -188,7 +188,7 @@ void TitleScene::Init()
 
 	//
 	Math::Vector2 size = { 50,50 };
-	m_spMapManager->GenerateMap(size, 20, MapType_Grassland);
+	m_spMapManager->GenerateMap(size, 20, MapType_Dungeon);
 
 	m_spCamera->SetPos(m_spMapManager->GetPlayerSpawnPos());
 	m_spTitleMove->SetPos(m_spMapManager->GetPlayerSpawnPos());

@@ -5,6 +5,8 @@ class MapObjManager;
 class MapObjBase;
 class CameraBase;
 
+enum MapType;
+
 //////////////////////////////////////////////////////
 // マップ生成で使う型
 //////////////////////////////////////////////////////
@@ -256,7 +258,9 @@ public:
 	// _spCamera ... カメラ
 	void SetCamera(std::shared_ptr<CameraBase> _spCamera) { m_wpCamera = _spCamera; }
 
-
+	//マップの種類に合わせたモデルを読み込んでセットする
+	// _type ... マップの種類
+	void LoadModelByMapType(MapType _type);
 private:
 
 	//////////////////////////////////////////////////////
@@ -778,4 +782,18 @@ private:
 	//敵のスポーン位置を決める
 	// _map ... マップ
 	void EnemySpawnListDecision(std::vector<std::vector<int>> _map);
+
+
+
+	//---- その他の処理 ----
+	// 
+	//マップの種類ごとのモデルのフォルダ名を返す
+	// _type ... マップの種類
+	//戻り値 ... フォルダ名(例: "Castle")
+	std::string GetMapModelFolder(MapType _type) const;
+
+	//モデルを読み込む(入れ物がなければ作る)
+	// _spModel ... 読み込み先のモデル
+	// _path    ... モデルのパス
+	void LoadModel(std::shared_ptr<KdModelWork>& _spModel, const std::string& _path);
 };

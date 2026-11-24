@@ -493,7 +493,7 @@ void MapManager::GenerateMap(Math::Vector2 _mapSize, int _roomNum, MapType _mapT
 	m_chunkNum = { -999,-999 };
 
 	if (!m_spMapGenerate) { return; }
-
+	LoadModelByMapType(_mapType);
 
 	m_spMapGenerate->SetMapObjManager(m_wpMapObjManager.lock());
 
@@ -728,6 +728,7 @@ void MapManager::GenerateBossMap(Math::Vector2 _mapSize, MapType _type)
 	m_updateChunks.clear();
 	m_drawChunks.clear();
 	if (!m_spMapGenerate) { return; }
+	LoadModelByMapType(_type);
 
 	//敵が歩ける一覧
 	std::vector<std::vector<bool>> mapData;
@@ -1048,4 +1049,13 @@ std::vector<Node*> MapManager::BuildPath(Node* _goal) const
 
 	std::reverse(path.begin(), path.end());
 	return path;
+}
+
+void MapManager::LoadModelByMapType(MapType _type)
+{
+	if (m_oldMapType == _type) { return; }
+	m_oldMapType = _type;
+
+	if (!m_spMapGenerate) { return; }
+	m_spMapGenerate->LoadModelByMapType(_type);
 }

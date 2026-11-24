@@ -59,6 +59,11 @@ struct CampDepartData
 	float         m_fadeStartRate  = 0.6f;					// 歩きの何割で暗転を始めるか(0〜1)
 	float         m_fadeTime       = 1.0f;					// 暗転にかける秒数
 	bool          m_hasTarget      = false;					// Tune に行き先が書いてあったか
+
+	// 入口の奥に出すエフェクト(ダンジョンの階段と同じ Stairs/Stairs.efkefc)
+	Math::Vector3 m_effectPos      = Math::Vector3::Zero;	// 出す位置
+	float         m_effectScale    = 1.0f;					// 大きさ
+	bool          m_hasEffectPos   = false;					// Tune に位置が書いてあったか
 };
 
 // ファイル丸ごと
