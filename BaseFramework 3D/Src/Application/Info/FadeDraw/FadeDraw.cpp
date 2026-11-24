@@ -17,13 +17,13 @@ void FadeDraw::Update()
 	switch (m_fadeType)
 	{
 	case FadeIn:
-		// 0 → 1 に上がる（画面が明るくなる）
-		m_color.w = t;
+		// 黒い板の不透明度 1 → 0（画面が明るくなる）
+		m_color.w = 1.0f - t;
 		break;
 
 	case FadeOut:
-		// 1 → 0 に下がる（画面が暗くなる）
-		m_color.w = 1.0f - t;
+		// 黒い板の不透明度 0 → 1（画面が暗くなる）
+		m_color.w = t;
 		break;
 	case NoFade:
 		m_color.w = 0.0f;

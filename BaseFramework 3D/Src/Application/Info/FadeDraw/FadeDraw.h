@@ -4,8 +4,8 @@
 //フェードの種類
 enum FadeType
 {
-	FadeIn,
-	FadeOut,
+	FadeIn,		//フェードイン ：黒 → 画面が見えてくる(明るくなる)
+	FadeOut,	//フェードアウト：画面 → 黒(暗くなる)
 	NoFade,
 };
 
@@ -42,6 +42,10 @@ public:
 	{
 		m_fadeType = _type;
 		m_fadeFlg = true;
+		//色(透明度は Update で決める)
+		m_color.x = _color.x;
+		m_color.y = _color.y;
+		m_color.z = _color.z;
 		m_time = _time;
 		m_nowTime = 0.0f;
 	}

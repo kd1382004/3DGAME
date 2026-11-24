@@ -426,7 +426,7 @@ void PrepareScene::UpdateDepart()
 	case DepartState::Walk:
 		if (t >= dep.m_fadeStartRate)
 		{
-			FadeDraw::Instance().SetFadeType(FadeIn, dep.m_fadeTime);
+			FadeDraw::Instance().SetFadeType(FadeOut, dep.m_fadeTime);	//暗転してからゲームへ
 			m_departState = DepartState::Fade;
 
 			//入口に吸い込まれる音

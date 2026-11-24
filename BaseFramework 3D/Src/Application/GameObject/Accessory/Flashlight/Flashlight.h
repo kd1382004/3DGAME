@@ -7,7 +7,7 @@
 struct FlashlightConfig
 {
 	//ライトの色(明るさ込み)
-	Math::Vector3 m_color = { 10,10,10 };
+	Math::Vector3 m_color = { 8.8, 9.7, 10 };
 	//ライトが届く距離
 	float m_radius = 100.0f;
 	//ライトの広がる角度(度)

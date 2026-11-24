@@ -76,7 +76,8 @@ void Flashlight::GenerateDepthMapFromLight()
 void Flashlight::DrawLit()
 {
 	if (!m_spFlashlightModel) { return; }
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spFlashlightModel, m_mWorld);
+	//レンズ・文字の帯・握りの溝を光らせる(発光の倍率 1)
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spFlashlightModel, m_mWorld, kWhiteColor, { 1.0f, 1.0f, 1.0f });
 }
 
 void Flashlight::DrawBright()

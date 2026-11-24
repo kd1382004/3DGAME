@@ -350,6 +350,8 @@ void GameScene::Init()
 	m_spMapManager->SetEnemyManager(m_spEnemyManager);
 	m_spMapManager->SetUIManager(m_spUIManager);
 	m_spMapManager->SetMapObjManager(m_spMapObjManager);
+	m_mapType = MapType::MapType_Dungeon;
+
 
 	/////////////////////////////////////////
 	//ポーション使用コントローラーにセット
@@ -446,7 +448,7 @@ void GameScene::Init()
 
 
 
-	FadeDraw::Instance().SetFadeType(FadeOut, 1.0f);
+	FadeDraw::Instance().SetFadeType(FadeIn, 1.0f);	//暗いところから明るくして始める
 }
 
 //=============================================
@@ -549,19 +551,23 @@ void GameScene::GenerateMap()
 	int baseRoomCount = 3;
 	int roomCount = baseRoomCount + m_mapGenerateDisplayFloor * 2;
 
-	//仮処理
-	if (m_displayFloor % 2 == 1)
+	//何番目のエリアか(ボス階までを1エリアとする)
+	//m_displayFloor は直前で ++ 済みなので 1 始まり
+	const int area = (m_displayFloor - 1) / m_bossInterval;
+
+	if (area < MapType::Maptype_Siz)
 	{
-		m_mapType = MapType::MapType_Dungeon;
-		
+		m_mapType = static_cast<MapType>(area);
 	}
 	else
 	{
-		m_mapType = MapType::MapType_Factory;
+		if ((m_displayFloor - 1) % m_bossInterval == 0)
+		{
+			m_mapType = static_cast<MapType>(KdRandom::GetInt(0, static_cast<int>(MapType::Maptype_Siz) - 1));
+		}
+		
 	}
 
-	//まだできてないから固定
-	m_mapType = MapType::MapType_Factory;
 
 
 	m_spEnemyManager->EnemyListReset();
@@ -669,7 +675,7 @@ void GameScene::WarpGateInit(Math::Vector3 _setNextGatePos, Math::Vector3 _setEs
 void GameScene::ChangeResultScene()
 {
 	SetGameResult();
-	FadeDraw::Instance().SetFadeType(FadeOut, 3);
+	FadeDraw::Instance().SetFadeType(FadeIn, 3);	//リザルトは暗いところから明るくなる
 	SceneManager::Instance().SetNextScene(SceneManager::SceneType::Result);
 }
 
@@ -677,7 +683,7 @@ void GameScene::PlayerDefeat()
 {
 	m_playerDefeatFlg = true;
 
-	FadeDraw::Instance().SetFadeType(FadeIn, 3);
+	FadeDraw::Instance().SetFadeType(FadeOut, 3);	//倒れたら暗転してからリザルトへ
 }
 
 void GameScene::Event()

@@ -52,15 +52,15 @@ public:
 //マップの種類
 enum MapType
 {
-	//設定されてない
-	NOLE,
-
 	//地下迷宮(石造りの通路・松明)
 	MapType_Dungeon,
 
 	//機械仕掛け
 	MapType_Factory,
 
+
+	//マップの種類異数かつ設定されてない
+	Maptype_Siz,
 };
 
 //マップの管理・経路探索
@@ -327,6 +327,6 @@ private:
 	// _type ... マップの種類
 	void LoadModelByMapType(MapType _type);
 
-	MapType m_oldMapType = MapType::NOLE;
+	MapType m_oldMapType = MapType::Maptype_Siz;
 };
 
