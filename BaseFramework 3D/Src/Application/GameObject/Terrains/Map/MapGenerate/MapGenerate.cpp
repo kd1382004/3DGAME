@@ -784,8 +784,7 @@ std::vector<std::vector<bool>> MapGenerate::Generate(Math::Vector2 _mapSize, int
 
 				m_roomInfoList[i][j].m_installation = true;
 				*_playerSpawnPos = m_roomInfoList[i][j].m_pos;
-				_playerSpawnPos->y += 1;
-
+	
 				//スポーン位置を決めたので、もう探さない
 				playerSpawn = true;
 			}

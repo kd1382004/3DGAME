@@ -644,14 +644,36 @@ void MapManager::GenerateMap(Math::Vector2 _mapSize, int _roomNum, MapType _mapT
 
 			//この部屋の、何も置いていない床の番号を集める
 			std::vector<int> freeFloors;
+
+			// この部屋のマスの一覧（部屋ごとに1回だけ作る）
+			std::set<std::pair<int, int>> roomTiles;
+			for (auto& f : mapRoomList[i]) {
+				roomTiles.insert({ (int)f.m_xy.x, (int)f.m_xy.y });
+			}
+
+			// 隣に通路がある(=通路の目の前)か
+			auto isEntrance = [&](int _x, int _y) {
+				const int dx[4] = { 1,-1,0,0 };
+				const int dy[4] = { 0,0,1,-1 };
+				for (int d = 0; d < 4; d++) {
+					int nx = _x + dx[d], ny = _y + dy[d];
+					if (ny < 0 || ny >= (int)mapData.size() || nx < 0 || nx >= (int)mapData[ny].size()) continue;
+					if (mapData[ny][nx] && !roomTiles.count({ nx, ny })) return true; // 隣が通路
+				}
+				return false;
+				};
+
 			for (size_t j = 0; j < mapRoomList[i].size(); j++)
 			{
-				if (!mapRoomList[i][j].m_installation)
+				int x = static_cast<int>(mapRoomList[i][j].m_xy.x);
+				int y = static_cast<int>(mapRoomList[i][j].m_xy.y);
+
+				// 何も置いていない かつ 入口ではない
+				if (!mapRoomList[i][j].m_installation && !isEntrance(x, y))
 				{
 					freeFloors.push_back(static_cast<int>(j));
 				}
 			}
-
 			//シャッフルする(フィッシャー–イェーツ)
 			for (int k = static_cast<int>(freeFloors.size()) - 1; k > 0; k--)
 			{

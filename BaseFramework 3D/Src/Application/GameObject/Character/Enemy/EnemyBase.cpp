@@ -808,7 +808,7 @@ void EnemyBase::ReturnSpawnPos()
 		}
 
 		// ノード間の線を描く
-		for (size_t i = 0; i < m_path.size() - 1; i++)
+		for (size_t i = 0; i + 1 < m_path.size(); i++)
 		{
 			Math::Vector3 a = spMapManager->NodeToWorld(m_path[i]);
 			Math::Vector3 b = spMapManager->NodeToWorld(m_path[i + 1]);

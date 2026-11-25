@@ -1,9 +1,20 @@
 ﻿#include "KdGameObject.h"
 
+//追加(当たり判定を描画するかの設定)
+#include"../../Application/Info/DebugInfo/DebugInfo.h"
+
 void KdGameObject::DrawDebug()
 {
 	// 早期リターン
 	if (!m_pDebugWire)return;
+
+	//当たり判定を表示しない設定なら、描画せずに今フレームの線を捨てる
+	//(Draw は描画したあとに線を消すので、描画しないときは Clear しないと線がたまり続ける)
+	if (!DebugInfo::Instance().GetDrawDebugWireFlg())
+	{
+		m_pDebugWire->Clear();
+		return;
+	}
 
 	m_pDebugWire->Draw();
 }

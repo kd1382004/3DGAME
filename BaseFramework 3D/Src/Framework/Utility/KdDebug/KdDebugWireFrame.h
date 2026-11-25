@@ -14,6 +14,9 @@ public:
 
 	void Draw();
 
+	//描画せずに、たまった線を捨てる(描画しないフレームに呼ぶ。呼ばないと線がたまり続ける)
+	void Clear() { m_debugVertices.clear(); }
+
 private:
 	void Release();
 

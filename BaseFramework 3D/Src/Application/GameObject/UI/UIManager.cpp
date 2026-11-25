@@ -52,19 +52,6 @@ void UIManager::PreUpdate()
 		}
 	}
 
-	//ソートする(描画優先数字が大きいほど後に)
-	if (m_uiListOldSize != m_spUIList.size())
-	{
-		m_spUIList.sort(
-			[](const std::shared_ptr<UIBase>& _spA, const std::shared_ptr<UIBase>& _spB)
-			{
-				return _spA->GetLayerPriority() > _spB->GetLayerPriority();
-			}
-		);
-
-		m_uiListOldSize = m_spUIList.size();
-	}
-
 	if (m_spUIBase2)
 	{
 		m_spUIBase2->SetDrawFlg(false);
@@ -87,6 +74,19 @@ void UIManager::Update()
 
 void UIManager::PreDraw()
 {
+	//ソートする(描画優先数字が大きいほど後に)
+	if (m_needSort)
+	{
+		m_spUIList.sort(
+			[](const std::shared_ptr<UIBase>& _spA, const std::shared_ptr<UIBase>& _spB)
+			{
+				return _spA->GetLayerPriority() > _spB->GetLayerPriority();
+			}
+		);
+
+		m_needSort = false;
+	}
+
 	for (auto ui : m_spUIList)
 	{
 		ui->PreDraw();
@@ -131,6 +131,12 @@ void UIManager::SetGameScene(std::shared_ptr<GameScene> _spGameScene)
 	{
 		m_spPlayerInventoryUI->SetGameScene(_spGameScene);
 	}
+}
+
+void UIManager::AddUIObj(std::shared_ptr<UIBase> _spUI)
+{
+	m_spUIList.push_back(_spUI); 
+	m_needSort = true;
 }
 
 void UIManager::SetPotionUseController(std::shared_ptr<PotionUseController> _spPotionUseController)

@@ -73,7 +73,7 @@ public:
 
 	//UIを追加
 	// _spUI ... 追加するUI
-	void AddUIObj(std::shared_ptr<UIBase> _spUI) { m_spUIList.push_back(_spUI); }
+	void AddUIObj(std::shared_ptr<UIBase> _spUI);
 
 	//ポーションを使う指示を出すクラスをセット
 	// _spPotionUseController ... ポーションを使う指示を出すクラス
@@ -122,4 +122,6 @@ private:
 
 	//宝箱用テクスチャ
 	std::shared_ptr<KdTexture>m_spTreasureChestUiTex;
+
+	bool m_needSort;
 };

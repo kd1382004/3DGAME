@@ -88,6 +88,14 @@ void SceneManager::DrawDebug()
 
 void SceneManager::ImGUI()
 {
+	//---- どのシーンでも使うデバッグ設定 ----
+	if (ImGui::TreeNode(U8("デバッグ表示")))
+	{
+		//当たり判定(m_pDebugWire)を描画するか
+		ImGui::Checkbox(U8("当たり判定を表示"), DebugInfo::Instance().WorkDrawDebugWireFlg());
+		ImGui::TreePop();
+	}
+
 	//FOGImGUI
 	if (ImGui::TreeNode(U8("FOG")))
 	{
