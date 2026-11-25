@@ -88,14 +88,14 @@ void Application::Execute()
 			break;
 		}
 
-		if (GetAsyncKeyState(VK_ESCAPE))
-		{
-//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
-//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
-			{
-				End();
-			}
-		}
+//		if (GetAsyncKeyState(VK_ESCAPE))
+//		{
+////			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
+////				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+//			{
+//				End();
+//			}
+//		}
 
 		//=========================================
 		//

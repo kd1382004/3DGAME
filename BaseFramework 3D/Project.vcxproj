@@ -401,6 +401,7 @@
     <ClInclude Include="Src\Application\Info\KeyInfo\KeyInfo.h" />
     <ClInclude Include="Src\Application\Info\MouseInfo\MouseInfo.h" />
     <ClInclude Include="Src\Application\Info\NumDraw\NumDraw.h" />
+    <ClInclude Include="Src\Application\Info\PauseUI\PauseUI.h" />
     <ClInclude Include="Src\Application\Info\VOL\VOLInfo.h" />
     <ClInclude Include="Src\Application\Info\SE\SEPlayer.h" />
     <ClInclude Include="Src\Application\main.h" />
@@ -583,6 +584,7 @@
     <ClCompile Include="Src\Application\Info\KeyInfo\KeyInfo.cpp" />
     <ClCompile Include="Src\Application\Info\MouseInfo\MouseInfo.cpp" />
     <ClCompile Include="Src\Application\Info\NumDraw\NumDraw.cpp" />
+    <ClCompile Include="Src\Application\Info\PauseUI\PauseUI.cpp" />
     <ClCompile Include="Src\Application\Info\VOL\VOLInfo.cpp" />
     <ClCompile Include="Src\Application\main.cpp" />
     <ClCompile Include="Src\Application\Scene\BaseScene\BaseScene.cpp" />

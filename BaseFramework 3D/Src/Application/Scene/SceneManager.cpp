@@ -12,6 +12,8 @@
 #include"../Info/MouseInfo/MouseInfo.h"		//マウス入力
 #include"../Info/KeyInfo/KeyInfo.h"			//キー入力
 #include"../Info/DebugInfo/DebugInfo.h"		//デバッグ用の状態
+#include"../Info/PauseUI/PauseUI.h"
+
 
 //=============================================
 // 基本の処理
@@ -30,6 +32,7 @@ void SceneManager::PreUpdate()
 		return;
 	}
 
+	if (PauseUI::Instance().GetPauseMenuFlg()) { return; }
 	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->PreUpdate();
 }
@@ -38,6 +41,7 @@ void SceneManager::Update()
 {
 	MouseInfo::Instance().Update();
 	KeyInfo::Instance().UpdateKey();
+	PauseUI::Instance().Update();
 
 
 	if (DebugInfo::Instance().GetSceneManagerImGUIFlg())
@@ -51,6 +55,8 @@ void SceneManager::Update()
 		while (ShowCursor(false) >= 0) {}  // カウンターが負になるまで下げる＝必ず非表示
 	}
 
+	if (PauseUI::Instance().GetPauseMenuFlg()) { return; }
+
 	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->Update();
 }
@@ -62,6 +68,7 @@ void SceneManager::PostUpdate()
 		return;
 	}
 
+	if (PauseUI::Instance().GetPauseMenuFlg()) { return; }
 	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->PostUpdate();
 }
@@ -86,6 +93,7 @@ void SceneManager::DrawSprite()
 		m_spCurrentScene->DrawSprite();
 	}
 
+	PauseUI::Instance().DrawSprite();
 	MouseInfo::Instance().DrawSprite();
 }
 
