@@ -30,6 +30,7 @@ void SceneManager::PreUpdate()
 		return;
 	}
 
+	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->PreUpdate();
 }
 
@@ -50,6 +51,7 @@ void SceneManager::Update()
 		while (ShowCursor(false) >= 0) {}  // カウンターが負になるまで下げる＝必ず非表示
 	}
 
+	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->Update();
 }
 
@@ -60,29 +62,36 @@ void SceneManager::PostUpdate()
 		return;
 	}
 
+	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->PostUpdate();
 }
 
 void SceneManager::PreDraw()
 {
+	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->PreDraw();
 }
 
 void SceneManager::Draw()
 {
+	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->Draw();
 }
 
 void SceneManager::DrawSprite()
 {
 
-	m_spCurrentScene->DrawSprite();
+	if (m_spCurrentScene)
+	{
+		m_spCurrentScene->DrawSprite();
+	}
 
 	MouseInfo::Instance().DrawSprite();
 }
 
 void SceneManager::DrawDebug()
 {
+	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->DrawDebug();
 }
 
@@ -144,7 +153,10 @@ void SceneManager::ImGUI()
 
 	}
 
-	m_spCurrentScene->ImGUI();
+	if (m_spCurrentScene)
+	{
+		m_spCurrentScene->ImGUI();
+	}
 
 
 	if (ImGui::Button(U8("ImGuiを閉じる")))
@@ -160,6 +172,9 @@ void SceneManager::ImGUI()
 
 const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()
 {
+	// シーンが無いときは空のリストを返す
+	static const std::list<std::shared_ptr<KdGameObject>> emptyList;
+	if (!m_spCurrentScene) { return emptyList; }
 	return m_spCurrentScene->GetObjList();
 }
 
@@ -169,6 +184,7 @@ const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()
 
 void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _spObj)
 {
+	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->AddObject(_spObj);
 }
 
@@ -278,7 +294,10 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	//エフェクシアリセット
 	KdEffekseerManager::GetInstance().StopAllEffect();
 
-	m_spCurrentScene->Init();
+	if (m_spCurrentScene)
+	{
+		m_spCurrentScene->Init();
+	}
 
 	// 現在のシーン情報を更新
 	m_currentSceneType = _sceneType;

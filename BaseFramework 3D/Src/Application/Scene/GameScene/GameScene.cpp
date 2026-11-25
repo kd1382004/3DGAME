@@ -401,15 +401,21 @@ void GameScene::Init()
 	if (!m_spGameBGM)
 	{
 		m_spGameBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Game/GameBGM.wav", true);
-		m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
-		m_spGameBGM->Stop();
+		if (m_spGameBGM)
+		{
+			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
+			m_spGameBGM->Stop();
+		}
 	}
 
 	if (!m_spBossBGM)
 	{
 		m_spBossBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Game/BossBGM.wav", true);
-		m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
-		m_spBossBGM->Stop();
+		if (m_spBossBGM)
+		{
+			m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol());
+			m_spBossBGM->Stop();
+		}
 	}
 
 
@@ -477,20 +483,33 @@ void GameScene::SetGameResult()
 	{
 		gameResult.m_playerDead = m_spPlayer->GetIsDead();
 
+		//今の所持金(所持品が無いときは -1 = 所持金は書き換えない)
+		std::shared_ptr<PlayerInventory> spPlayerInventory = m_spPlayer->GetPlayerInventory();
+		const long nowMoney = spPlayerInventory ? spPlayerInventory->GetMoney() : -1L;
+
 		//手に入れたお金 = 今の所持金 - 出発したときの所持金
-		gameResult.m_getMoney = std::max(0L, m_spPlayer->GetPlayerInventory()->GetMoney() - m_carryIn.m_money);
+		if (spPlayerInventory)
+		{
+			gameResult.m_getMoney = std::max(0L, nowMoney - m_carryIn.m_money);
+		}
 
 
 		bool saveFlg = !gameResult.m_playerDead;
 
 		//セーブデータに保存
-		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
-		SaveWeaponStrengtheningData(saveFlg, m_weaponStrengtheningFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+		SaveInventoryData(saveFlg, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryFilePath, nowMoney);
+		if (m_spWeapon)
+		{
+			SaveWeaponStrengtheningData(saveFlg, m_weaponStrengtheningFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+		}
 
 
 		//ゲームResultに保存
-		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryGameResultFilePath, m_spPlayer->GetPlayerInventory()->GetMoney());
-		SaveWeaponStrengtheningData(true, m_weaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+		SaveInventoryData(true, m_spPlayer->GetPotionsInventoryList(), m_spPlayer->GetWeaponsStrengtheningInventoryList(), m_inventoryGameResultFilePath, nowMoney);
+		if (m_spWeapon)
+		{
+			SaveWeaponStrengtheningData(true, m_weaponStrengtheningGameResultFilePath, m_spWeapon->GetWeaponsStrengtheningInfoList());
+		}
 		//プレイヤーのステータス状況を保存
 		m_spPlayer->ClearAllBuffs();
 		m_spPlayer->SaveCharaStatus(m_playerStatusGameResultFilePath);
@@ -773,6 +792,7 @@ void GameScene::Event()
 	//更新チャンク更新
 	///////////////////////////////////////////////////
 	if (!m_spMapManager) { return; }
+	if (!m_spPlayer) { return; }
 	//更新チャンク決め
 	m_spMapManager->SetPlayerChunk(m_spPlayer->GetPos());
 
@@ -796,9 +816,12 @@ void GameScene::Event()
 			{
 				m_spCamera->ResolveCameraOcclusionObject(map);
 			}
-			for (auto& mapObj : m_spMapObjManager->GetMapUpdateObj())
+			if (m_spMapObjManager)
 			{
-				m_spCamera->ResolveCameraOcclusionObject(mapObj);
+				for (auto& mapObj : m_spMapObjManager->GetMapUpdateObj())
+				{
+					m_spCamera->ResolveCameraOcclusionObject(mapObj);
+				}
 			}
 		}
 	}

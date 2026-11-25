@@ -215,13 +215,19 @@ void MouseInfo::Init()
 	if (!m_spClickSE)
 	{
 		m_spClickSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/click.wav", false);
-		m_spClickSE->Stop();
-		m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		if (m_spClickSE)
+		{
+			m_spClickSE->Stop();
+			m_spClickSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		}
 	}
 	if (!m_spHitSE)
 	{
 		m_spHitSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Mouse/Hit.wav", false);
-		m_spHitSE->Stop();
-		m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		if (m_spHitSE)
+		{
+			m_spHitSE->Stop();
+			m_spHitSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		}
 	}
 }

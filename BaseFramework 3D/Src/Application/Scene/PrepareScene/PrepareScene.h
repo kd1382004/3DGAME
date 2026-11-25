@@ -35,6 +35,7 @@ public:
 		Shop,
 		Equip,
 		Records,
+		Notab,		//選べない
 		TabSize
 	};
 

@@ -112,7 +112,10 @@ void ResultScene::Init()
 		if (!m_spPlayerDeadBGM)
 		{
 			m_spPlayerDeadBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Result/PlayerDeadBGM.wav", true);
-			m_spPlayerDeadBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.3);
+			if (m_spPlayerDeadBGM)
+			{
+				m_spPlayerDeadBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.3);
+			}
 		}
 	}
 	else
@@ -120,7 +123,10 @@ void ResultScene::Init()
 		if (!m_spEscapeBGM)
 		{
 			m_spEscapeBGM = KdAudioManager::Instance().Play("Asset/Sound/BGM/Result/EscapeBGM.wav", true);
-			m_spEscapeBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.3);
+			if (m_spEscapeBGM)
+			{
+				m_spEscapeBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.3);
+			}
 		}
 	}
 }

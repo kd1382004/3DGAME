@@ -67,7 +67,10 @@ void StairsBase::Init()
 	);
 
 	auto spEffect = m_wpAuraEffect.lock();
-	spEffect->SetLoop(false);
+	if (spEffect)
+	{
+		spEffect->SetLoop(false);
+	}
 
 	m_effectLocalPos.z += 5;
 

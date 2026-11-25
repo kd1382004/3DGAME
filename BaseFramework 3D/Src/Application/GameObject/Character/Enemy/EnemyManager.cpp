@@ -110,7 +110,7 @@ void EnemyManager::PreDraw()
 	if (spUIManager)
 	{
 		std::shared_ptr<UIMapManager>spUIMapManager = spUIManager->GetUIMapManager();
-		if (spUIMapManager)
+		if (spUIMapManager && spUIMapManager->GetUIMap_Enemy())
 		{
 
 			spUIMapManager->GetUIMap_Enemy()->PosListReset();
@@ -123,10 +123,10 @@ void EnemyManager::PreDraw()
 	}
 
 
-	if (m_spEnemyBoss)
+	if (m_spEnemyBoss && spUIManager)
 	{
 		std::shared_ptr<UIMapManager>spUIMapManager = spUIManager->GetUIMapManager();
-		if (spUIMapManager)
+		if (spUIMapManager && spUIMapManager->GetUIMap_Enemy())
 		{
 			m_spEnemyBoss->PreDraw();
 			spUIMapManager->GetUIMap_Enemy()->SetEnemyPosAngleList(m_spEnemyBoss->GetPos(), m_spEnemyBoss->GetAngle());

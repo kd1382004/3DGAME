@@ -139,27 +139,27 @@ void PlayerBase::Init()
 	if (!m_spWalkSE)
 	{
 		m_spWalkSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Walk.wav", false);
-		m_spWalkSE->Stop();
+		if (m_spWalkSE) { m_spWalkSE->Stop(); }
 	}
 	if (!m_spDashSE)
 	{
 		m_spDashSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Dash.wav", false);
-		m_spDashSE->Stop();
+		if (m_spDashSE) { m_spDashSE->Stop(); }
 	}
 	if (!m_spDamageSE)
 	{
 		m_spDamageSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Damage.wav", false);
-		m_spDamageSE->Stop();
+		if (m_spDamageSE) { m_spDamageSE->Stop(); }
 	}
 	if (!m_spRollSE)
 	{
 		m_spRollSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Roll.wav", false);
-		m_spRollSE->Stop();
+		if (m_spRollSE) { m_spRollSE->Stop(); }
 	}
 	if (!m_spJumpSE)
 	{
 		m_spJumpSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Player/Jump.wav", false);
-		m_spJumpSE->Stop();
+		if (m_spJumpSE) { m_spJumpSE->Stop(); }
 	}
 }
 

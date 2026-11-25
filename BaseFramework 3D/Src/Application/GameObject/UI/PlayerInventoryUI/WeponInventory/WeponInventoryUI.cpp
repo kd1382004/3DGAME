@@ -207,7 +207,8 @@ void WeponInventoryUI::Update()
 {
 	//持ってる数を武器に渡す
 	std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
-	std::shared_ptr<WeaponBase>spWeapon = spPlayer->GetWeapon().lock();
+	std::shared_ptr<WeaponBase>spWeapon = nullptr;
+	if (spPlayer) { spWeapon = spPlayer->GetWeapon().lock(); }
 	if (spPlayer && spWeapon)
 	{
 		for (int i = 0; i < WeaponsStrengtheningSize; i++)

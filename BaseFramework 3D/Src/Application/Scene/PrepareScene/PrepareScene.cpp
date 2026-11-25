@@ -322,6 +322,7 @@ void PrepareScene::ChangeTab(PrepareTab _tab)
 	if (m_spEquipDisplay)   m_spEquipDisplay->SetActive(_tab == PrepareTab::Equip);
 	if (m_spRecordsDisplay) m_spRecordsDisplay->SetActive(_tab == PrepareTab::Records);
 	if (m_spPrepareSceneDisplay) m_spPrepareSceneDisplay->SetActive(_tab == PrepareTab::None);
+	if (m_spPrepareSceneDisplay) m_spPrepareSceneDisplay->SetTabActive(_tab == PrepareTab::Notab);
 
 	// 出発ボタンはメニューだけのときに出す(ショップなどの画面と重なるため)
 	if (m_spGameButton) m_spGameButton->SetActive(_tab == PrepareTab::None);
@@ -366,7 +367,7 @@ void PrepareScene::StartDepart()
 	m_departTimer = 0;
 	m_departFadeTimer = 0;
 	m_departStepTimer = 0;
-	ChangeTab(PrepareTab::None);
+	ChangeTab(PrepareTab::Notab);
 	if (m_spGameButton) { m_spGameButton->SetActive(false); }
 	if (m_spPrepareSceneDisplay) { m_spPrepareSceneDisplay->SetActive(false); }
 

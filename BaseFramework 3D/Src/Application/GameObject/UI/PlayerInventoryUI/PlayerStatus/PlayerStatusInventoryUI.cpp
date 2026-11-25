@@ -96,6 +96,7 @@ void PlayerStatusInventoryUI::Update()
 void PlayerStatusInventoryUI::PreDraw()
 {
 	if (!m_spRtTargetPack) { return; }
+	if (!m_spStatusCamera) { return; }
 	std::shared_ptr<PlayerBase> spPlayer = m_spContext->m_wpPlayer.lock();
 	if (spPlayer)
 	{
@@ -121,7 +122,10 @@ void PlayerStatusInventoryUI::PreDraw()
 		// 5. 3Dシェーダーのパスを開始してプレイヤーを描画
 		KdShaderManager::Instance().m_StandardShader.BeginLit();
 		spPlayer->DrawLit();
-		spPlayer->GetWeapon().lock()->DrawLit();
+		if (std::shared_ptr<WeaponBase> spWeapon = spPlayer->GetWeapon().lock())
+		{
+			spWeapon->DrawLit();
+		}
 
 		KdShaderManager::Instance().m_StandardShader.EndLit();
 		// レンダーターゲットを戻す

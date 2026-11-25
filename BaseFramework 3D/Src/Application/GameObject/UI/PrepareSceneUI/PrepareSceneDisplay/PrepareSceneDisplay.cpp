@@ -95,6 +95,9 @@ void PrepareSceneDisplay::Init()
 
 void PrepareSceneDisplay::Update()
 {
+	if (m_TabActiveFlg) { return; }
+
+
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
 		if (MouseHit(m_menuPos[i], m_menuDrawSize[i].x, m_menuDrawSize[i].y))
@@ -122,6 +125,7 @@ void PrepareSceneDisplay::Update()
 
 void PrepareSceneDisplay::DrawSprite()
 {
+	if (m_TabActiveFlg) { return; }
 	for (int i = 0; i < static_cast<int>(PrepareMenu::MenuSize); i++)
 	{
 		if (!m_spMenuTex[i]) { continue; }

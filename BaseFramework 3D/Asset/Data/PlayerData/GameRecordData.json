@@ -45,16 +45,16 @@
     ],
     "Latest": {
         "CarryIn": {
-            "Money": 2130,
-            "PotionNum": 1301,
+            "Money": 3380,
+            "PotionNum": 1324,
             "Weapon": 0
         },
-        "DisplayFloor": 3,
-        "EnemyKillCount": 11,
-        "GetMoney": 1250,
-        "PlayDate": 1795581086,
-        "PlayTimeSc": 159.50083923339844,
+        "DisplayFloor": 1,
+        "EnemyKillCount": 0,
+        "GetMoney": 0,
+        "PlayDate": 1795583448,
+        "PlayTimeSc": 2.7129974365234375,
         "PlayerDead": false,
-        "TreasureChestsNum": 23
+        "TreasureChestsNum": 0
     }
 }

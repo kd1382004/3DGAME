@@ -98,7 +98,7 @@ void ResultDisplay_PlayerStatus::Init()
 
 void ResultDisplay_PlayerStatus::Update()
 {
-	if (m_spPlayerModel)
+	if (m_spPlayerModel && m_spAnimator)
 	{
 		m_spAnimator->AdvanceTime(m_spPlayerModel->WorkNodes(), 100);
 		m_spPlayerModel->CalcNodeMatrices();
@@ -136,6 +136,7 @@ void ResultDisplay_PlayerStatus::Update()
 void ResultDisplay_PlayerStatus::PreDraw()
 {
 	if (!m_spRtTargetPack) { return; }
+	if (!m_spStatusCamera) { return; }
 	// レンダーターゲットを切り替え
 	SceneManager::Instance().ChangeRendertarget(m_spRtTargetPack);
 	// 背景を完全透明(アルファ0)にクリアしたい場合 (UIの上にキャラだけ重ねる場合におすすめ)

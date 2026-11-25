@@ -51,6 +51,9 @@ public:
 	// _flg ... 表示するか
 	void SetActive(bool _flg) { m_activeFlg = _flg; }
 
+	//Tab選択を表示するかどうか
+	void SetTabActive(bool _flg) { m_TabActiveFlg = _flg; }
+
 	//持っているポーションの合計をセット
 	// _num ... ポーションの合計(0未満は0にする)
 	void SetPotionNum(int _num) { m_potionNum = std::max(0, _num); }
@@ -110,6 +113,9 @@ private:
 
 	//表示中かどうか(開いているタブの時だけtrue)
 	bool m_activeFlg = false;
+
+
+	bool m_TabActiveFlg = false;
 
 	//準備シーン(循環参照を防ぐためweak_ptr)
 	std::weak_ptr<PrepareScene> m_wpPrepareScene;

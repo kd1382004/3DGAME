@@ -269,6 +269,9 @@ void TitleScene::Event()
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
 	}
 
+	if (!m_spMapManager) { return; }
+	if (!m_spTitleMove) { return; }
+
 	m_spMapManager->SetPlayerChunk(m_spTitleMove->GetPos());
 
 	//プレイヤーのあたり判定リストを毎フレーム更新

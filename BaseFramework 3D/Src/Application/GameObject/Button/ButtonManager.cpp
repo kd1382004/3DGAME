@@ -29,7 +29,7 @@ void ButtonManager::Update()
 			m_posListNum = 0;
 		}
 
-		m_spButtonChange->Play();
+		if (m_spButtonChange) { m_spButtonChange->Play(); }
 	}
 
 	if (KeyInfo::GetInstance().KeyPush(VK_RIGHT, true, true))
@@ -41,7 +41,7 @@ void ButtonManager::Update()
 			m_posListNum = m_posList.size() - 1;
 		}
 
-		m_spButtonChange->Play();
+		if (m_spButtonChange) { m_spButtonChange->Play(); }
 	}
 
 	int i = 0;
@@ -60,7 +60,7 @@ void ButtonManager::Update()
 
 		if (KeyInfo::GetInstance().GetKeyPush(VK_SPACE))
 		{
-			m_spButtonDecision->Play();
+			if (m_spButtonDecision) { m_spButtonDecision->Play(); }
 		}
 		
 		i++;
@@ -139,9 +139,15 @@ void ButtonManager::InitResult()
 void ButtonManager::Init()
 {
 	m_spButtonChange = KdAudioManager::Instance().Play("Asset/Sound/Button/Change.wav");
-	m_spButtonChange->SetVolume(0.5);
-	m_spButtonChange->Stop();
+	if (m_spButtonChange)
+	{
+		m_spButtonChange->SetVolume(0.5);
+		m_spButtonChange->Stop();
+	}
 	m_spButtonDecision = KdAudioManager::Instance().Play("Asset/Sound/Button/Decision.wav");
-	m_spButtonDecision->SetVolume(0.5);
-	m_spButtonDecision->Stop();
+	if (m_spButtonDecision)
+	{
+		m_spButtonDecision->SetVolume(0.5);
+		m_spButtonDecision->Stop();
+	}
 }
