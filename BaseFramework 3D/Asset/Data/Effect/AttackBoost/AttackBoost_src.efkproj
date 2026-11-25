@@ -119,19 +119,19 @@
             <ColorAll_Easing>
               <Start>
                 <R>
-                  <Center>35.0</Center>
-                  <Max>35</Max>
-                  <Min>35</Min>
+                  <Center>150.0</Center>
+                  <Max>150</Max>
+                  <Min>150</Min>
                 </R>
                 <G>
-                  <Center>0.0</Center>
-                  <Max>0</Max>
-                  <Min>0</Min>
+                  <Center>15.0</Center>
+                  <Max>15</Max>
+                  <Min>15</Min>
                 </G>
                 <B>
-                  <Center>0.0</Center>
-                  <Max>0</Max>
-                  <Min>0</Min>
+                  <Center>15.0</Center>
+                  <Max>15</Max>
+                  <Min>15</Min>
                 </B>
                 <A>
                   <Center>130.0</Center>
@@ -141,9 +141,9 @@
               </Start>
               <End>
                 <R>
-                  <Center>10.0</Center>
-                  <Max>10</Max>
-                  <Min>10</Min>
+                  <Center>70.0</Center>
+                  <Max>70</Max>
+                  <Min>70</Min>
                 </R>
                 <G>
                   <Center>0.0</Center>
@@ -283,14 +283,14 @@
                   <Min>255</Min>
                 </R>
                 <G>
-                  <Center>35.0</Center>
-                  <Max>35</Max>
-                  <Min>35</Min>
+                  <Center>25.0</Center>
+                  <Max>25</Max>
+                  <Min>25</Min>
                 </G>
                 <B>
-                  <Center>10.0</Center>
-                  <Max>10</Max>
-                  <Min>10</Min>
+                  <Center>25.0</Center>
+                  <Max>25</Max>
+                  <Min>25</Min>
                 </B>
                 <A>
                   <Center>170.0</Center>
@@ -300,9 +300,9 @@
               </Start>
               <End>
                 <R>
-                  <Center>150.0</Center>
-                  <Max>150</Max>
-                  <Min>150</Min>
+                  <Center>190.0</Center>
+                  <Max>190</Max>
+                  <Min>190</Min>
                 </R>
                 <G>
                   <Center>0.0</Center>
@@ -424,14 +424,14 @@
                   <Min>255</Min>
                 </R>
                 <G>
-                  <Center>90.0</Center>
-                  <Max>90</Max>
-                  <Min>90</Min>
+                  <Center>200.0</Center>
+                  <Max>200</Max>
+                  <Min>200</Min>
                 </G>
                 <B>
-                  <Center>50.0</Center>
-                  <Max>50</Max>
-                  <Min>50</Min>
+                  <Center>185.0</Center>
+                  <Max>185</Max>
+                  <Min>185</Min>
                 </B>
                 <A>
                   <Center>255.0</Center>
@@ -441,19 +441,19 @@
               </Start>
               <End>
                 <R>
-                  <Center>160.0</Center>
-                  <Max>160</Max>
-                  <Min>160</Min>
+                  <Center>255.0</Center>
+                  <Max>255</Max>
+                  <Min>255</Min>
                 </R>
                 <G>
-                  <Center>0.0</Center>
-                  <Max>0</Max>
-                  <Min>0</Min>
+                  <Center>40.0</Center>
+                  <Max>40</Max>
+                  <Min>40</Min>
                 </G>
                 <B>
-                  <Center>0.0</Center>
-                  <Max>0</Max>
-                  <Min>0</Min>
+                  <Center>40.0</Center>
+                  <Max>40</Max>
+                  <Min>40</Min>
                 </B>
                 <A>
                   <Center>0.0</Center>
@@ -578,9 +578,9 @@
             <ColorAll_Easing>
               <Start>
                 <R>
-                  <Center>25.0</Center>
-                  <Max>25</Max>
-                  <Min>25</Min>
+                  <Center>120.0</Center>
+                  <Max>120</Max>
+                  <Min>120</Min>
                 </R>
                 <G>
                   <Center>0.0</Center>
@@ -600,9 +600,9 @@
               </Start>
               <End>
                 <R>
-                  <Center>5.0</Center>
-                  <Max>5</Max>
-                  <Min>5</Min>
+                  <Center>45.0</Center>
+                  <Max>45</Max>
+                  <Min>45</Min>
                 </R>
                 <G>
                   <Center>0.0</Center>
@@ -757,14 +757,14 @@
                   <Min>255</Min>
                 </R>
                 <G>
-                  <Center>45.0</Center>
-                  <Max>45</Max>
-                  <Min>45</Min>
+                  <Center>35.0</Center>
+                  <Max>35</Max>
+                  <Min>35</Min>
                 </G>
                 <B>
-                  <Center>15.0</Center>
-                  <Max>15</Max>
-                  <Min>15</Min>
+                  <Center>35.0</Center>
+                  <Max>35</Max>
+                  <Min>35</Min>
                 </B>
                 <A>
                   <Center>150.0</Center>
@@ -774,9 +774,9 @@
               </Start>
               <End>
                 <R>
-                  <Center>110.0</Center>
-                  <Max>110</Max>
-                  <Min>110</Min>
+                  <Center>200.0</Center>
+                  <Max>200</Max>
+                  <Min>200</Min>
                 </R>
                 <G>
                   <Center>0.0</Center>
@@ -912,14 +912,14 @@
                   <Min>255</Min>
                 </R>
                 <G>
-                  <Center>110.0</Center>
-                  <Max>110</Max>
-                  <Min>110</Min>
+                  <Center>230.0</Center>
+                  <Max>230</Max>
+                  <Min>230</Min>
                 </G>
                 <B>
-                  <Center>80.0</Center>
-                  <Max>80</Max>
-                  <Min>80</Min>
+                  <Center>220.0</Center>
+                  <Max>220</Max>
+                  <Min>220</Min>
                 </B>
                 <A>
                   <Center>230.0</Center>
@@ -929,19 +929,19 @@
               </Start>
               <End>
                 <R>
-                  <Center>200.0</Center>
-                  <Max>200</Max>
-                  <Min>200</Min>
+                  <Center>255.0</Center>
+                  <Max>255</Max>
+                  <Min>255</Min>
                 </R>
                 <G>
-                  <Center>0.0</Center>
-                  <Max>0</Max>
-                  <Min>0</Min>
+                  <Center>30.0</Center>
+                  <Max>30</Max>
+                  <Min>30</Min>
                 </G>
                 <B>
-                  <Center>0.0</Center>
-                  <Max>0</Max>
-                  <Min>0</Min>
+                  <Center>30.0</Center>
+                  <Max>30</Max>
+                  <Min>30</Min>
                 </B>
                 <A>
                   <Center>0.0</Center>

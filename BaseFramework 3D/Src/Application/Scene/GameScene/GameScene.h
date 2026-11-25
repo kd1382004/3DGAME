@@ -14,6 +14,7 @@ class WarpGateManager;
 class MapObjManager;
 class TPSCamera;
 class UIManager;
+class FloorTitleUI;
 
 
 class WeaponStrengtheningEditor;
@@ -89,6 +90,9 @@ public:
 
 	//プレイヤーが倒されたときの処理
 	void PlayerDefeat();
+
+	void RequestNextFloor();                 // ゲートから呼ぶ
+	bool IsFloorChanging() const { return m_floorChangeState != FloorChangeState::None; }
 
 private:
 
@@ -220,4 +224,13 @@ private:
 
 	//敵の攻撃パターンを読み直す(エディターで保存したときに呼ぶ)
 	void ReloadEnemyAttackPatterns();
+
+
+
+	enum class FloorChangeState { None, FadeToBlack, ShowFloor, FadeFromBlack };
+	FloorChangeState m_floorChangeState = FloorChangeState::None;
+	std::shared_ptr<FloorTitleUI> m_spFloorTitleUI;
+	static constexpr float kFloorFadeTime = 0.5f;
+
+	void UpdateFloorChange();                // Event から毎フレーム
 };

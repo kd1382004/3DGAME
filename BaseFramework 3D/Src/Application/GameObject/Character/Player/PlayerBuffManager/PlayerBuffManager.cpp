@@ -82,6 +82,12 @@ void PlayerBuffManager::AddStatusBuff(StatusBuff _statusBuff)
 		{
 			spPlayer->PlayAttackBoostEffect();
 		}
+
+		// スタミナ回復力アップ中は体にエフェクトを出す
+		if (_statusBuff.m_ID == PotionsType_StaminaRegenBoost)
+		{
+			spPlayer->PlayStaminaRegenBoostEffect();
+		}
 	}
 
 }
@@ -105,6 +111,12 @@ void PlayerBuffManager::BuffFinish(const StatusBuff& _statusBuff)
 		if (_statusBuff.m_ID == PotionsType_AttackBoostPotion)
 		{
 			spPlayer->StopAttackBoostEffect();
+		}
+
+		// スタミナ回復力アップが切れたらエフェクトを消す
+		if (_statusBuff.m_ID == PotionsType_StaminaRegenBoost)
+		{
+			spPlayer->StopStaminaRegenBoostEffect();
 		}
 	}
 }

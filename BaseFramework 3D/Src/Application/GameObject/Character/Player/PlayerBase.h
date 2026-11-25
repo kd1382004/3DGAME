@@ -241,11 +241,17 @@ public:
 	// インベントリ表示時などのSE全停止処理
 	void StopSound();
 
-	//Effect
+	//攻撃力アップEffect
 	void PlayAttackBoostEffect();
 
 	//攻撃力アップのエフェクトを止める
 	void StopAttackBoostEffect();
+
+	//スタミナ回復力アップEffect
+	void PlayStaminaRegenBoostEffect();
+
+	//スタミナ回復力アップのエフェクトを止める
+	void StopStaminaRegenBoostEffect();
 
 protected:
 
@@ -460,6 +466,15 @@ protected:
 
 	//攻撃力アップのエフェクトが出ているか
 	bool m_isAttackBoostActive = false;
+
+	//スタミナ回復力アップのエフェクト
+	std::weak_ptr<KdEffekseerObject> m_wpStaminaRegenBoostEffect;
+
+	//スタミナ回復力アップのエフェクトが出ているか
+	bool m_isStaminaRegenBoostActive = false;
+
+	//スタミナ回復力アップのエフェクトのパス
+	static constexpr const char* kStaminaRegenBoostEffectPath = "StaminaRegenBoost/StaminaRegenBoost.efkefc";
 
 	//ダッシュのエフェクト
 	std::weak_ptr<KdEffekseerObject> m_wpDashEffect;

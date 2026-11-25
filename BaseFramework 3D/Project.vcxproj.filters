@@ -460,6 +460,9 @@
     <Filter Include="Src\Application\GameObject\UI\ItemBar">
       <UniqueIdentifier>{061eb046-ee66-408e-997d-a5c32ee353f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\FloorTitleUI">
+      <UniqueIdentifier>{665528cb-ae12-4a71-a556-10bca21c23b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -1032,6 +1035,9 @@
     <ClInclude Include="Src\Application\GameObject\UI\ItemBar\ItemBar.h">
       <Filter>Src\Application\GameObject\UI\ItemBar</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\FloorTitleUI\FloorTitleUI.h">
+      <Filter>Src\Application\GameObject\UI\FloorTitleUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1558,6 +1564,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\ItemBar\ItemBar.cpp">
       <Filter>Src\Application\GameObject\UI\ItemBar</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\FloorTitleUI\FloorTitleUI.cpp">
+      <Filter>Src\Application\GameObject\UI\FloorTitleUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

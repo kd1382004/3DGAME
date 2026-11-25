@@ -188,6 +188,18 @@ void PlayerBase::PreUpdate()
 
 void PlayerBase::Update()
 {
+
+	//階層移動中(暗転・階層表示・明るくなる間)はプレイヤーを動かさない
+	if (auto spGameScene = m_wpGameScene.lock())
+	{
+		if (spGameScene->IsFloorChanging())
+		{
+			//次の階へ進むゲージは消しておく(Update を止めると消えずに残るため)
+			if (m_spNextFloorAction) { m_spNextFloorAction->Update(false); }
+			return;
+		}
+	}
+
 	if (m_isDead && m_isDeadAnime)
 	{
 		std::shared_ptr<GameScene>spGameScene = m_wpGameScene.lock();
@@ -305,6 +317,22 @@ void PlayerBase::PostUpdate()
 			m_wpAttackBoostEffect = KdEffekseerManager::GetInstance().Play(
 				"AttackBoost/AttackBoost.efkefc", pos, 1.0f, 1.0f, false);
 			spEffect = m_wpAttackBoostEffect.lock();
+		}
+
+		if (spEffect) { spEffect->SetPos(pos); }
+	}
+
+	if (m_isStaminaRegenBoostActive)
+	{
+		Math::Vector3 pos = m_pos + Math::Vector3{ 0, 0.5f, 0 };
+
+		auto spEffect = m_wpStaminaRegenBoostEffect.lock();
+		if (!spEffect || !spEffect->IsPlaying())
+		{
+			// 1周終わったら自分で再生し直す（毎回新しいオブジェクトを受け取る）
+			m_wpStaminaRegenBoostEffect = KdEffekseerManager::GetInstance().Play(
+				kStaminaRegenBoostEffectPath, pos, 1.0f, 1.0f, false);
+			spEffect = m_wpStaminaRegenBoostEffect.lock();
 		}
 
 		if (spEffect) { spEffect->SetPos(pos); }
@@ -780,6 +808,28 @@ void PlayerBase::StopAttackBoostEffect()
 		effect->StopEffect();   // 中で SetLoop(false) も呼ばれる
 	}
 	m_wpAttackBoostEffect.reset();
+}
+
+void PlayerBase::PlayStaminaRegenBoostEffect()
+{
+	m_isStaminaRegenBoostActive = true;
+
+	auto spEffect = m_wpStaminaRegenBoostEffect.lock();
+	if (spEffect && spEffect->IsPlaying()) { return; }   // 再生中ならそのまま
+
+	m_wpStaminaRegenBoostEffect = KdEffekseerManager::GetInstance().Play(
+		kStaminaRegenBoostEffectPath, m_pos + Math::Vector3{ 0, 0.5f, 0 }, 1.0f, 1.0f, false);
+}
+
+void PlayerBase::StopStaminaRegenBoostEffect()
+{
+	m_isStaminaRegenBoostActive = false;
+
+	if (auto spEffect = m_wpStaminaRegenBoostEffect.lock())
+	{
+		spEffect->StopEffect();   // 中で SetLoop(false) も呼ばれる
+	}
+	m_wpStaminaRegenBoostEffect.reset();
 }
 
 void PlayerBase::WeaponUpdate()

@@ -83,6 +83,13 @@ void EnemyManager::PreUpdate()
 
 void EnemyManager::Update()
 {
+
+	//階層移動中(暗転・階層表示・明るくなる間)は敵を動かさない
+	if (auto spGameScene = m_wpGameScene.lock())
+	{
+		if (spGameScene->IsFloorChanging()) { return; }
+	}
+
 	for (const auto& enemy : m_enemyUpdateList)
 	{
 		enemy->Update();

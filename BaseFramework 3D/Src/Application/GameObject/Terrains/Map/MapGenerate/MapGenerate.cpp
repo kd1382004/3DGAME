@@ -2783,17 +2783,55 @@ void MapGenerate::SlopeCheck(std::vector<std::vector<FloorInfo>>* _map)
 //===================================================
 bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 {
+	if (_map.empty()) return false;
+
+	//---- 部屋の数チェック -----
+	//スポーン部屋・階段部屋・その他が別々に必要
+	if (static_cast<int>(m_roomInfo.size()) < kMinRoomNum)
+	{
+		return false;
+	}
+
+	//---- 坂の向きと高さチェック -----
+	for (int y = 0; y < static_cast<int>(_map.size()); y++)
+	{
+		for (int x = 0; x < static_cast<int>(_map[y].size()); x++)
+		{
+			if (_map[y][x].m_tileType != TileType::Slope) { continue; }
+
+			//高い側と低い側のマス(SlopeCheck の向きと同じ)
+			int hx = x, hy = y, lx = x, ly = y;
+			switch (_map[y][x].m_angle)
+			{
+			case 0:   hy = y + 1; ly = y - 1; break;
+			case 180: hy = y - 1; ly = y + 1; break;
+			case 270: hx = x + 1; lx = x - 1; break;
+			case 90:  hx = x - 1; lx = x + 1; break;
+			default: return false;
+			}
+
+			//両側ともマップの中で、床がある
+			if (hy < 0 || hy >= static_cast<int>(_map.size()) || hx < 0 || hx >= static_cast<int>(_map[0].size())) { return false; }
+			if (ly < 0 || ly >= static_cast<int>(_map.size()) || lx < 0 || lx >= static_cast<int>(_map[0].size())) { return false; }
+			if (_map[hy][hx].m_tileType == TileType::None || _map[ly][lx].m_tileType == TileType::None) { return false; }
+
+			//高い側は坂と同じ高さ、低い側は1段低い
+			int h = _map[y][x].m_heightLevel;
+			if (_map[hy][hx].m_heightLevel != h) { return false; }
+			if (_map[ly][lx].m_heightLevel != h - 1) { return false; }
+		}
+	}
 
 
 	//---- 高さの異常チェック -----
-	for (int i = 0; i < _map.size(); i++)
+	for (int i = 0; i < static_cast<int>(_map.size()); i++)
 	{
-		for (int j = 0; j < _map[i].size(); j++)
+		for (int j = 0; j < static_cast<int>(_map[i].size()); j++)
 		{
 			if (_map[i][j].m_tileType == TileType::None) { continue; }
 
 			// 下のマス
-			if (i + 1 < _map.size() && j < _map[i + 1].size()
+			if (i + 1 < static_cast<int>(_map.size()) && j < static_cast<int>(_map[i + 1].size())
 				&& _map[i + 1][j].m_tileType != TileType::None)
 			{
 				int gap = _map[i][j].m_heightLevel - _map[i + 1][j].m_heightLevel;
@@ -2812,7 +2850,7 @@ bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 			}
 
 			// 右のマス
-			if (j + 1 < _map[i].size()
+			if (j + 1 < static_cast<int>(_map[i].size())
 				&& _map[i][j + 1].m_tileType != TileType::None)
 			{
 				int gap = _map[i][j].m_heightLevel - _map[i][j + 1].m_heightLevel;
@@ -2882,44 +2920,6 @@ bool MapGenerate::MapCheck(std::vector<std::vector<FloorInfo>>& _map)
 			}
 		}
 	}
-
-	//---- 部屋の数チェック -----
-	//スポーン部屋・階段部屋・その他が別々に必要
-	if (static_cast<int>(m_roomInfo.size()) < kMinRoomNum)
-	{
-		return false;
-	}
-
-	//---- 坂の向きと高さチェック -----
-	for (int y = 0; y < static_cast<int>(_map.size()); y++)
-	{
-		for (int x = 0; x < static_cast<int>(_map[y].size()); x++)
-		{
-			if (_map[y][x].m_tileType != TileType::Slope) { continue; }
-
-			//高い側と低い側のマス(SlopeCheck の向きと同じ)
-			int hx = x, hy = y, lx = x, ly = y;
-			switch (_map[y][x].m_angle)
-			{
-			case 0:   hy = y + 1; ly = y - 1; break;
-			case 180: hy = y - 1; ly = y + 1; break;
-			case 270: hx = x + 1; lx = x - 1; break;
-			case 90:  hx = x - 1; lx = x + 1; break;
-			default: return false;
-			}
-
-			//両側ともマップの中で、床がある
-			if (hy < 0 || hy >= static_cast<int>(_map.size()) || hx < 0 || hx >= static_cast<int>(_map[0].size())) { return false; }
-			if (ly < 0 || ly >= static_cast<int>(_map.size()) || lx < 0 || lx >= static_cast<int>(_map[0].size())) { return false; }
-			if (_map[hy][hx].m_tileType == TileType::None || _map[ly][lx].m_tileType == TileType::None) { return false; }
-
-			//高い側は坂と同じ高さ、低い側は1段低い
-			int h = _map[y][x].m_heightLevel;
-			if (_map[hy][hx].m_heightLevel != h) { return false; }
-			if (_map[ly][lx].m_heightLevel != h - 1) { return false; }
-		}
-	}
-
 
 	//異常なし
 	return true;
@@ -3241,16 +3241,12 @@ bool MapGenerate::IsSetTorch(int _x, int _y, const std::vector<std::vector<Floor
 
 std::string MapGenerate::GetMapModelFolder(MapType _type) const
 {
-	switch (_type)
-	{
-	case MapType_Dungeon: return "Dungeon";
-	case MapType_Factory: return "Factory";
-	default:              return "Dungeon";	//知らない種類のときは地下迷宮のモデルを使う
-	}
+	const char* name = GetMapTypeName(_type);
+	return name ? name : "Dungeon";	//知らない種類のときは地下迷宮
 }
 
 void MapGenerate::LoadModel(std::shared_ptr<KdModelWork>& _spModel, const std::string& _path)
 {
-	if (!_spModel) { _spModel = std::make_shared<KdModelWork>(); }
+	_spModel = std::make_shared<KdModelWork>();
 	_spModel->SetModelData(_path);
 }

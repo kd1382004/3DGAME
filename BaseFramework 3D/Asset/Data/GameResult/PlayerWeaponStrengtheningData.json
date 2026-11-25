@@ -4,13 +4,13 @@
             "Lv": 10,
             "nextLvNum": 6,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 80
+            "strengtheningItemNum": 82
         },
         "body": {
             "Lv": 1,
             "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 80
+            "strengtheningItemNum": 82
         },
         "characteristic": {
             "Lv": 3,
@@ -40,19 +40,19 @@
             "Lv": 10,
             "nextLvNum": 6,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 80
+            "strengtheningItemNum": 82
         },
         "defenseIgnore": {
             "Lv": 10,
             "nextLvNum": 6,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 80
+            "strengtheningItemNum": 82
         },
         "stamina": {
             "Lv": 10,
             "nextLvNum": 6,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 80
+            "strengtheningItemNum": 82
         }
     },
     "sword": {

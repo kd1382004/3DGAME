@@ -1,4 +1,4 @@
-//---- 自分のヘッダー ----
+﻿//---- 自分のヘッダー ----
 #include "NextStageGate.h"							//次のステージへのゲート
 
 //---- シーン ----
@@ -90,7 +90,7 @@ void NextStageGate::Update()
 				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 			}
 
-			spGameScene->GenerateMap();
+			spGameScene->RequestNextFloor();
 			if (spEffect)
 			{
 				spEffect->StopEffect();

@@ -46,6 +46,7 @@
 #include"../../GameObject/UI/HitDamage/HitDamage.h"																	//ダメージ数字の表示
 #include"../../GameObject/UI/UI2/UIBase2.h"																			//キー表示付きUIの基底クラス
 #include"../../GameObject/UI/ItemBar/ItemBar.h"																		//アイテムバー
+#include"../../GameObject/UI/FloorTitleUI/FloorTitleUI.h"
 
 //---- エディター ----
 #include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"														//キャラステータス編集エディター
@@ -269,6 +270,7 @@ void GameScene::Init()
 	m_objList.push_back(m_spUIManager);
 
 
+
 	/////////////////////////////////////////
 	//アクセサリー
 	/////////////////////////////////////////	
@@ -313,6 +315,12 @@ void GameScene::Init()
 	spUIBase2->SetDrawKeyPos(DrawKeyPos_Bot);
 	spUIBase2->SetDrawFlg(true);
 	m_spUIManager->AddUIObj(spUIBase2);
+
+	//階層移動のときの「◯階層」表示
+	m_spFloorTitleUI = std::make_shared<FloorTitleUI>();
+	m_spFloorTitleUI->Init();
+	m_spUIManager->AddUIObj(m_spFloorTitleUI);
+
 
 	/////////////////////////////////////////
 	//プレイヤーにセット
@@ -405,8 +413,14 @@ void GameScene::Init()
 	}
 
 
-	//マップ生成
+	//最初の階を作って、いきなり「1階層」の表示から始める
+	//(準備画面の出発で暗転しているので、もう一度暗くする必要はない)
 	GenerateMap();
+	if (m_spFloorTitleUI)
+	{
+		m_spFloorTitleUI->Show(m_displayFloor, static_cast<int>(m_mapType));
+	}
+	m_floorChangeState = FloorChangeState::ShowFloor;
 
 
 
@@ -445,10 +459,6 @@ void GameScene::Init()
 	m_editors.push_back({ U8("武器のコンボ"), false, [this](bool* _open) { m_spComboStepEditor->Draw(_open); } });
 	m_editors.push_back({ U8("キャラの初期ステータス"), false, [this](bool* _open) { m_spCharaStatusEditor->Draw(_open); } });
 	m_editors.push_back({ U8("敵の攻撃パターン"), false, [this](bool* _open) { m_spEnemyAttackPatternEditor->Draw(_open); } });
-
-
-
-	FadeDraw::Instance().SetFadeType(FadeIn, 1.0f);	//暗いところから明るくして始める
 }
 
 //=============================================
@@ -686,6 +696,13 @@ void GameScene::PlayerDefeat()
 	FadeDraw::Instance().SetFadeType(FadeOut, 3);	//倒れたら暗転してからリザルトへ
 }
 
+void GameScene::RequestNextFloor()
+{
+	if (m_floorChangeState != FloorChangeState::None) { return; }
+	FadeDraw::Instance().SetFadeType(FadeOut, kFloorFadeTime);	//画面 → 黒
+	m_floorChangeState = FloorChangeState::FadeToBlack;
+}
+
 void GameScene::Event()
 {
 	//BGM の音量を毎フレーム設定に合わせる(ゲーム中に音量を変えてもすぐ反映される)
@@ -713,7 +730,8 @@ void GameScene::Event()
 		return;
 	}
 
-
+	//階層移動(暗転 → 階層表示 → 明るく)
+	UpdateFloorChange();
 
 	////////////////////////////////////////////
 	//デバック
@@ -724,7 +742,7 @@ void GameScene::Event()
 
 		if (!reFlg)
 		{
-			GenerateMap();
+			RequestNextFloor();
 			reFlg = true;
 		}
 	}
@@ -851,5 +869,48 @@ void GameScene::ReloadEnemyAttackPatterns()
 		{
 			spEnemy->ReloadAttackPatterns();
 		}
+	}
+}
+
+void GameScene::UpdateFloorChange()
+{
+	switch (m_floorChangeState)
+	{
+	case FloorChangeState::None:
+		//移動していない
+		break;
+
+	case FloorChangeState::FadeToBlack:
+		//真っ黒になりきったら(FadeDraw が止まったら)
+		if (!FadeDraw::Instance().GetFadeFlg())
+		{
+			GenerateMap();
+			if (m_spFloorTitleUI)
+			{
+				m_spFloorTitleUI->Show(m_displayFloor, static_cast<int>(m_mapType));
+			}
+			m_floorChangeState = FloorChangeState::ShowFloor;
+		}
+		break;
+
+	case FloorChangeState::ShowFloor:
+		//階層表示の時間が終わったら
+		if (!m_spFloorTitleUI || m_spFloorTitleUI->IsFinished())
+		{
+			if (m_spFloorTitleUI) { m_spFloorTitleUI->Hide(); }
+
+			//黒 → 明るく(同じフレームで始めるので隙間ができない)
+			FadeDraw::Instance().SetFadeType(FadeIn, kFloorFadeTime);
+			m_floorChangeState = FloorChangeState::FadeFromBlack;
+		}
+		break;
+
+	case FloorChangeState::FadeFromBlack:
+		//明るくなりきったら終わり
+		if (!FadeDraw::Instance().GetFadeFlg())
+		{
+			m_floorChangeState = FloorChangeState::None;
+		}
+		break;
 	}
 }

@@ -1,20 +1,20 @@
 {
-    "money": 690,
+    "money": 795,
     "potions": [
         {
             "id": 0,
             "name": "InstantHealPotion",
-            "num": 225
+            "num": 196
         },
         {
             "id": 1,
             "name": "AttackBoostPotion",
-            "num": 223
+            "num": 224
         },
         {
             "id": 2,
             "name": "InstantStaminaHealPotion",
-            "num": 215
+            "num": 218
         },
         {
             "id": 3,
@@ -24,7 +24,7 @@
         {
             "id": 4,
             "name": "StaminaRegenBoostPotion",
-            "num": 223
+            "num": 226
         },
         {
             "id": 5,
@@ -36,7 +36,7 @@
         {
             "id": 0,
             "name": "WeaponStrengthening_Crystal1",
-            "num": 81
+            "num": 83
         },
         {
             "id": 1,

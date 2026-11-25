@@ -64,7 +64,7 @@ void NextFloorAction::Update(bool _nextFloorActionFlg)
 				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 1.0f); }
 			}
 
-			spGameScene->GenerateMap();
+			spGameScene->RequestNextFloor();
 		}
 
 		m_nextFloorCount = 0;
