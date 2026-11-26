@@ -382,6 +382,13 @@ private:
 	// _index ... 枠の番号(0が最新のプレイ、1〜3がランキング)
 	void DrawCard(int _index);
 
+	//記録が無い枠の枠組み(背景・点線・順位)を描く
+	// _index ... 枠の番号(0が最新のプレイ、1〜3がランキング)
+	// _pos ... 枠の中心
+	// _left ... 枠の左端
+	// _top ... 枠の上端
+	void DrawEmptyCard(int _index, const Math::Vector2& _pos, float _left, float _top);
+
 	//記録の詳細を描く(選んでいる記録)
 	void DrawDetail();
 };

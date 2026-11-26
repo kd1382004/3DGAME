@@ -6,55 +6,27 @@
                 "PotionNum": 0,
                 "Weapon": 0
             },
-            "DisplayFloor": 10,
-            "EnemyKillCount": 5,
-            "GetMoney": 770,
-            "PlayDate": 1795496070,
-            "PlayTimeSc": 262.8667907714844,
+            "DisplayFloor": 1,
+            "EnemyKillCount": 0,
+            "GetMoney": 0,
+            "PlayDate": 1795661552,
+            "PlayTimeSc": 51.86408615112305,
             "PlayerDead": true,
-            "TreasureChestsNum": 14
-        },
-        {
-            "CarryIn": {
-                "Money": 530,
-                "PotionNum": 1338,
-                "Weapon": 1
-            },
-            "DisplayFloor": 6,
-            "EnemyKillCount": 1,
-            "GetMoney": 160,
-            "PlayDate": 1795660989,
-            "PlayTimeSc": 91.71656036376953,
-            "PlayerDead": false,
-            "TreasureChestsNum": 5
-        },
-        {
-            "CarryIn": {
-                "Money": 795,
-                "PotionNum": 1291,
-                "Weapon": 0
-            },
-            "DisplayFloor": 6,
-            "EnemyKillCount": 7,
-            "GetMoney": 1060,
-            "PlayDate": 1795580146,
-            "PlayTimeSc": 140.40760803222656,
-            "PlayerDead": false,
-            "TreasureChestsNum": 13
+            "TreasureChestsNum": 2
         }
     ],
     "Latest": {
         "CarryIn": {
-            "Money": 530,
-            "PotionNum": 1338,
-            "Weapon": 1
+            "Money": 0,
+            "PotionNum": 0,
+            "Weapon": 0
         },
-        "DisplayFloor": 6,
-        "EnemyKillCount": 1,
-        "GetMoney": 160,
-        "PlayDate": 1795660989,
-        "PlayTimeSc": 91.71656036376953,
-        "PlayerDead": false,
-        "TreasureChestsNum": 5
+        "DisplayFloor": 1,
+        "EnemyKillCount": 0,
+        "GetMoney": 0,
+        "PlayDate": 1795661552,
+        "PlayTimeSc": 51.86408615112305,
+        "PlayerDead": true,
+        "TreasureChestsNum": 2
     }
 }

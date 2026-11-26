@@ -36,6 +36,10 @@
 #include"../../Info/DebugInfo/DebugInfo.h"							//デバッグ用の状態
 #include"../../Info/MouseInfo/MouseInfo.h"							//マウス入力
 
+//---- データのリセット ----
+#include"../../GameObject/Character/Player/PlayerInventory/PlayerInventory.h"	//プレイヤーの所持品
+#include"../../GameObject/Weapon/WeaponBase.h"								//武器の強化情報
+
 //タイトルの BGM の音量の倍率(作ったときと毎フレームで同じ値を使う)
 namespace { constexpr float kTitleBGMVolRate = 0.5f; }
 
@@ -83,11 +87,158 @@ void TitleScene::ImGUI()
 		SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo::PlayerWeaponInfo_Sword);
 	}
 
+	//---------- データのリセット ----------
+	ImGui::Separator();
+	ImGui::Text(U8("データのリセット(元に戻せません)"));
+
+	if (ResetButton(U8("ショップの在庫をリセット"), "ResetShopStock"))
+	{
+		ResetShopStock();
+	}
+
+	if (ResetButton(U8("プレイヤーのデータをリセット"), "ResetPlayerData"))
+	{
+		ResetPlayerData();
+	}
+
+	if (ResetButton(U8("歴代の記録を削除"), "ResetGameRecord"))
+	{
+		ResetGameRecord();
+	}
+
+	if (ResetButton(U8("全部リセット"), "ResetAll"))
+	{
+		ResetShopStock();
+		ResetPlayerData();
+		ResetGameRecord();
+	}
+
 
 
 
 	ImGui::End();
 
+}
+
+bool TitleScene::ResetButton(const char* _label, const char* _popupId)
+{
+	if (ImGui::Button(_label))
+	{
+		ImGui::OpenPopup(_popupId);
+	}
+
+	bool yesFlg = false;
+	if (ImGui::BeginPopupModal(_popupId, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text(U8("本当にリセットしますか？(元に戻せません)"));
+
+		if (ImGui::Button(U8("はい")))
+		{
+			yesFlg = true;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(U8("いいえ")))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+	return yesFlg;
+}
+
+void TitleScene::ResetShopStock()
+{
+	//マスターを読む
+	nlohmann::json master = nlohmann::json::object();
+	{
+		std::ifstream file(m_shopMasterFilePath);
+		if (!file)
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Error] ショップのマスターが見つかりません : %s\n"), m_shopMasterFilePath.c_str());
+			return;
+		}
+		master = nlohmann::json::parse(file, nullptr, false);
+		if (master.is_discarded()) { return; }
+	}
+
+	//マスターの "startStock" を在庫にして作り直す
+	nlohmann::json stock = nlohmann::json::object();
+	for (const char* key : { "potions", "materials", "weapons" })
+	{
+		stock[key] = nlohmann::json::array();
+		if (!master.contains(key) || !master[key].is_array()) { continue; }
+
+		for (const auto& item : master[key])
+		{
+			stock[key].push_back({
+				{"id", item.value("id", -1)},
+				{"name", item.value("name", std::string{})},
+				{"stock", item.value("startStock", 0)}
+				});
+		}
+	}
+
+	std::ofstream file(m_shopStockFilePath);
+	if (!file) { return; }
+	file << stock.dump(4);
+
+	KdDebugGUI::Instance().AddLog(U8("ショップの在庫をリセットしました\n"));
+}
+
+void TitleScene::ResetPlayerData()
+{
+	//---- ステータス:最初のステータス(Status.json)をそのまま写す ----
+	{
+		std::ifstream src(m_playerDefaultStatusFilePath);
+		if (src)
+		{
+			nlohmann::json status = nlohmann::json::parse(src, nullptr, false);
+			if (!status.is_discarded())
+			{
+				std::ofstream dst(m_playerStatusFilePath);
+				if (dst) { dst << status.dump(4); }
+			}
+		}
+	}
+
+	//---- 持ち物:個数を0・所持金を0にする(倒れたときと同じ) ----
+	{
+		std::vector<std::vector<Inventory>> lists = LoadInventoryData(m_inventoryFilePath);
+		SaveInventoryData(false, lists[0], lists[1], m_inventoryFilePath, 0);
+	}
+
+	//---- 持っている武器:ダガーだけにする ----
+	{
+		std::vector<bool> owned(PlayerWeaponInfoSize, false);
+		owned[PlayerWeaponInfo_Dagger] = true;
+		SaveOwnedWeapons(owned);
+	}
+
+	//---- 武器の強化:全部の武器を最初の状態にする ----
+	SaveWeaponStrengtheningData(false, m_weaponStrengtheningFilePath, {});
+
+	//---- 装備中の武器:ダガーにする ----
+	SceneManager::Instance().SetPlayerWeaponInfo(PlayerWeaponInfo_Dagger);
+	{
+		std::ofstream file(m_playerEquipFilePath);
+		if (file) { file << nlohmann::json{ {"equippedWeapon", static_cast<int>(PlayerWeaponInfo_Dagger)} }.dump(4); }
+	}
+
+	KdDebugGUI::Instance().AddLog(U8("プレイヤーのデータをリセットしました\n"));
+}
+
+void TitleScene::ResetGameRecord()
+{
+	//最新もベストも無い状態にする
+	nlohmann::json data = nlohmann::json::object();
+	data["Best"] = nlohmann::json::array();
+
+	std::ofstream file(m_gameRecordFilePath);
+	if (!file) { return; }
+	file << data.dump(4);
+
+	KdDebugGUI::Instance().AddLog(U8("歴代の記録を削除しました\n"));
 }
 
 void TitleScene::Init()

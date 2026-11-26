@@ -73,4 +73,28 @@ private:
 
 	//シーンのイベント(毎フレーム)
 	void Event() override;
+
+	//---- データのリセット(ImGuiから呼ぶ) ----
+
+	//ショップの在庫を最初の数に戻す(ShopMasterData の startStock)
+	void ResetShopStock();
+
+	//プレイヤーのデータを最初の状態に戻す
+	//(ステータス・持ち物・所持金・持っている武器・武器の強化・装備中の武器)
+	void ResetPlayerData();
+
+	//歴代の記録(最新・ベスト3)を消す
+	void ResetGameRecord();
+
+	//確認つきのリセットボタン
+	// _label ... ボタンの文字
+	// _popupId ... 確認ウィンドウの名前(ボタンごとに別にする)
+	//戻り値 ... 「はい」が押されたらtrue
+	bool ResetButton(const char* _label, const char* _popupId);
+
+	//プレイヤーの最初のステータスのファイルのパス
+	const std::string m_playerDefaultStatusFilePath = "Asset/Data/ObjeData/Character/Praeyr/Status/Status.json";
+
+	//装備中の武器のファイルのパス
+	const std::string m_playerEquipFilePath = "Asset/Data/PlayerData/PlayerEquipData.json";
 };

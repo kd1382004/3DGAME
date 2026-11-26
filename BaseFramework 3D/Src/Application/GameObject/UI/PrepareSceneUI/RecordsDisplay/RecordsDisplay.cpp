@@ -305,12 +305,18 @@ void RecordsDisplay::DrawDateL(long long _playDate, float _x, float _y)
 void RecordsDisplay::DrawCard(int _index)
 {
 	const GameResult* pResult = GetCardResult(_index);
-	if (!pResult) { return; }
 
 	const Math::Vector2 pos = GetCardPos(_index);
 	const float left = pos.x - m_cardW / 2.0f;
 	const float top  = pos.y + m_cardH / 2.0f;
 	const float right = pos.x + m_cardW / 2.0f;
+
+	//記録が無い枠は、枠組み(背景・点線・順位)だけ出す
+	if (!pResult)
+	{
+		DrawEmptyCard(_index, pos, left, top);
+		return;
+	}
 
 	const DisplayFloorInfo& info = pResult->m_displayFloorInfo;
 
@@ -376,6 +382,28 @@ void RecordsDisplay::DrawCard(int _index)
 	{
 		DrawTex(GetTex(RecordsTex::HoverFrame), pos);
 	}
+}
+
+void RecordsDisplay::DrawEmptyCard(int _index, const Math::Vector2& _pos, float _left, float _top)
+{
+	//背景
+	DrawTex(GetTex(RecordsTex::CardPanel), _pos);
+
+	//ランキングの枠なら順位(「1位」など)だけ出す
+	const float line1Y = _top - 32.0f;
+	if (_index >= 1)
+	{
+		const float x = DrawNumL(_index, _left + m_cardPad, line1Y, m_numColor) + m_numGap;
+		DrawTexL(GetTex(RecordsTex::RankSuffix), x, line1Y);
+	}
+
+	//横の点線
+	DrawTex(GetTex(RecordsTex::CardDivider), { _left + m_cardPad, _top - 53.0f }, m_pivotLeft);
+
+	//縦の点線(武器と撃破の間・撃破と宝箱の間)
+	const float line2Y = _top - 80.0f;
+	DrawTex(GetTex(RecordsTex::CardDividerV), { _left + m_cardPad + m_colDivider1X, line2Y + 2.0f });
+	DrawTex(GetTex(RecordsTex::CardDividerV), { _left + m_cardPad + m_colDivider2X, line2Y + 2.0f });
 }
 
 void RecordsDisplay::DrawDetail()
