@@ -20,7 +20,7 @@
         {
             "id": 1,
             "name": "AttackBoostPotion",
-            "stock": 3
+            "stock": 23
         },
         {
             "id": 2,
@@ -40,7 +40,7 @@
         {
             "id": 5,
             "name": "MapScroll",
-            "stock": 1
+            "stock": 6
         }
     ],
     "weapons": [

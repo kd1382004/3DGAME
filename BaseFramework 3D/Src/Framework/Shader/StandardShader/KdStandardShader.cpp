@@ -564,6 +564,7 @@ void KdStandardShader::BeginGenerateDepthMapFromSpotLight(const Math::Matrix& mL
 		KdShaderManager::Instance().SetVSConstantBuffer(1, m_cb1_Mesh.GetAddress());
 	}
 	KdShaderManager::Instance().SetVSConstantBuffer(3, m_cb3_Bone.GetAddress());
+
 	if (KdShaderManager::Instance().SetPixelShader(m_PS_GenDepthFromLight))
 	{
 		KdShaderManager::Instance().SetPSConstantBuffer(0, m_cb0_Obj.GetAddress());

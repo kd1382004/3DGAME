@@ -60,55 +60,55 @@
             "Lv": 0,
             "nextLvNum": 2,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 147
+            "strengtheningItemNum": 75
         },
         "body": {
             "Lv": 1,
             "nextLvNum": 2,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 147
+            "strengtheningItemNum": 75
         },
         "characteristic": {
             "Lv": 3,
             "nextLvNum": 11,
             "strengtheningFlg": false,
-            "strengtheningItemNum": 36
+            "strengtheningItemNum": 14
         },
         "characteristic1": {
-            "Lv": 10,
-            "nextLvNum": 13,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 36
+            "Lv": 3,
+            "nextLvNum": 7,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 14
         },
         "characteristic2": {
-            "Lv": 0,
-            "nextLvNum": 5,
+            "Lv": 1,
+            "nextLvNum": 6,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 36
+            "strengtheningItemNum": 14
         },
         "characteristic3": {
-            "Lv": 0,
-            "nextLvNum": 5,
+            "Lv": 1,
+            "nextLvNum": 6,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 36
+            "strengtheningItemNum": 14
         },
         "chargeTime": {
             "Lv": 0,
             "nextLvNum": 2,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 147
+            "strengtheningItemNum": 75
         },
         "defenseIgnore": {
-            "Lv": 10,
-            "nextLvNum": 6,
-            "strengtheningFlg": false,
-            "strengtheningItemNum": 147
+            "Lv": 0,
+            "nextLvNum": 2,
+            "strengtheningFlg": true,
+            "strengtheningItemNum": 75
         },
         "stamina": {
             "Lv": 0,
             "nextLvNum": 2,
             "strengtheningFlg": true,
-            "strengtheningItemNum": 147
+            "strengtheningItemNum": 75
         }
     }
 }
