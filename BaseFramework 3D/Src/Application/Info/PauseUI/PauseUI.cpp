@@ -728,6 +728,7 @@ void PauseUI::PauseClose()
 	{
 		m_pausePage = PausePage::Main;
 		MouseInfo::Instance().SetMouseFreeFlg(true);
+		SceneManager::Instance().OnPauseOpen();	//プレイヤーの音とチャージを止める
 	}
 	else
 	{

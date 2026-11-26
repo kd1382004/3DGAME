@@ -81,6 +81,9 @@ public:
 	//戻り値 ... 開いていいならtrue
 	virtual bool CanOpenPause();
 
+	//ポーズメニューを開いたときに呼ばれる
+	virtual void OnPauseOpen() {}
+
 protected:
 
 	//---- メンバ変数 ----

@@ -42,6 +42,8 @@ public:
 	//更新後の処理(ライトの位置・向きを決める)
 	void PostUpdate() override;
 
+	void PreDraw();
+
 	//影の描画
 	void GenerateDepthMapFromLight() override;
 

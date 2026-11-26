@@ -74,6 +74,19 @@ void Torch::Init()
 	m_radius = 25;
 }
 
+void Torch::Update()
+{
+	m_flickerTime += DeltaTime::Instance().GetGameDeltaTime() * m_flickerSpeed;
+
+	// 周期の違う波を重ねて、規則的に見えないようにする
+	float wave = std::sin(m_flickerTime * 7.0f) * 0.6f
+		+ std::sin(m_flickerTime * 13.0f + 1.3f) * 0.3f
+		+ std::sin(m_flickerTime * 23.0f + 2.7f) * 0.1f;
+
+	m_drawRadius = m_radius * (1.0f + wave * m_flickerAmount);
+
+}
+
 void Torch::PostUpdate()
 {
 	std::shared_ptr<CameraBase>spCamera = m_wpCamera.lock();
@@ -81,21 +94,12 @@ void Torch::PostUpdate()
 	Math::Vector3 worldEffectPos = DirectX::SimpleMath::Vector3::Transform(m_effectLocalPos, m_mWorld);
 
 
-	m_flickerTime += DeltaTime::Instance().GetGameDeltaTime() * m_flickerSpeed;
-
-	// 周期の違う波を重ねて、規則的に見えないようにする
-	float wave = std::sin(m_flickerTime * 7.0f) * 0.6f
-		+ std::sin(m_flickerTime * 13.0f + 1.3f) * 0.3f
-		+ std::sin(m_flickerTime * 23.0f + 2.7f) * 0.1f; 
-
-	float radius = m_radius * (1.0f + wave * m_flickerAmount);
-
-	if (CheckInScreen(spCamera->GetBoundingFrustum(), worldEffectPos, radius))
+	if (CheckInScreen(spCamera->GetBoundingFrustum(), worldEffectPos, m_drawRadius))
 	{
 		// 画面内に映っている時：一時停止解除（再生）
 		KdShaderManager::Instance().WorkAmbientController().AddPointLight(
 			m_effectLocalColor,								//色
-			radius,										//半径	
+			m_drawRadius,										//半径	
 			worldEffectPos		//座標
 		);
 	}

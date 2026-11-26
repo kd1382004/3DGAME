@@ -57,7 +57,7 @@
                 "",
                 "thumb_2_L"
             ],
-            "m_maxDistance": 40.0,
+            "m_maxDistance": 100.0,
             "m_minDistance": 0.0,
             "m_minLV": 1,
             "m_name": "JumpSlam",

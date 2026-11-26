@@ -65,10 +65,8 @@ public:
 
 	//マウスを自由に動かせる状態にするかをセット
 	// _free ... 自由に動かせるならtrue(falseで中央に固定)
-	void SetMouseFreeFlg(bool _free)
-	{ 
-		m_mouseFreeFlg = _free; 
-	}
+	void SetMouseFreeFlg(bool _free);
+
 
 	//マウスの状態セッター
 	// _type ... マウスの状態

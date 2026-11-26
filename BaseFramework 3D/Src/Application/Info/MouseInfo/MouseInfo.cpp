@@ -140,10 +140,24 @@ int MouseInfo::GetMouseWheelValue() const
 // 設定
 //=============================================
 
+void MouseInfo::SetMouseFreeFlg(bool _free)
+{
+	m_mouseFreeFlg = _free;
+	
+	if (!m_mouseFreeFlg)
+	{
+		//カーソルも中心に戻す(戻したあとカメラが一気に回らないように)
+		SetMousePosFixMousePos();
+	}
+}
+
 void MouseInfo::SetMouseType(MouseType _type)
 {
 
-	if (m_mouseType != MouseType::MouseType_HIT && m_mouseOldType != MouseType::MouseType_HIT)
+	//ボタンなどに乗った瞬間だけ鳴らす
+	if (_type == MouseType::MouseType_HIT &&
+		m_mouseType != MouseType::MouseType_HIT &&
+		m_mouseOldType != MouseType::MouseType_HIT)
 	{
 		if (m_spHitSE)
 		{
@@ -151,6 +165,8 @@ void MouseInfo::SetMouseType(MouseType _type)
 			m_spHitSE->Play();
 		}
 	}
+
+	m_mouseType = _type;
 
 
 	m_mouseType = _type;

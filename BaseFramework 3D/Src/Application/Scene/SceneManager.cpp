@@ -32,7 +32,6 @@ void SceneManager::PreUpdate()
 		return;
 	}
 
-	if (PauseUI::Instance().GetPauseMenuFlg()) { return; }
 	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->PreUpdate();
 }
@@ -76,7 +75,6 @@ void SceneManager::PostUpdate()
 		return;
 	}
 
-	if (PauseUI::Instance().GetPauseMenuFlg()) { return; }
 	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->PostUpdate();
 }
@@ -209,6 +207,14 @@ bool SceneManager::CanOpenPause()
 	//今のシーンに聞く
 	if (!m_spCurrentScene) { return false; }
 	return m_spCurrentScene->CanOpenPause();
+}
+
+void SceneManager::OnPauseOpen()
+{
+	if (m_spCurrentScene)
+	{
+		m_spCurrentScene->OnPauseOpen();
+	}
 }
 
 void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _spObj)

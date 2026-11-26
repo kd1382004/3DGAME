@@ -165,10 +165,10 @@ void TitleScene::Init()
 	spUIManager->AddUIObj(spDrawTex);
 
 
-	std::shared_ptr<VOLUI>spVOLUI = std::make_shared<VOLUI>();
-	spVOLUI->Init();
-	spVOLUI->SetVolPos({ 400,-300 });
-	spUIManager->AddUIObj(spVOLUI);
+	//std::shared_ptr<VOLUI>spVOLUI = std::make_shared<VOLUI>();
+	//spVOLUI->Init();
+	//spVOLUI->SetVolPos({ 400,-300 });
+	//spUIManager->AddUIObj(spVOLUI);
 	/////////////////////////////////////////
 	m_spTitleMove->SetMapManager(m_spMapManager);
 	m_spTitleMove->SetCamera(m_spCamera);

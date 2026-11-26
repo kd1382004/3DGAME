@@ -20,6 +20,8 @@ public:
 	//初期化
 	void Init()override;
 
+	void Update()override;
+
 	//更新後の処理
 	void PostUpdate()override;
 
@@ -84,6 +86,7 @@ private:
 
 	//光の半径
 	float m_radius = 0.0f;
+	float m_drawRadius = 0.0f;
 
 	//揺れの時間
 	float m_flickerTime = 0.0f;

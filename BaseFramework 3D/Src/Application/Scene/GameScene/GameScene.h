@@ -98,6 +98,9 @@ public:
 	bool IsFloorChanging() const { return m_floorChangeState != FloorChangeState::None; }
 
 	bool CanOpenPause()override;
+
+	//ポーズメニューを開いたときに呼ばれる(プレイヤーの音とチャージを止める)
+	void OnPauseOpen()override;
 private:
 
 	//---- 型 ----

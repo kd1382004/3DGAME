@@ -44,14 +44,6 @@ void BaseScene::PreUpdate()
 
 	for (auto& obj : m_objList)
 	{
-		if (m_poseFlg)
-		{
-			if (!obj->GetPauseStop())
-			{
-				obj->PreUpdate();
-			}
-		}
-		else
 		{
 			obj->PreUpdate();
 		}
@@ -66,21 +58,27 @@ void BaseScene::Update()
 		Event();
 	}
 
-	// KdGameObjectを継承した全てのオブジェクトの更新 (ポリモーフィズム)
-	for (auto& obj : m_objList)
+	if (!PauseUI::Instance().GetPauseMenuFlg())
 	{
-		if (m_poseFlg)
+		// KdGameObjectを継承した全てのオブジェクトの更新 (ポリモーフィズム)
+		for (auto& obj : m_objList)
 		{
-			if (!obj->GetPauseStop())
+			if (m_poseFlg)
+			{
+				if (!obj->GetPauseStop())
+				{
+					obj->Update();
+				}
+			}
+			else
 			{
 				obj->Update();
 			}
 		}
-		else
-		{
-			obj->Update();
-		}
 	}
+
+
+
 
 	FadeDraw::Instance().Update();
 
@@ -95,17 +93,7 @@ void BaseScene::PostUpdate()
 
 	for (auto& obj : m_objList)
 	{
-		if (m_poseFlg)
-		{
-			if (!obj->GetPauseStop())
-			{
-				obj->PostUpdate();
-			}
-		}
-		else
-		{
-			obj->PostUpdate();
-		}
+		obj->PostUpdate();
 	}
 
 }

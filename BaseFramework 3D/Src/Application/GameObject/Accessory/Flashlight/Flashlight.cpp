@@ -26,6 +26,7 @@ void Flashlight::PostUpdate()
 	// モデルは腰に完全に追従させる
 	m_mWorld = m_localMat * m_accessoryParentMat;
 
+
 	Math::Vector3 pos = m_mWorld.Translation();
 
 	// ライトの向き：腰に追従させると歩くたびに大きく揺れるので、
@@ -66,6 +67,11 @@ void Flashlight::PostUpdate()
 		m_flashlightconfig.m_angle,           // 照射角 
 		true
 	);
+}
+
+void Flashlight::PreDraw()
+{
+
 }
 
 void Flashlight::GenerateDepthMapFromLight()

@@ -730,6 +730,15 @@ bool GameScene::CanOpenPause()
 	return true;
 }
 
+void GameScene::OnPauseOpen()
+{
+	//足音・心音・武器のチャージ音を止めて、チャージも解除する(インベントリを開いたときと同じ)
+	if (m_spPlayer)
+	{
+		m_spPlayer->StopSound();
+	}
+}
+
 void GameScene::ApplyBGMVolume()
 {
 	//倍率は鳴らし始めたときと同じ(通常 0.4・ボス 0.1)
