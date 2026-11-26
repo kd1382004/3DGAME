@@ -241,6 +241,9 @@ public:
 	// インベントリ表示時などのSE全停止処理
 	void StopSound();
 
+	//鳴り続けている音(心音)の音量を今の設定に合わせる(ポーズ中も呼ばれる)
+	void ApplySoundVolume();
+
 	//攻撃力アップEffect
 	void PlayAttackBoostEffect();
 

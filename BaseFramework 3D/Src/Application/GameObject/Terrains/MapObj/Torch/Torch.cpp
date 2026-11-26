@@ -103,10 +103,10 @@ void Torch::PostUpdate()
 	if (m_spFireSE)
 	{
 		m_spFireSE->SetPos(worldEffectPos);
-		m_spFireSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		ApplySoundVolume();
 		if (!m_spFireSE->IsPlaying())
 		{
-			m_spFireSE->Play();
+			m_spFireSE->Play(true);
 		}
 
 	}
@@ -178,6 +178,14 @@ void Torch::SetRotation(Math::Matrix _rMat)
 //=============================================
 // 基本の処理
 //=============================================
+
+void Torch::ApplySoundVolume()
+{
+	if (m_spFireSE)
+	{
+		m_spFireSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+	}
+}
 
 void Torch::Release()
 {

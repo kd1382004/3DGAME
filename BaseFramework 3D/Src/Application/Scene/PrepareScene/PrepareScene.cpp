@@ -473,6 +473,12 @@ void PrepareScene::ApplyBGMVolume()
 	{
 		m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kPrepareBGMVolRate);
 	}
+
+	//たき火の音も効果音の音量に合わせる(鳴らし始めと同じ倍率 1.0)
+	for (const auto& spSE : m_spCampfire3DSEList)
+	{
+		if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol()); }
+	}
 }
 
 void PrepareScene::Event()
@@ -537,6 +543,17 @@ void PrepareScene::UpdateRackWeapons()
 		const bool isOwned = id < static_cast<int>(owned.size()) && owned[id];
 		spWeapon->SetDrawFlg(isOwned && id != equip);
 	}
+}
+
+bool PrepareScene::CanOpenPause()
+{
+	//共通の判定(インベントリ中・暗転中)
+	if (!BaseScene::CanOpenPause()) { return false; }
+
+	//出発の演出中(走っていく〜暗転)は開かない
+	if (m_departState != DepartState::None) { return false; }
+
+	return true;
 }
 
 void PrepareScene::ApplyEquip()

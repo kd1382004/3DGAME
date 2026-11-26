@@ -633,7 +633,7 @@ void GameScene::GenerateMap()
 		if (m_spGameBGM && !m_spGameBGM->IsPlaying())
 		{
 			m_spGameBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kGameBGMVolRate);
-			m_spGameBGM->Play();
+			m_spGameBGM->Play(true);
 		}
 
 		m_spMapManager->GenerateMap({ (float)mapSizeX,(float)mapSizeY }, roomCount, m_mapType);
@@ -652,7 +652,7 @@ void GameScene::GenerateMap()
 		if (m_spBossBGM)
 		{
 			m_spBossBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kBossBGMVolRate);
-			m_spBossBGM->Play();
+			m_spBossBGM->Play(true);
 		}
 
 		//ボスの登場の音(工場はロボット、それ以外は巨人の雄たけび)
@@ -722,6 +722,14 @@ void GameScene::RequestNextFloor()
 	m_floorChangeState = FloorChangeState::FadeToBlack;
 }
 
+bool GameScene::CanOpenPause()
+{
+	if (!BaseScene::CanOpenPause()) { return false; }	//共通の判定
+	if (IsFloorChanging()) { return false; }			//階層移動中
+	if (m_spPlayer && m_spPlayer->GetIsDead()) { return false; }	//倒れたあと
+	return true;
+}
+
 void GameScene::ApplyBGMVolume()
 {
 	//倍率は鳴らし始めたときと同じ(通常 0.4・ボス 0.1)
@@ -737,6 +745,11 @@ void GameScene::ApplyBGMVolume()
 	{
 		m_spFactoryAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kFactoryAmbientVolRate);
 	}
+
+	//鳴り続けている効果音(たいまつ・宝箱・ワープゲート・心音)
+	if (m_spMapObjManager) { m_spMapObjManager->ApplySoundVolume(); }
+	if (m_spWarpGateManager) { m_spWarpGateManager->ApplySoundVolume(); }
+	if (m_spPlayer) { m_spPlayer->ApplySoundVolume(); }
 }
 
 void GameScene::Event()

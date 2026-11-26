@@ -46,6 +46,14 @@ void WarpGateManager::Update()
 	}
 }
 
+void WarpGateManager::ApplySoundVolume()
+{
+	for (auto warp : m_warpGateList)
+	{
+		warp->ApplySoundVolume();
+	}
+}
+
 void WarpGateManager::PreDraw()
 {
 	for (auto warp : m_warpGateList)

@@ -735,6 +735,21 @@ void PlayerBase::StopSound()
 	m_chargeAttackCount = 0;
 }
 
+void PlayerBase::ApplySoundVolume()
+{
+	//心音は HP が少ないときだけ鳴っている
+	if (!m_spHeartbeatSE || !m_spHeartbeatSE->IsPlaying()) { return; }
+
+	const float maxHP = m_status.m_HP.m_maxHP;
+	const float nowHP = m_status.m_HP.m_nowHP;
+	if (maxHP <= 0.0f) { return; }
+
+	// HPが減るほど大きく(0.5 〜 1.0)
+	float rate = 1.0f - (nowHP / (maxHP * kHeartbeatHPRate)) * 0.5f;
+	rate = std::clamp(rate, 0.5f, 1.0f);
+	m_spHeartbeatSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * rate);
+}
+
 void PlayerBase::UpdateStatusSE()
 {
 	//---- 着地 ----
@@ -776,11 +791,7 @@ void PlayerBase::UpdateStatusSE()
 		}
 
 		// HPが減るほど大きく(0.5 〜 1.0)
-		if (m_spHeartbeatSE)
-		{
-			float rate = 1.0f - (nowHP / (maxHP * kHeartbeatHPRate)) * 0.5f;
-			m_spHeartbeatSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * rate);
-		}
+		ApplySoundVolume();
 	}
 	else if (m_spHeartbeatSE && m_spHeartbeatSE->IsPlaying())
 	{

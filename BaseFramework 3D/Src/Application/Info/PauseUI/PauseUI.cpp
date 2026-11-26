@@ -508,7 +508,12 @@ void PauseUI::MainMenuUpdate()
 	{
 		if (!m_escFlg)
 		{
-			PauseClose();
+			//閉じているときは、今開いていいかを確かめてから開く
+			if (m_pauseMenuFlg || SceneManager::Instance().CanOpenPause())
+			{
+				PauseClose();
+			}
+
 			m_escFlg = true;
 		}
 	}

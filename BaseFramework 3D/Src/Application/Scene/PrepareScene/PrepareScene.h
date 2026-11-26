@@ -84,6 +84,11 @@ public:
 	//持っている武器だけを出し、装備中の武器は(プレイヤーが持っているので)隠す
 	void UpdateRackWeapons();
 
+
+	//今ポーズメニューを開いていいか
+	//戻り値 ... 開いていいならtrue
+	bool CanOpenPause() override;
+
 private:
 
 	//---- メンバ変数 ----

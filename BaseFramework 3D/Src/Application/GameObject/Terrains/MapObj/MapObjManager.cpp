@@ -88,6 +88,14 @@ void MapObjManager::PostUpdate()
 	}
 }
 
+void MapObjManager::ApplySoundVolume()
+{
+	for (auto& obj : m_mapObjUpdateList)
+	{
+		obj->ApplySoundVolume();
+	}
+}
+
 void MapObjManager::GenerateDepthMapFromLight()
 {
 	for (auto& obj : m_mapObjDrawList)

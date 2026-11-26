@@ -132,6 +132,10 @@ public:
 	//戻り値 ... 霧の色
 	const Math::Vector3 GetFogColor() { return m_fogColor; }
 
+	//今ポーズメニューを開いていいか
+	//戻り値 ... 開いていいならtrue
+	bool CanOpenPause();
+
 	//---- 設定 ----
 
 	// 次のシーンをセット (次のフレームから切り替わる)

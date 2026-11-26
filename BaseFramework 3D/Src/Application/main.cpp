@@ -176,9 +176,6 @@ void Application::PreUpdate()
 void Application::Update()
 {
 	SceneManager::Instance().Update();
-
-	// 毎フレームの更新
-	KdEffekseerManager::GetInstance().Update();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////

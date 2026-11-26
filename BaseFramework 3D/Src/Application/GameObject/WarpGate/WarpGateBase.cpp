@@ -160,7 +160,18 @@ void WarpGateBase::UpdateHumSE()
 
 	//位置と音量(設定の変更)を合わせる
 	m_spHum3DSE->SetPos(m_pos);
-	m_spHum3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.35f);
+	ApplySoundVolume();
+}
+
+void WarpGateBase::ApplySoundVolume()
+{
+	//消える予定なら鳴らさないので触らない
+	if (m_isExpired) { return; }
+
+	if (m_spHum3DSE)
+	{
+		m_spHum3DSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * 0.35f);
+	}
 }
 
 void WarpGateBase::ShowGuideUI(int _key)

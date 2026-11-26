@@ -34,6 +34,9 @@ public:
 	//ライトありの描画
 	void DrawLit()override;
 
+	//全ワープゲートの音量を今の設定に合わせる(ポーズ中も呼ばれる)
+	void ApplySoundVolume();
+
 	//---- 設定 ----
 
 	//プレイヤーをセット

@@ -33,6 +33,9 @@ public:
 	//更新後の処理
 	void PostUpdate()override;
 
+	//鳴っている音の音量を今の設定に合わせる(ポーズ中も呼ばれる)
+	void ApplySoundVolume()override;
+
 	//影の描画
 	void GenerateDepthMapFromLight()override;
 

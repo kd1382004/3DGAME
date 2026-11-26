@@ -77,6 +77,10 @@ public:
 	//BGMの音量を今の設定に合わせる(ポーズ中も呼ばれる)
 	virtual void ApplyBGMVolume() {}
 
+	//今ポーズメニューを開いていいか
+	//戻り値 ... 開いていいならtrue
+	virtual bool CanOpenPause();
+
 protected:
 
 	//---- メンバ変数 ----

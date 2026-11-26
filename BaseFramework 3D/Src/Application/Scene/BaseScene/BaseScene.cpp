@@ -15,7 +15,7 @@
 
 //---- 便利機能 ----
 #include"../../Info/FadeDraw/FadeDraw.h"											//画面フェードの描画
-
+#include"../../Info/PauseUI/PauseUI.h"
 //=============================================
 // 基本の処理
 //=============================================
@@ -83,8 +83,13 @@ void BaseScene::Update()
 	}
 
 	FadeDraw::Instance().Update();
-}
 
+	// 毎フレームの更新(ポーズ中は止める)
+	if (!PauseUI::Instance().GetPauseMenuFlg() && !m_poseFlg)
+	{
+		KdEffekseerManager::GetInstance().Update();
+	}
+}
 void BaseScene::PostUpdate()
 {
 
@@ -232,6 +237,17 @@ void BaseScene::ImGUI()
 void BaseScene::Init()
 {
 	// 各シーンで必要な内容を実装(オーバーライド)する
+}
+
+bool BaseScene::CanOpenPause()
+{
+	//インベントリなどで止まっている間は開かない
+	if (m_poseFlg) { return false; }
+
+	//暗転・明転中は開かない
+	if (FadeDraw::Instance().GetFadeFlg()) { return false; }
+
+	return true;
 }
 
 //=============================================

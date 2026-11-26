@@ -47,6 +47,9 @@ public:
 	//デバッグ描画
 	void DrawDebug()override;
 
+	//更新範囲内のマップオブジェクトの音量を今の設定に合わせる(ポーズ中も呼ばれる)
+	void ApplySoundVolume();
+
 	//---- 取得 ----
 
 	//更新するマップオブジェクトの一覧を返す

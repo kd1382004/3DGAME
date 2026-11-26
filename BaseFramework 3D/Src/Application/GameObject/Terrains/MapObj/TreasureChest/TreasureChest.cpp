@@ -252,13 +252,24 @@ void TreasureChest::PostUpdate()
 
 	if (m_spTreasureChestSE)
 	{
-		m_spTreasureChestSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
+		ApplySoundVolume();
 		if (!m_spTreasureChestSE->IsPlaying())
 		{
 			m_spTreasureChestSE->Play(true);
 		}
 		m_spTreasureChestSE->SetPos(GetPos());
 
+	}
+}
+
+void TreasureChest::ApplySoundVolume()
+{
+	//開いた宝箱はもう鳴らさない
+	if (m_open) { return; }
+
+	if (m_spTreasureChestSE)
+	{
+		m_spTreasureChestSE->SetVolume(VOLInfo::Instance().GetMSSEVol());
 	}
 }
 

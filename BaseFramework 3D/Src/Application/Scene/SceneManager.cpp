@@ -198,6 +198,19 @@ const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()
 // 設定
 //=============================================
 
+bool SceneManager::CanOpenPause()
+{
+	//シーンの切り替えを予約している間は開かない
+	if (m_currentSceneType != m_nextSceneType) { return false; }
+
+	//デバッグのImGui画面中は開かない
+	if (DebugInfo::Instance().GetSceneManagerImGUIFlg()) { return false; }
+
+	//今のシーンに聞く
+	if (!m_spCurrentScene) { return false; }
+	return m_spCurrentScene->CanOpenPause();
+}
+
 void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _spObj)
 {
 	if (!m_spCurrentScene) { return; }

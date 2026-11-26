@@ -97,6 +97,7 @@ public:
 	void RequestNextFloor();                 // ゲートから呼ぶ
 	bool IsFloorChanging() const { return m_floorChangeState != FloorChangeState::None; }
 
+	bool CanOpenPause()override;
 private:
 
 	//---- 型 ----

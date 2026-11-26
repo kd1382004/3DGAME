@@ -50,6 +50,9 @@ public:
 	// _flg ... チャンク内にいるか
 	virtual void SetInChunk(bool _flg) {};
 
+	//鳴っている音の音量を今の設定に合わせる(音を持つものだけ上書きする)
+	virtual void ApplySoundVolume() {}
+
 	//ゲームシーンをセット
 	// _spGameScene ... ゲームシーン
 	void SetGameScene(std::shared_ptr<GameScene>_spGameScene) { m_wpGameScene = _spGameScene; }
