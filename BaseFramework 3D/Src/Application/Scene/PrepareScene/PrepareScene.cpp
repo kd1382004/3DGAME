@@ -464,8 +464,22 @@ void PrepareScene::UpdateDepart()
 	}
 }
 
+void PrepareScene::ApplyBGMVolume()
+{
+	//出発の暗転中は UpdateDepart 側で小さくしているので触らない
+	if (m_departState != DepartState::None) { return; }
+
+	if (m_spPrepareBGM)
+	{
+		m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kPrepareBGMVolRate);
+	}
+}
+
 void PrepareScene::Event()
 {
+	//BGM の音量を毎フレーム設定に合わせる
+	ApplyBGMVolume();
+
 	MouseInfo::Instance().SetMouseFreeFlg(true);
 
 	// 武器を買った・装備を変えたらすぐ反映されるように毎フレーム更新する

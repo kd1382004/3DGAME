@@ -21,7 +21,7 @@ private:
 	bool m_escFlg = false;
 
 
-	void MainMenuDraw();
+
 
 
 	//---- 型 ----
@@ -46,10 +46,89 @@ private:
 	bool m_titleButtonHoverFlg = false;
 	bool m_exitButtonHoverFlg = false;
 
-	//---- 関数 ----
+	//---------- 関数 ----------
 
-	//メインメニューの更新
+	//--- メインメニュー ---
 	void MainMenuUpdate();
+	void MainMenuDraw();
+
+	//-----------------------
+
+	//--- VOL ---
+	void VolumePageUpdate();
+	void VolumePageDraw();
+
+	//「戻る」ボタンの更新
+	void BackButtonUpdate();
+
+	//つまみのドラッグの更新
+	void SliderDragUpdate();
+
+	//バーの上にマウスが乗っているか
+	// _sliderPos ... バーの位置(中心)
+	//戻り値 ... 乗っているならtrue
+	bool IsMouseOnSlider(const Math::Vector2& _sliderPos);
+
+	//つまみの上にマウスが乗っているか
+	// _sliderPos ... バーの位置(中心)
+	// _vol ... 今の音量(0〜1)
+	//戻り値 ... 乗っているならtrue
+	bool IsMouseOnThumb(const Math::Vector2& _sliderPos, float _vol);
+
+	//マウスのxから音量を計算
+	// _sliderPos ... バーの位置(中心)
+	//戻り値 ... 音量(0〜1)
+	float MouseXToVol(const Math::Vector2& _sliderPos);
+
+	//音量をセット(VOLInfoへ)
+	// _index ... 0:全体 1:BGM 2:効果音
+	// _vol ... 音量(0〜1)
+	void SetVolume(int _index, float _vol);
+
+	//音量を取得(VOLInfoから)
+	// _index ... 0:全体 1:BGM 2:効果音
+	//戻り値 ... 音量(0〜1)
+	float GetVolume(int _index);
+
+
+
+	//ドラッグしているバー
+	enum DragSlider
+	{
+		DragSlider_Master = 0,	//全体
+		DragSlider_BGM,			//BGM
+		DragSlider_SE,			//効果音
+		DragSlider_Siz,	
+
+		DragSlider_None,	//ドラッグしていない
+	};
+
+	//バーの位置を取得
+	// _slider ... どのバーか
+	//戻り値 ... バーの位置(中心)
+	Math::Vector2 GetSliderPos(DragSlider _slider);
+
+	//ドラッグしているバーの番号
+	DragSlider m_dragIndex = DragSlider_None;
+
+	//つまみにマウスが乗っているか(0:全体 1:BGM 2:効果音)
+	bool m_thumbHoverFlg[DragSlider_Siz] = {};
+
+	//「戻る」にマウスが乗っているか
+	bool m_backButtonHoverFlg = false;
+
+	//-----------------------------------------
+
+
+	void ConfirmDraw();
+	void ConfirmUpdate();
+	//「はい」「いいえ」にマウスが乗っているか
+	bool m_yesButtonHoverFlg = false;
+	bool m_noButtonHoverFlg = false;
+
+
+
+
 
 	//画像の上にマウスが乗っているか
 	// _spTex ... 画像
@@ -106,6 +185,10 @@ private:
 	std::shared_ptr<KdTexture> m_spVolumeTitleTex;
 	//「ESCで閉じる」
 	std::shared_ptr<KdTexture> m_spEscCloseTex;
+
+	//「ESCで戻る」
+	std::shared_ptr<KdTexture> m_spEscBackTex;
+
 	//「タイトルへ戻りますか？」
 	std::shared_ptr<KdTexture> m_spConfirmTitleTitleTex;
 	//「ゲームを終了しますか？」
@@ -122,6 +205,9 @@ private:
 	std::shared_ptr<KdTexture> m_spSETex;
 	//「%」
 	std::shared_ptr<KdTexture> m_spPercentTex;
+
+
+	std::shared_ptr<KdTexture> m_spBlackTex;
 
 	//---- スライダー ----
 

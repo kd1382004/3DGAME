@@ -722,9 +722,8 @@ void GameScene::RequestNextFloor()
 	m_floorChangeState = FloorChangeState::FadeToBlack;
 }
 
-void GameScene::Event()
+void GameScene::ApplyBGMVolume()
 {
-	//BGM の音量を毎フレーム設定に合わせる(ゲーム中に音量を変えてもすぐ反映される)
 	//倍率は鳴らし始めたときと同じ(通常 0.4・ボス 0.1)
 	if (m_spGameBGM && m_spGameBGM->IsPlaying())
 	{
@@ -738,6 +737,12 @@ void GameScene::Event()
 	{
 		m_spFactoryAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kFactoryAmbientVolRate);
 	}
+}
+
+void GameScene::Event()
+{
+	//BGM の音量を毎フレーム設定に合わせる(ゲーム中に音量を変えてもすぐ反映される)
+	ApplyBGMVolume();
 
 	if (m_playerDefeatFlg)
 	{

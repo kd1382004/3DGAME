@@ -74,6 +74,9 @@ public:
 	//ゲーム結果を保存
 	virtual void SetGameResult() {};
 
+	//BGMの音量を今の設定に合わせる(ポーズ中も呼ばれる)
+	virtual void ApplyBGMVolume() {}
+
 protected:
 
 	//---- メンバ変数 ----

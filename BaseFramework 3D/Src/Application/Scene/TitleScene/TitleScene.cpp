@@ -255,12 +255,18 @@ void TitleScene::SetObjectList()
 // その他の処理
 //=============================================
 
-void TitleScene::Event()
+void TitleScene::ApplyBGMVolume()
 {
 	if (m_spTitleBGM)
 	{
 		m_spTitleBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kTitleBGMVolRate);
 	}
+}
+
+void TitleScene::Event()
+{
+	//BGM の音量を毎フレーム設定に合わせる
+	ApplyBGMVolume();
 
 	MouseInfo::Instance().SetMouseFreeFlg(true);
 

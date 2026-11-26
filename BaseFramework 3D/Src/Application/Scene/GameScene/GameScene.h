@@ -46,6 +46,9 @@ public:
 	//シーンの初期化
 	void Init()  override;
 
+	//BGMの音量を今の設定に合わせる(ポーズ中も呼ばれる)
+	void ApplyBGMVolume() override;
+
 	//---- 取得 ----
 
 	//ポーションを使う処理を取得

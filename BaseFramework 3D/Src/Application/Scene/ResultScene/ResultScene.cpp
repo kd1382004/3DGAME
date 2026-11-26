@@ -135,6 +135,19 @@ void ResultScene::Init()
 // その他の処理
 //=============================================
 
+void ResultScene::ApplyBGMVolume()
+{
+	//倍率は鳴らし始めたときと同じ(0.3)
+	if (m_spPlayerDeadBGM)
+	{
+		m_spPlayerDeadBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.3f);
+	}
+	if (m_spEscapeBGM)
+	{
+		m_spEscapeBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * 0.3f);
+	}
+}
+
 void ResultScene::Event()
 {
 	MouseInfo::Instance().SetMouseFreeFlg(true);

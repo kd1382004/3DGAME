@@ -55,7 +55,15 @@ void SceneManager::Update()
 		while (ShowCursor(false) >= 0) {}  // カウンターが負になるまで下げる＝必ず非表示
 	}
 
-	if (PauseUI::Instance().GetPauseMenuFlg()) { return; }
+	if (PauseUI::Instance().GetPauseMenuFlg())
+	{
+		//止まっている間も音量設定をすぐ反映する
+		if (m_spCurrentScene)
+		{
+			m_spCurrentScene->ApplyBGMVolume();
+		}
+		return;
+	}
 
 	if (!m_spCurrentScene) { return; }
 	m_spCurrentScene->Update();
