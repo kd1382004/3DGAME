@@ -54,13 +54,6 @@ void UIMap_Map::PreDraw()
 {
 	DiscoverTile();
 	if (m_isDirty) { BakeTiles(); m_isDirty = false; }
-
-
-	//デバッグ
-	if (GetAsyncKeyState('4') & 0x8000)
-	{
-		SetMinimapRevealAll(true);
-	}
 }
 
 //=============================================
@@ -84,6 +77,7 @@ void UIMap_Map::AddPosList(Math::Vector3 _3DPos, float _worldTileSize, int _room
 	m_posList.push_back(info);
 
 	m_tileMap[MakeKey((int)tileX, (int)tileY)] = &m_posList.back();
+
 }
 
 void UIMap_Map::AddStairsPos(Math::Vector3 _3DPos, float _worldTileSize, int _roomNum)
@@ -129,6 +123,7 @@ void UIMap_Map::PosListReset()
 	m_stairsMiniMapInfo.m_drawFlg = false;
 	m_isStairsMine = false;
 	m_isDirty = true;
+	m_playerRoomNum = kNOTRoom;
 }
 
 void UIMap_Map::DiscoverTile()
@@ -136,6 +131,11 @@ void UIMap_Map::DiscoverTile()
 	// プレイヤーがミニマップ上のどのタイルにいるか
 	int px = (int)((m_miniMapPlayerPos.x - m_basePos.x - m_mapTexSize.x * 0.5f) / (m_mapTexSize.x * m_size));
 	int py = (int)((m_miniMapPlayerPos.y - m_basePos.y - m_mapTexSize.y * 0.5f) / (m_mapTexSize.y * m_size));
+	// プレイヤーがいるタイルと部屋の番号を覚える
+	m_playerTileX = px;
+	m_playerTileY = py;
+	const MiniMapInfo* playerTile = FindTile(px, py);
+	m_playerRoomNum = playerTile ? playerTile->m_roomNum : kNOTRoom;
 
 	float discoverRadius = m_discoverTileNum * m_mapTexSize.x;
 	int r = m_discoverTileNum + 1;

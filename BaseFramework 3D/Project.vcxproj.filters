@@ -466,6 +466,9 @@
     <Filter Include="Src\Application\Info\PauseUI">
       <UniqueIdentifier>{15ad51cb-522e-4147-b3f4-3288c5741d57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\UI\FloorNumUI">
+      <UniqueIdentifier>{25ebc874-f579-4069-a7f9-c4da0ba7b28c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -1044,6 +1047,9 @@
     <ClInclude Include="Src\Application\Info\PauseUI\PauseUI.h">
       <Filter>Src\Application\Info\PauseUI</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\UI\FloorNumUI\FloorNumUI.h">
+      <Filter>Src\Application\GameObject\UI\FloorNumUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1576,6 +1582,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Info\PauseUI\PauseUI.cpp">
       <Filter>Src\Application\Info\PauseUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\UI\FloorNumUI\FloorNumUI.cpp">
+      <Filter>Src\Application\GameObject\UI\FloorNumUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

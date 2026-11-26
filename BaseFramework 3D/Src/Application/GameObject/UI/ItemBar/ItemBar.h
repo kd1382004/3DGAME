@@ -91,10 +91,10 @@ private:
 	const float m_slotSpacing = 36.0f;
 
 	//中央のアイコンの大きさ
-	const float m_selectSize = 32.0f;
+	const float m_selectSize = 42.0f;
 
 	//左右のアイコンの大きさ
-	const float m_slotSize = 20.0f;
+	const float m_slotSize = 28.0f;
 
 	//バー全体の帯の画像
 	std::shared_ptr<KdTexture> m_spBackTex;

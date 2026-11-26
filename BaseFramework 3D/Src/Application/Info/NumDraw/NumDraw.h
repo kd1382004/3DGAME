@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 //数字をどちらにそろえて描くか
 enum Aligned
@@ -32,6 +32,14 @@ public:
 	void Draw(long _num, Aligned _aligned, Math::Vector2 _pos, Math::Color _color = Math::Color(1, 1, 1, 1), float _size = 1, bool _separator = false, int _digit = -1, Math::Vector2 _maxSize = { 0, 0 });
 
 	//---- 取得 ----
+
+	//数字1文字の横の大きさ(元の画像のピクセル)を返す
+	//戻り値 ... 1文字の横の大きさ
+	int GetCharWidth() const { return m_recX; }
+
+	//数字1文字の縦の大きさ(元の画像のピクセル)を返す
+	//戻り値 ... 1文字の縦の大きさ
+	int GetCharHeight() const { return m_recY; }
 
 	//インスタンスを取得する(シングルトン)
 	//戻り値 ... NumDrawのインスタンス

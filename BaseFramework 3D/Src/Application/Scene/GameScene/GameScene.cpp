@@ -47,6 +47,7 @@
 #include"../../GameObject/UI/UI2/UIBase2.h"																			//キー表示付きUIの基底クラス
 #include"../../GameObject/UI/ItemBar/ItemBar.h"																		//アイテムバー
 #include"../../GameObject/UI/FloorTitleUI/FloorTitleUI.h"
+#include"../../GameObject/UI/FloorNumUI/FloorNumUI.h"
 
 //---- エディター ----
 #include"../../Editor/CharaStatusEditor/CharaStatusEditor.h"														//キャラステータス編集エディター
@@ -321,6 +322,10 @@ void GameScene::Init()
 	m_spFloorTitleUI->Init();
 	m_spUIManager->AddUIObj(m_spFloorTitleUI);
 
+	std::shared_ptr<FloorNumUI> spFloorNumUI = std::make_shared<FloorNumUI>();
+	spFloorNumUI->Init();
+	spFloorNumUI->SetGameScene(self); 
+	m_spUIManager->AddUIObj(spFloorNumUI);
 
 	/////////////////////////////////////////
 	//プレイヤーにセット

@@ -47,6 +47,7 @@ public:
 	//戻り値 ... 敵のUI
 	std::shared_ptr<UIMap_EnemyManage> GetUIMap_Enemy() {return m_spUIMap_Enemy;}
 
+
 	//---- 設定 ----
 
 	//マップの基準位置(ワールド)をセット(子のUIにも渡す)
@@ -95,4 +96,5 @@ private:
 
 	//1タイルの大きさ
 	float m_tileSize = 10.0f;
+
 };

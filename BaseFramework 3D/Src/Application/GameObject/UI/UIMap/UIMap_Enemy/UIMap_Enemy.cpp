@@ -69,12 +69,22 @@ Math::Vector2 UIMap_EnemyManage::Change2DPos(Math::Vector3 _pos)
 void UIMap_EnemyManage::DiscoverEnemy(List* _info)
 {
 	auto spUIMap_Map = m_wpUIMap_Map.lock();
-	if (!spUIMap_Map) { return; }
+	if (!spUIMap_Map) { _info->m_drawFlg = false; return; }
 
 	int enemyTileX = (int)((_info->m_pos.x - m_base3DPos.x) / m_tileSize);
 	int enemyTileY = (int)((_info->m_pos.z - m_base3DPos.z) / m_tileSize);
 
-	const MiniMapInfo* tile = spUIMap_Map->FindTile(enemyTileX, enemyTileY);
-	_info->m_drawFlg = tile ? tile->m_drawFlg : false;
+	//プレイヤーと同じ部屋にいるときだけ表示
+	_info->m_drawFlg = spUIMap_Map->IsSamePlayerRoom(enemyTileX, enemyTileY);
 
+	//もし自分が部屋にいなかったら
+	if (!spUIMap_Map->IsPlayerInRoom())
+	{
+		//プレイヤーとの差(タイル)
+		int diffX = std::abs(enemyTileX - spUIMap_Map->GetPlayerTileX());
+		int diffY = std::abs(enemyTileY - spUIMap_Map->GetPlayerTileY());
+
+		//縦横斜め1マス以内なら表示
+		_info->m_drawFlg = (diffX <= 1 && diffY <= 1);
+	}
 }

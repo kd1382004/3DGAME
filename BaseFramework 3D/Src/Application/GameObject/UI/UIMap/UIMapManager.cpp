@@ -13,7 +13,7 @@
 
 void UIMapManager::Init()
 {
-	m_basePos = { -600,350 };
+	m_basePos = { -600,280 };
 
 
 	if (!m_spUIMap_Map)
@@ -43,6 +43,7 @@ void UIMapManager::Init()
 	}
 
 	m_layerPriority = 2;
+
 }
 
 void UIMapManager::PreUpdate()

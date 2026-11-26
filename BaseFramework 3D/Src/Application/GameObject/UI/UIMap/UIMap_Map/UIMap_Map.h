@@ -53,6 +53,7 @@ public:
 	//戻り値 ... 画像の大きさ
 	Math::Vector2 GetMapTexSize() { return m_mapTexSize; }
 
+
 	//---- 設定 ----
 
 	//床のタイルを追加
@@ -106,6 +107,30 @@ public:
 		return (it != m_tileMap.end()) ? it->second : nullptr;
 	}
 
+
+	//プレイヤーと同じ部屋のタイルか
+	// _x ... タイルのx
+	// _y ... タイルのy
+	//戻り値 ... 同じ部屋ならtrue(どちらかが通路ならfalse)
+	bool IsSamePlayerRoom(int _x, int _y) const
+	{
+		if (m_playerRoomNum == kNOTRoom) { return false; }
+
+		const MiniMapInfo* tile = FindTile(_x, _y);
+		if (!tile) { return false; }
+
+		return tile->m_roomNum == m_playerRoomNum;
+	}
+
+	//プレイヤーが部屋にいるか
+	bool IsPlayerInRoom() const { return m_playerRoomNum != kNOTRoom; }
+
+	//プレイヤーがいるタイルのx
+	int GetPlayerTileX() const { return m_playerTileX; }
+
+	//プレイヤーがいるタイルのy
+	int GetPlayerTileY() const { return m_playerTileY; }
+
 private:
 
 	//---- 定数 ----
@@ -114,6 +139,10 @@ private:
 	static const int kNOTRoom = -999;
 
 	//---- メンバ変数 ----
+
+	int m_playerRoomNum = kNOTRoom;
+	int m_playerTileX = 0;
+	int m_playerTileY = 0;
 
 	// タイル座標 → タイル（1座標に1タイル）
 	std::unordered_map<long long, MiniMapInfo*> m_tileMap;
