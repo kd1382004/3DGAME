@@ -635,61 +635,115 @@ void MapManager::GenerateMap(Math::Vector2 _mapSize, int _roomNum, MapType _mapT
 		std::list<Math::Vector3> treasureChestPosList;
 
 		//////////////////////////////////////////
-		// 部屋ごとに chestNum 個置く
+// 部屋ごとに chestNum 個置く
 		for (size_t i = 0; i < mapRoomList.size(); i++)
 		{
-			if (mapRoomList[i].empty()) { continue; }
-			int chestNum = mapRoomList[i][0].m_roomTreasureChestNum;
-			if (chestNum <= 0) { continue; }
+			if (mapRoomList[i].empty()) continue;
 
-			//この部屋の、何も置いていない床の番号を集める
+			int chestNum = mapRoomList[i][0].m_roomTreasureChestNum;
+			if (chestNum <= 0) continue;
+
 			std::vector<int> freeFloors;
 
-			// この部屋のマスの一覧（部屋ごとに1回だけ作る）
+			// この部屋のマス一覧
 			std::set<std::pair<int, int>> roomTiles;
-			for (auto& f : mapRoomList[i]) {
+			for (auto& f : mapRoomList[i])
+			{
 				roomTiles.insert({ (int)f.m_xy.x, (int)f.m_xy.y });
 			}
 
-			// 隣に通路がある(=通路の目の前)か
-			auto isEntrance = [&](int _x, int _y) {
-				const int dx[4] = { 1,-1,0,0 };
-				const int dy[4] = { 0,0,1,-1 };
-				for (int d = 0; d < 4; d++) {
-					int nx = _x + dx[d], ny = _y + dy[d];
-					if (ny < 0 || ny >= (int)mapData.size() || nx < 0 || nx >= (int)mapData[ny].size()) continue;
-					if (mapData[ny][nx] && !roomTiles.count({ nx, ny })) return true; // 隣が通路
-				}
-				return false;
+			// 通路の入口判定
+			auto isEntrance = [&](int _x, int _y)
+				{
+					const int dx[4] = { 1,-1,0,0 };
+					const int dy[4] = { 0,0,1,-1 };
+
+					for (int d = 0; d < 4; d++)
+					{
+						int nx = _x + dx[d];
+						int ny = _y + dy[d];
+
+						if (ny < 0 || ny >= (int)mapData.size()) continue;
+						if (nx < 0 || nx >= (int)mapData[ny].size()) continue;
+
+						if (mapData[ny][nx] &&
+							!roomTiles.count({ nx, ny }))
+						{
+							return true;
+						}
+					}
+
+					return false;
 				};
 
+			// 配置候補集め
 			for (size_t j = 0; j < mapRoomList[i].size(); j++)
 			{
-				int x = static_cast<int>(mapRoomList[i][j].m_xy.x);
-				int y = static_cast<int>(mapRoomList[i][j].m_xy.y);
+				int x = (int)mapRoomList[i][j].m_xy.x;
+				int y = (int)mapRoomList[i][j].m_xy.y;
 
-				// 何も置いていない かつ 入口ではない
-				if (!mapRoomList[i][j].m_installation && !isEntrance(x, y))
+				if (!mapRoomList[i][j].m_installation &&
+					!isEntrance(x, y))
 				{
-					freeFloors.push_back(static_cast<int>(j));
+					freeFloors.push_back((int)j);
 				}
 			}
-			//シャッフルする(フィッシャー–イェーツ)
-			for (int k = static_cast<int>(freeFloors.size()) - 1; k > 0; k--)
+
+			// シャッフル
+			for (int k = (int)freeFloors.size() - 1; k > 0; k--)
 			{
-				std::swap(freeFloors[k], freeFloors[KdRandom::GetInt(0, k)]);
+				std::swap(
+					freeFloors[k],
+					freeFloors[KdRandom::GetInt(0, k)]
+				);
 			}
 
-			//前から chestNum 個置く(床が足りなければ置けるだけ)
-			int placeNum = std::min(chestNum, static_cast<int>(freeFloors.size()));
-			for (int n = 0; n < placeNum; n++)
-			{
-				int j = freeFloors[n];
+			// 実際に選ばれた床
+			std::vector<int> placedFloors;
 
+			const int minDistance = 2;
+
+			for (int floorIdx : freeFloors)
+			{
+				if ((int)placedFloors.size() >= chestNum)
+				{
+					break;
+				}
+
+				int x1 = (int)mapRoomList[i][floorIdx].m_xy.x;
+				int y1 = (int)mapRoomList[i][floorIdx].m_xy.y;
+
+				bool tooClose = false;
+
+				for (int placedIdx : placedFloors)
+				{
+					int x2 = (int)mapRoomList[i][placedIdx].m_xy.x;
+					int y2 = (int)mapRoomList[i][placedIdx].m_xy.y;
+
+					if (abs(x1 - x2) <= minDistance &&
+						abs(y1 - y2) <= minDistance)
+					{
+						tooClose = true;
+						break;
+					}
+				}
+
+				if (tooClose)
+				{
+					continue;
+				}
+
+				placedFloors.push_back(floorIdx);
+			}
+
+			// 配置
+			for (int j : placedFloors)
+			{
 				mapRoomList[i][j].m_installation = true;
 
-				int x = static_cast<int>(mapRoomList[i][j].m_xy.x);
-				int y = static_cast<int>(mapRoomList[i][j].m_xy.y);
+				int x = (int)mapRoomList[i][j].m_xy.x;
+				int y = (int)mapRoomList[i][j].m_xy.y;
+
 				mapData[y][x] = false;
 
 				treasureChestPosList.push_back(mapRoomList[i][j].m_pos);
@@ -703,6 +757,9 @@ void MapManager::GenerateMap(Math::Vector2 _mapSize, int _roomNum, MapType _mapT
 			std::shared_ptr<TreasureChest> spTreasureChest = std::make_shared<TreasureChest>();
 			spTreasureChest->Init();
 			spTreasureChest->SetPos(pos);
+
+			Math::Matrix rMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(KdRandom::GetInt(0, 3) * 90));
+			spTreasureChest->SetRotation(rMat);
 
 			// チャンク番号の計算とセット
 			int tileX = static_cast<int>(pos.x / m_mapTileSize);

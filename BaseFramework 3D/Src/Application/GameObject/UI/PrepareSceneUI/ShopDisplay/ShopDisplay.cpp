@@ -1,4 +1,4 @@
-﻿//---- 自分のヘッダー ----
+//---- 自分のヘッダー ----
 #include "ShopDisplay.h"									//準備シーンのショップ画面
 
 //---- シーン ----
@@ -729,10 +729,28 @@ void ShopDisplay::WriteHave(nlohmann::json& _data, const char* _key, const int* 
 	// ポーションは表(kPotionDefs)から作り直す(増やした・消したポーションも正しく保存される)
 	if (std::string(_key) == "potions")
 	{
+		// 元のデータにある "ItemBarFlg" を引き継ぐ(無ければ初期値 true)
+		std::vector<bool> itemBarFlgs(_num, true);
+		if (_data.contains(_key) && _data[_key].is_array())
+		{
+			for (const auto& item : _data[_key])
+			{
+				int id = GetJsonItemID(item, _key);	// ポーションは名前で探す
+				if (id < 0 || id >= _num) { continue; }
+				itemBarFlgs[id] = item.value("ItemBarFlg", true);
+			}
+		}
+
 		_data[_key] = nlohmann::json::array();
 		for (int id = 0; id < _num; id++)
 		{
-			_data[_key].push_back({ {"id", id}, {"name", GetPotionSTName(id)}, {"num", _have[id]} });
+			const bool itemBarFlg = itemBarFlgs[id];
+			_data[_key].push_back({
+				{"id", id},
+				{"name", GetPotionSTName(id)},
+				{"num", _have[id]},
+				{"ItemBarFlg", itemBarFlg}
+				});
 		}
 		return;
 	}

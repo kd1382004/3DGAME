@@ -323,3 +323,14 @@ void TreasureChest::SetUIManager(std::shared_ptr<UIManager> _spUIManager)
 	}
 
 }
+
+void TreasureChest::SetRotation(Math::Matrix _rMat)
+{
+	Math::Vector3 pos = GetPos();
+	Math::Vector3 size = GetScale();
+
+	Math::Matrix tMat = Math::Matrix::CreateTranslation(pos);
+	Math::Matrix sMat = Math::Matrix::CreateScale(size);
+
+	m_mWorld = sMat * _rMat * tMat;
+}

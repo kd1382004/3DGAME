@@ -71,6 +71,11 @@ public:
 	// _spTex ... テクスチャ
 	void SetUITex(std::shared_ptr<KdTexture>_spTex) { m_spUiTex = _spTex; }
 
+
+
+	//回転をセット
+	// _rMat ... 回転行列
+	void SetRotation(Math::Matrix _rMat);
 private:
 
 	//---- メンバ変数 ----

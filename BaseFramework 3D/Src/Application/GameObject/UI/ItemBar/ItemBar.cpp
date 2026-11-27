@@ -188,7 +188,7 @@ void ItemBar::MakeItemList()
 	std::shared_ptr<PlayerInventory> spInventory = spPlayer->GetPlayerInventory();
 	if (!spInventory) { m_selectID = -1; return; }
 
-	for (const Inventory& potion : spInventory->GetPotionsInventoryList())
+	for (const Inventory& potion : spInventory->GetPpotionsItemBarInventoryList())
 	{
 		if (potion.m_num > 0)
 		{

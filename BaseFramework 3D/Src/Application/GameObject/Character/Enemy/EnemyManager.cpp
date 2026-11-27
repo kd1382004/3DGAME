@@ -322,6 +322,7 @@ void EnemyManager::RegisterSpawnTable()
 	RegisterEnemy<MagmaBrute>(MapType_Volcano, RoomStarsEnemy);
 	RegisterEnemy<VolcanoColossus>(MapType_Volcano, BossEnemy);
 
+	//---- 黄昏の霊廟 ----
 	RegisterEnemy<SkeletonWarrior>(MapType_Mausoleum, RoomEnemy);
 	RegisterEnemy<BoneBehemoth>(MapType_Mausoleum, RoomStarsEnemy);
 	RegisterEnemy<LichKing>(MapType_Mausoleum, BossEnemy);

@@ -1,4 +1,4 @@
-﻿//---- 自分のヘッダー ----
+//---- 自分のヘッダー ----
 #include "BaseScene.h"																//シーンの基底クラス
 
 //---- シーン ----
@@ -280,7 +280,8 @@ void BaseScene::SaveInventoryData(bool _isSave, const std::vector<Inventory>& _i
 		data["potions"].push_back({
 			{"id", potion.m_ID},
 			{"num", num},
-			{"name", potion.m_name}
+			{"name", potion.m_name},
+			{"ItemBarFlg", potion.ItemBarFlg}
 			});
 	}
 
@@ -368,6 +369,7 @@ std::vector<Inventory> BaseScene::ReadInventoryList(const nlohmann::json& _data,
 		item.m_ID = GetJsonItemID(itemData, _key);	// ポーションは名前で探す
 		item.m_num = itemData.value("num", 0);
 		item.m_name = itemData.value("name", std::string{});
+		item.ItemBarFlg = itemData.value("ItemBarFlg", true);
 
 		// 消したポーションなど、今の表に無いものは読み飛ばす
 		if (item.m_ID < 0) { continue; }

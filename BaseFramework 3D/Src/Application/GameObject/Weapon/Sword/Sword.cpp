@@ -93,8 +93,8 @@ void Sword::Update()
 
 	//最後段(終ノ一閃)
 	int finalSlashLv = m_weaponsStrengtheningInfo[WeaponsStrengthening_Characteristic1].m_lv;
-	if (finalSlashLv > 0 && !m_nowLvComboList.empty() &&
-		m_comboStepNow.m_comboIndex == m_nowLvComboList.back().m_comboIndex)
+	if (finalSlashLv > 0 && !m_nowLvComboList.empty() && !m_comboList.empty() &&
+		m_comboStepNow.m_comboIndex == m_comboList.back().m_comboIndex)
 	{
 		if (m_animePercentNow >= m_comboStepNow.m_hitEnd && !m_finalSlashDoneFlg)
 		{
@@ -214,7 +214,7 @@ void Sword::Update()
 
 			spGameObj->OnAttackHit(
 				damage,
-				m_baseWeaponStatus.m_knockback* GetComboKnockbackRate(),   // コンボの段のノックバック倍率
+				m_baseWeaponStatus.m_knockback * GetComboKnockbackRate(),   // コンボの段のノックバック倍率
 				dir,
 				m_baseWeaponStatus.m_startup,
 				false,
@@ -276,7 +276,7 @@ void Sword::DrawLit()
 {
 	if (!m_spWeaponModel) { return; }
 	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spWeaponModel, m_mWorld);
-	
+
 
 }
 

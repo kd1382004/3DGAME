@@ -11,6 +11,9 @@ struct Inventory
 	int m_num = 0;
 	//アイテムの名前
 	std::string m_name;
+
+	//クイックスロットに入れる?
+	bool ItemBarFlg = true;
 };
 
 //プレイヤーが持ってるアイテムの数を管理するクラス
@@ -40,6 +43,10 @@ public:
 	//武器強化素材のインベントリを返す
 	//戻り値 ... 武器強化素材のインベントリ(コピー)
 	std::vector<Inventory> GetWeaponsStrengtheningInventory() { return m_weaponsStrengtheningInventory; }
+	
+	//クイックインベントリー
+	std::vector<Inventory> GetPpotionsItemBarInventory() { return m_potionsItemBarInventory; }
+
 
 	//ポーションの数を取得
 	// _potionsType ... 数を知りたいポーションの番号
@@ -52,6 +59,9 @@ public:
 	//ポーションのインベントリリストを取得
 	const std::vector<Inventory>& GetPotionsInventoryList() { return m_potionsInventory; }
 
+	//クイックインベントリーリストを取得
+	const std::vector<Inventory>& GetPpotionsItemBarInventoryList() { return m_potionsItemBarInventory; }
+
 	//武器強化素材のインベントリリストを取得
 	const std::vector<Inventory>& GetWeaponsStrengtheningInventoryList() { return m_weaponsStrengtheningInventory; }
 
@@ -63,6 +73,11 @@ public:
 	//ポーションがインベントリで増えたとき
 	// _potionsType ... 増やすポーションの番号
 	void AddPotionsInventory(int _potionsType);
+
+	//クイックスロットに登録・解除
+	//_potionsType ... 登録・解除する番号
+	//_flg ... true(登録)・false(解除)
+	void AddQuickSlot(int _potionsType,bool _flg);
 
 	//武器強化素材がインベントリで増えたとき
 	// _weaponsStrengtheningType ... 増やす武器強化素材の番号
@@ -110,10 +125,14 @@ public:
 
 private:
 
+	//ポーションの数に変化があった時
+	void RefreshQuickSlot();
+
 	//---- メンバ変数 ----
 
 	//各番号のポーションがどれだけあるか
 	std::vector<Inventory>m_potionsInventory;
+	std::vector<Inventory>m_potionsItemBarInventory;
 
 	//武器強化素材がどれだけあるか
 	std::vector<Inventory>m_weaponsStrengtheningInventory;
