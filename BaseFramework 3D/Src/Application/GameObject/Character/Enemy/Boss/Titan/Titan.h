@@ -51,6 +51,13 @@ public:
 	// _hitPos ... 当たった位置(ダメージ数字を出す場所。nullptrなら頭の上)
 	void OnAttackHit(float _damage, float _knockbackDistance, const Math::Vector3& _knockbackDir, float _hitStunTime, bool _isCritical, float _ignoreRate, const Math::Vector3* _hitPos = nullptr)override;
 
+protected:
+
+	//---- 取得 ----
+
+	//使うモデルのパス(同じ骨・アニメーションで見た目だけ違う敵を作るときに、子クラスで上書きする)
+	virtual std::string GetModelPath() const { return "Asset/Models/Character/Enemy/Factory/Titan/Titan.gltf"; }
+
 private:
 
 	//---- 型 ----

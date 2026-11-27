@@ -23,7 +23,7 @@ void ScrapBot::Init()
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
-		m_spCharaModel->SetModelData("Asset/Models/Character/Enemy/Factory/ScrapBot/ScrapBot.gltf");
+		m_spCharaModel->SetModelData(GetModelPath());
 		//アニメータの準備
 		//(効果音はまだ専用のものがないので、ゴブリンのものを仮で使っている)
 		m_spAnimator = std::make_shared<KdAnimator>();

@@ -26,7 +26,7 @@ void Titan::Init()
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
-		m_spCharaModel->SetModelData("Asset/Models/Character/Enemy/Factory/Titan/Titan.gltf");
+		m_spCharaModel->SetModelData(GetModelPath());
 
 		m_spAnimator = std::make_shared<KdAnimator>();
 		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_titanAnimeName.m_idleAnime), true);

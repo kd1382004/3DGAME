@@ -59,7 +59,7 @@ void MapBase::PostUpdate()
 void MapBase::DrawLit()
 {
 	if (!m_spModel) { return; }
-	if (!m_isInView) { return; }
+	//if (!m_isInView) { return; }
 	if (m_fader.IsHidden()) { return; }
 
 	bool isNoCull = (m_mapObjType == MapObjType::Wall || m_mapObjType == MapObjType::Ground);

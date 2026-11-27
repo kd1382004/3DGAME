@@ -172,6 +172,24 @@
     <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\Titan">
       <UniqueIdentifier>{83a16a59-fec4-47a7-99b1-ed087184b44b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\CinderImp">
+      <UniqueIdentifier>{009daada-601a-4872-a1a3-1367886cb8f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\MagmaBrute">
+      <UniqueIdentifier>{c48d8369-9f12-4a5c-94ea-0fdb69b13bf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\VolcanoColossus">
+      <UniqueIdentifier>{b9540879-2ac4-4c07-92c8-eb16dc04929d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\SkeletonWarrior">
+      <UniqueIdentifier>{d9831044-c3a1-4552-a567-fe4f78c40d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\BoneBehemoth">
+      <UniqueIdentifier>{9e047126-772b-422e-912d-416b61b3f9c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\GameObject\Character\Enemy\Boss\LichKing">
+      <UniqueIdentifier>{61806d4d-d372-4d40-aaa5-22a5430a9a82}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Application\GameObject\Character\Enemy\Goblin">
       <UniqueIdentifier>{ff82b1af-fba1-4a5d-9b3b-d718285bbb6f}</UniqueIdentifier>
     </Filter>
@@ -963,6 +981,24 @@
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\Titan\Titan.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Boss\Titan</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\CinderImp\CinderImp.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\CinderImp</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\MagmaBrute\MagmaBrute.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\MagmaBrute</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\VolcanoColossus\VolcanoColossus.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\VolcanoColossus</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\SkeletonWarrior\SkeletonWarrior.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\SkeletonWarrior</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\BoneBehemoth\BoneBehemoth.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\BoneBehemoth</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Character\Enemy\Boss\LichKing\LichKing.h">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\LichKing</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.h">
       <Filter>Src\Application\GameObject\Character\Enemy\Golem</Filter>
     </ClInclude>
@@ -1501,6 +1537,24 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\Titan\Titan.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Boss\Titan</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\CinderImp\CinderImp.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\CinderImp</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\MagmaBrute\MagmaBrute.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\MagmaBrute</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\VolcanoColossus\VolcanoColossus.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\VolcanoColossus</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\SkeletonWarrior\SkeletonWarrior.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\SkeletonWarrior</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\BoneBehemoth\BoneBehemoth.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\BoneBehemoth</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Character\Enemy\Boss\LichKing\LichKing.cpp">
+      <Filter>Src\Application\GameObject\Character\Enemy\Boss\LichKing</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Character\Enemy\Golem\Golem.cpp">
       <Filter>Src\Application\GameObject\Character\Enemy\Golem</Filter>

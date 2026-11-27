@@ -82,6 +82,16 @@ GameScene::~GameScene()
 	{
 		m_spFactoryAmbientSE->Stop();
 	}
+
+	if (m_spVolcanoAmbientSE)
+	{
+		m_spVolcanoAmbientSE->Stop();
+	}
+
+	if (m_spMausoleumAmbientSE)
+	{
+		m_spMausoleumAmbientSE->Stop();
+	}
 }
 
 //=============================================
@@ -602,8 +612,6 @@ void GameScene::GenerateMap()
 		
 	}
 
-
-
 	m_spEnemyManager->EnemyListReset();
 	m_spMapObjManager->ResetMapObj();
 
@@ -626,6 +634,48 @@ void GameScene::GenerateMap()
 	else if (m_spFactoryAmbientSE)
 	{
 		m_spFactoryAmbientSE->Stop();
+	}
+
+	//火山帯マップだけ環境音を流す
+	if (m_mapType == MapType::MapType_Volcano)
+	{
+		if (!m_spVolcanoAmbientSE)
+		{
+			m_spVolcanoAmbientSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Ambient/Volcano.wav", true);
+		}
+		else if (!m_spVolcanoAmbientSE->IsPlaying())
+		{
+			m_spVolcanoAmbientSE->Play(true);
+		}
+		if (m_spVolcanoAmbientSE)
+		{
+			m_spVolcanoAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kVolcanoAmbientVolRate);
+		}
+	}
+	else if (m_spVolcanoAmbientSE)
+	{
+		m_spVolcanoAmbientSE->Stop();
+	}
+
+	//霊廟マップだけ環境音を流す
+	if (m_mapType == MapType::MapType_Mausoleum)
+	{
+		if (!m_spMausoleumAmbientSE)
+		{
+			m_spMausoleumAmbientSE = KdAudioManager::Instance().Play("Asset/Sound/SE/Ambient/Mausoleum.wav", true);
+		}
+		else if (!m_spMausoleumAmbientSE->IsPlaying())
+		{
+			m_spMausoleumAmbientSE->Play(true);
+		}
+		if (m_spMausoleumAmbientSE)
+		{
+			m_spMausoleumAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kMausoleumAmbientVolRate);
+		}
+	}
+	else if (m_spMausoleumAmbientSE)
+	{
+		m_spMausoleumAmbientSE->Stop();
 	}
 
 	if (m_displayFloor % m_bossInterval != 0)
@@ -758,6 +808,14 @@ void GameScene::ApplyBGMVolume()
 	if (m_spFactoryAmbientSE && m_spFactoryAmbientSE->IsPlaying())
 	{
 		m_spFactoryAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kFactoryAmbientVolRate);
+	}
+	if (m_spVolcanoAmbientSE && m_spVolcanoAmbientSE->IsPlaying())
+	{
+		m_spVolcanoAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kVolcanoAmbientVolRate);
+	}
+	if (m_spMausoleumAmbientSE && m_spMausoleumAmbientSE->IsPlaying())
+	{
+		m_spMausoleumAmbientSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * kMausoleumAmbientVolRate);
 	}
 
 	//鳴り続けている効果音(たいまつ・宝箱・ワープゲート・心音)

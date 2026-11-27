@@ -62,6 +62,12 @@ enum MapType
 	//機械仕掛け
 	MapType_Factory,
 
+	//火山帯(赤茶の地層・光る割れ目)
+	MapType_Volcano,
+
+	//黄昏の霊廟(骨の納骨壁・紫の魂火)
+	MapType_Mausoleum,
+
 	//------------------------------------------------------------
 	//----- これより上に置くとマップのタイプとして選ばれる -------
 
@@ -83,6 +89,8 @@ inline const char* GetMapTypeName(MapType _type)
 	{
 	case MapType_Dungeon: return "Dungeon";
 	case MapType_Factory: return "Factory";
+	case MapType_Volcano: return "Volcano";
+	case MapType_Mausoleum: return "Mausoleum";
 	default:              return nullptr;	//名前を付け忘れている
 	}
 }

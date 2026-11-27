@@ -26,6 +26,13 @@ public:
 	//更新前の処理
 	void PreUpdate()override;
 
+protected:
+
+	//---- 取得 ----
+
+	//使うモデルのパス(同じ骨・アニメーションで見た目だけ違う敵を作るときに、子クラスで上書きする)
+	virtual std::string GetModelPath() const { return "Asset/Models/Character/Enemy/Factory/PressBot/PressBot.gltf"; }
+
 private:
 
 	//---- 型 ----

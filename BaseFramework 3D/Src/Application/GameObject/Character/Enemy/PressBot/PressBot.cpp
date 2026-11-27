@@ -23,7 +23,7 @@ void PressBot::Init()
 	if (!m_spCharaModel)
 	{
 		m_spCharaModel = std::make_shared<KdModelWork>();
-		m_spCharaModel->SetModelData("Asset/Models/Character/Enemy/Factory/PressBot/PressBot.gltf");
+		m_spCharaModel->SetModelData(GetModelPath());
 		//アニメータの準備
 		m_spAnimator = std::make_shared<KdAnimator>();
 		m_spAnimator->SetAnimation(m_spCharaModel->GetAnimation(m_pressBotAnimeName.m_idleAnime), true);

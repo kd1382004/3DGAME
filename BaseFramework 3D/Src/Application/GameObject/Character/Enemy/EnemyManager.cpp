@@ -12,6 +12,12 @@
 #include"ScrapBot/ScrapBot.h"						//敵(スクラップボット・工場)
 #include"PressBot/PressBot.h"						//敵(プレスボット・工場)
 #include"Boss/Titan/Titan.h"							//ボス(タイタン・工場)
+#include"CinderImp/CinderImp.h"						//敵(燼鬼・火山帯)
+#include"MagmaBrute/MagmaBrute.h"						//敵(溶岩の剛鬼・火山帯)
+#include"Boss/VolcanoColossus/VolcanoColossus.h"		//ボス(火山の巨神・火山帯)
+#include"SkeletonWarrior/SkeletonWarrior.h"			//敵(骸骨兵・黄昏の霊廟)
+#include"BoneBehemoth/BoneBehemoth.h"				//敵(骨の巨躯・黄昏の霊廟)
+#include"Boss/LichKing/LichKing.h"					//ボス(死霊の王・黄昏の霊廟)
 
 //---- マップ ----
 #include"../../Terrains/Map/MapManager.h"				//マップの管理・経路探索
@@ -310,4 +316,13 @@ void EnemyManager::RegisterSpawnTable()
 	RegisterEnemy<ScrapBot>(MapType_Factory, RoomEnemy);
 	RegisterEnemy<PressBot>(MapType_Factory, RoomStarsEnemy);
 	RegisterEnemy<Titan>(MapType_Factory, BossEnemy);
+
+	//---- 火山帯 ----
+	RegisterEnemy<CinderImp>(MapType_Volcano, RoomEnemy);
+	RegisterEnemy<MagmaBrute>(MapType_Volcano, RoomStarsEnemy);
+	RegisterEnemy<VolcanoColossus>(MapType_Volcano, BossEnemy);
+
+	RegisterEnemy<SkeletonWarrior>(MapType_Mausoleum, RoomEnemy);
+	RegisterEnemy<BoneBehemoth>(MapType_Mausoleum, RoomStarsEnemy);
+	RegisterEnemy<LichKing>(MapType_Mausoleum, BossEnemy);
 }

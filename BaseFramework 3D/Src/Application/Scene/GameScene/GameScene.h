@@ -203,6 +203,14 @@ private:
 	std::shared_ptr<KdSoundInstance> m_spFactoryAmbientSE;
 	static constexpr float kFactoryAmbientVolRate = 0.3f;
 
+	//火山帯マップの環境音(地鳴り・溶岩の泡・岩のはぜる音。ループ)
+	std::shared_ptr<KdSoundInstance> m_spVolcanoAmbientSE;
+	static constexpr float kVolcanoAmbientVolRate = 0.3f;
+
+	//霊廟マップの環境音(すすり泣く風・遠くの鐘・ささやき・水滴。ループ)
+	std::shared_ptr<KdSoundInstance> m_spMausoleumAmbientSE;
+	static constexpr float kMausoleumAmbientVolRate = 0.3f;
+
 	//武器用のImGUI
 	// メンバに持つ
 	std::shared_ptr<WeaponStrengtheningEditor> m_spWSEditor;
