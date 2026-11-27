@@ -4,20 +4,11 @@
 //---- シーン ----
 #include "../SceneManager.h"																//シーンの管理
 
-//---- カメラ ----
-#include"../../GameObject/Camera/PrepareCamera/PrepareCamera.h"								//準備シーン用カメラ
-
 //---- キャンプ ----
-#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"					//キャンプの配置データ
-#include"../../GameObject/Terrains/Camp/CampLight/CampLight.h"								//キャンプのライト
-#include"../../GameObject/Terrains/Camp/CampObject/CampObject.h"							//キャンプの置物
-
-//---- マップオブジェクト ----
-#include"../../GameObject/Terrains/MapObj/Torch/Torch.h"									//松明
+#include"../../GameObject/Terrains/Camp/CampManager.h"										//キャンプの管理
 
 //---- UI ----
 #include"../../GameObject/UI/UIManager.h"													//UIの管理
-#include"../../GameObject/UI/PrepareSceneUI/PrepareSceneDisplay/PrepareSceneDisplay.h"		//準備シーンの画面管理
 #include"../../GameObject/UI/PrepareSceneUI/PrepareSceneDisplay/PrepareSceneDisplay.h"		//準備シーンの画面管理
 #include"../../GameObject/UI/PrepareSceneUI/EquipDisplay/EquipDisplay.h"					//準備シーンの装備画面
 #include"../../GameObject/UI/PrepareSceneUI/ShopDisplay/ShopDisplay.h"						//準備シーンのショップ画面
@@ -33,30 +24,9 @@
 #include"../../Editor/PrepareLayoutEditor/PrepareLayoutEditor.h"							//準備シーンの配置編集エディター
 
 //---- 便利機能 ----
-#include"../../Info/FadeDraw/FadeDraw.h"													//画面フェードの描画
 #include"../../Info/DebugInfo/DebugInfo.h"													//デバッグ用の状態
 #include"../../Info/MouseInfo/MouseInfo.h"													//マウス入力
 #include"../../Info/KeyInfo/KeyInfo.h"														//キー入力
-#include"../../Info/SE/SEPlayer.h"															//効果音
-
-//---- 武器立ての武器 ----
-
-namespace
-{
-	//武器立ての置物の名前(Blenderでの名前の先頭)と、武器の種類の対応
-	//武器を増やしたら、ここに1行足す
-	struct RackWeaponName
-	{
-		const char*      m_prefix;	//置物の名前の先頭("RackSword.001" なら "RackSword")
-		PlayerWeaponInfo m_weapon;	//武器の種類
-	};
-
-	const RackWeaponName kRackWeaponNames[] =
-	{
-		{ "RackDagger", PlayerWeaponInfo_Dagger },
-		{ "RackSword",  PlayerWeaponInfo_Sword  },
-	};
-}
 
 //=============================================
 // コンストラクタ・デストラクタ
@@ -69,22 +39,7 @@ PrepareScene::~PrepareScene()
 		m_spPrepareBGM->Stop();
 	}
 
-	for (const auto& spSE : m_spCampfire3DSEList)
-	{
-		if (spSE) { spSE->Stop(); }
-	}
-
-	for (const auto& wpEf : m_wpKdEffekseerObject)
-	{
-		auto spEf = wpEf.lock();
-		if (spEf)
-		{
-			spEf->SetLoop(false);
-			spEf->StopEffect();
-		}
-
-	}
-
+	// 焚き火の音とエフェクトは CampManager のデストラクタで止まる
 }
 
 //=============================================
@@ -123,7 +78,7 @@ void PrepareScene::ImGUI()
 		ImGui::Checkbox(U8("キャラの初期ステータス"), &m_charaStatusEditorOpenFlg);
 
 		// 背景のカメラ・ライトを調整するEditor
-		ImGui::Checkbox(U8("背景とカメラ"), &m_layoutEditorOpenFlg);
+		ImGui::Checkbox(U8("背景(置物・ライト・カメラ)"), &m_layoutEditorOpenFlg);
 	}
 	ImGui::End();
 
@@ -220,90 +175,16 @@ void PrepareScene::Init()
 		}
 	}
 
-	// 背景の配置を読む
-	m_campLayout = LoadCampLayout(m_campLayoutFilePath);
-	ApplyCampLayoutTune(m_campLayout, m_campLayoutTuneFilePath);
+	/////////////////////////////////////////
+	// キャンプ(背景・カメラ・置物・ライト・焚き火)
+	/////////////////////////////////////////
+	m_spCampManager = std::make_shared<CampManager>();
+	m_spCampManager->Init();
+	m_objList.push_back(m_spCampManager);	// キャンプの物の更新と描画は CampManager がまとめて行う
 
-	// 霧と環境光を準備画面用にする
-	KdShaderManager::Instance().WorkAmbientController().SetFogEnable(true, false);
-	KdShaderManager::Instance().WorkAmbientController().SetDistanceFog(m_campFogColor, m_campFogDensity);
-	KdShaderManager::Instance().WorkAmbientController().SetAmbientLight(m_campAmbient);
-
-	// カメラ(タブごとに動く)
-	m_spPrepareCamera = std::make_shared<PrepareCamera>();
-	m_spPrepareCamera->Init();
-	m_spPrepareCamera->SetCameraData(m_campLayout.m_cameras);
-	m_spPrepareCamera->MoveTo("Explore", true);	// 最初から入口を映す
-	m_objList.push_back(m_spPrepareCamera);
-	KdEffekseerManager::GetInstance().SetCamera(m_spPrepareCamera->GetCamera());
-
-	// 置物
-	for (const auto& data : m_campLayout.m_objects)
-	{
-		if (data.m_kind == "Torch")
-		{
-
-			continue;
-		}
-
-		if (data.m_kind == "Campfire")
-		{
-			// 炎(焚き火の少し上)。ループ再生
-			auto ef = KdEffekseerManager::GetInstance().Play("Campfire/Campfire.efkefc",
-				data.m_pos + Math::Vector3(0, 0, 0), 1.0f, 1.0f, true);
-
-			m_wpKdEffekseerObject.push_back(ef);
-
-			// パチパチ音(ループ)
-			auto spSE = SEPlayer::Play3D("Asset/Sound/SE/Prepare/Campfire.wav", data.m_pos, 1.0f, true);
-			if (spSE) { m_spCampfire3DSEList.push_back(spSE); }
-		}
-
-		auto spObj = std::make_shared<CampObject>();
-		spObj->Init();
-		spObj->SetData(data);
-		m_objList.push_back(spObj);
-		m_campObjects.push_back(spObj);	// エディタ用に覚えておく
-
-
-		// 武器立ての武器なら、武器の種類ごとに覚えておく(表示を切り替えるため)
-		for (const auto& rack : kRackWeaponNames)
-		{
-			if (data.m_name.rfind(rack.m_prefix, 0) == 0)
-			{
-				m_wpRackWeapons[rack.m_weapon] = spObj;
-				break;
-			}
-		}
-
-		if (data.m_kind == "Player")
-		{
-			m_wpCampPlayer = spObj;
-			spObj->PlayAnime("Idle", true);
-		}
-	}
-
-
-	for (const auto& data : m_campLayout.m_lights)
-	{
-		if (data.m_name.rfind("Light_Torch", 0) == 0) { continue; }	// 松明は自分で光る
-		auto spLight = std::make_shared<CampLight>();
-		spLight->SetData(data);
-		m_objList.push_back(spLight);
-		m_campLights.push_back(spLight);	// エディタ用
-	}
-
-	// 入口の奥のエフェクト(ダンジョンの階段と同じもの)。ループ再生
-	// 位置と大きさはエディタの「出発」タブで合わせて CampLayoutTune.json に保存する
-	m_wpEntranceEffect = KdEffekseerManager::GetInstance().Play("Stairs/Stairs.efkefc",
-		m_campLayout.m_depart.m_effectPos, m_campLayout.m_depart.m_effectScale, 1.0f, true);
-	m_wpKdEffekseerObject.push_back(m_wpEntranceEffect);	// シーンを出るときに止める
-
-	// 背景のカメラ・ライトを調整するEditor
-	m_spLayoutEditor = std::make_shared<PrepareLayoutEditor>(m_campLayoutTuneFilePath);
-	m_spLayoutEditor->SetTargets(shared_from_this(), m_spPrepareCamera, m_campLights, m_campObjects);
-	m_spLayoutEditor->SetDepartData(&m_campLayout.m_depart);
-	m_spLayoutEditor->SetEntranceEffect(m_wpEntranceEffect);
+	// 背景の配置・カメラ・ライトを調整するEditor
+	m_spLayoutEditor = std::make_shared<PrepareLayoutEditor>();
+	m_spLayoutEditor->SetTargets(shared_from_this(), m_spCampManager);
 
 	// 武器立ての武器を、持っている物・装備中の物に合わせる
 	UpdateRackWeapons();
@@ -329,14 +210,14 @@ void PrepareScene::ChangeTab(PrepareTab _tab)
 
 
 	// タブに合わせてカメラを動かす
-	if (m_spPrepareCamera)
+	if (m_spCampManager)
 	{
 		switch (_tab)
 		{
-		case PrepareTab::Equip:   m_spPrepareCamera->MoveTo("Equip");   break;
-		case PrepareTab::Shop:    m_spPrepareCamera->MoveTo("Shop");    break;
-		case PrepareTab::Records: m_spPrepareCamera->MoveTo("Records"); break;
-		default:                  m_spPrepareCamera->MoveTo("Explore"); break;
+		case PrepareTab::Equip:   m_spCampManager->MoveCamera("Equip");   break;
+		case PrepareTab::Shop:    m_spCampManager->MoveCamera("Shop");    break;
+		case PrepareTab::Records: m_spCampManager->MoveCamera("Records"); break;
+		default:                  m_spCampManager->MoveCamera("Explore"); break;
 		}
 	}
 
@@ -360,125 +241,37 @@ void PrepareScene::OnShopDataChanged()
 	}
 }
 
+void PrepareScene::OnMerchantReaction(MerchantReaction _reaction)
+{
+	if (!m_spCampManager) { return; }
+	m_spCampManager->PlayMerchantReaction(_reaction);
+}
+
 void PrepareScene::StartDepart()
 {
-	if (m_departState != DepartState::None) { return; }
-	m_departState = DepartState::Walk;
-	m_departTimer = 0;
-	m_departFadeTimer = 0;
-	m_departStepTimer = 0;
+	if (!m_spCampManager || m_spCampManager->IsDeparting()) { return; }
+
+	// UIを隠す
 	ChangeTab(PrepareTab::Notab);
 	if (m_spGameButton) { m_spGameButton->SetActive(false); }
 	if (m_spPrepareSceneDisplay) { m_spPrepareSceneDisplay->SetActive(false); }
 
-
-	auto player = m_wpCampPlayer.lock();
-	if (player)
-	{
-		player->PlayAnime("Run", true);
-		m_departStartPos = player->WorkData().m_pos;
-		const CampDepartData& dep = m_campLayout.m_depart;
-		Math::Vector3 dir = dep.m_target - m_departStartPos;
-
-
-		dir.y = 0.0f;
-		if (dir.LengthSquared() > 0.0001f)
-		{
-			float yaw = DirectX::XMConvertToDegrees(atan2(dir.x, dir.z));
-			player->WorkData().m_rotDeg.y = yaw;
-			player->ApplyData();
-		}
-	}
-
-}
-
-void PrepareScene::UpdateDepart()
-{
-	const CampDepartData& dep = m_campLayout.m_depart;
-	auto player = m_wpCampPlayer.lock();
-
-	//---- 歩く(Walk でも Fade でも) ----
-	m_departTimer += DeltaTime::Instance().GetGameDeltaTime();
-
-	float t = 1.0f;
-	if (dep.m_walkTime > 0.0f) { t = m_departTimer / dep.m_walkTime; }
-	if (t > 1.0f) { t = 1.0f; }
-
-	if (player)
-	{
-		player->WorkData().m_pos = Math::Vector3::Lerp(m_departStartPos, dep.m_target, t);
-		player->ApplyData();
-
-		//---- 足音(目的地に着くまで一定の間隔で) ----
-		if (t < 1.0f)
-		{
-			m_departStepTimer -= DeltaTime::Instance().GetGameDeltaTime();
-			if (m_departStepTimer <= 0.0f)
-			{
-				m_departStepTimer += kDepartStepInterval;
-				SEPlayer::Play2D("Asset/Sound/SE/Prepare/DepartStep.wav", 0.7f);
-			}
-		}
-	}
-
-	//---- 状態ごと ----
-	switch (m_departState)
-	{
-	case DepartState::Walk:
-		if (t >= dep.m_fadeStartRate)
-		{
-			FadeDraw::Instance().SetFadeType(FadeOut, dep.m_fadeTime);	//暗転してからゲームへ
-			m_departState = DepartState::Fade;
-
-			//入口に吸い込まれる音
-			SEPlayer::Play2D("Asset/Sound/SE/Prepare/DepartWhoosh.wav", 0.9f);
-
-			// FadeDraw はこのフレームから時間を進めるので、こちらも同じフレームから数える
-			m_departFadeTimer = DeltaTime::Instance().GetRealDeltaTime();
-		}
-		break;
-
-	case DepartState::Fade:
-		// FadeDraw と同じ Real の時間で数えて、真っ暗になったらゲームへ
-		m_departFadeTimer += DeltaTime::Instance().GetRealDeltaTime();
-
-		//暗転に合わせて BGM と焚き火の音を小さくしていく
-		{
-			float rate = 1.0f;
-			if (dep.m_fadeTime > 0.0f) { rate = 1.0f - m_departFadeTimer / dep.m_fadeTime; }
-			if (rate < 0.0f) { rate = 0.0f; }
-			if (m_spPrepareBGM) { m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kPrepareBGMVolRate * rate); }
-			for (const auto& spSE : m_spCampfire3DSEList)
-			{
-				if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol() * rate); }
-			}
-		}
-		if (m_departFadeTimer >= dep.m_fadeTime)
-		{
-			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);
-		}
-		break;
-
-	default:
-		break;
-	}
+	// プレイヤーを入口へ走らせる
+	m_spCampManager->StartDepart();
 }
 
 void PrepareScene::ApplyBGMVolume()
 {
-	//出発の暗転中は UpdateDepart 側で小さくしているので触らない
-	if (m_departState != DepartState::None) { return; }
+	//出発の暗転中は、暗くなるのに合わせて小さくしていく
+	const float departRate = m_spCampManager ? m_spCampManager->GetDepartVolumeRate() : 1.0f;
 
 	if (m_spPrepareBGM)
 	{
-		m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kPrepareBGMVolRate);
+		m_spPrepareBGM->SetVolume(VOLInfo::Instance().GetMSBGMVol() * kPrepareBGMVolRate * departRate);
 	}
 
 	//たき火の音も効果音の音量に合わせる(鳴らし始めと同じ倍率 1.0)
-	for (const auto& spSE : m_spCampfire3DSEList)
-	{
-		if (spSE) { spSE->SetVolume(VOLInfo::Instance().GetMSSEVol()); }
-	}
+	if (m_spCampManager) { m_spCampManager->ApplyCampfireVolume(departRate); }
 }
 
 void PrepareScene::Event()
@@ -491,7 +284,18 @@ void PrepareScene::Event()
 	// 武器を買った・装備を変えたらすぐ反映されるように毎フレーム更新する
 	UpdateRackWeapons();
 
-	if (m_departState != DepartState::None) { UpdateDepart(); return; }
+	// 配置エディタを開いている間はUIを隠す(ImGui を閉じたらエディタも閉じたのと同じ)
+	SetUIHiddenForEditor(m_layoutEditorOpenFlg && DebugInfo::Instance().GetSceneManagerImGUIFlg());
+
+	//出発の演出中(真っ暗になったらゲームへ)
+	if (m_spCampManager && m_spCampManager->IsDeparting())
+	{
+		if (m_spCampManager->UpdateDepart())
+		{
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::Game);
+		}
+		return;
+	}
 	if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 	{
 		DebugInfo::Instance().SetSceneManagerImGUIFlg(true);
@@ -529,19 +333,36 @@ void PrepareScene::EquipEvent()
 
 void PrepareScene::UpdateRackWeapons()
 {
-	if (!m_spShopDisplay) { return; }
+	if (!m_spShopDisplay || !m_spCampManager) { return; }
 
-	const std::vector<bool> owned = m_spShopDisplay->GetOwnedWeapons();
-	const int equip = SceneManager::Instance().GetPlayerWeaponInfo();
+	m_spCampManager->UpdateRackWeapons(m_spShopDisplay->GetOwnedWeapons(), SceneManager::Instance().GetPlayerWeaponInfo());
+}
 
-	for (int id = 0; id < PlayerWeaponInfoSize; id++)
+void PrepareScene::SetUIHiddenForEditor(bool _hide)
+{
+	if (m_uiHiddenForEditorFlg == _hide) { return; }
+	m_uiHiddenForEditorFlg = _hide;
+
+	// 隠す物(メンバーで持っているので、一覧から外しても消えない)
+	const std::shared_ptr<KdGameObject> uiObjects[] = { m_spUIManager, m_spGameButton };
+
+	if (_hide)
 	{
-		std::shared_ptr<CampObject> spWeapon = m_wpRackWeapons[id].lock();
-		if (!spWeapon) { continue; }	// 武器立てに置いていない武器
+		for (const auto& spUI : uiObjects)
+		{
+			if (spUI) { m_objList.remove(spUI); }
+		}
+	}
+	else
+	{
+		// 元の順番(UI → 出発ボタン)で戻す
+		for (const auto& spUI : uiObjects)
+		{
+			if (spUI) { m_objList.push_back(spUI); }
+		}
 
-		// 持っていて、装備していない武器だけを出す
-		const bool isOwned = id < static_cast<int>(owned.size()) && owned[id];
-		spWeapon->SetDrawFlg(isOwned && id != equip);
+		// 選んでいる印を消す
+		if (m_spLayoutEditor) { m_spLayoutEditor->OnClose(); }
 	}
 }
 
@@ -551,7 +372,7 @@ bool PrepareScene::CanOpenPause()
 	if (!BaseScene::CanOpenPause()) { return false; }
 
 	//出発の演出中(走っていく〜暗転)は開かない
-	if (m_departState != DepartState::None) { return false; }
+	if (m_spCampManager && m_spCampManager->IsDeparting()) { return false; }
 
 	return true;
 }

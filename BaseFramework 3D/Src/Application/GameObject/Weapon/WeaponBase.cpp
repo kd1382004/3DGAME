@@ -63,6 +63,36 @@ void WeaponBase::DrawBright()
 }
 
 //=============================================
+// 軌跡
+//=============================================
+
+void WeaponBase::InitTrail(const std::string& _texPath, UINT _length)
+{
+	if (m_spTPoly) { return; }
+
+	m_spTPoly = std::make_shared<KdTrailPolygon>();
+	m_spTPoly->SetMaterial(_texPath);
+
+	//行列の向きのまま帯を作る(ビルボードにしない。刃が通った面がそのまま残る)
+	m_spTPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eDefault);
+	m_spTPoly->SetLength(_length);
+}
+
+void WeaponBase::AddTrailPoint(const Math::Vector3& _tip, const Math::Vector3& _base)
+{
+	if (!m_spTPoly) { return; }
+	m_spTPoly->AddPoint(MakeTrailPoint(_tip, _base));
+}
+
+Math::Matrix WeaponBase::MakeTrailPoint(const Math::Vector3& _tip, const Math::Vector3& _base) const
+{
+	Math::Matrix mat = Math::Matrix::Identity;
+	mat.Translation((_tip + _base) * 0.5f);				// 帯の真ん中
+	mat.Right((_tip - _base) * m_trailWidthRate);		// 帯の向きと長さ
+	return mat;
+}
+
+//=============================================
 // 取得
 //=============================================
 

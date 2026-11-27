@@ -35,14 +35,22 @@ void MapBase::Init()
 
 	if (allPositions.empty()) { return; }
 
-	// ローカル空間の OBB を生成
-	DirectX::BoundingOrientedBox localOBB;
-	DirectX::BoundingOrientedBox::CreateFromPoints(
-		localOBB,
+	// ローカル空間の箱を生成
+	// BoundingOrientedBox::CreateFromPoints は頂点の散らばり方から箱の向きを決めるので、
+	// モデルによっては箱の軸が入れ替わる(箱のY軸がモデルのZ軸になる など)。
+	// 壁は段数ぶんY方向にだけ伸ばすので、軸が入れ替わると伸ばす向きがずれて、
+	// 映っているのに画面外と判定されて消えていた。
+	// モデルの軸にそろえた箱(AABB)を作ってから OBB にすれば、伸ばす向きが必ず合う
+	DirectX::BoundingBox localAABB;
+	DirectX::BoundingBox::CreateFromPoints(
+		localAABB,
 		allPositions.size(),
 		allPositions.data(),
 		sizeof(Math::Vector3)
 	);
+
+	DirectX::BoundingOrientedBox localOBB;
+	DirectX::BoundingOrientedBox::CreateFromBoundingBox(localOBB, localAABB);
 
 	m_frustumBox = KdCollider::BoxInfo(0, localOBB);
 }
@@ -59,7 +67,7 @@ void MapBase::PostUpdate()
 void MapBase::DrawLit()
 {
 	if (!m_spModel) { return; }
-	//if (!m_isInView) { return; }
+	if (!m_isInView) { return; }	// 画面に映っていなければ描かない
 	if (m_fader.IsHidden()) { return; }
 
 	bool isNoCull = (m_mapObjType == MapObjType::Wall || m_mapObjType == MapObjType::Ground);

@@ -472,6 +472,25 @@ public:
 
 protected:
 
+	//---- 軌跡(剣先から鍔/柄までを覆う帯) ----
+
+	//軌跡を作る(各武器の Init で呼ぶ)
+	// _texPath ... 軌跡の画像
+	// _length  ... 何フレーム分の軌跡を残すか(大きいほど長く尾を引く)
+	void InitTrail(const std::string& _texPath = "Asset/Textures/Weapon/Daerre/jet.png", UINT _length = 20);
+
+	//軌跡に今の刃の位置を1つ足す(各武器の Update で呼ぶ)
+	// _tip  ... 刃の先(ワールド)
+	// _base ... 刃の根元(鍔・柄。ワールド)
+	void AddTrailPoint(const Math::Vector3& _tip, const Math::Vector3& _base);
+
+	//刃の先から根元までを覆う、軌跡の点の行列を作る
+	//KdTrailPolygon(eDefault) は「位置=帯の真ん中」「Right=帯の向きと長さ(中で×0.25)」として使う
+	// _tip  ... 刃の先
+	// _base ... 刃の根元
+	//戻り値 ... AddPoint に渡す行列
+	Math::Matrix MakeTrailPoint(const Math::Vector3& _tip, const Math::Vector3& _base) const;
+
 	//---- 型 ----
 
 	//武器のステータス
@@ -583,6 +602,10 @@ protected:
 
 	//トレイルポリゴン (軌跡) ポリゴン
 	std::shared_ptr<KdTrailPolygon> m_spTPoly = nullptr;
+
+	//軌跡の幅の倍率(刃の先→根元の長さに掛ける)
+	//2 で刃の先から根元までぴったり、4 でその2倍の幅(真ん中から両側へ伸びる)
+	float m_trailWidthRate = 4.0f;
 
 	//軌跡を出しているか
 	bool m_tPolyFlg = false;

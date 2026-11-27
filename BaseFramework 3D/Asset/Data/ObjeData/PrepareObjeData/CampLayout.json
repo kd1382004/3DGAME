@@ -1,9 +1,161 @@
 {
+    "Cameras": {
+        "Equip": {
+            "FovY": 37.3,
+            "Pos": [
+                0.6,
+                2.8,
+                5.2
+            ],
+            "Target": [
+                -2.8468,
+                1.1578,
+                -4.0425
+            ]
+        },
+        "Explore": {
+            "FovY": 42.55,
+            "Pos": [
+                1.6,
+                2.8,
+                3.8
+            ],
+            "Target": [
+                2.7967,
+                2.4993,
+                -6.1236
+            ]
+        },
+        "Records": {
+            "FovY": 35.12,
+            "Pos": [
+                -1.8,
+                2.5,
+                3.4
+            ],
+            "Target": [
+                5.3172,
+                -0.73,
+                -2.8381
+            ]
+        },
+        "Shop": {
+            "FovY": 37.3,
+            "Pos": [
+                -0.2,
+                3.0,
+                4.8
+            ],
+            "Target": [
+                7.946,
+                1.5543,
+                -0.8172
+            ]
+        }
+    },
+    "Lights": [
+        {
+            "Color": [
+                0.4000000059604645,
+                0.6499999761581421,
+                1.0
+            ],
+            "Intensity": 12.5,
+            "Name": "Light_Gate.001",
+            "Pos": [
+                0.0,
+                2.200000047683716,
+                -15.0
+            ],
+            "Power": 500.0,
+            "Radius": 7.826237678527832
+        },
+        {
+            "Color": [
+                1.0,
+                0.5,
+                0.18000000715255737
+            ],
+            "Intensity": 30.0,
+            "Name": "Light_Campfire.001",
+            "Pos": [
+                0.0,
+                1.399999976158142,
+                -1.0
+            ],
+            "Power": 2200.0,
+            "Radius": 16.416454315185547
+        },
+        {
+            "Color": [
+                1.0,
+                0.699999988079071,
+                0.4000000059604645
+            ],
+            "Intensity": 5.0,
+            "Name": "Light_Tent.001",
+            "Pos": [
+                -3.4000000953674316,
+                2.5999999046325684,
+                -3.5999999046325684
+            ],
+            "Power": 200.0,
+            "Radius": 4.949747562408447
+        },
+        {
+            "Color": [
+                1.0,
+                0.699999988079071,
+                0.4000000059604645
+            ],
+            "Intensity": 15.0,
+            "Name": "Light_Stall.001",
+            "Pos": [
+                4.300000190734863,
+                2.4000000953674316,
+                -3.5999999046325684
+            ],
+            "Power": 600.0,
+            "Radius": 8.573214530944824
+        },
+        {
+            "Color": [
+                1.0,
+                0.550000011920929,
+                0.20000000298023224
+            ],
+            "Intensity": 15.0,
+            "Name": "Light_Torch_-1.001",
+            "Pos": [
+                -3.9000000953674316,
+                4.0,
+                -7.900000095367432
+            ],
+            "Power": 600.0,
+            "Radius": 8.573214530944824
+        },
+        {
+            "Color": [
+                1.0,
+                0.550000011920929,
+                0.20000000298023224
+            ],
+            "Intensity": 15.0,
+            "Name": "Light_Torch_1.001",
+            "Pos": [
+                3.9000000953674316,
+                4.0,
+                -7.900000095367432
+            ],
+            "Power": 600.0,
+            "Radius": 8.573214530944824
+        }
+    ],
     "Objects": [
         {
-            "Name": "GroundDirt.001",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/GroundDirt/GroundDirt.gltf",
+            "Name": "GroundDirt.001",
             "Pos": [
                 0.0,
                 0.0,
@@ -21,11 +173,11 @@
             ]
         },
         {
-            "Name": "Cliff_L",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/CliffA/CliffA.gltf",
+            "Name": "Cliff_L",
             "Pos": [
-                -8.4,
+                -8.399999618530273,
                 0.0,
                 -12.0
             ],
@@ -41,9 +193,9 @@
             ]
         },
         {
-            "Name": "Cliff_R",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/CliffB/CliffB.gltf",
+            "Name": "Cliff_R",
             "Pos": [
                 8.0,
                 0.0,
@@ -61,13 +213,13 @@
             ]
         },
         {
-            "Name": "Cliff_LL",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/CliffB/CliffB.gltf",
+            "Name": "Cliff_LL",
             "Pos": [
                 -17.0,
                 0.0,
-                -12.8
+                -12.800000190734863
             ],
             "Rot": [
                 0.0,
@@ -75,19 +227,19 @@
                 0.0
             ],
             "Scale": [
-                1.1,
-                1.1,
-                1.1
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
             ]
         },
         {
-            "Name": "Cliff_RR",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/CliffA/CliffA.gltf",
+            "Name": "Cliff_RR",
             "Pos": [
                 17.5,
                 0.0,
-                -12.8
+                -12.800000190734863
             ],
             "Rot": [
                 0.0,
@@ -101,13 +253,13 @@
             ]
         },
         {
-            "Name": "Cliff_Top",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/CliffA/CliffA.gltf",
+            "Name": "Cliff_Top",
             "Pos": [
                 0.0,
-                5.6,
-                -12.2
+                5.599999904632568,
+                -12.199999809265137
             ],
             "Rot": [
                 0.0,
@@ -121,13 +273,133 @@
             ]
         },
         {
-            "Name": "Rock_GateR",
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/CliffB/CliffB.gltf",
+            "Name": "Cliff_SideL_0",
+            "Pos": [
+                -20.5,
+                0.0,
+                -5.0
+            ],
+            "Rot": [
+                0.0,
+                90.0,
+                0.0
+            ],
+            "Scale": [
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/CliffA/CliffA.gltf",
+            "Name": "Cliff_SideL_1",
+            "Pos": [
+                -21.0,
+                0.0,
+                4.5
+            ],
+            "Rot": [
+                0.0,
+                84.0,
+                0.0
+            ],
+            "Scale": [
+                1.0499999523162842,
+                1.0499999523162842,
+                1.0499999523162842
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/CliffB/CliffB.gltf",
+            "Name": "Cliff_SideL_2",
+            "Pos": [
+                -20.5,
+                0.0,
+                13.5
+            ],
+            "Rot": [
+                0.0,
+                97.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/CliffA/CliffA.gltf",
+            "Name": "Cliff_SideR_0",
+            "Pos": [
+                20.5,
+                0.0,
+                -5.0
+            ],
+            "Rot": [
+                0.0,
+                -90.0,
+                0.0
+            ],
+            "Scale": [
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/CliffB/CliffB.gltf",
+            "Name": "Cliff_SideR_1",
+            "Pos": [
+                21.0,
+                0.0,
+                4.5
+            ],
+            "Rot": [
+                0.0,
+                -95.0,
+                0.0
+            ],
+            "Scale": [
+                1.0499999523162842,
+                1.0499999523162842,
+                1.0499999523162842
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/CliffA/CliffA.gltf",
+            "Name": "Cliff_SideR_2",
+            "Pos": [
+                20.5,
+                0.0,
+                13.5
+            ],
+            "Rot": [
+                0.0,
+                -83.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/BoulderB/BoulderB.gltf",
+            "Name": "Rock_GateR",
             "Pos": [
-                3.9,
+                3.9000000953674316,
                 0.0,
-                -9.6
+                -9.600000381469727
             ],
             "Rot": [
                 0.0,
@@ -135,19 +407,19 @@
                 0.0
             ],
             "Scale": [
-                0.8,
-                0.8,
-                0.8
+                0.800000011920929,
+                0.800000011920929,
+                0.800000011920929
             ]
         },
         {
-            "Name": "Rock_0",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/BoulderA/BoulderA.gltf",
+            "Name": "Rock_0",
             "Pos": [
-                -6.2,
+                -6.199999809265137,
                 0.0,
-                -8.2
+                -8.199999809265137
             ],
             "Rot": [
                 0.0,
@@ -161,13 +433,13 @@
             ]
         },
         {
-            "Name": "Rock_1",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/BoulderB/BoulderB.gltf",
+            "Name": "Rock_1",
             "Pos": [
-                6.6,
+                6.599999904632568,
                 0.0,
-                -8.6
+                -8.600000381469727
             ],
             "Rot": [
                 0.0,
@@ -181,9 +453,9 @@
             ]
         },
         {
-            "Name": "Rock_2",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/BoulderA/BoulderA.gltf",
+            "Name": "Rock_2",
             "Pos": [
                 -10.5,
                 0.0,
@@ -195,19 +467,19 @@
                 0.0
             ],
             "Scale": [
-                0.8,
-                0.8,
-                0.8
+                0.800000011920929,
+                0.800000011920929,
+                0.800000011920929
             ]
         },
         {
-            "Name": "Rock_3",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/BoulderB/BoulderB.gltf",
+            "Name": "Rock_3",
             "Pos": [
-                10.6,
+                10.600000381469727,
                 0.0,
-                -5.6
+                -5.599999904632568
             ],
             "Rot": [
                 0.0,
@@ -215,15 +487,15 @@
                 0.0
             ],
             "Scale": [
-                0.8,
-                0.8,
-                0.8
+                0.800000011920929,
+                0.800000011920929,
+                0.800000011920929
             ]
         },
         {
-            "Name": "Tree_0",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_0",
             "Pos": [
                 -11.5,
                 0.0,
@@ -241,13 +513,13 @@
             ]
         },
         {
-            "Name": "Tree_1",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_1",
             "Pos": [
-                -13.5,
+                -12.096717834472656,
                 0.0,
-                -1.0
+                -3.047483444213867
             ],
             "Rot": [
                 0.0,
@@ -261,9 +533,9 @@
             ]
         },
         {
-            "Name": "Tree_2",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_2",
             "Pos": [
                 -12.0,
                 0.0,
@@ -281,9 +553,9 @@
             ]
         },
         {
-            "Name": "Tree_3",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_3",
             "Pos": [
                 -15.0,
                 0.0,
@@ -301,9 +573,9 @@
             ]
         },
         {
-            "Name": "Tree_4",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_4",
             "Pos": [
                 11.5,
                 0.0,
@@ -321,9 +593,9 @@
             ]
         },
         {
-            "Name": "Tree_5",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_5",
             "Pos": [
                 13.5,
                 0.0,
@@ -341,9 +613,9 @@
             ]
         },
         {
-            "Name": "Tree_6",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_6",
             "Pos": [
                 12.0,
                 0.0,
@@ -361,9 +633,9 @@
             ]
         },
         {
-            "Name": "Tree_7",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/PineTree/PineTree.gltf",
+            "Name": "Tree_7",
             "Pos": [
                 15.0,
                 0.0,
@@ -381,9 +653,9 @@
             ]
         },
         {
-            "Name": "Bush_0",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Bush/Bush.gltf",
+            "Name": "Bush_0",
             "Pos": [
                 -9.5,
                 0.0,
@@ -395,17 +667,17 @@
                 0.0
             ],
             "Scale": [
-                1.1,
-                1.1,
-                1.1
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
             ]
         },
         {
-            "Name": "Bush_1",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Bush/Bush.gltf",
+            "Name": "Bush_1",
             "Pos": [
-                9.8,
+                9.800000190734863,
                 0.0,
                 -2.5
             ],
@@ -415,19 +687,19 @@
                 0.0
             ],
             "Scale": [
-                1.1,
-                1.1,
-                1.1
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
             ]
         },
         {
-            "Name": "Bush_2",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Bush/Bush.gltf",
+            "Name": "Bush_2",
             "Pos": [
-                -3.8,
+                -3.799999952316284,
                 0.0,
-                -7.4
+                -7.400000095367432
             ],
             "Rot": [
                 -0.0,
@@ -435,19 +707,19 @@
                 -0.0
             ],
             "Scale": [
-                1.1,
-                1.1,
-                1.1
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
             ]
         },
         {
-            "Name": "Bush_3",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Bush/Bush.gltf",
+            "Name": "Bush_3",
             "Pos": [
-                3.6,
+                3.5999999046325684,
                 0.0,
-                -7.8
+                -7.800000190734863
             ],
             "Rot": [
                 -0.0,
@@ -455,15 +727,15 @@
                 -0.0
             ],
             "Scale": [
-                1.1,
-                1.1,
-                1.1
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
             ]
         },
         {
-            "Name": "Bush_4",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Bush/Bush.gltf",
+            "Name": "Bush_4",
             "Pos": [
                 -12.0,
                 0.0,
@@ -475,15 +747,15 @@
                 -0.0
             ],
             "Scale": [
-                1.1,
-                1.1,
-                1.1
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
             ]
         },
         {
-            "Name": "Bush_5",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Bush/Bush.gltf",
+            "Name": "Bush_5",
             "Pos": [
                 12.5,
                 0.0,
@@ -495,15 +767,15 @@
                 0.0
             ],
             "Scale": [
-                1.1,
-                1.1,
-                1.1
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
             ]
         },
         {
-            "Name": "DungeonGate.003",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/DungeonGate/DungeonGate.gltf",
+            "Name": "DungeonGate.003",
             "Pos": [
                 0.0,
                 0.0,
@@ -521,53 +793,13 @@
             ]
         },
         {
-            "Name": "Torch_-1.001",
-            "Kind": "Torch",
-            "Model": "Asset/Models/Terrains/MapObj/Torch/Torch.gltf",
-            "Pos": [
-                -3.9,
-                2.9688,
-                -8.2394
-            ],
-            "Rot": [
-                -0.0,
-                -180.0,
-                -0.0
-            ],
-            "Scale": [
-                0.3129,
-                0.3129,
-                0.3129
-            ]
-        },
-        {
-            "Name": "Torch_1.001",
-            "Kind": "Torch",
-            "Model": "Asset/Models/Terrains/MapObj/Torch/Torch.gltf",
-            "Pos": [
-                3.9,
-                2.9688,
-                -8.2394
-            ],
-            "Rot": [
-                -0.0,
-                -180.0,
-                -0.0
-            ],
-            "Scale": [
-                0.3129,
-                0.3129,
-                0.3129
-            ]
-        },
-        {
-            "Name": "Campfire.003",
             "Kind": "Campfire",
             "Model": "Asset/Models/Terrains/Camp/Campfire/Campfire.gltf",
+            "Name": "Campfire.003",
             "Pos": [
-                -0.0174,
-                0.036,
-                -0.9835
+                -0.017400000244379044,
+                0.035999998450279236,
+                -0.9835000038146973
             ],
             "Rot": [
                 0.0,
@@ -581,13 +813,13 @@
             ]
         },
         {
-            "Name": "LogSeat.005",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/LogSeat/LogSeat.gltf",
+            "Name": "LogSeat.005",
             "Pos": [
-                -2.2,
-                0.01,
-                -1.2
+                -2.200000047683716,
+                0.009999999776482582,
+                -1.2000000476837158
             ],
             "Rot": [
                 -0.0,
@@ -601,13 +833,13 @@
             ]
         },
         {
-            "Name": "LogSeat.007",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/LogSeat/LogSeat.gltf",
+            "Name": "LogSeat.007",
             "Pos": [
-                0.2,
-                0.01,
-                1.4
+                0.20000000298023224,
+                0.009999999776482582,
+                1.399999976158142
             ],
             "Rot": [
                 0.0,
@@ -621,13 +853,13 @@
             ]
         },
         {
-            "Name": "Stump.003",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Stump/Stump.gltf",
+            "Name": "Stump.003",
             "Pos": [
                 2.0,
-                0.1295,
-                -2.4
+                0.12950000166893005,
+                -2.4000000953674316
             ],
             "Rot": [
                 0.0,
@@ -641,13 +873,13 @@
             ]
         },
         {
-            "Name": "Journal.003",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Journal/Journal.gltf",
+            "Name": "Journal.003",
             "Pos": [
-                1.8889,
-                0.7,
-                -2.3872
+                1.8889000415802002,
+                0.699999988079071,
+                -2.387200117111206
             ],
             "Rot": [
                 0.0,
@@ -661,13 +893,13 @@
             ]
         },
         {
-            "Name": "Tent.003",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Tent/Tent.gltf",
+            "Name": "Tent.003",
             "Pos": [
-                -6.0,
-                0.1687,
-                -3.6
+                -5.986999988555908,
+                0.21400000154972076,
+                -4.138000011444092
             ],
             "Rot": [
                 -0.0,
@@ -681,13 +913,13 @@
             ]
         },
         {
-            "Name": "WeaponRack.003",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/WeaponRack/WeaponRack.gltf",
+            "Name": "WeaponRack.003",
             "Pos": [
-                -4.4,
-                0.0486,
-                0.6
+                -5.19303035736084,
+                0.04859999939799309,
+                -0.16304540634155273
             ],
             "Rot": [
                 0.0,
@@ -701,113 +933,53 @@
             ]
         },
         {
-            "Name": "RackSword.001",
             "Kind": "Prop",
             "Model": "Asset/Models/Weapon/Sword/Warrior_Sword.gltf",
+            "Name": "RackSword.001",
             "Pos": [
-                -4.85,
-                0.5001,
-                1.05
+                -4.707845687866211,
+                1.75600004196167,
+                -0.6435854434967041
             ],
             "Rot": [
-                0.0,
-                50.0,
+                -185.0,
+                47.0,
                 0.0
             ],
             "Scale": [
-                0.5351,
-                0.5351,
-                0.5351
+                0.535099983215332,
+                0.535099983215332,
+                0.535099983215332
             ]
         },
         {
-            "Name": "RackDagger.001",
             "Kind": "Prop",
             "Model": "Asset/Models/Weapon/Dagger/Rogue_Dagger.gltf",
+            "Name": "RackDagger.001",
             "Pos": [
-                -4.1,
-                0.398,
-                0.35
+                -4.091000080108643,
+                1.125,
+                2.009999990463257
             ],
             "Rot": [
-                0.0,
-                50.0,
-                0.0
+                -90.5,
+                96.5,
+                5.0
             ],
             "Scale": [
-                0.5682,
-                0.5682,
-                0.5682
+                0.5681999921798706,
+                0.5681999921798706,
+                0.5681999921798706
             ]
         },
         {
-            "Name": "Crate.006",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Crate/Crate.gltf",
+            "Name": "Crate.006",
             "Pos": [
-                -7.4,
-                0.045,
-                -0.4
-            ],
-            "Rot": [
-                0.0,
-                15.0,
-                0.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-        {
-            "Name": "MarketStall.003",
-            "Kind": "Prop",
-            "Model": "Asset/Models/Terrains/Camp/MarketStall/MarketStall.gltf",
-            "Pos": [
-                5.9,
-                0.0,
-                -3.6
-            ],
-            "Rot": [
-                -0.0,
-                -90.0,
-                0.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-        {
-            "Name": "Barrel.005",
-            "Kind": "Prop",
-            "Model": "Asset/Models/Terrains/Camp/Barrel/Barrel.gltf",
-            "Pos": [
-                7.6,
-                0.0,
-                -6.0
-            ],
-            "Rot": [
-                0.0,
-                -0.0,
-                0.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-        {
-            "Name": "Barrel.007",
-            "Kind": "Prop",
-            "Model": "Asset/Models/Terrains/Camp/Barrel/Barrel.gltf",
-            "Pos": [
-                8.3,
-                0.0,
-                -4.9
+                -4.652225494384766,
+                0.04500000178813934,
+                2.2873597145080566
             ],
             "Rot": [
                 0.0,
@@ -821,13 +993,113 @@
             ]
         },
         {
-            "Name": "Crate.008",
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/MarketStall/MarketStall.gltf",
+            "Name": "MarketStall.003",
+            "Pos": [
+                8.211158752441406,
+                0.0,
+                -3.6187617778778076
+            ],
+            "Rot": [
+                -0.0,
+                -90.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/ShopSign/ShopSign.gltf",
+            "Name": "ShopSign",
+            "Pos": [
+                5.901983737945557,
+                0.0,
+                -6.964258193969727
+            ],
+            "Rot": [
+                0.0,
+                -49.5,
+                0.0
+            ],
+            "Scale": [
+                1.3300000429153442,
+                1.3300000429153442,
+                1.3300000429153442
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/ShopBoard/ShopBoard.gltf",
+            "Name": "ShopBoard",
+            "Pos": [
+                7.697000026702881,
+                0.0,
+                -1.23970627784729
+            ],
+            "Rot": [
+                -0.0,
+                -91.5,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/Barrel/Barrel.gltf",
+            "Name": "Barrel.005",
+            "Pos": [
+                8.15617561340332,
+                0.0,
+                -6.682703971862793
+            ],
+            "Rot": [
+                0.0,
+                -0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "Kind": "Prop",
+            "Model": "Asset/Models/Terrains/Camp/Barrel/Barrel.gltf",
+            "Name": "Barrel.007",
+            "Pos": [
+                9.705292701721191,
+                0.0,
+                -6.386476993560791
+            ],
+            "Rot": [
+                0.0,
+                30.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Crate/Crate.gltf",
+            "Name": "Crate.008",
             "Pos": [
-                7.6,
-                0.045,
-                -0.8
+                9.171045303344727,
+                0.04500000178813934,
+                -1.0936886072158813
             ],
             "Rot": [
                 0.0,
@@ -841,13 +1113,13 @@
             ]
         },
         {
-            "Name": "Crate_Top.001",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Crate/Crate.gltf",
+            "Name": "Crate_Top.001",
             "Pos": [
-                7.6,
-                1.045,
-                -0.8
+                9.81985092163086,
+                1.0449999570846558,
+                -1.1702075004577637
             ],
             "Rot": [
                 0.0,
@@ -861,13 +1133,13 @@
             ]
         },
         {
-            "Name": "Sack.007",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Sack/Sack.gltf",
+            "Name": "Sack.007",
             "Pos": [
-                4.4,
+                6.871456623077393,
                 0.0,
-                -6.3
+                -6.867529392242432
             ],
             "Rot": [
                 0.0,
@@ -881,13 +1153,13 @@
             ]
         },
         {
-            "Name": "Sack.009",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Sack/Sack.gltf",
+            "Name": "Sack.009",
             "Pos": [
-                3.8,
+                6.409052848815918,
                 0.0,
-                -5.8
+                -5.458168983459473
             ],
             "Rot": [
                 0.0,
@@ -901,13 +1173,13 @@
             ]
         },
         {
-            "Name": "Sack.011",
             "Kind": "Prop",
             "Model": "Asset/Models/Terrains/Camp/Sack/Sack.gltf",
+            "Name": "Sack.011",
             "Pos": [
-                8.6,
-                0.0,
-                -2.2
+                8.033802032470703,
+                1.2057641744613647,
+                -4.60621452331543
             ],
             "Rot": [
                 0.0,
@@ -915,19 +1187,19 @@
                 0.0
             ],
             "Scale": [
-                1.0,
-                1.0,
-                1.0
+                0.6100000143051147,
+                0.6100000143051147,
+                0.6100000143051147
             ]
         },
         {
-            "Name": "Player.001",
             "Kind": "Player",
             "Model": "Asset/Models/Character/Player/Rogue.gltf",
+            "Name": "Player.001",
             "Pos": [
-                0.177,
-                -0.005,
-                -6.424
+                0.1770000010728836,
+                -0.004999999888241291,
+                -6.423999786376953
             ],
             "Rot": [
                 0.0,
@@ -935,150 +1207,70 @@
                 0.0
             ],
             "Scale": [
-                0.7553,
-                0.7553,
-                0.7553
+                0.755299985408783,
+                0.755299985408783,
+                0.755299985408783
+            ]
+        },
+        {
+            "Kind": "Merchant",
+            "Model": "Asset/Models/Terrains/Camp/NPC/Merchant/Merchant.gltf",
+            "Name": "Merchant",
+            "Pos": [
+                10.911452293395996,
+                0.0,
+                -3.8398146629333496
+            ],
+            "Rot": [
+                -0.0,
+                90.0,
+                0.0
+            ],
+            "Scale": [
+                0.6899999976158142,
+                0.6899999976158142,
+                0.6899999976158142
+            ]
+        },
+        {
+            "Kind": "Torch",
+            "Model": "Asset/Models/Terrains/MapObj/Torch/Torch.gltf",
+            "Name": "Torch_-1.001",
+            "Pos": [
+                -3.9000000953674316,
+                2.9688000679016113,
+                -8.239399909973145
+            ],
+            "Rot": [
+                -0.0,
+                -180.0,
+                -0.0
+            ],
+            "Scale": [
+                0.31290000677108765,
+                0.31290000677108765,
+                0.31290000677108765
+            ]
+        },
+        {
+            "Kind": "Torch",
+            "Model": "Asset/Models/Terrains/MapObj/Torch/Torch.gltf",
+            "Name": "Torch_1.001",
+            "Pos": [
+                3.9000000953674316,
+                2.9688000679016113,
+                -8.239399909973145
+            ],
+            "Rot": [
+                -0.0,
+                -180.0,
+                -0.0
+            ],
+            "Scale": [
+                0.31290000677108765,
+                0.31290000677108765,
+                0.31290000677108765
             ]
         }
-    ],
-    "Lights": [
-        {
-            "Name": "Light_Gate.001",
-            "Pos": [
-                0.0,
-                2.2,
-                -15.0
-            ],
-            "Color": [
-                0.4,
-                0.65,
-                1.0
-            ],
-            "Power": 500.0
-        },
-        {
-            "Name": "Light_Torch_-1.001",
-            "Pos": [
-                -3.9,
-                4.0,
-                -7.9
-            ],
-            "Color": [
-                1.0,
-                0.55,
-                0.2
-            ],
-            "Power": 600.0
-        },
-        {
-            "Name": "Light_Torch_1.001",
-            "Pos": [
-                3.9,
-                4.0,
-                -7.9
-            ],
-            "Color": [
-                1.0,
-                0.55,
-                0.2
-            ],
-            "Power": 600.0
-        },
-        {
-            "Name": "Light_Campfire.001",
-            "Pos": [
-                0.0,
-                1.4,
-                -1.0
-            ],
-            "Color": [
-                1.0,
-                0.5,
-                0.18
-            ],
-            "Power": 2200.0
-        },
-        {
-            "Name": "Light_Tent.001",
-            "Pos": [
-                -3.4,
-                2.6,
-                -3.6
-            ],
-            "Color": [
-                1.0,
-                0.7,
-                0.4
-            ],
-            "Power": 200.0
-        },
-        {
-            "Name": "Light_Stall.001",
-            "Pos": [
-                4.3,
-                2.4,
-                -3.6
-            ],
-            "Color": [
-                1.0,
-                0.7,
-                0.4
-            ],
-            "Power": 600.0
-        }
-    ],
-    "Cameras": {
-        "Explore": {
-            "Pos": [
-                1.6,
-                2.8,
-                3.8
-            ],
-            "Target": [
-                2.7967,
-                2.4993,
-                -6.1236
-            ],
-            "FovY": 42.55
-        },
-        "Equip": {
-            "Pos": [
-                0.6,
-                2.8,
-                5.2
-            ],
-            "Target": [
-                -2.8468,
-                1.1578,
-                -4.0425
-            ],
-            "FovY": 37.3
-        },
-        "Shop": {
-            "Pos": [
-                -0.2,
-                3.0,
-                4.8
-            ],
-            "Target": [
-                7.946,
-                1.5543,
-                -0.8172
-            ],
-            "FovY": 37.3
-        },
-        "Records": {
-            "Pos": [
-                -1.8,
-                2.5,
-                3.4
-            ],
-            "Target": [
-                5.3172,
-                -0.73,
-                -2.8381
-            ],
-            "FovY": 35.12
-        }
-    }
+    ]
 }

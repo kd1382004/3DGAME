@@ -24,6 +24,9 @@ public:
 	// _data ... ライトのデータ
 	void SetData(const CampLightData& _data) { m_data = _data; }
 
+	//シーンから消す(エディタでライトを消したときに使う。次の更新で一覧から外れる)
+	void Remove() { m_isExpired = true; }
+
 	//---- 取得 ----
 
 	//ライトのデータを取得(エディタから値を変えるときに使う)

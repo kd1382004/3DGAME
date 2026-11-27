@@ -208,3 +208,59 @@ void ApplyCampLayoutTune(CampLayoutData& _layout, const std::string& _filePath)
 
 	SetDefaultDepartTarget(_layout);
 }
+
+bool SaveCampLayout(const CampLayoutData& _layout, const std::string& _filePath)
+{
+	// 今のファイルを読んで、置物とライト以外(カメラなど)を残す
+	nlohmann::json root = nlohmann::json::object();
+	{
+		std::ifstream ifs(_filePath);
+		if (ifs.is_open())
+		{
+			nlohmann::json old = nlohmann::json::parse(ifs, nullptr, false);
+			if (!old.is_discarded() && old.is_object()) { root = old; }
+		}
+	}
+
+	// 初めて上書きするときだけ、元のファイル(Blender から書き出した物)を残しておく
+	const std::string backupPath = _filePath + ".bak";
+	if (std::filesystem::exists(_filePath) && !std::filesystem::exists(backupPath))
+	{
+		std::error_code ec;
+		std::filesystem::copy_file(_filePath, backupPath, ec);
+	}
+
+	//---- 置物(glTFの座標に戻す) ----
+	nlohmann::json objects = nlohmann::json::array();
+	for (const auto& d : _layout.m_objects)
+	{
+		objects.push_back({
+			{ "Name",  d.m_name },
+			{ "Kind",  d.m_kind },
+			{ "Model", d.m_modelPath },
+			{ "Pos",   Vec3ToJson(ConvPos(d.m_pos)) },
+			{ "Rot",   Vec3ToJson(ConvRot(d.m_rotDeg)) },
+			{ "Scale", Vec3ToJson(d.m_scale) } });
+	}
+	root["Objects"] = objects;
+
+	//---- ライト(glTFの座標に戻す。ゲーム用の明るさと半径も書く) ----
+	nlohmann::json lights = nlohmann::json::array();
+	for (const auto& d : _layout.m_lights)
+	{
+		lights.push_back({
+			{ "Name",      d.m_name },
+			{ "Pos",       Vec3ToJson(ConvPos(d.m_pos)) },
+			{ "Color",     Vec3ToJson(d.m_color) },
+			{ "Power",     d.m_power },
+			{ "Intensity", d.m_intensity },
+			{ "Radius",    d.m_radius } });
+	}
+	root["Lights"] = lights;
+
+	std::ofstream ofs(_filePath);
+	if (!ofs.is_open()) { return false; }
+
+	ofs << root.dump(4);
+	return true;
+}

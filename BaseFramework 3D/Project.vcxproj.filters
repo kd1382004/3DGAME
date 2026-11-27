@@ -1086,6 +1086,12 @@
     <ClInclude Include="Src\Application\GameObject\UI\FloorNumUI\FloorNumUI.h">
       <Filter>Src\Application\GameObject\UI\FloorNumUI</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\MerchantReaction.h">
+      <Filter>Src\Application\GameObject\Terrains\Camp</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampManager.h">
+      <Filter>Src\Application\GameObject\Terrains\Camp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -1639,6 +1645,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\UI\FloorNumUI\FloorNumUI.cpp">
       <Filter>Src\Application\GameObject\UI\FloorNumUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampManager.cpp">
+      <Filter>Src\Application\GameObject\Terrains\Camp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

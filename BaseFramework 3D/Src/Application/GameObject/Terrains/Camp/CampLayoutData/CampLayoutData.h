@@ -2,7 +2,7 @@
 
 //////////////////////////////////////////////////////////////
 // 準備画面の背景(キャンプ)の配置データ
-// Blender から書き出した CampLayout.json を読む
+// CampLayout.json を読む(Blender から書き出した物 / 準備シーンのエディタで保存した物)
 //
 // JSON の値は glTF の座標(右手系)なので、読むときに
 // ゲームの座標(左手系)へ直す(ConvPos / ConvRot)
@@ -112,3 +112,13 @@ CampLayoutData LoadCampLayout(const std::string& _filePath);
 // _layout   ... 上書きする配置データ
 // _filePath ... CampLayoutTune.json のパス
 void ApplyCampLayoutTune(CampLayoutData& _layout, const std::string& _filePath);
+
+//---- 書き出し ----
+
+// 置物とライトを CampLayout.json と同じ形(glTFの座標)で保存する
+// ファイルにあるほかの値(Cameras など)はそのまま残す
+// 初めて上書きするときは、元のファイルを .bak として残す
+// _layout   ... 保存する配置データ(m_objects と m_lights を使う)
+// _filePath ... CampLayout.json のパス
+// 戻り値    ... 保存できたらtrue
+bool SaveCampLayout(const CampLayoutData& _layout, const std::string& _filePath);

@@ -1,0 +1,58 @@
+{
+    "materials": [
+        {
+            "id": 0,
+            "name": "WeaponStrengthening_Crystal1",
+            "stock": 4
+        },
+        {
+            "id": 1,
+            "name": "WeaponStrengthening_Crystal2",
+            "stock": 5
+        }
+    ],
+    "potions": [
+        {
+            "id": 0,
+            "name": "InstantHealPotion",
+            "stock": 4
+        },
+        {
+            "id": 1,
+            "name": "AttackBoostPotion",
+            "stock": 46
+        },
+        {
+            "id": 2,
+            "name": "InstantStaminaHealPotion",
+            "stock": 6
+        },
+        {
+            "id": 3,
+            "name": "StaminaMaxUPPotion",
+            "stock": 1
+        },
+        {
+            "id": 4,
+            "name": "StaminaRegenBoostPotion",
+            "stock": 3
+        },
+        {
+            "id": 5,
+            "name": "MapScroll",
+            "stock": 16
+        }
+    ],
+    "weapons": [
+        {
+            "id": 0,
+            "name": "Dagger",
+            "stock": 1
+        },
+        {
+            "id": 1,
+            "name": "Sword",
+            "stock": 1
+        }
+    ]
+}

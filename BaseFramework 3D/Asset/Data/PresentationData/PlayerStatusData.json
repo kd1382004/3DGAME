@@ -1,0 +1,30 @@
+{
+    "HP": {
+        "baseHP": 1000.0,
+        "maxHP": 1040.0,
+        "nowHP": 1040.0
+    },
+    "LV": {
+        "LV": 5
+    },
+    "attck": {
+        "addAttack": 0.0,
+        "baseAttckPowe": 120.0
+    },
+    "defense": {
+        "addDefense": 0.0,
+        "baseDefensePowe": 30.0
+    },
+    "moveSpeed": {
+        "baseSpeed": 10.0,
+        "runMovePowe": 13.0,
+        "walkMovePowe": 3.0
+    },
+    "stamina": {
+        "dashStaminaDrainPerSec": 10.0,
+        "staminaMax": 200.0,
+        "staminaNow": 200.0,
+        "staminaRegenBuff": 0.0,
+        "staminaRegenPerSec": 1.0
+    }
+}

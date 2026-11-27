@@ -1,0 +1,59 @@
+{
+    "money": 2300,
+    "potions": [
+        {
+            "id": 0,
+            "name": "InstantHealPotion",
+            "num": 101
+        },
+        {
+            "id": 1,
+            "name": "AttackBoostPotion",
+            "num": 98
+        },
+        {
+            "id": 2,
+            "name": "InstantStaminaHealPotion",
+            "num": 112
+        },
+        {
+            "id": 3,
+            "name": "StaminaMaxUPPotion",
+            "num": 105
+        },
+        {
+            "id": 4,
+            "name": "StaminaRegenBoostPotion",
+            "num": 110
+        },
+        {
+            "id": 5,
+            "name": "MapScroll",
+            "num": 98
+        }
+    ],
+    "weaponStrengtheningMaterials": [
+        {
+            "id": 0,
+            "name": "WeaponStrengthening_Crystal1",
+            "num": 38
+        },
+        {
+            "id": 1,
+            "name": "WeaponStrengthening_Crystal2",
+            "num": 36
+        }
+    ],
+    "weapons": [
+        {
+            "id": 0,
+            "name": "Dagger",
+            "owned": true
+        },
+        {
+            "id": 1,
+            "name": "Sword",
+            "owned": true
+        }
+    ]
+}

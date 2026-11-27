@@ -336,6 +336,8 @@
     <ClInclude Include="Src\Application\GameObject\Potions\PotionUseController.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampLayoutData\CampLayoutData.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampLight\CampLight.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\MerchantReaction.h" />
+    <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampManager.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\Camp\CampObject\CampObject.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.h" />
     <ClInclude Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.h" />
@@ -529,6 +531,7 @@
     <ClCompile Include="Src\Application\GameObject\Potions\PotionUseController.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampLayoutData\CampLayoutData.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampLight\CampLight.cpp" />
+    <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampManager.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\Camp\CampObject\CampObject.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjBase.cpp" />
     <ClCompile Include="Src\Application\GameObject\Terrains\MapObj\MapObjManager.cpp" />

@@ -31,7 +31,18 @@ public:
 	// _flg ... 描くならtrue
 	void SetDrawFlg(bool _flg) { m_drawFlg = _flg; }
 
+	//シーンから消す(エディタで置物を消したときに使う。次の更新で一覧から外れる)
+	void Remove() { m_isExpired = true; }
+
+	//エディタで選んでいる印(色を変えて描く)をセット
+	// _flg ... 選んでいるならtrue
+	void SetHighlight(bool _flg) { m_highlightFlg = _flg; }
+
 	//---- 取得 ----
+
+	//描いているか(武器立ての隠れている武器はfalse)
+	//戻り値 ... 描いているならtrue
+	bool GetDrawFlg() const { return m_drawFlg; }
 
 	// エディタから値を変えるときに使う
 	//戻り値 ... 置物のデータ(書き換え可)
@@ -47,6 +58,13 @@ public:
 	// _loop ... ループさせるならtrue
 	void PlayAnime(const std::string& _name, bool _loop);
 
+
+	void PlayAnimeOnce(const std::string& _name, const std::string& _next)
+	{
+		PlayAnime(_name, false);
+		m_nextAnime = _next;
+	}
+
 private:
 
 	//---- メンバ変数 ----
@@ -60,6 +78,11 @@ private:
 	//アニメーションを動かすもの
 	std::shared_ptr<KdAnimator> m_spAnimator;
 
+	std::string m_nextAnime;	//今のアニメが終わったら流すアニメ(空なら何もしない)
+
 	//描くか(falseなら影も描かない)
 	bool m_drawFlg = true;
+
+	//エディタで選んでいるか(選んでいる間は色を変えて描く)
+	bool m_highlightFlg = false;
 };

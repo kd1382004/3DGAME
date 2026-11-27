@@ -915,9 +915,18 @@ void ShopDisplay::BuySellUpdate()
 	bool pushed = false;
 	//売ったか(買った音と売った音を分ける)
 	bool sold = false;
+	//買おうとしたけれど、お金が足りなかったか(商人に首を振らせる)
+	bool noMoney = false;
 	if (m_clickFlg && MouseHit(buyPos, m_buttonW, m_buttonH))
 	{
 		pushed = true;
+
+		// 買う前の値段とお金で、足りるかを調べておく(買えたらお金が減るので先に見る)
+		const long buyTotal = IsStackTab()
+			? static_cast<long>(GetStackItem(m_selectIndex).m_buyPrice) * m_count
+			: static_cast<long>(m_weaponItem[m_selectIndex].m_buyPrice);
+		noMoney = (m_money < buyTotal);
+
 		if (IsStackTab())
 		{
 			// 消耗品・素材のタブ → 選んでいる商品を、数量(m_count)の分だけ買う
@@ -948,12 +957,24 @@ void ShopDisplay::BuySellUpdate()
 		//買った・売った音
 		SEPlayer::Play2D(sold ? "Asset/Sound/SE/Shop/Sell.wav" : "Asset/Sound/SE/Shop/Buy.wav", 0.8f);
 
-		if (auto spScene = m_wpPrepareScene.lock()) { spScene->OnShopDataChanged(); }
+		if (auto spScene = m_wpPrepareScene.lock())
+		{
+			spScene->OnShopDataChanged();
+
+			//屋台の商人も、買った・売ったに合わせて動く
+			spScene->OnMerchantReaction(sold ? MerchantReaction::Sell : MerchantReaction::Buy);
+		}
 	}
 	else if (pushed)
 	{
 		//お金が足りない・在庫が無いなどで失敗した
 		SEPlayer::Play2D("Asset/Sound/SE/Shop/Error.wav", 0.8f);
+
+		//お金が足りなかったときだけ、商人が首を振る(在庫切れ・もう持っている武器では振らない)
+		if (noMoney && !sold)
+		{
+			if (auto spScene = m_wpPrepareScene.lock()) { spScene->OnMerchantReaction(MerchantReaction::NoMoney); }
+		}
 	}
 }
 

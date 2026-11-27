@@ -45,14 +45,8 @@ void Sword::Init()
 		m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 	}
 
-	if (!m_spTPoly)
-	{
-		m_spTPoly = std::make_shared<KdTrailPolygon>();
-		m_spTPoly->SetMaterial("Asset/Textures/Weapon/Daerre/jet.png");
-
-		//トレイルポリゴンをビルボード(面をカメラに向ける)化
-		m_spTPoly->SetPattern(KdTrailPolygon::Trail_Pattern::eBillboard);
-	}
+	//軌跡(剣先から鍔まで)
+	InitTrail("Asset/Textures/Weapon/Daerre/jet.png", 20);
 
 	m_chargeTimeMax = 3;
 
@@ -93,11 +87,7 @@ void Sword::Update()
 	if (!m_attackFlg)
 	{
 		m_isFirstFrame = true;
-		if (m_spTPoly)
-		{
-			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-			m_spTPoly->AddPoint(mat);
-		}
+		AddTrailPoint(currTipPos, currBasePos);
 		return;
 	}
 
@@ -118,11 +108,7 @@ void Sword::Update()
 	if (!IsInComboHitWindow())
 	{
 		m_isFirstFrame = true;   // 範囲に入ったフレームから掃引をやり直す
-		if (m_spTPoly && m_tPolyFlg)
-		{
-			Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-			m_spTPoly->AddPoint(mat);
-		}
+		if (m_tPolyFlg) { AddTrailPoint(currTipPos, currBasePos); }
 		return;
 	}
 
@@ -283,11 +269,7 @@ void Sword::Update()
 	m_prevBasePos = currBasePos;
 	m_prevWeaponParentMat = m_weaponParentMat;
 	// トレイルポイント追加
-	if (m_spTPoly && m_tPolyFlg)
-	{
-		Math::Matrix mat = Math::Matrix::CreateTranslation(currTipPos);
-		m_spTPoly->AddPoint(mat);
-	}
+	if (m_tPolyFlg) { AddTrailPoint(currTipPos, currBasePos); }
 }
 
 void Sword::DrawLit()

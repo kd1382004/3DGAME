@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include"../BaseScene/BaseScene.h"
-#include"../../GameObject/Terrains/Camp/CampLayoutData/CampLayoutData.h"
+#include"../../GameObject/Terrains/Camp/MerchantReaction.h"	//商人の反応
 
 class UIManager;
 class ShopDisplay;
@@ -11,12 +11,8 @@ class PrepareSceneDisplay;
 class ShopEditor;
 class CharaStatusEditor;
 class GameButton;
-class CampObject;
-class PrepareCamera;
-class CampLight;
+class CampManager;
 class PrepareLayoutEditor;
-//出発演出の状態(None:していない / Walk:入口へ歩いている / Fade:暗転中)
-enum class DepartState { None, Walk, Fade };
 //////////////////////////////////////////////////////////////
 // 準備シーン
 // Title → Prepare → Game
@@ -74,11 +70,13 @@ public:
 	// ShopDisplay が持っている今の値(お金・武器)を、ほかの画面に配る
 	void OnShopDataChanged();
 
+	// ショップで買った・売った・お金が足りなかったときに ShopDisplay から呼ぶ
+	// 屋台の商人に、それに合わせた動きをさせる
+	// _reaction ... 何が起きたか
+	void OnMerchantReaction(MerchantReaction _reaction);
+
 	//出発の演出を始める(出発ボタンを押したときに呼ぶ)
 	void StartDepart();
-
-	//出発の演出を進める(プレイヤーを入口へ歩かせて、暗転したらゲームシーンへ)
-	void UpdateDepart();
 
 	//武器立ての武器の表示を更新する
 	//持っている武器だけを出し、装備中の武器は(プレイヤーが持っているので)隠す
@@ -101,8 +99,6 @@ private:
 
 	//音
 	std::shared_ptr<KdSoundInstance> m_spPrepareBGM;
-	//焚き火のパチパチ音(焚き火の位置から聞こえる)
-	std::vector<std::shared_ptr<KdSoundInstance3D>> m_spCampfire3DSEList;
 	//BGMの音量の倍率
 	static constexpr float kPrepareBGMVolRate = 0.5f;
 
@@ -142,6 +138,9 @@ private:
 	//背景とカメラのエディタを開いているか
 	bool m_layoutEditorOpenFlg = false;
 
+	//エディタのためにUI(メニュー・出発ボタン)を隠しているか
+	bool m_uiHiddenForEditorFlg = false;
+
 	//---- その他の処理 ----
 
 	//シーンのイベント(毎フレーム)
@@ -156,57 +155,14 @@ private:
 	// 決定した装備をSceneManagerへ反映(Gameシーンへ持ち越す)
 	void ApplyEquip();
 
-
-	//---- キャンプ(背景)関係のメンバ変数 ----
-
-	//Blenderから書き出したキャンプの配置データのパス
-	const std::string m_campLayoutFilePath = "Asset/Data/ObjeData/PrepareObjeData/CampLayout.json";
-
-	//エディタで調整した値(カメラ・ライト・出発演出)のパス
-	const std::string m_campLayoutTuneFilePath = "Asset/Data/ObjeData/PrepareObjeData/CampLayoutTune.json";
-
-	//キャンプの配置データ
-	CampLayoutData m_campLayout;
-
-	//準備シーン用カメラ
-	std::shared_ptr<PrepareCamera> m_spPrepareCamera;
-
-	//キャンプの置物
-	std::vector<std::shared_ptr<CampObject>> m_campObjects;
-
-	//武器立てに置いてある武器(武器の種類ごと。置いていない武器は空)
-	std::weak_ptr<CampObject> m_wpRackWeapons[PlayerWeaponInfoSize];
-
-	//キャンプのライト
-	std::vector<std::shared_ptr<CampLight>> m_campLights;
-
-	//キャンプで出しているエフェクト(焚き火など)
-	std::vector<std::weak_ptr<KdEffekseerObject>> m_wpKdEffekseerObject;
-
-	//入口の奥のエフェクト(エディタで位置を動かすために覚えておく)
-	std::weak_ptr<KdEffekseerObject> m_wpEntranceEffect;
-
-	// 準備画面(屋外・夕方)の霧と環境光
-	// ダンジョン用の値(霧 0.3 灰色・濃さ 0.02 / 環境光 0.5)のままだと暗く濁るので、準備画面だけ変える
-	// 次のシーンに移るときは SceneManager::ChangeScene がダンジョン用の値に戻すので、戻す処理は要らない
-	Math::Vector3 m_campFogColor = { 0.32f, 0.36f, 0.48f };	// 夕方の青っぽい空気
-	float         m_campFogDensity = 0.012f;					// 奥の崖がうっすら霞むくらい
-	Math::Vector4 m_campAmbient = { 0.6f, 0.62f, 0.75f, 0.5f };	// 少し青寄り。オレンジの光と対比させる
+	//配置エディタを開いている間はUIを隠す(マウスで置物を選ぶとき、ボタンを押してしまわないように)
+	//シーンの一覧から外すので、描画も更新(クリック)もされなくなる
+	// _hide ... 隠すならtrue
+	void SetUIHiddenForEditor(bool _hide);
 
 
-	//キャンプに立っているプレイヤーの置物(出発の演出で歩かせる)
-	std::weak_ptr<CampObject>m_wpCampPlayer;
+	//---- キャンプ(背景) ----
 
-	//---- 出発演出のメンバ変数 ----
-
-	//出発演出の状態
-
-	DepartState m_departState = DepartState::None;
-	float m_departTimer = 0.0f;//歩き始めてからの秒数
-	float m_departFadeTimer = 0.0f;//暗転を始めてからの秒数
-	float m_departStepTimer = 0.0f;//次の足音までの秒数
-	//足音の間隔(秒)。走るアニメーションに合わせる
-	static constexpr float kDepartStepInterval = 0.32f;
-	//歩き始めた位置
-	Math::Vector3 m_departStartPos;
+	//キャンプの管理(置物・ライト・カメラ・焚き火・出発の演出)
+	std::shared_ptr<CampManager> m_spCampManager;
 };

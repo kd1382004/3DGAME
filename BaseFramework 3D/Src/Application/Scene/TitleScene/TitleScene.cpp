@@ -113,6 +113,28 @@ void TitleScene::ImGUI()
 		ResetGameRecord();
 	}
 
+	//---------- 発表用データ ----------
+	ImGui::Separator();
+	ImGui::Text(U8("発表用データ"));
+	ImGui::TextDisabled(U8("ステータス・持ち物とお金・武器の強化・装備・記録・ショップの在庫"));
+
+	if (!std::filesystem::exists(m_presentationDataDir))
+	{
+		ImGui::TextColored({ 1.0f, 0.8f, 0.3f, 1.0f }, U8("発表用データがまだありません"));
+	}
+
+	if (ResetButton(U8("発表用データをプレイ用に読み込む"), "LoadPresentationData",
+		U8("今のプレイ用データを、発表用データで上書きしますか？(今のデータは消えます)")))
+	{
+		LoadPresentationData();
+	}
+
+	if (ResetButton(U8("今のプレイ用データを発表用に保存"), "SavePresentationData",
+		U8("今のプレイ用データで、発表用データを上書きしますか？")))
+	{
+		SavePresentationData();
+	}
+
 
 
 
@@ -120,7 +142,7 @@ void TitleScene::ImGUI()
 
 }
 
-bool TitleScene::ResetButton(const char* _label, const char* _popupId)
+bool TitleScene::ResetButton(const char* _label, const char* _popupId, const char* _message)
 {
 	if (ImGui::Button(_label))
 	{
@@ -130,7 +152,7 @@ bool TitleScene::ResetButton(const char* _label, const char* _popupId)
 	bool yesFlg = false;
 	if (ImGui::BeginPopupModal(_popupId, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::Text(U8("本当にリセットしますか？(元に戻せません)"));
+		ImGui::Text("%s", _message ? _message : U8("本当にリセットしますか？(元に戻せません)"));
 
 		if (ImGui::Button(U8("はい")))
 		{
@@ -239,6 +261,72 @@ void TitleScene::ResetGameRecord()
 	file << data.dump(4);
 
 	KdDebugGUI::Instance().AddLog(U8("歴代の記録を削除しました\n"));
+}
+
+bool TitleScene::CopyPlayerDataFiles(const std::string& _fromDir, const std::string& _toDir)
+{
+	std::error_code ec;
+	std::filesystem::create_directories(_toDir, ec);
+
+	bool allOk = true;
+	for (const std::string& name : m_playerDataFileNames)
+	{
+		const std::string from = _fromDir + name;
+		const std::string to = _toDir + name;
+
+		//元に無いファイルは飛ばす(写す先の今のファイルはそのまま)
+		if (!std::filesystem::exists(from))
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Warning] 見つからないので飛ばしました : %s\n"), from.c_str());
+			allOk = false;
+			continue;
+		}
+
+		std::filesystem::copy_file(from, to, std::filesystem::copy_options::overwrite_existing, ec);
+		if (ec)
+		{
+			KdDebugGUI::Instance().AddLog(U8("[Error] 写せませんでした : %s → %s\n"), from.c_str(), to.c_str());
+			allOk = false;
+			ec.clear();
+		}
+	}
+	return allOk;
+}
+
+bool TitleScene::SavePresentationData()
+{
+	const bool ok = CopyPlayerDataFiles(m_playerDataDir, m_presentationDataDir);
+	KdDebugGUI::Instance().AddLog(ok ? U8("発表用データを保存しました\n") : U8("発表用データの保存で、写せなかったファイルがあります\n"));
+	return ok;
+}
+
+bool TitleScene::LoadPresentationData()
+{
+	if (!std::filesystem::exists(m_presentationDataDir))
+	{
+		KdDebugGUI::Instance().AddLog(U8("[Error] 発表用データがありません : %s\n"), m_presentationDataDir.c_str());
+		return false;
+	}
+
+	const bool ok = CopyPlayerDataFiles(m_presentationDataDir, m_playerDataDir);
+
+	//装備中の武器は SceneManager が覚えているので、写したファイルから読み直して入れる
+	{
+		std::ifstream file(m_playerEquipFilePath);
+		if (file)
+		{
+			nlohmann::json data = nlohmann::json::parse(file, nullptr, false);
+			if (!data.is_discarded())
+			{
+				int weapon = data.value("equippedWeapon", static_cast<int>(PlayerWeaponInfo_Dagger));
+				if (weapon < 0 || weapon >= PlayerWeaponInfoSize) { weapon = PlayerWeaponInfo_Dagger; }
+				SceneManager::Instance().SetPlayerWeaponInfo(static_cast<PlayerWeaponInfo>(weapon));
+			}
+		}
+	}
+
+	KdDebugGUI::Instance().AddLog(ok ? U8("発表用データを読み込みました\n") : U8("発表用データの読み込みで、写せなかったファイルがあります\n"));
+	return ok;
 }
 
 void TitleScene::Init()
