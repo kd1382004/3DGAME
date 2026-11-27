@@ -55,9 +55,6 @@ void ItemBar::Update()
 
 void ItemBar::DrawSprite()
 {
-	// インベントリを開いている・倒れているときは出さない
-	if (IsInputBlocked()) { return; }
-
 	// はねる演出の倍率(0 → 1.15 → 1)
 	float pop = 1.0f;
 	if (m_popTimer > 0.0f)

@@ -53,7 +53,7 @@ private:
 	//---- 定数 ----
 
 	//左右に出す数
-	static constexpr int kSideNum = 2;
+	static constexpr int kSideNum = 1;
 
 	//使うキー
 	static constexpr int kUseKey = 'F';

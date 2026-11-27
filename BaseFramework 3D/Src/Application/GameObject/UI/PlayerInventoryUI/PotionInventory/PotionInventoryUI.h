@@ -54,6 +54,13 @@ private:
 	const float m_slotSpacing = 10.0f;
 
 
+	int  m_SlotSetKey = 'F';
+	std::shared_ptr<KdTexture> m_SlotRegisterTex;
+	std::shared_ptr<KdTexture> m_SlotUnregisterTex;
+	std::shared_ptr<KdTexture> m_SlotFullTex;
+	std::shared_ptr<KdTexture> m_spNumSlashTex;
+	Math::Vector2 m_SlotTexPos;
+
 	//---------- 種類の切り替えボタン（消耗品／素材） ----------
 	// 通常（選ばれていないとき）の画像
 	std::shared_ptr<KdTexture> m_spCategoryTex[ItemCategory_Num];

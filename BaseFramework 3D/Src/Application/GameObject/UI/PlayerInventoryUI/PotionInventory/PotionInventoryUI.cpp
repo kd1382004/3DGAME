@@ -17,6 +17,7 @@
 #include"../../../../Info/VOL/VOLInfo.h"									//音量設定
 #include"../../../../Info/KeyInfo/KeyInfo.h"								//キー入力
 #include"../../../../Info/MouseInfo/MouseInfo.h"							//マウス入力
+#include"../../../../Info/NumDraw/NumDraw.h"
 
 //=============================================
 // 
@@ -107,6 +108,17 @@ void PotionInventoryUI::Init()
 	// 最初は溝の内側いっぱい（ScrollBarCalcThumb で毎フレーム決め直す）
 	m_scrollThumbPos = m_scrollTrackPos;
 	m_scrollThumbSize.y = m_scrollTrackSize.y - m_scrollTrackInset * 2;
+
+	//---------- スロット ----------
+	loadTex(m_SlotRegisterTex, "Asset/Textures/GameUI/Item/PlayerInventory/SlotRegisterTex.png");
+	loadTex(m_SlotUnregisterTex, "Asset/Textures/GameUI/Item/PlayerInventory/SlotUnregisterTex.png");
+	loadTex(m_SlotFullTex, "Asset/Textures/GameUI/Item/PlayerInventory/SlotFullTex.png");
+	loadTex(m_spNumSlashTex, "Asset/Textures/Num/NumSlash.png");
+
+
+	m_SlotTexPos = m_spContext->m_useTex2DPos;
+	m_SlotTexPos.x += 20;
+	m_SlotTexPos.y += 80;
 }
 
 void PotionInventoryUI::OnSelect()
@@ -143,6 +155,19 @@ void PotionInventoryUI::Update()
 	IconHit();
 
 	PotionUse();
+
+
+	std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
+	if (!spPlayer) { return; }
+
+	std::shared_ptr<PlayerInventory> spPlayerInventory = spPlayer->GetPlayerInventory();
+	if (!spPlayerInventory) { return; }
+
+	//クイックスロットに登録or解除
+	if (KeyInfo::Instance().GetValidKeyPush(m_SlotSetKey, true))
+	{
+		spPlayerInventory->AddQuickSlot(m_selectPotionID);
+	}
 }
 
 void PotionInventoryUI::DrawSprite()
@@ -199,14 +224,83 @@ void PotionInventoryUI::DrawSprite()
 		}
 	}
 
-	//使用ボタン（消耗品のときだけ）
-	if (m_spContext->m_spUseTex && m_nowCategory == ItemCategory_Consumable)
-	{
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->m_spUseTex, m_spContext->m_useTex2DPos.x, m_spContext->m_useTex2DPos.y);
-	}
-
 	//スクロールバーの描画
 	ScrollBarDraw();
+
+	//消耗品のときだけ
+	if (m_nowCategory == ItemCategory_Consumable)
+	{
+		if (m_spContext->m_spUseTex)
+		{
+			//使用ボタン
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spContext->m_spUseTex, m_spContext->m_useTex2DPos.x, m_spContext->m_useTex2DPos.y);
+		}
+
+		//クイックスロット
+		if (m_selectPotionID == -999) { return; }
+		std::shared_ptr<PlayerBase>spPlayer = m_spContext->m_wpPlayer.lock();
+		if (!spPlayer) { return; }
+
+		std::shared_ptr<PlayerInventory> spPlayerInventory = spPlayer->GetPlayerInventory();
+		if (!spPlayerInventory) { return; }
+
+		std::shared_ptr<KdTexture>spTex;
+
+		if (spPlayerInventory->GetQuickSlotFlg(m_selectPotionID))
+		{
+			spTex = m_SlotUnregisterTex;
+		}
+		else
+		{
+			//上限かどうか
+			if (spPlayerInventory->IsQuickSlotFull())
+			{
+				spTex = m_SlotFullTex;
+			}
+			else
+			{
+				spTex = m_SlotRegisterTex;
+			}
+		}
+
+
+		if (spTex)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(spTex, m_SlotTexPos.x, m_SlotTexPos.y);
+		}
+
+		if (!spPlayerInventory->IsQuickSlotFull() || spPlayerInventory->GetQuickSlotFlg(m_selectPotionID))
+		{
+			Math::Vector2 keyPos = m_SlotTexPos;
+			keyPos.x -= 60;
+			Math::Vector2 keySiz = { 30,30 };
+			KeyInfo::Instance().Draw2Dkey(m_SlotSetKey, keyPos, keySiz);
+		}
+
+		//数を出す
+		const int listSiz = spPlayerInventory->GetPpotionsItemBarInventoryListSiz();
+		const int listMaxSiz = spPlayerInventory->GetQUICK_SLOT_MAX();
+
+		Math::Vector2 listSizPos = m_spContext->m_useTex2DPos;
+		Math::Vector2 listMaxPos = m_spContext->m_useTex2DPos;
+
+		listSizPos += {-10, 45};
+		listMaxPos += {10, 41};
+		float numSIz = 1.5;
+		NumDraw::GetInstance().Draw(listSiz, RAligned, listSizPos, kWhiteColor, numSIz);
+
+		//「/」
+		if (m_spNumSlashTex)
+		{
+			Math::Rectangle rec = { 0,0,9,14 };
+			float SlashSiz = numSIz;
+			KdShaderManager::Instance().m_spriteShader.DrawTex(m_spNumSlashTex, (int)m_spContext->m_useTex2DPos.x, (int)m_spContext->m_useTex2DPos.y + 43, (int)(9 * SlashSiz), (int)(14 * SlashSiz),&rec);
+		}
+
+		NumDraw::GetInstance().Draw(listMaxSiz, LAligned, listMaxPos, kWhiteColor, numSIz);
+
+	}
+
 }
 
 bool PotionInventoryUI::OnInventoryOpen()

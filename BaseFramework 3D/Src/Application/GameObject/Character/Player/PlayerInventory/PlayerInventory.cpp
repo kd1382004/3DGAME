@@ -75,6 +75,17 @@ int PlayerInventory::GetWeaponsStrengtheningInventoryNum(int _weaponsStrengtheni
 // 設定
 //=============================================
 
+bool PlayerInventory::GetQuickSlotFlg(int _potionsType)
+{
+	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return false; }
+	return m_potionsInventory[_potionsType].ItemBarFlg;
+}
+
+bool PlayerInventory::IsQuickSlotFull() const
+{
+	return (m_potionsItemBarInventory.size() >= QUICK_SLOT_MAX);
+}
+
 void PlayerInventory::AddPotionsInventory(int _potionsType)
 {
 	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return; }
@@ -96,9 +107,21 @@ void PlayerInventory::AddPotionsInventory(int _potionsType)
 void PlayerInventory::AddQuickSlot(int _potionsType, bool _flg)
 {
 	if (_potionsType<0 || _potionsType>m_potionsInventory.size() - 1) { return; }
+
+	//もしも登録なら上限チェック
+	if (_flg == true && m_potionsItemBarInventory.size() >= QUICK_SLOT_MAX)
+	{
+		return;
+	}
+
 	m_potionsInventory[_potionsType].ItemBarFlg = _flg;
 
 	RefreshQuickSlot();
+}
+
+void PlayerInventory::AddQuickSlot(int _potionsType)
+{
+	AddQuickSlot(_potionsType, !m_potionsInventory[_potionsType].ItemBarFlg);
 }
 
 void PlayerInventory::AddWeaponsStrengtheningInventory(int _weaponsStrengtheningType)

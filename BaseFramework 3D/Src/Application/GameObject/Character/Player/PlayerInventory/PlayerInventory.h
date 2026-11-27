@@ -68,6 +68,15 @@ public:
 	//所持金を取得
 	long GetMoney() const { return m_money; }
 
+	//クイックスロットに設定されてるか
+	// _potionsType ... ポーションの番号
+	bool GetQuickSlotFlg(int _potionsType);
+
+	const int GetQUICK_SLOT_MAX() { return QUICK_SLOT_MAX; }
+
+	const int GetPpotionsItemBarInventoryListSiz() { return m_potionsItemBarInventory.size(); }
+bool IsQuickSlotFull() const;
+
 	//---- 設定 ----
 
 	//ポーションがインベントリで増えたとき
@@ -78,6 +87,10 @@ public:
 	//_potionsType ... 登録・解除する番号
 	//_flg ... true(登録)・false(解除)
 	void AddQuickSlot(int _potionsType,bool _flg);
+
+	//クイックスロット登録を反転させる
+	//_potionsType ... 登録・解除する番号
+	void AddQuickSlot(int _potionsType);
 
 	//武器強化素材がインベントリで増えたとき
 	// _weaponsStrengtheningType ... 増やす武器強化素材の番号
@@ -114,6 +127,7 @@ public:
 	// _num ... 使う数
 	void UseWeaponsStrengtheningInventory(int _weaponsStrengtheningType, int _num);
 
+
 	//お金を使うとき。足りなければ使わずにfalseを返す
 	// _money ... 使う金額
 	bool UseMoney(long _money)
@@ -142,4 +156,7 @@ private:
 
 	//お金
 	long m_money = 0;
+
+	//クイックスロットに設定できる数
+	static const int QUICK_SLOT_MAX = 3;
 };
